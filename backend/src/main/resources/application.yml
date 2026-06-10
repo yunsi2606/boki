@@ -1,0 +1,43 @@
+# =============================================
+# Boki — Common Configuration
+# =============================================
+
+spring:
+  application:
+    name: boki-backend
+
+  # JPA
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # Flyway
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # Jackson
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+# JWT
+app:
+  jwt:
+    secret: ${JWT_SECRET:default-dev-secret-change-in-production-must-be-at-least-64-characters-long}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
+
+# Server
+server:
+  port: 8080
+  servlet:
+    context-path: /

@@ -1,0 +1,25 @@
+package com.boki.domain.port.out;
+
+import com.boki.domain.model.book.Book;
+import com.boki.domain.model.book.BookId;
+import com.boki.domain.model.book.BookStatus;
+import com.boki.domain.model.user.UserId;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Port (outbound) for book persistence.
+ */
+public interface BookRepository {
+
+    Book save(Book book);
+
+    Optional<Book> findById(BookId id);
+
+    List<Book> findByStatus(BookStatus status, int page, int size);
+
+    List<Book> findBySellerId(UserId sellerId);
+
+    void deleteById(BookId id);
+}
