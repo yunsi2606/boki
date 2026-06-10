@@ -1,0 +1,120 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-24) var(--space-6);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-50) 0%,
+    white 50%,
+    var(--color-secondary-50) 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 30% 50%,
+    rgba(99, 102, 241, 0.05) 0%,
+    transparent 50%
+  );
+  animation: drift 20s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -30px); }
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--color-primary-700);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-6);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+.title {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-6);
+  background: linear-gradient(135deg, var(--color-neutral-900), var(--color-primary-700));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-neutral-500);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-8);
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stats {
+  display: flex;
+  gap: var(--space-12);
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+}
+
+.stat {
+  text-align: center;
+}
+
+.statValue {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.statLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-500);
+  font-weight: var(--font-weight-medium);
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: var(--font-size-3xl);
+  }
+  .stats {
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+}

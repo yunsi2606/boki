@@ -1,0 +1,114 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-semibold);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+
+.md {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-md);
+}
+
+.lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--font-size-lg);
+  border-radius: var(--radius-md);
+}
+
+/* Variants */
+.primary {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+  color: white;
+  box-shadow: var(--shadow-sm), 0 0 0 0 rgba(99, 102, 241, 0);
+}
+
+.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  box-shadow: var(--shadow-md), 0 0 20px rgba(99, 102, 241, 0.25);
+  transform: translateY(-1px);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+.secondary {
+  background: white;
+  color: var(--color-neutral-700);
+  border: 1.5px solid var(--color-neutral-200);
+  box-shadow: var(--shadow-xs);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--color-neutral-50);
+  border-color: var(--color-neutral-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-neutral-600);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-900);
+}
+
+.danger {
+  background: linear-gradient(135deg, var(--color-error-500), var(--color-error-600));
+  color: white;
+}
+
+.danger:hover:not(:disabled) {
+  box-shadow: var(--shadow-md), 0 0 20px rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Full width */
+.fullWidth {
+  width: 100%;
+}
+
+/* Loading */
+.loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.spinner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
