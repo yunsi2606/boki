@@ -21,4 +21,8 @@ public interface UserRepository {
     boolean existsByEmail(Email email);
 
     void deleteById(UserId id);
+
+    Optional<User> findByOAuth(String provider, String providerUserId);
+
+    void linkOAuthAccount(UserId userId, String provider, String providerUserId);
 }
