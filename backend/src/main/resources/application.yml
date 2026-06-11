@@ -6,6 +6,9 @@ spring:
   application:
     name: boki-backend
 
+  config:
+    import: "optional:file:./backend/.env[.properties],optional:file:./.env[.properties],optional:file:.env[.properties]"
+
   # JPA
   jpa:
     open-in-view: false
