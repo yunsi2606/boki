@@ -368,38 +368,30 @@
 
 /* --- Netflix Big Number Rankings --- */
 .rankingWrapper {
-  margin: 0 calc(-1 * var(--space-4));
+  overflow: hidden;
 }
 
 .rankingCarousel {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--space-10);
-  padding: var(--space-4) var(--space-6) var(--space-8);
-  scrollbar-width: none;
-}
-
-.rankingCarousel::-webkit-scrollbar {
-  display: none;
+  padding: var(--space-4) 0 var(--space-8);
 }
 
 .rankingItem {
-  flex-shrink: 0;
-  width: calc((100% - 4 * var(--space-10)) / 5);
-  scroll-snap-align: start;
+  min-width: 0;
 }
 
 @media (max-width: 1024px) {
-  .rankingItem {
-    width: calc((100% - 2 * var(--space-10)) / 3);
+  .rankingCarousel {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 600px) {
-  .rankingItem {
-    width: calc((100% - 1 * var(--space-10)) / 2);
+  .rankingCarousel {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
   }
 }
 
