@@ -291,7 +291,29 @@ Must follow a **consistent design system**:
   - E-commerce platforms
   - Mobile-first design
 
-### 7.2 Rules
+### 7.2 Core UI Style Guidelines
+
+#### 1. Card-Based Layout (Bố cục dạng thẻ)
+- This is the backbone of the Boki layout. Each item (books, products) is contained in a rectangular card.
+- **Card Structure**: Standard aspect-ratio thumbnail on top, Title, Author/Translator, views/rating, price, and CTA buy button.
+- **Grid System**: Displayed in responsive grid (4, 5, or 6 columns on desktop; automatically scales down to 2 columns on mobile viewports).
+
+#### 2. Content-First & Image-Centric (Ưu tiên nội dung và hình ảnh)
+- The UI serves as a clean background to elevate product visibility.
+- **Background Palette**: Neutral colors, using solid white (`#FFFFFF`) or very light grays (`#F8F9FA`, `#F5F5F5`).
+- **Whitespace**: Generous padding and whitespace to prevent overcrowding.
+- **Cover Accentuation**: The UI color accentuation should rely heavily on the natural colors of the book cover artwork. Avoid excessive, distracting neon colors.
+
+#### 3. Carousel / Slider (Băng chuyền nội dung)
+- Use horizontal swipeable sliders (Swiper/Carousel) for categories like "New Updates", "Top Charts", and "Recommendations" to optimize vertical space.
+- Desktop view supports navigation arrows; mobile view supports swipe/touch interaction.
+
+#### 4. Modern Web trends (Quy chuẩn thiết kế hiện đại)
+- **Border Radius**: Subtly rounded corners (4px to 12px) for book covers, banners, input boxes, cards, and buttons.
+- **Soft Shadows**: Box shadows with large blur radius and low opacity (5-10% alpha max) for depth, avoiding solid borders.
+- **Flat Design & Micro-interactions**: Sharp outline icons. Interactive elements (like cards) must have scale feedback (`transform: scale(1.03)` or shadow deepening) on hover.
+
+### 7.3 Rules
 
 | Rule                 | Description                                    |
 |----------------------|------------------------------------------------|
