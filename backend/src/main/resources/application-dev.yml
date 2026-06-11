@@ -8,12 +8,20 @@ spring:
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      # Supabase session pooler (port 5432) settings
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      maximum-pool-size: 5
 
   jpa:
     show-sql: true
 
   flyway:
     clean-disabled: false
+    # Auto-repair failed migrations (e.g. after V005 rollback on first run)
+    repair-on-migrate: true
 
 logging:
   level:
