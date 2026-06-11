@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/hooks/useAuth';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import PhoneVerificationModal from '@/components/features/auth/PhoneVerificationModal';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({
           <Header />
           <main style={{ flex: 1 }}>{children}</main>
           <Footer />
+          <PhoneVerificationModal />
         </AuthProvider>
       </body>
     </html>
