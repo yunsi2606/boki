@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,35 +21,70 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Check query parameters for OAuth redirect callback
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const code = searchParams.get('code');
+      const state = searchParams.get('state'); // 'google' or 'facebook'
+
+      if (code && state && (state === 'google' || state === 'facebook')) {
+        setIsLoading(true);
+        const redirectUri = window.location.origin + '/login';
+
+        authService.loginOAuth(state, code, redirectUri)
+          .then((response) => {
+            login(response);
+            router.push('/');
+          })
+          .catch((err: any) => {
+            console.error('OAuth exchange failed:', err);
+            setError(err.message || 'Xác thực tài khoản liên kết thất bại. Vui lòng thử lại.');
+            setIsLoading(false);
+          });
+      }
+    }
+  }, [login, router]);
+
   const handleOAuthLogin = async (provider: 'google' | 'facebook') => {
     setError('');
-    setIsLoading(true);
 
-    try {
-      let token = '';
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const facebookClientId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID; // Or fallback to client app id
 
-      if (!isFirebaseConfigured) {
-        // Mock login token for local development bypass
-        token = provider === 'google' ? 'mock-google-token' : 'mock-facebook-token';
+    // Determine if we should run in mock bypass mode
+    const isMock = !googleClientId || googleClientId === 'your-google-client-id';
+
+    if (isMock) {
+      setIsLoading(true);
+      // Mock login token for local development bypass
+      const mockToken = provider === 'google' ? 'mock-google-token' : 'mock-facebook-token';
+      try {
         await new Promise((resolve) => setTimeout(resolve, 800)); // Simulating latency
-      } else {
-        if (!firebaseAuth) throw new Error('Firebase Auth is not initialized');
-        const providerObj = provider === 'google' 
-          ? new GoogleAuthProvider() 
-          : new FacebookAuthProvider();
-        const result = await signInWithPopup(firebaseAuth, providerObj);
-        token = await result.user.getIdToken();
+        const response = await authService.loginOAuth(provider, mockToken);
+        login(response);
+        router.push('/');
+      } catch (err: any) {
+        console.error(`${provider} mock login failed:`, err);
+        setError(err.message || `${provider} mock login failed. Please try again.`);
+      } finally {
+        setIsLoading(false);
       }
-
-      const response = await authService.loginOAuth(provider, token);
-      login(response);
-      router.push('/');
-    } catch (err: any) {
-      console.error(`${provider} login failed:`, err);
-      setError(err.message || `${provider} login failed. Please try again.`);
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    // Redirect to provider consent page to request authorization code
+    const redirectUri = window.location.origin + '/login';
+    let authUrl = '';
+
+    if (provider === 'google') {
+      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20email%20profile&state=google`;
+    } else {
+      const fbAppId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || ''; // using project id or app id
+      authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email,public_profile&state=facebook`;
+    }
+
+    window.location.href = authUrl;
   };
 
   const handleSubmit = async (e: FormEvent) => {

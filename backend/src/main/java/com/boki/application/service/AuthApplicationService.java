@@ -155,7 +155,7 @@ public class AuthApplicationService
     @Override
     @Transactional
     public AuthResponse loginOAuth(com.boki.application.dto.request.OAuthLoginRequest request) {
-        com.boki.application.dto.response.OAuthUserInfo userInfo = oauthProvider.verifyToken(request.provider(), request.token());
+        com.boki.application.dto.response.OAuthUserInfo userInfo = oauthProvider.verifyToken(request.provider(), request.token(), request.redirectUri());
 
         Email email = Email.of(userInfo.email());
         java.util.Optional<User> existingUser = userRepository.findByOAuth(request.provider(), userInfo.providerUserId());

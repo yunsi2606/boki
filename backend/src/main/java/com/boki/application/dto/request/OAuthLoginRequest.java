@@ -7,5 +7,7 @@ public record OAuthLoginRequest(
         String provider,
 
         @NotBlank(message = "Token is required")
-        String token
+        String token,
+
+        String redirectUri
 ) {}

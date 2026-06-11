@@ -19,25 +19,31 @@ public class OAuthProviderAdapter implements OAuthProvider {
     @Value("${app.google.client-id:}")
     private String googleClientId;
 
+    @Value("${app.google.client-secret:}")
+    private String googleClientSecret;
+
     @Value("${app.facebook.client-id:}")
     private String facebookClientId;
+
+    @Value("${app.facebook.client-secret:}")
+    private String facebookClientSecret;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public OAuthUserInfo verifyToken(String provider, String token) {
+    public OAuthUserInfo verifyToken(String provider, String token, String redirectUri) {
         if ("google".equalsIgnoreCase(provider)) {
-            return verifyGoogleToken(token);
+            return verifyGoogleToken(token, redirectUri);
         } else if ("facebook".equalsIgnoreCase(provider)) {
-            return verifyFacebookToken(token);
+            return verifyFacebookToken(token, redirectUri);
         } else {
             throw new IllegalArgumentException("Unsupported OAuth provider: " + provider);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private OAuthUserInfo verifyGoogleToken(String token) {
-        if (googleClientId == null || googleClientId.isBlank() || "mock-google-token".equals(token)) {
+    private OAuthUserInfo verifyGoogleToken(String code, String redirectUri) {
+        if (googleClientId == null || googleClientId.isBlank() || "mock-google-token".equals(code)) {
             log.warn("Using Google OAuth STUB/MOCK verification");
             return new OAuthUserInfo(
                     "mock.google@boki.com",
@@ -48,8 +54,32 @@ public class OAuthProviderAdapter implements OAuthProvider {
         }
 
         try {
-            String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + token;
-            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            // Exchange authorization code for tokens
+            String tokenUrl = "https://oauth2.googleapis.com/token";
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+
+            org.springframework.util.LinkedMultiValueMap<String, String> map = new org.springframework.util.LinkedMultiValueMap<>();
+            map.add("code", code);
+            map.add("client_id", googleClientId);
+            map.add("client_secret", googleClientSecret);
+            // Default to 'postmessage' (standard for popup auth code flow) if no redirect URI is passed
+            map.add("redirect_uri", redirectUri != null ? redirectUri : "postmessage");
+            map.add("grant_type", "authorization_code");
+
+            org.springframework.http.HttpEntity<org.springframework.util.LinkedMultiValueMap<String, String>> requestEntity = 
+                    new org.springframework.http.HttpEntity<>(map, headers);
+
+            Map<String, Object> tokenResponse = restTemplate.postForObject(tokenUrl, requestEntity, Map.class);
+            if (tokenResponse == null || !tokenResponse.containsKey("id_token")) {
+                throw new AuthenticationException("Failed to exchange Google authorization code");
+            }
+
+            String idToken = (String) tokenResponse.get("id_token");
+
+            // Verify Google tokeninfo using the id_token
+            String verifyUrl = "https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken;
+            Map<String, Object> response = restTemplate.getForObject(verifyUrl, Map.class);
             if (response == null) {
                 throw new AuthenticationException("Google token verification returned null response");
             }
@@ -82,8 +112,8 @@ public class OAuthProviderAdapter implements OAuthProvider {
     }
 
     @SuppressWarnings("unchecked")
-    private OAuthUserInfo verifyFacebookToken(String token) {
-        if (facebookClientId == null || facebookClientId.isBlank() || "mock-facebook-token".equals(token)) {
+    private OAuthUserInfo verifyFacebookToken(String code, String redirectUri) {
+        if (facebookClientId == null || facebookClientId.isBlank() || "mock-facebook-token".equals(code)) {
             log.warn("Using Facebook OAuth STUB/MOCK verification");
             return new OAuthUserInfo(
                     "mock.facebook@boki.com",
@@ -94,8 +124,23 @@ public class OAuthProviderAdapter implements OAuthProvider {
         }
 
         try {
-            String url = "https://graph.facebook.com/v19.0/me?fields=id,name,email,picture.type(large)&access_token=" + token;
-            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            // Exchange authorization code for access token
+            String actualRedirect = redirectUri != null ? redirectUri : "http://localhost:3000/login";
+            String tokenUrl = String.format(
+                    "https://graph.facebook.com/v19.0/oauth/access_token?client_id=%s&redirect_uri=%s&client_secret=%s&code=%s",
+                    facebookClientId, actualRedirect, facebookClientSecret, code
+            );
+
+            Map<String, Object> tokenResponse = restTemplate.getForObject(tokenUrl, Map.class);
+            if (tokenResponse == null || !tokenResponse.containsKey("access_token")) {
+                throw new AuthenticationException("Failed to exchange Facebook authorization code");
+            }
+
+            String accessToken = (String) tokenResponse.get("access_token");
+
+            // Query profile info using access token
+            String profileUrl = "https://graph.facebook.com/v19.0/me?fields=id,name,email,picture.type(large)&access_token=" + accessToken;
+            Map<String, Object> response = restTemplate.getForObject(profileUrl, Map.class);
             if (response == null) {
                 throw new AuthenticationException("Facebook profile retrieval returned null response");
             }

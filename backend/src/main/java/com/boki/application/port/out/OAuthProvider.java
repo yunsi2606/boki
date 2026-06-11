@@ -12,8 +12,9 @@ public interface OAuthProvider {
      * Verify an OAuth token with the social provider (e.g. google, facebook).
      *
      * @param provider the social provider name (google, facebook)
-     * @param token    the access or ID token from the provider
+     * @param token    the access token or authorization code from the provider
+     * @param redirectUri the redirect URI used during code acquisition
      * @return the profile info if valid
      */
-    OAuthUserInfo verifyToken(String provider, String token);
+    OAuthUserInfo verifyToken(String provider, String token, String redirectUri);
 }

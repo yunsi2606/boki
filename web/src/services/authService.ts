@@ -11,8 +11,8 @@ export const authService = {
   getCurrentUser: (): Promise<User> =>
     api.get<User>('/auth/me'),
 
-  loginOAuth: (provider: string, token: string): Promise<AuthResponse> =>
-    api.post<AuthResponse>('/auth/oauth', { provider, token }),
+  loginOAuth: (provider: string, token: string, redirectUri?: string): Promise<AuthResponse> =>
+    api.post<AuthResponse>('/auth/oauth', { provider, token, redirectUri }),
 
   verifyPhone: (payload: { phoneNumber: string; verificationId: string; code: string }): Promise<AuthResponse> =>
     api.post<AuthResponse>('/auth/verify-phone', payload),
