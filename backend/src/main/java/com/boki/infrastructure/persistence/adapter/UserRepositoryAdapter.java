@@ -18,9 +18,14 @@ import java.util.Optional;
 public class UserRepositoryAdapter implements UserRepository {
 
     private final UserJpaRepository jpaRepository;
+    private final com.boki.infrastructure.persistence.repository.UserOauthAccountJpaRepository oauthRepository;
 
-    public UserRepositoryAdapter(UserJpaRepository jpaRepository) {
+    public UserRepositoryAdapter(
+            UserJpaRepository jpaRepository,
+            com.boki.infrastructure.persistence.repository.UserOauthAccountJpaRepository oauthRepository
+    ) {
         this.jpaRepository = jpaRepository;
+        this.oauthRepository = oauthRepository;
     }
 
     @Override
@@ -50,5 +55,26 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public void deleteById(UserId id) {
         jpaRepository.deleteById(id.value());
+    }
+
+    @Override
+    public Optional<User> findByOAuth(String provider, String providerUserId) {
+        return oauthRepository.findByProviderAndProviderUserId(provider, providerUserId)
+                .map(oauthAccount -> UserPersistenceMapper.toDomainModel(oauthAccount.getUser()));
+    }
+
+    @Override
+    public void linkOAuthAccount(UserId userId, String provider, String providerUserId) {
+        var userEntity = jpaRepository.findById(userId.value())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId.value()));
+
+        boolean exists = oauthRepository.existsByUserIdAndProvider(userId.value(), provider);
+        if (!exists) {
+            var oauthAccount = new com.boki.infrastructure.persistence.entity.UserOauthAccountJpaEntity();
+            oauthAccount.setUser(userEntity);
+            oauthAccount.setProvider(provider);
+            oauthAccount.setProviderUserId(providerUserId);
+            oauthRepository.save(oauthAccount);
+        }
     }
 }
