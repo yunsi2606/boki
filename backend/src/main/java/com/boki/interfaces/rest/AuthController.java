@@ -29,17 +29,23 @@ public class AuthController {
     private final LoginUserUseCase loginUseCase;
     private final VerifyPhoneUseCase verifyPhoneUseCase;
     private final GetCurrentUserUseCase getCurrentUserUseCase;
+    private final com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase;
+    private final com.boki.application.port.in.VerifyEmailUseCase verifyEmailUseCase;
 
     public AuthController(
             RegisterUserUseCase registerUseCase,
             LoginUserUseCase loginUseCase,
             VerifyPhoneUseCase verifyPhoneUseCase,
-            GetCurrentUserUseCase getCurrentUserUseCase
+            GetCurrentUserUseCase getCurrentUserUseCase,
+            com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase,
+            com.boki.application.port.in.VerifyEmailUseCase verifyEmailUseCase
     ) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
         this.verifyPhoneUseCase = verifyPhoneUseCase;
         this.getCurrentUserUseCase = getCurrentUserUseCase;
+        this.loginOAuthUseCase = loginOAuthUseCase;
+        this.verifyEmailUseCase = verifyEmailUseCase;
     }
 
     @PostMapping("/register")
@@ -61,6 +67,18 @@ public class AuthController {
     ) {
         AuthResponse response = verifyPhoneUseCase.verifyPhone(principal.userId(), request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/oauth")
+    public ResponseEntity<AuthResponse> loginOAuth(@Valid @RequestBody com.boki.application.dto.request.OAuthLoginRequest request) {
+        AuthResponse response = loginOAuthUseCase.loginOAuth(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody com.boki.application.dto.request.VerifyEmailRequest request) {
+        verifyEmailUseCase.verifyEmail(request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")

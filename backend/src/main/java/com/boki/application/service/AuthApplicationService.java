@@ -35,23 +35,30 @@ import java.util.UUID;
  */
 @Service
 public class AuthApplicationService
-        implements RegisterUserUseCase, LoginUserUseCase, VerifyPhoneUseCase, GetCurrentUserUseCase {
+        implements RegisterUserUseCase, LoginUserUseCase, VerifyPhoneUseCase, GetCurrentUserUseCase,
+                   com.boki.application.port.in.LoginOAuthUseCase, com.boki.application.port.in.VerifyEmailUseCase {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final OtpService otpService;
+    private final com.boki.application.port.out.EmailService emailService;
+    private final com.boki.application.port.out.OAuthProvider oauthProvider;
 
     public AuthApplicationService(
             UserRepository userRepository,
             TokenService tokenService,
             PasswordEncoder passwordEncoder,
-            OtpService otpService
+            OtpService otpService,
+            com.boki.application.port.out.EmailService emailService,
+            com.boki.application.port.out.OAuthProvider oauthProvider
     ) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.otpService = otpService;
+        this.emailService = emailService;
+        this.oauthProvider = oauthProvider;
     }
 
     @Override
@@ -66,6 +73,14 @@ public class AuthApplicationService
         String hashedPassword = passwordEncoder.encode(request.password());
         User user = User.register(email, hashedPassword, request.displayName());
         User savedUser = userRepository.save(user);
+
+        // Send email verification token
+        String emailToken = tokenService.generateToken(
+                savedUser.getId().value(),
+                savedUser.getEmail().value(),
+                savedUser.getPhoneVerified()
+        );
+        emailService.sendVerificationEmail(savedUser.getEmail().value(), emailToken);
 
         String token = tokenService.generateToken(
                 savedUser.getId().value(),
@@ -135,5 +150,63 @@ public class AuthApplicationService
         User user = userRepository.findById(UserId.of(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return UserDtoMapper.toResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse loginOAuth(com.boki.application.dto.request.OAuthLoginRequest request) {
+        com.boki.application.dto.response.OAuthUserInfo userInfo = oauthProvider.verifyToken(request.provider(), request.token());
+
+        Email email = Email.of(userInfo.email());
+        java.util.Optional<User> existingUser = userRepository.findByOAuth(request.provider(), userInfo.providerUserId());
+        
+        User user;
+        if (existingUser.isPresent()) {
+            user = existingUser.get();
+        } else {
+            // Check if user exists by email (registered via email/password or another provider)
+            java.util.Optional<User> userByEmail = userRepository.findByEmail(email);
+            if (userByEmail.isPresent()) {
+                user = userByEmail.get();
+            } else {
+                // Register a new user from OAuth
+                user = User.fromOAuth(email, userInfo.displayName(), userInfo.avatarUrl());
+                user = userRepository.save(user);
+            }
+            // Link the OAuth account
+            userRepository.linkOAuthAccount(user.getId(), request.provider(), userInfo.providerUserId());
+        }
+
+        if (!user.isActive()) {
+            throw new AuthenticationException("Account is deactivated");
+        }
+
+        String token = tokenService.generateToken(
+                user.getId().value(),
+                user.getEmail().value(),
+                user.getPhoneVerified()
+        );
+
+        return AuthResponse.of(token, UserDtoMapper.toResponse(user));
+    }
+
+    @Override
+    @Transactional
+    public void verifyEmail(com.boki.application.dto.request.VerifyEmailRequest request) {
+        // Validate email token using TokenService
+        if (!tokenService.validateToken(request.token())) {
+            throw new BusinessRuleException("Invalid or expired email verification token");
+        }
+
+        String emailFromToken = tokenService.extractEmail(request.token());
+        if (!emailFromToken.equalsIgnoreCase(request.email())) {
+            throw new BusinessRuleException("Token does not match the provided email address");
+        }
+
+        User user = userRepository.findByEmail(Email.of(request.email()))
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.email()));
+
+        user.verifyEmail();
+        userRepository.save(user);
     }
 }

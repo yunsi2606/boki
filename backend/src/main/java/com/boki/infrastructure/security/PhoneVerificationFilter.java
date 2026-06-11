@@ -31,7 +31,9 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
             "/api/auth/me",
             "/api/auth/logout",
             "/api/auth/login",
-            "/api/auth/register"
+            "/api/auth/register",
+            "/api/auth/oauth",
+            "/api/auth/verify-email"
     );
 
     private final UserRepository userRepository;
