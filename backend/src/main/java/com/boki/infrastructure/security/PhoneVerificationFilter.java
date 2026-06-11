@@ -51,9 +51,10 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String path = request.getRequestURI();
+        String method = request.getMethod();
 
         // Skip check for allowed paths
-        if (isAllowedPath(path)) {
+        if (isAllowedPath(path) || isPublicBookGetRequest(method, path)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -81,6 +82,12 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicBookGetRequest(String method, String path) {
+        return "GET".equalsIgnoreCase(method) && 
+               path.startsWith("/api/books") && 
+               !path.startsWith("/api/books/seller");
     }
 
     private boolean isAllowedPath(String path) {

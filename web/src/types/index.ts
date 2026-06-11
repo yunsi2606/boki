@@ -40,3 +40,77 @@ export interface VerifyPhonePayload {
   verificationId: string;
   code: string;
 }
+
+export interface Book {
+  id: string;
+  sellerId: string;
+  sellerName: string;
+  categoryId: number | null;
+  title: string;
+  author: string;
+  isbn: string | null;
+  description: string | null;
+  price: number;
+  currency: string;
+  condition: 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
+  status: 'DRAFT' | 'ACTIVE' | 'SOLD' | 'ARCHIVED';
+  stockQuantity: number;
+  imageUrls: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBookPayload {
+  title: string;
+  author: string;
+  isbn?: string;
+  description?: string;
+  price: number;
+  condition: string;
+  stockQuantity: number;
+  categoryId?: number;
+  imageUrls?: string[];
+}
+
+export interface UpdateBookPayload {
+  title?: string;
+  author?: string;
+  isbn?: string;
+  description?: string;
+  price?: number;
+  condition?: string;
+  stockQuantity?: number;
+  categoryId?: number;
+  imageUrls?: string[];
+}
+
+export interface OrderItem {
+  bookId: string;
+  bookTitle: string;
+  bookCover: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+}
+
+export interface Order {
+  id: string;
+  buyerId: string;
+  totalAmount: number;
+  currency: string;
+  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  shippingAddress: string;
+  items: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateOrderItemPayload {
+  bookId: string;
+  quantity: number;
+}
+
+export interface CreateOrderPayload {
+  shippingAddress: string;
+  items: CreateOrderItemPayload[];
+}

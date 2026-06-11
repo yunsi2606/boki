@@ -1,0 +1,235 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6) var(--space-16);
+}
+
+.titleSection {
+  margin-bottom: var(--space-8);
+}
+
+.pageTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  margin-bottom: var(--space-2);
+}
+
+.pageSubtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-400);
+}
+
+/* --- Orders List --- */
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.orderCard {
+  background: rgba(18, 18, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: var(--space-4);
+}
+
+.orderIdInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.orderId {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.orderDate {
+  font-size: 11px;
+  color: var(--color-neutral-500);
+}
+
+.statusTag {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusPending {
+  background: rgba(255, 214, 10, 0.1);
+  color: #ffd60a;
+}
+
+.statusConfirmed {
+  background: rgba(10, 132, 255, 0.1);
+  color: #0a84ff;
+}
+
+.statusShipped {
+  background: rgba(191, 90, 242, 0.1);
+  color: #bf5af2;
+}
+
+.statusDelivered {
+  background: rgba(48, 209, 88, 0.1);
+  color: #30d158;
+}
+
+.statusCancelled {
+  background: rgba(255, 45, 85, 0.1);
+  color: #ff2d55;
+}
+
+/* --- Items List --- */
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.itemRow {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.itemCover {
+  width: 50px;
+  height: 67px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.itemTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 2px;
+}
+
+.itemMeta {
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+}
+
+/* --- Order Footer --- */
+.orderFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.shippingDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 70%;
+}
+
+.shippingLabel {
+  font-size: 10px;
+  color: var(--color-neutral-500);
+  text-transform: uppercase;
+}
+
+.shippingAddress {
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-300);
+  line-height: 1.4;
+}
+
+.totalSummary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.totalLabel {
+  font-size: 10px;
+  color: var(--color-neutral-500);
+  text-transform: uppercase;
+}
+
+.totalAmount {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-400);
+}
+
+/* --- Loading States --- */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: var(--space-4);
+  color: var(--color-neutral-400);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  border-top-color: var(--color-primary-500);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 350px;
+  background: rgba(18, 18, 22, 0.4);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  padding: var(--space-10);
+  text-align: center;
+  color: var(--color-neutral-400);
+  gap: var(--space-4);
+}
+
+.emptyIcon {
+  color: var(--color-neutral-600);
+}
+
+.emptyTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+}

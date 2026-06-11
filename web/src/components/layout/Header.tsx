@@ -1,12 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import Button from '@/components/ui/Button';
 import styles from './Header.module.css';
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const initials = user?.displayName
     ?.split(' ')
@@ -14,6 +18,15 @@ export default function Header() {
     .join('')
     .toUpperCase()
     .slice(0, 2) || 'U';
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push('/books');
+    }
+  };
 
   return (
     <header className={styles.header}>
@@ -27,9 +40,11 @@ export default function Header() {
 
           <nav className={styles.navLinks}>
             <Link href="/" className={styles.navLinkActive}>Trang chủ</Link>
-            <Link href="#flash-sale" className={styles.navLink}>Flash sale</Link>
-            <Link href="#vouchers" className={styles.navLink}>Mã khuyến mại</Link>
-            <Link href="#policy" className={styles.navLink}>Điều khoản &amp; Chính sách</Link>
+            <Link href="/books" className={styles.navLink}>Cửa hàng</Link>
+            {isAuthenticated && (
+              <Link href="/orders/history" className={styles.navLink}>Lịch sử mua</Link>
+            )}
+            <Link href="/#vouchers" className={styles.navLink}>Mã khuyến mại</Link>
           </nav>
 
           <div className={styles.userSection}>
@@ -81,7 +96,7 @@ export default function Header() {
 
         {/* Row 2: Categories Trigger, Search input, Seller Link */}
         <div className={styles.bottomRow}>
-          <button className={styles.categoryMenuTrigger} aria-label="Danh mục">
+          <button onClick={() => router.push('/books')} className={styles.categoryMenuTrigger} aria-label="Danh mục">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="6" height="6" rx="1"></rect>
               <rect x="15" y="3" width="6" height="6" rx="1"></rect>
@@ -90,7 +105,7 @@ export default function Header() {
             </svg>
           </button>
 
-          <form className={styles.searchBar} onSubmit={(e) => e.preventDefault()}>
+          <form className={styles.searchBar} onSubmit={handleSearchSubmit}>
             <div className={styles.searchInputWrapper}>
               <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
@@ -98,8 +113,10 @@ export default function Header() {
               </svg>
               <input
                 type="text"
-                placeholder="Nhập tên sản phẩm, tên thương hiệu, tên thể loại"
+                placeholder="Nhập tên sản phẩm, tên thương hiệu, tên thể loại..."
                 className={styles.searchInput}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <button type="submit" className={styles.searchSubmit}>
@@ -107,8 +124,8 @@ export default function Header() {
             </button>
           </form>
 
-          <Link href="/seller/register" className={styles.sellerCta}>
-            Trở thành người bán
+          <Link href="/books/new" className={styles.sellerCta}>
+            Đăng bán sách
             <svg className={styles.sellerArrow} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>

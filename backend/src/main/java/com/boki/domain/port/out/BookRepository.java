@@ -21,5 +21,7 @@ public interface BookRepository {
 
     List<Book> findBySellerId(UserId sellerId);
 
+    List<Book> searchActive(Integer categoryId, String query, int page, int size);
+
     void deleteById(BookId id);
 }

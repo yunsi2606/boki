@@ -3,6 +3,9 @@ package com.boki.domain.model.book;
 import com.boki.domain.model.user.UserId;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Book aggregate root.
@@ -26,6 +29,7 @@ public class Book {
     private BookCondition condition;
     private BookStatus status;
     private int stockQuantity;
+    private List<String> imageUrls = new ArrayList<>();
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
@@ -38,7 +42,8 @@ public class Book {
      */
     public static Book create(
             UserId sellerId, String title, String author,
-            Price price, BookCondition condition, int stockQuantity
+            Price price, BookCondition condition, int stockQuantity,
+            List<String> imageUrls
     ) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Book title cannot be empty");
@@ -59,6 +64,7 @@ public class Book {
         book.condition = condition;
         book.status = BookStatus.DRAFT;
         book.stockQuantity = stockQuantity;
+        book.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
         book.createdAt = Instant.now();
         book.updatedAt = Instant.now();
         book.createdBy = sellerId.toString();
@@ -72,7 +78,7 @@ public class Book {
             BookId id, UserId sellerId, Integer categoryId,
             String title, String author, String isbn, String description,
             Price price, BookCondition condition, BookStatus status,
-            int stockQuantity, Instant createdAt, Instant updatedAt, String createdBy
+            int stockQuantity, List<String> imageUrls, Instant createdAt, Instant updatedAt, String createdBy
     ) {
         Book book = new Book();
         book.id = id;
@@ -86,6 +92,7 @@ public class Book {
         book.condition = condition;
         book.status = status;
         book.stockQuantity = stockQuantity;
+        book.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
         book.createdAt = createdAt;
         book.updatedAt = updatedAt;
         book.createdBy = createdBy;
@@ -139,6 +146,32 @@ public class Book {
         this.updatedAt = Instant.now();
     }
 
+    public void updateImages(List<String> imageUrls) {
+        this.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
+        this.updatedAt = Instant.now();
+    }
+
+    public void updateCondition(BookCondition newCondition) {
+        if (newCondition == null) {
+            throw new IllegalArgumentException("Book condition cannot be null");
+        }
+        this.condition = newCondition;
+        this.updatedAt = Instant.now();
+    }
+
+    public void updateStockQuantity(int newStock) {
+        if (newStock < 0) {
+            throw new IllegalArgumentException("Stock quantity cannot be negative");
+        }
+        this.stockQuantity = newStock;
+        if (this.stockQuantity == 0 && this.status == BookStatus.ACTIVE) {
+            this.status = BookStatus.SOLD;
+        } else if (this.stockQuantity > 0 && this.status == BookStatus.SOLD) {
+            this.status = BookStatus.ACTIVE;
+        }
+        this.updatedAt = Instant.now();
+    }
+
     // ---- Getters ----
 
     public BookId getId() { return id; }
@@ -152,6 +185,7 @@ public class Book {
     public BookCondition getCondition() { return condition; }
     public BookStatus getStatus() { return status; }
     public int getStockQuantity() { return stockQuantity; }
+    public List<String> getImageUrls() { return Collections.unmodifiableList(imageUrls); }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
     public String getCreatedBy() { return createdBy; }
