@@ -36,7 +36,8 @@ import java.util.UUID;
 @Service
 public class AuthApplicationService
         implements RegisterUserUseCase, LoginUserUseCase, VerifyPhoneUseCase, GetCurrentUserUseCase,
-                   com.boki.application.port.in.LoginOAuthUseCase, com.boki.application.port.in.VerifyEmailUseCase {
+                   com.boki.application.port.in.LoginOAuthUseCase, com.boki.application.port.in.VerifyEmailUseCase,
+                   com.boki.application.port.in.UpdateUserProfileUseCase {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
@@ -208,5 +209,16 @@ public class AuthApplicationService
 
         user.verifyEmail();
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateProfile(UUID userId, com.boki.application.dto.request.UpdateProfileRequest request) {
+        User user = userRepository.findById(UserId.of(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        user.updateProfile(request.displayName(), request.avatarUrl());
+        User savedUser = userRepository.save(user);
+        return UserDtoMapper.toResponse(savedUser);
     }
 }

@@ -31,6 +31,7 @@ public class AuthController {
     private final GetCurrentUserUseCase getCurrentUserUseCase;
     private final com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase;
     private final com.boki.application.port.in.VerifyEmailUseCase verifyEmailUseCase;
+    private final com.boki.application.port.in.UpdateUserProfileUseCase updateProfileUseCase;
 
     public AuthController(
             RegisterUserUseCase registerUseCase,
@@ -38,7 +39,8 @@ public class AuthController {
             VerifyPhoneUseCase verifyPhoneUseCase,
             GetCurrentUserUseCase getCurrentUserUseCase,
             com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase,
-            com.boki.application.port.in.VerifyEmailUseCase verifyEmailUseCase
+            com.boki.application.port.in.VerifyEmailUseCase verifyEmailUseCase,
+            com.boki.application.port.in.UpdateUserProfileUseCase updateProfileUseCase
     ) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
@@ -46,6 +48,7 @@ public class AuthController {
         this.getCurrentUserUseCase = getCurrentUserUseCase;
         this.loginOAuthUseCase = loginOAuthUseCase;
         this.verifyEmailUseCase = verifyEmailUseCase;
+        this.updateProfileUseCase = updateProfileUseCase;
     }
 
     @PostMapping("/register")
@@ -86,6 +89,15 @@ public class AuthController {
             @AuthenticationPrincipal AuthenticatedUser principal
     ) {
         UserResponse response = getCurrentUserUseCase.getCurrentUser(principal.userId());
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/me")
+    public ResponseEntity<UserResponse> updateProfile(
+            @AuthenticationPrincipal AuthenticatedUser principal,
+            @RequestBody com.boki.application.dto.request.UpdateProfileRequest request
+    ) {
+        UserResponse response = updateProfileUseCase.updateProfile(principal.userId(), request);
         return ResponseEntity.ok(response);
     }
 }
