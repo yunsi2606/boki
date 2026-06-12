@@ -114,3 +114,26 @@ export interface CreateOrderPayload {
   shippingAddress: string;
   items: CreateOrderItemPayload[];
 }
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  parentId: number | null;
+}
+
+export interface UpdateProfilePayload {
+  displayName?: string;
+  avatarUrl?: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  email: string;
+  newPassword: string;
+}

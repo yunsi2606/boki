@@ -4,19 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { bookService } from '@/services/bookService';
-import type { ApiError } from '@/types';
+import { categoryService } from '@/services/categoryService';
+import type { ApiError, Category } from '@/types';
 import Button from '@/components/ui/Button';
 import styles from './new.module.css';
 
-const categoriesList = [
-  { id: 1, name: 'Sách Văn học' },
-  { id: 2, name: 'Sách Thiếu nhi' },
-  { id: 3, name: 'Sách Kinh tế' },
-  { id: 4, name: 'Sách Giáo khoa' },
-  { id: 5, name: 'Kỹ Năng' },
-  { id: 6, name: 'Phát triển bản thân' },
-  { id: 7, name: 'Sổ tay các loại' }
-];
 
 const conditionsList = [
   { value: 'NEW', label: 'Mới (NEW) — Chưa qua sử dụng' },
@@ -34,13 +26,16 @@ export default function SellBookPage() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [isbn, setIsbn] = useState('');
-  const [categoryId, setCategoryId] = useState(1);
+  const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
   const [condition, setCondition] = useState('GOOD');
   const [price, setPrice] = useState('');
   const [stockQuantity, setStockQuantity] = useState('1');
   const [description, setDescription] = useState('');
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+  // Category data
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Feedback states
   const [submitting, setSubmitting] = useState(false);
@@ -53,6 +48,11 @@ export default function SellBookPage() {
       router.push('/login?redirectTo=/books/new');
     }
   }, [isAuthenticated, authLoading, router]);
+
+  // Load categories from API
+  useEffect(() => {
+    categoryService.getCategories().then(setCategories).catch(() => {});
+  }, []);
 
   const handleAddImageUrl = () => {
     if (!imageUrlInput.trim()) return;
@@ -197,11 +197,12 @@ export default function SellBookPage() {
               <label className={styles.label}>Thể loại *</label>
               <select
                 className={styles.select}
-                value={categoryId}
+                value={categoryId ?? ''}
                 onChange={(e) => setCategoryId(parseInt(e.target.value))}
                 disabled={submitting}
               >
-                {categoriesList.map((cat) => (
+                <option value="" disabled>-- Chọn thể loại --</option>
+                {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>

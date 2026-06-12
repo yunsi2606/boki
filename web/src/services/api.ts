@@ -55,4 +55,10 @@ export const api = {
     }),
 
   delete: <T>(endpoint: string) => apiFetch<T>(endpoint, { method: 'DELETE' }),
+
+  patch: <T>(endpoint: string, body: unknown) =>
+    apiFetch<T>(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    }),
 };
