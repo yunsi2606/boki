@@ -118,6 +118,24 @@ public class User {
         this.updatedAt = Instant.now();
     }
 
+    public void updateProfile(String displayName, String avatarUrl) {
+        if (displayName != null && !displayName.isBlank()) {
+            this.displayName = displayName.trim();
+        }
+        if (avatarUrl != null) {
+            this.avatarUrl = avatarUrl.isBlank() ? null : avatarUrl.trim();
+        }
+        this.updatedAt = Instant.now();
+    }
+
+    public void changePassword(String newPasswordHash) {
+        if (newPasswordHash == null || newPasswordHash.isBlank()) {
+            throw new IllegalArgumentException("Password hash cannot be empty");
+        }
+        this.passwordHash = newPasswordHash;
+        this.updatedAt = Instant.now();
+    }
+
     public boolean isPhoneVerified() {
         return phoneVerified;
     }
