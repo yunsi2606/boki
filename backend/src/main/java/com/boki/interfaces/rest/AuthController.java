@@ -32,6 +32,8 @@ public class AuthController {
     private final com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase;
     private final com.boki.application.port.in.VerifyEmailUseCase verifyEmailUseCase;
     private final com.boki.application.port.in.UpdateUserProfileUseCase updateProfileUseCase;
+    private final com.boki.application.port.in.ForgotPasswordUseCase forgotPasswordUseCase;
+    private final com.boki.application.port.in.ResetPasswordUseCase resetPasswordUseCase;
 
     public AuthController(
             RegisterUserUseCase registerUseCase,
@@ -40,7 +42,9 @@ public class AuthController {
             GetCurrentUserUseCase getCurrentUserUseCase,
             com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase,
             com.boki.application.port.in.VerifyEmailUseCase verifyEmailUseCase,
-            com.boki.application.port.in.UpdateUserProfileUseCase updateProfileUseCase
+            com.boki.application.port.in.UpdateUserProfileUseCase updateProfileUseCase,
+            com.boki.application.port.in.ForgotPasswordUseCase forgotPasswordUseCase,
+            com.boki.application.port.in.ResetPasswordUseCase resetPasswordUseCase
     ) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
@@ -49,6 +53,8 @@ public class AuthController {
         this.loginOAuthUseCase = loginOAuthUseCase;
         this.verifyEmailUseCase = verifyEmailUseCase;
         this.updateProfileUseCase = updateProfileUseCase;
+        this.forgotPasswordUseCase = forgotPasswordUseCase;
+        this.resetPasswordUseCase = resetPasswordUseCase;
     }
 
     @PostMapping("/register")
@@ -99,5 +105,21 @@ public class AuthController {
     ) {
         UserResponse response = updateProfileUseCase.updateProfile(principal.userId(), request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(
+            @Valid @RequestBody com.boki.application.dto.request.ForgotPasswordRequest request
+    ) {
+        forgotPasswordUseCase.forgotPassword(request.email());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(
+            @Valid @RequestBody com.boki.application.dto.request.ResetPasswordRequest request
+    ) {
+        resetPasswordUseCase.resetPassword(request);
+        return ResponseEntity.ok().build();
     }
 }

@@ -37,7 +37,9 @@ import java.util.UUID;
 public class AuthApplicationService
         implements RegisterUserUseCase, LoginUserUseCase, VerifyPhoneUseCase, GetCurrentUserUseCase,
                    com.boki.application.port.in.LoginOAuthUseCase, com.boki.application.port.in.VerifyEmailUseCase,
-                   com.boki.application.port.in.UpdateUserProfileUseCase {
+                   com.boki.application.port.in.UpdateUserProfileUseCase,
+                   com.boki.application.port.in.ForgotPasswordUseCase,
+                   com.boki.application.port.in.ResetPasswordUseCase {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
@@ -220,5 +222,43 @@ public class AuthApplicationService
         user.updateProfile(request.displayName(), request.avatarUrl());
         User savedUser = userRepository.save(user);
         return UserDtoMapper.toResponse(savedUser);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void forgotPassword(String email) {
+        // Silently skip if email not found — do not reveal account existence (security best practice)
+        userRepository.findByEmail(Email.of(email)).ifPresent(user -> {
+            String resetToken = tokenService.generateToken(
+                    user.getId().value(),
+                    user.getEmail().value(),
+                    user.getPhoneVerified()
+            );
+            emailService.sendPasswordResetEmail(user.getEmail().value(), resetToken);
+        });
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(com.boki.application.dto.request.ResetPasswordRequest request) {
+        if (!tokenService.validateToken(request.token())) {
+            throw new BusinessRuleException("Invalid or expired password reset token");
+        }
+
+        String emailFromToken = tokenService.extractEmail(request.token());
+        if (!emailFromToken.equalsIgnoreCase(request.email())) {
+            throw new BusinessRuleException("Token does not match the provided email address");
+        }
+
+        User user = userRepository.findByEmail(Email.of(request.email()))
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.email()));
+
+        if (user.getPasswordHash() == null) {
+            throw new BusinessRuleException("This account uses OAuth login and does not have a password");
+        }
+
+        String newHash = passwordEncoder.encode(request.newPassword());
+        user.changePassword(newHash);
+        userRepository.save(user);
     }
 }
