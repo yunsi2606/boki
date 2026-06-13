@@ -137,3 +137,9 @@ export interface ResetPasswordPayload {
   email: string;
   newPassword: string;
 }
+
+export interface CartItem {
+  book: Book;
+  quantity: number;
+}
+
