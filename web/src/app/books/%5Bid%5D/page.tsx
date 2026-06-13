@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import { useCart } from '@/hooks/useCart';
 import { bookService } from '@/services/bookService';
 import type { Book } from '@/types';
 import Button from '@/components/ui/Button';
@@ -39,12 +40,14 @@ export default function BookDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { addToCart } = useCart();
   
   const id = params.id as string;
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [added, setAdded] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -69,6 +72,16 @@ export default function BookDetailsPage() {
     }
     setCheckoutOpen(true);
   };
+
+  const handleAddToCart = () => {
+    if (!book) return;
+    addToCart(book, 1);
+    setAdded(true);
+    setTimeout(() => {
+      setAdded(false);
+    }, 2000);
+  };
+
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -173,14 +186,25 @@ export default function BookDetailsPage() {
             </div>
           </div>
 
-          <Button 
-            size="lg" 
-            fullWidth 
-            onClick={handleBuyNow} 
-            disabled={book.stockQuantity === 0}
-          >
-            {book.stockQuantity === 0 ? 'Đã hết hàng' : 'Mua ngay'}
-          </Button>
+          <div className={styles.actionsRow}>
+            <Button 
+              size="lg" 
+              variant="secondary"
+              onClick={handleAddToCart} 
+              disabled={book.stockQuantity === 0}
+              className={styles.cartButton}
+            >
+              {added ? 'Đã thêm! ✔' : 'Thêm vào giỏ'}
+            </Button>
+            <Button 
+              size="lg" 
+              onClick={handleBuyNow} 
+              disabled={book.stockQuantity === 0}
+              className={styles.buyButton}
+            >
+              {book.stockQuantity === 0 ? 'Đã hết hàng' : 'Mua ngay'}
+            </Button>
+          </div>
 
           {/* Description Block */}
           {book.description && (

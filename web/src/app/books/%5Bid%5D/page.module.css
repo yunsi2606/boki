@@ -269,3 +269,18 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.actionsRow {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.cartButton {
+  flex: 1;
+}
+
+.buyButton {
+  flex: 1.5;
+}
+
