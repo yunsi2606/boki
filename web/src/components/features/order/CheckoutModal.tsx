@@ -10,17 +10,20 @@ import styles from './CheckoutModal.module.css';
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  book: Book | null;
+  book?: Book | null;
+  items?: { book: Book; quantity: number }[];
+  onSuccess?: () => void;
 }
 
-export default function CheckoutModal({ isOpen, onClose, book }: CheckoutModalProps) {
+export default function CheckoutModal({ isOpen, onClose, book, items, onSuccess }: CheckoutModalProps) {
   const router = useRouter();
   const [shippingAddress, setShippingAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  if (!isOpen || !book) return null;
+  const hasItems = items && items.length > 0;
+  if (!isOpen || (!book && !hasItems)) return null;
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,20 +35,32 @@ export default function CheckoutModal({ isOpen, onClose, book }: CheckoutModalPr
     setLoading(true);
     setError(null);
 
-    try {
-      await orderService.createOrder({
-        shippingAddress: shippingAddress.trim(),
-        items: [
+    const orderItems = book
+      ? [
           {
             bookId: book.id,
             quantity: 1
           }
         ]
+      : (items || []).map(item => ({
+          bookId: item.book.id,
+          quantity: item.quantity
+        }));
+
+    try {
+      await orderService.createOrder({
+        shippingAddress: shippingAddress.trim(),
+        items: orderItems
       });
       setSuccess(true);
+      if (onSuccess) {
+        onSuccess();
+      }
       setTimeout(() => {
         router.push('/orders/history');
         onClose();
+        setSuccess(false);
+        setShippingAddress('');
       }, 2000);
     } catch (err: unknown) {
       const apiErr = err as ApiError;
@@ -59,9 +74,15 @@ export default function CheckoutModal({ isOpen, onClose, book }: CheckoutModalPr
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
-  const cover = book.imageUrls && book.imageUrls.length > 0
-    ? book.imageUrls[0]
-    : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200';
+  const totalAmount = book
+    ? book.price
+    : (items || []).reduce((sum, item) => sum + item.book.price * item.quantity, 0);
+
+  const getCover = (b: Book) => {
+    return b.imageUrls && b.imageUrls.length > 0
+      ? b.imageUrls[0]
+      : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200';
+  };
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -89,13 +110,33 @@ export default function CheckoutModal({ isOpen, onClose, book }: CheckoutModalPr
           <form onSubmit={handleCheckout}>
             <div className={styles.body}>
               {/* Product summary */}
-              <div className={styles.summaryCard}>
-                <img src={cover} alt={book.title} className={styles.bookCover} />
-                <div className={styles.bookInfo}>
-                  <h3 className={styles.bookTitle}>{book.title}</h3>
-                  <p className={styles.bookAuthor}>{book.author}</p>
-                  <span className={styles.bookPrice}>{formatPrice(book.price)}</span>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {book ? (
+                  <div className={styles.summaryCard}>
+                    <img src={getCover(book)} alt={book.title} className={styles.bookCover} />
+                    <div className={styles.bookInfo}>
+                      <h3 className={styles.bookTitle}>{book.title}</h3>
+                      <p className={styles.bookAuthor}>{book.author}</p>
+                      <span className={styles.bookPrice}>{formatPrice(book.price)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.itemsList}>
+                    {(items || []).map((item, idx) => (
+                      <div key={item.book.id} className={styles.summaryCard}>
+                        <img src={getCover(item.book)} alt={item.book.title} className={styles.bookCover} style={{ width: '48px', height: '64px' }} />
+                        <div className={styles.bookInfo}>
+                          <h3 className={styles.bookTitle} style={{ fontSize: '14px' }}>{item.book.title}</h3>
+                          <p className={styles.bookAuthor} style={{ fontSize: '12px', marginBottom: '4px' }}>Tác giả: {item.book.author}</p>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', minWidth: '200px' }}>
+                            <span className={styles.bookPrice} style={{ fontSize: '14px' }}>{formatPrice(item.book.price)}</span>
+                            <span style={{ fontSize: '12px', color: 'var(--color-neutral-500)', fontWeight: 'bold' }}>SL: {item.quantity}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Shipping input */}
@@ -116,7 +157,7 @@ export default function CheckoutModal({ isOpen, onClose, book }: CheckoutModalPr
               {/* Order total */}
               <div className={styles.totalRow}>
                 <span className={styles.totalLabel}>Tổng số tiền thanh toán</span>
-                <span className={styles.totalAmount}>{formatPrice(book.price)}</span>
+                <span className={styles.totalAmount}>{formatPrice(totalAmount)}</span>
               </div>
             </div>
 

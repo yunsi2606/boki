@@ -190,3 +190,26 @@
   padding: var(--space-4) var(--space-6) var(--space-6);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+.itemsList {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemsList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.itemsList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.itemsList::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+}
+
