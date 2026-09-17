@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { adminService } from '@/services/adminService';
 import { paymentService } from '@/services/paymentService';
+import { API_BASE_URL } from '@/lib/constants';
 import styles from './PaymentConfigTab.module.css';
 
 interface PaymentConfigTabProps {
@@ -102,6 +103,11 @@ export default function PaymentConfigTab({ onSuccessNotice }: PaymentConfigTabPr
       return window.location.origin;
     }
     return 'https://boki.store';
+  };
+
+  const getBackendWebhookUrl = (gateway: string) => {
+    const base = API_BASE_URL.replace(/\/+$/, '');
+    return `${base}/webhooks/${gateway}`;
   };
 
   const copyToClipboard = (text: string, key: string) => {
@@ -260,11 +266,11 @@ export default function PaymentConfigTab({ onSuccessNotice }: PaymentConfigTabPr
                 </a>
               </div>
               <div className={styles.webhookUrlRow}>
-                <code className={styles.urlCode}>{`${getOrigin()}/api/webhooks/sepay`}</code>
+                <code className={styles.urlCode}>{getBackendWebhookUrl('sepay')}</code>
                 <button
                   type="button"
                   className={styles.copyUrlBtn}
-                  onClick={() => copyToClipboard(`${getOrigin()}/api/webhooks/sepay`, 'sepay')}
+                  onClick={() => copyToClipboard(getBackendWebhookUrl('sepay'), 'sepay')}
                 >
                   {copiedKey === 'sepay' ? '✓ Đã sao chép' : '📋 Sao chép URL'}
                 </button>
@@ -414,11 +420,11 @@ export default function PaymentConfigTab({ onSuccessNotice }: PaymentConfigTabPr
                 <span style={{ fontSize: '0.75rem', color: '#a16207' }}>Tự động gửi kèm payload tạo thanh toán</span>
               </div>
               <div className={styles.webhookUrlRow}>
-                <code className={styles.urlCode}>{`${getOrigin()}/api/webhooks/momo`}</code>
+                <code className={styles.urlCode}>{getBackendWebhookUrl('momo')}</code>
                 <button
                   type="button"
                   className={styles.copyUrlBtn}
-                  onClick={() => copyToClipboard(`${getOrigin()}/api/webhooks/momo`, 'momo')}
+                  onClick={() => copyToClipboard(getBackendWebhookUrl('momo'), 'momo')}
                 >
                   {copiedKey === 'momo' ? '✓ Đã sao chép' : '📋 Sao chép URL'}
                 </button>
