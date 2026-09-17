@@ -12,6 +12,8 @@ export interface User {
 
 export interface AuthResponse {
   token: string;
+  accessToken?: string;
+  refreshToken?: string;
   user: User;
 }
 
@@ -41,21 +43,53 @@ export interface VerifyPhonePayload {
   code: string;
 }
 
+export interface RefreshTokenPayload {
+  refreshToken: string;
+}
+
+export interface BookVariant {
+  id: string;
+  bookId: string;
+  sku?: string;
+  name: string;               // e.g. "Bản Đặc Biệt (Tặng kèm Bookmark)"
+  price: number;              // e.g. 145000
+  originalPrice?: number;     // e.g. 180000
+  stockQuantity: number;      // e.g. 15
+  imageUrl?: string;          // Variant specific image
+  attributes?: Record<string, string>; // e.g. { "Loại bìa": "Bìa Cứng" }
+  isStandaloneDisplay?: boolean; // Display variant as individual product card in showcase
+}
+
 export interface Book {
   id: string;
   sellerId: string;
   sellerName: string;
   categoryId: number | null;
   title: string;
+  slug?: string;
   author: string;
   isbn: string | null;
+  publisher?: string | null;
+  supplier?: string | null;
+  publicationYear?: number | null;
+  language?: string | null;
+  format?: string | null;
+  numberOfPages?: number | null;
+  weightGrams?: number | null;
+  dimensions?: string | null;
+  translator?: string | null;
   description: string | null;
   price: number;
+  originalPrice?: number;
   currency: string;
   condition: 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
   status: 'DRAFT' | 'ACTIVE' | 'SOLD' | 'ARCHIVED';
   stockQuantity: number;
+  viewsCount?: number;
+  rating?: number;
+  reviewsCount?: number;
   imageUrls: string[];
+  variants?: BookVariant[];
   createdAt: string;
   updatedAt: string;
 }
@@ -64,6 +98,15 @@ export interface CreateBookPayload {
   title: string;
   author: string;
   isbn?: string;
+  publisher?: string;
+  supplier?: string;
+  publicationYear?: number;
+  language?: string;
+  format?: string;
+  numberOfPages?: number;
+  weightGrams?: number;
+  dimensions?: string;
+  translator?: string;
   description?: string;
   price: number;
   condition: string;
@@ -76,6 +119,15 @@ export interface UpdateBookPayload {
   title?: string;
   author?: string;
   isbn?: string;
+  publisher?: string;
+  supplier?: string;
+  publicationYear?: number;
+  language?: string;
+  format?: string;
+  numberOfPages?: number;
+  weightGrams?: number;
+  dimensions?: string;
+  translator?: string;
   description?: string;
   price?: number;
   condition?: string;
@@ -93,26 +145,139 @@ export interface OrderItem {
   subtotal: number;
 }
 
+export type ShippingCarrierCode = 'SPX' | 'JT_EXPRESS' | 'GHN' | 'GHTK' | 'VIETTEL_POST' | 'VNPOST' | 'OTHER';
+
+export interface CarrierConfig {
+  code: ShippingCarrierCode;
+  name: string;
+  logo: string;
+  isActive: boolean;
+  baseFee: number;
+  weightStepFee: number;
+  deliveryDays: string;
+  apiToken?: string;
+  shopId?: string;
+  isSandbox: boolean;
+  sandboxEndpoint?: string;
+  productionEndpoint?: string;
+  notes?: string;
+}
+
+export interface StoreGeneralConfig {
+  storeName: string;
+  hotline: string;
+  email: string;
+  senderAddress: string;
+  senderPhone: string;
+  defaultShippingNote: string;
+}
+
+export interface OrderTimeline {
+  id: string;
+  status: string;
+  title: string;
+  description: string;
+  actor: string;
+  createdAt: string;
+}
+
 export interface Order {
   id: string;
   buyerId: string;
+  customerName?: string;
+  customerPhone?: string;
   totalAmount: number;
   currency: string;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'RETURNED';
   shippingAddress: string;
+  carrierName?: string;
+  trackingNumber?: string;
+  shippingFee?: number;
+  estimatedDelivery?: string;
+  weightGrams?: number;
+  cancelReason?: string;
+  cancelledBy?: string;
+  carrierStatus?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  paymentCode?: string;
+  paidAt?: string;
   items: OrderItem[];
+  timelines?: OrderTimeline[];
   createdAt: string;
   updatedAt: string;
 }
 
+export interface PushShippingPayload {
+  carrier: ShippingCarrierCode;
+  trackingNumber?: string;
+  weightGrams?: number;
+  shippingFee?: number;
+  notes?: string;
+  estimatedDelivery?: string;
+}
+
 export interface CreateOrderItemPayload {
   bookId: string;
+  variantId?: string;
   quantity: number;
+}
+
+export interface PrintWaybillResponse {
+  orderCode: string;
+  carrierName: string;
+  printUrl?: string | null;
+  paperSize: string;
+  token?: string | null;
+}
+
+export interface CarrierFeeEstimate {
+  carrierName: string;
+  fee: number;
+  estimatedDelivery: string;
+  deliveryDays: string;
+  note: string;
+}
+
+export interface UpdateShippingInfoPayload {
+  toName?: string;
+  toPhone?: string;
+  toAddress?: string;
+  toWardName?: string;
+  toDistrictName?: string;
+  toProvinceName?: string;
+  notes?: string;
+  weightGrams?: number;
 }
 
 export interface CreateOrderPayload {
   shippingAddress: string;
   items: CreateOrderItemPayload[];
+  paymentMethod?: string;
+}
+
+export interface PaymentInitResponse {
+  orderId: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  amount: number;
+  currency: string;
+  paymentCode: string;
+  qrUrl?: string | null;
+  payUrl?: string | null;
+  bankCode?: string | null;
+  accountNumber?: string | null;
+  accountName?: string | null;
+  message?: string | null;
+}
+
+export interface PaymentStatusResponse {
+  orderId: string;
+  paymentStatus: string;
+  paymentMethod: string;
+  paymentCode: string;
+  amount: number;
+  paidAt?: string | null;
 }
 
 export interface Category {
@@ -140,6 +305,6 @@ export interface ResetPasswordPayload {
 
 export interface CartItem {
   book: Book;
+  selectedVariant?: BookVariant;
   quantity: number;
 }
-

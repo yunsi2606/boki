@@ -7,6 +7,8 @@ public record OrderItemRequest(
         @NotNull(message = "Book ID is required")
         UUID bookId,
 
+        UUID variantId,
+
         @Min(value = 1, message = "Quantity must be at least 1")
         int quantity
 ) {

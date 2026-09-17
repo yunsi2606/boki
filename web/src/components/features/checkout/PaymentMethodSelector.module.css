@@ -1,0 +1,118 @@
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.headerIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #fff7ed;
+  color: #ff5722;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.methodsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.methodItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+}
+
+.methodItem:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.selected {
+  border-color: #ff4d4f;
+  background-color: #fff1f2;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.08);
+}
+
+.radioInput {
+  margin-top: 3px;
+  accent-color: #ff4d4f;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.methodIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  font-size: 24px;
+}
+
+.walletLogo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.methodInfo {
+  flex: 1;
+}
+
+.methodTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.methodDesc {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.bankDetailsBox {
+  margin-top: 12px;
+  padding: 14px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 1px dashed #cbd5e1;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+}

@@ -16,6 +16,8 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
 
     List<BookJpaEntity> findBySellerId(UUID sellerId);
 
+    java.util.Optional<BookJpaEntity> findBySlug(String slug);
+
     @Query("SELECT b FROM BookJpaEntity b WHERE b.status = :status AND " +
            "(LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
@@ -41,4 +43,12 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
             @Param("query") String query,
             Pageable pageable
     );
+
+    @Query("SELECT b FROM BookJpaEntity b WHERE " +
+           "(:query IS NULL OR :query = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<BookJpaEntity> searchAllBooks(@Param("query") String query, Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("UPDATE BookJpaEntity b SET b.viewsCount = b.viewsCount + 1 WHERE b.id = :id")
+    void incrementViewsCount(@Param("id") UUID id);
 }

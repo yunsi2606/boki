@@ -13,12 +13,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Extracts and validates JWT from Authorization header.
- * Sets the SecurityContext with the authenticated user principal.
+ * Sets the SecurityContext with the authenticated user principal & granted authorities based on user role.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -43,11 +44,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && tokenService.validateToken(token)) {
             UUID userId = tokenService.extractUserId(token);
             String email = tokenService.extractEmail(token);
+            String role = tokenService.extractRole(token);
+
+            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            if (StringUtils.hasText(role)) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+            } else {
+                authorities.add(new SimpleGrantedAuthority("ROLE_BUYER"));
+            }
 
             var authentication = new UsernamePasswordAuthenticationToken(
                     new AuthenticatedUser(userId, email),
                     null,
-                    List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                    authorities
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

@@ -6,6 +6,9 @@ spring:
   application:
     name: boki-backend
 
+  profiles:
+    active: dev
+
   config:
     import: "optional:file:./backend/.env[.properties],optional:file:./.env[.properties],optional:file:.env[.properties]"
 
@@ -37,7 +40,7 @@ app:
     secret: ${JWT_SECRET:default-dev-secret-change-in-production-must-be-at-least-64-characters-long}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001}
   firebase:
     api-key: ${FIREBASE_API_KEY:}
   oauth:
@@ -47,6 +50,13 @@ app:
     facebook:
       client-id: ${FACEBOOK_CLIENT_ID:}
       client-secret: ${FACEBOOK_CLIENT_SECRET:}
+  cloudflare:
+    r2:
+      account-id: ${CLOUDFLARE_R2_ACCOUNT_ID:}
+      access-key-id: ${CLOUDFLARE_R2_ACCESS_KEY_ID:}
+      secret-access-key: ${CLOUDFLARE_R2_SECRET_ACCESS_KEY:}
+      bucket-name: ${CLOUDFLARE_R2_BUCKET_NAME:boki-media}
+      public-url: ${CLOUDFLARE_R2_PUBLIC_URL:https://pub-r2.bokistore.vn}
 
 # Server
 server:

@@ -23,10 +23,24 @@ public final class BookPersistenceMapper {
         entity.setSellerId(book.getSellerId().value());
         entity.setCategoryId(book.getCategoryId());
         entity.setTitle(book.getTitle());
+        entity.setSlug(com.boki.infrastructure.util.SlugUtils.slugify(book.getTitle()));
         entity.setAuthor(book.getAuthor());
         entity.setIsbn(book.getIsbn());
+        entity.setPublisher(book.getPublisher());
+        entity.setSupplier(book.getSupplier());
+        entity.setPublicationYear(book.getPublicationYear());
+        entity.setLanguage(book.getLanguage());
+        entity.setFormat(book.getFormat());
+        entity.setNumberOfPages(book.getNumberOfPages());
+        entity.setWeightGrams(book.getWeightGrams());
+        entity.setDimensions(book.getDimensions());
+        entity.setTranslator(book.getTranslator());
         entity.setDescription(book.getDescription());
         entity.setPrice(book.getPrice().amount());
+        entity.setOriginalPrice(book.getOriginalPrice() != null ? book.getOriginalPrice().amount() : null);
+        entity.setViewsCount(book.getViewsCount());
+        entity.setRating(book.getRating());
+        entity.setReviewsCount(book.getReviewsCount());
         entity.setCurrency(book.getPrice().currency());
         entity.setCondition(BookJpaEntity.BookConditionJpa.valueOf(book.getCondition().name()));
         entity.setStatus(BookJpaEntity.BookStatusJpa.valueOf(book.getStatus().name()));
@@ -68,8 +82,21 @@ public final class BookPersistenceMapper {
                 entity.getTitle(),
                 entity.getAuthor(),
                 entity.getIsbn(),
+                entity.getPublisher(),
+                entity.getSupplier(),
+                entity.getPublicationYear(),
+                entity.getLanguage(),
+                entity.getFormat(),
+                entity.getNumberOfPages(),
+                entity.getWeightGrams(),
+                entity.getDimensions(),
+                entity.getTranslator(),
                 entity.getDescription(),
                 Price.of(entity.getPrice(), entity.getCurrency()),
+                entity.getOriginalPrice() != null ? Price.of(entity.getOriginalPrice(), entity.getCurrency()) : null,
+                entity.getViewsCount(),
+                entity.getRating(),
+                entity.getReviewsCount(),
                 BookCondition.valueOf(entity.getCondition().name()),
                 BookStatus.valueOf(entity.getStatus().name()),
                 entity.getStockQuantity(),

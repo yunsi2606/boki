@@ -1,11 +1,13 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { bookService } from '@/services/bookService';
 import type { Book } from '@/types';
+import { getBookUrl } from '@/lib/slug';
 import styles from './books.module.css';
+import { BookGridSkeleton } from '@/components/ui/Skeleton';
 
 // Standard static category listing matching homepage circle list
 const categoriesList = [
@@ -28,7 +30,6 @@ const conditionsList = [
 
 function BooksPageContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const search = searchParams.get('search') || '';
 
   const [books, setBooks] = useState<Book[]>([]);
@@ -43,16 +44,17 @@ function BooksPageContent() {
       setLoading(true);
       try {
         const data = await bookService.searchBooks(selectedCategory || undefined, search || undefined);
-        
+        let filteredData = data || [];
+
         // Filter by conditions on client side if selected
-        let filteredData = data;
         if (selectedConditions.length > 0) {
-          filteredData = data.filter(book => selectedConditions.includes(book.condition));
+          filteredData = filteredData.filter(book => selectedConditions.includes(book.condition));
         }
 
         setBooks(filteredData);
       } catch (err) {
-        console.error('Failed to search books', err);
+        console.error('Backend API fetch error:', err);
+        setBooks([]);
       } finally {
         setLoading(false);
       }
@@ -146,10 +148,7 @@ function BooksPageContent() {
         {/* Main Grid View */}
         <main className={styles.resultsSection}>
           {loading ? (
-            <div className={styles.loadingContainer}>
-              <div className={styles.spinner}></div>
-              <p>Đang tìm kiếm sách...</p>
-            </div>
+            <BookGridSkeleton count={8} />
           ) : books.length === 0 ? (
             <div className={styles.emptyContainer}>
               <svg className={styles.emptyIcon} width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -167,7 +166,7 @@ function BooksPageContent() {
                   : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200';
 
                 return (
-                  <Link href={`/books/${book.id}`} key={book.id} className={styles.bookCard}>
+                  <Link href={getBookUrl(book)} key={book.id} className={styles.bookCard}>
                     <div className={styles.coverWrapper}>
                       <img
                         src={cover}
@@ -204,9 +203,8 @@ function BooksPageContent() {
 export default function BooksPage() {
   return (
     <Suspense fallback={
-      <div className={styles.loadingContainer}>
-        <div className={styles.spinner}></div>
-        <p>Đang tải trang cửa hàng...</p>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
+        <BookGridSkeleton count={8} />
       </div>
     }>
       <BooksPageContent />

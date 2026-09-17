@@ -1,6 +1,7 @@
 /** Application-wide constants */
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 export const TOKEN_STORAGE_KEY = 'boki_auth_token';
+export const REFRESH_TOKEN_STORAGE_KEY = 'boki_refresh_token';
 export const USER_STORAGE_KEY = 'boki_user';
 
 /** Spacing values (matching CSS tokens) */

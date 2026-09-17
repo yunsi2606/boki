@@ -1,7 +1,7 @@
 .card {
-  background: var(--color-neutral-100);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-base);
   overflow: hidden;
@@ -13,7 +13,8 @@
 
 .hoverable:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(238, 77, 45, 0.2);
 }
 
 .padded {
@@ -21,8 +22,9 @@
 }
 
 .glass {
-  background: rgba(18, 18, 22, 0.75);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
+

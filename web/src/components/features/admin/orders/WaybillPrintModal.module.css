@@ -1,0 +1,279 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modalCard {
+  background: #ffffff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.topBar {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tabSwitcher {
+  display: flex;
+  gap: 6px;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.tabBtn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  color: #475569;
+  transition: all 0.15s ease;
+}
+
+.tabBtnActive {
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sizeSelector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.sizeBtn {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.sizeBtnActive {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.topBarActions {
+  display: flex;
+  gap: 10px;
+}
+
+.printBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.openTabBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.closeBtn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Printable Waybill Sheet */
+.waybillSheet {
+  padding: 24px;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: Arial, sans-serif;
+}
+
+.billBorder {
+  border: 2px solid #0f172a;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.brandName {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.carrierBadge {
+  font-size: 1.1rem;
+  font-weight: 800;
+  border: 2px solid #0f172a;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.barcodeContainer {
+  text-align: center;
+  margin: 12px 0;
+  padding: 8px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+}
+
+.barcodeGraphics {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 20px;
+  letter-spacing: 4px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.trackingText {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.partiesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  border-bottom: 1px solid #0f172a;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.partyBox {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.partyTitle {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.itemsChecklist {
+  border-bottom: 1px solid #0f172a;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+}
+
+.itemLine {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.codSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+.codTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.codAmount {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .modalOverlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    padding: 0;
+  }
+  .topBar {
+    display: none !important;
+  }
+  .modalCard {
+    box-shadow: none;
+    max-width: 100%;
+    border-radius: 0;
+  }
+  .waybillSheet, .waybillSheet * {
+    visibility: visible;
+  }
+  .waybillSheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0;
+  }
+}

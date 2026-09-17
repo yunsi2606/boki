@@ -12,7 +12,15 @@ public record CreateBookRequest(
         String author,
 
         String isbn,
-
+        String publisher,
+        String supplier,
+        Integer publicationYear,
+        String language,
+        String format,
+        Integer numberOfPages,
+        Integer weightGrams,
+        String dimensions,
+        String translator,
         String description,
 
         @NotNull(message = "Price is required")

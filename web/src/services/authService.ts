@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { AuthResponse, ForgotPasswordPayload, LoginPayload, RegisterPayload, ResetPasswordPayload, UpdateProfilePayload, User } from '@/types';
+import type { AuthResponse, ForgotPasswordPayload, LoginPayload, RefreshTokenPayload, RegisterPayload, ResetPasswordPayload, UpdateProfilePayload, User } from '@/types';
 
 export const authService = {
   register: (payload: RegisterPayload): Promise<AuthResponse> =>
@@ -7,6 +7,9 @@ export const authService = {
 
   login: (payload: LoginPayload): Promise<AuthResponse> =>
     api.post<AuthResponse>('/auth/login', payload),
+
+  refreshToken: (payload: RefreshTokenPayload): Promise<AuthResponse> =>
+    api.post<AuthResponse>('/auth/refresh', payload),
 
   getCurrentUser: (): Promise<User> =>
     api.get<User>('/auth/me'),
@@ -29,4 +32,3 @@ export const authService = {
   resetPassword: (payload: ResetPasswordPayload): Promise<void> =>
     api.post<void>('/auth/reset-password', payload),
 };
-

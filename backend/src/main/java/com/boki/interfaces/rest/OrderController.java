@@ -35,12 +35,20 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9a-fA-F\\-]{36}}")
     public ResponseEntity<OrderResponse> getOrder(
             @PathVariable UUID id,
             @AuthenticationPrincipal AuthenticatedUser principal
     ) {
         OrderResponse response = getOrderUseCase.getOrder(id, principal.email());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> getOrders(
+            @AuthenticationPrincipal AuthenticatedUser principal
+    ) {
+        List<OrderResponse> response = getOrderUseCase.getBuyerOrders(principal.email());
         return ResponseEntity.ok(response);
     }
 

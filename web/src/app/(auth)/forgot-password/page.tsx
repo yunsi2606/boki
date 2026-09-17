@@ -35,18 +35,20 @@ export default function ForgotPasswordPage() {
     <div className={styles.page}>
       <Card className={styles.card} glass>
         <div className={styles.header}>
-          <h1>Forgot password?</h1>
-          <p>Enter your email and we&apos;ll send you a reset link.</p>
+          <Link href="/" className={styles.brandLogoLink}>
+            <img src="/brand/logo.png" alt="Boki Logo" className={styles.brandLogo} />
+          </Link>
+          <h1>Quên mật khẩu?</h1>
+          <p>Nhập email của bạn và chúng tôi sẽ gửi cho bạn một liên kết đặt lại mật khẩu.</p>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
 
         {submitted ? (
           <div className={styles.success}>
-            ✉️ <strong>Check your inbox!</strong>
+            ✉️ <strong>Đã gửi thư !</strong>
             <br />
-            If an account exists for <strong>{email}</strong>, a password reset
-            link has been sent. It may take a minute to arrive.
+            Nếu có tài khoản với <strong>{email}</strong>, một liên kết đặt lại mật khẩu đã được gửi.
           </div>
         ) : (
           <form className={styles.form} onSubmit={handleSubmit}>
@@ -60,14 +62,14 @@ export default function ForgotPasswordPage() {
               autoComplete="email"
             />
             <Button type="submit" fullWidth isLoading={isLoading}>
-              Send reset link
+              Đặt lại mật khẩu
             </Button>
           </form>
         )}
 
         <div className={styles.footer}>
-          Remember your password?{' '}
-          <Link href="/login">Back to sign in</Link>
+          Đã có tài khoản?{' '}
+          <Link href="/login">Quay lại đăng nhập</Link>
         </div>
       </Card>
     </div>

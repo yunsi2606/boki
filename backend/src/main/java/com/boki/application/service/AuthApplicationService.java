@@ -1,6 +1,7 @@
 package com.boki.application.service;
 
 import com.boki.application.dto.request.LoginRequest;
+import com.boki.application.dto.request.RefreshTokenRequest;
 import com.boki.application.dto.request.RegisterRequest;
 import com.boki.application.dto.request.VerifyPhoneRequest;
 import com.boki.application.dto.response.AuthResponse;
@@ -11,6 +12,7 @@ import com.boki.application.exception.ResourceNotFoundException;
 import com.boki.application.mapper.UserDtoMapper;
 import com.boki.application.port.in.GetCurrentUserUseCase;
 import com.boki.application.port.in.LoginUserUseCase;
+import com.boki.application.port.in.RefreshTokenUseCase;
 import com.boki.application.port.in.RegisterUserUseCase;
 import com.boki.application.port.in.VerifyPhoneUseCase;
 import com.boki.application.port.out.OtpService;
@@ -21,21 +23,23 @@ import com.boki.domain.model.user.PhoneNumber;
 import com.boki.domain.model.user.User;
 import com.boki.domain.model.user.UserId;
 import com.boki.domain.port.out.UserRepository;
+import com.boki.infrastructure.persistence.entity.RefreshTokenJpaEntity;
+import com.boki.infrastructure.persistence.repository.RefreshTokenJpaRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 /**
  * Application service implementing auth use cases.
- * <p>
- * Orchestrates domain logic and infrastructure ports.
- * Transactions are managed here (Application layer).
  */
 @Service
 public class AuthApplicationService
         implements RegisterUserUseCase, LoginUserUseCase, VerifyPhoneUseCase, GetCurrentUserUseCase,
+                   RefreshTokenUseCase,
                    com.boki.application.port.in.LoginOAuthUseCase, com.boki.application.port.in.VerifyEmailUseCase,
                    com.boki.application.port.in.UpdateUserProfileUseCase,
                    com.boki.application.port.in.ForgotPasswordUseCase,
@@ -47,6 +51,7 @@ public class AuthApplicationService
     private final OtpService otpService;
     private final com.boki.application.port.out.EmailService emailService;
     private final com.boki.application.port.out.OAuthProvider oauthProvider;
+    private final RefreshTokenJpaRepository refreshTokenRepository;
 
     public AuthApplicationService(
             UserRepository userRepository,
@@ -54,7 +59,8 @@ public class AuthApplicationService
             PasswordEncoder passwordEncoder,
             OtpService otpService,
             com.boki.application.port.out.EmailService emailService,
-            com.boki.application.port.out.OAuthProvider oauthProvider
+            com.boki.application.port.out.OAuthProvider oauthProvider,
+            RefreshTokenJpaRepository refreshTokenRepository
     ) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
@@ -62,6 +68,16 @@ public class AuthApplicationService
         this.otpService = otpService;
         this.emailService = emailService;
         this.oauthProvider = oauthProvider;
+        this.refreshTokenRepository = refreshTokenRepository;
+    }
+
+    private String issueRefreshToken(User user) {
+        RefreshTokenJpaEntity refreshEntity = new RefreshTokenJpaEntity();
+        refreshEntity.setUserId(user.getId().value());
+        refreshEntity.setToken(UUID.randomUUID().toString());
+        refreshEntity.setExpiryDate(Instant.now().plus(14, ChronoUnit.DAYS));
+        refreshTokenRepository.save(refreshEntity);
+        return refreshEntity.getToken();
     }
 
     @Override
@@ -81,21 +97,24 @@ public class AuthApplicationService
         String emailToken = tokenService.generateToken(
                 savedUser.getId().value(),
                 savedUser.getEmail().value(),
+                savedUser.getRole().name(),
                 savedUser.getPhoneVerified()
         );
         emailService.sendVerificationEmail(savedUser.getEmail().value(), emailToken);
 
-        String token = tokenService.generateToken(
+        String accessToken = tokenService.generateToken(
                 savedUser.getId().value(),
                 savedUser.getEmail().value(),
+                savedUser.getRole().name(),
                 savedUser.getPhoneVerified()
         );
+        String refreshToken = issueRefreshToken(savedUser);
 
-        return AuthResponse.of(token, UserDtoMapper.toResponse(savedUser));
+        return AuthResponse.of(accessToken, refreshToken, UserDtoMapper.toResponse(savedUser));
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         Email email = Email.of(request.email());
 
@@ -114,13 +133,47 @@ public class AuthApplicationService
             throw new AuthenticationException("Invalid email or password");
         }
 
-        String token = tokenService.generateToken(
+        String accessToken = tokenService.generateToken(
                 user.getId().value(),
                 user.getEmail().value(),
+                user.getRole().name(),
                 user.getPhoneVerified()
         );
+        String refreshToken = issueRefreshToken(user);
 
-        return AuthResponse.of(token, UserDtoMapper.toResponse(user));
+        return AuthResponse.of(accessToken, refreshToken, UserDtoMapper.toResponse(user));
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse refreshToken(RefreshTokenRequest request) {
+        RefreshTokenJpaEntity refreshEntity = refreshTokenRepository.findByToken(request.refreshToken())
+                .orElseThrow(() -> new AuthenticationException("Invalid or expired refresh token"));
+
+        if (refreshEntity.getExpiryDate().isBefore(Instant.now())) {
+            refreshTokenRepository.delete(refreshEntity);
+            throw new AuthenticationException("Refresh token expired. Please login again.");
+        }
+
+        User user = userRepository.findById(UserId.of(refreshEntity.getUserId()))
+                .orElseThrow(() -> new AuthenticationException("User not found"));
+
+        if (!user.isActive()) {
+            throw new AuthenticationException("Account is deactivated");
+        }
+
+        // Token rotation: delete old refresh token
+        refreshTokenRepository.delete(refreshEntity);
+
+        String newAccessToken = tokenService.generateToken(
+                user.getId().value(),
+                user.getEmail().value(),
+                user.getRole().name(),
+                user.getPhoneVerified()
+        );
+        String newRefreshToken = issueRefreshToken(user);
+
+        return AuthResponse.of(newAccessToken, newRefreshToken, UserDtoMapper.toResponse(user));
     }
 
     @Override
@@ -129,22 +182,21 @@ public class AuthApplicationService
         User user = userRepository.findById(UserId.of(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        // Validate OTP server-side via Firebase
         otpService.verifyOtp(request.verificationId(), request.code());
 
-        // Update domain model
         PhoneNumber phone = PhoneNumber.of(request.phoneNumber());
         user.verifyPhone(phone);
         User savedUser = userRepository.save(user);
 
-        // Issue new token with updated phone_verified claim
-        String token = tokenService.generateToken(
+        String accessToken = tokenService.generateToken(
                 savedUser.getId().value(),
                 savedUser.getEmail().value(),
+                savedUser.getRole().name(),
                 savedUser.getPhoneVerified()
         );
+        String refreshToken = issueRefreshToken(savedUser);
 
-        return AuthResponse.of(token, UserDtoMapper.toResponse(savedUser));
+        return AuthResponse.of(accessToken, refreshToken, UserDtoMapper.toResponse(savedUser));
     }
 
     @Override
@@ -167,16 +219,13 @@ public class AuthApplicationService
         if (existingUser.isPresent()) {
             user = existingUser.get();
         } else {
-            // Check if user exists by email (registered via email/password or another provider)
             java.util.Optional<User> userByEmail = userRepository.findByEmail(email);
             if (userByEmail.isPresent()) {
                 user = userByEmail.get();
             } else {
-                // Register a new user from OAuth
                 user = User.fromOAuth(email, userInfo.displayName(), userInfo.avatarUrl());
                 user = userRepository.save(user);
             }
-            // Link the OAuth account
             userRepository.linkOAuthAccount(user.getId(), request.provider(), userInfo.providerUserId());
         }
 
@@ -184,19 +233,20 @@ public class AuthApplicationService
             throw new AuthenticationException("Account is deactivated");
         }
 
-        String token = tokenService.generateToken(
+        String accessToken = tokenService.generateToken(
                 user.getId().value(),
                 user.getEmail().value(),
+                user.getRole().name(),
                 user.getPhoneVerified()
         );
+        String refreshToken = issueRefreshToken(user);
 
-        return AuthResponse.of(token, UserDtoMapper.toResponse(user));
+        return AuthResponse.of(accessToken, refreshToken, UserDtoMapper.toResponse(user));
     }
 
     @Override
     @Transactional
     public void verifyEmail(com.boki.application.dto.request.VerifyEmailRequest request) {
-        // Validate email token using TokenService
         if (!tokenService.validateToken(request.token())) {
             throw new BusinessRuleException("Invalid or expired email verification token");
         }
@@ -227,11 +277,11 @@ public class AuthApplicationService
     @Override
     @Transactional(readOnly = true)
     public void forgotPassword(String email) {
-        // Silently skip if email not found — do not reveal account existence (security best practice)
         userRepository.findByEmail(Email.of(email)).ifPresent(user -> {
             String resetToken = tokenService.generateToken(
                     user.getId().value(),
                     user.getEmail().value(),
+                    user.getRole().name(),
                     user.getPhoneVerified()
             );
             emailService.sendPasswordResetEmail(user.getEmail().value(), resetToken);

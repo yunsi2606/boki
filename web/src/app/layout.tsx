@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/hooks/useAuth';
 import { CartProvider } from '@/hooks/useCart';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import PhoneVerificationModal from '@/components/features/auth/PhoneVerificationModal';
+import StorefrontLayoutWrapper from '@/components/layout/StorefrontLayoutWrapper';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Boki — Book Marketplace',
+  title: 'Boki — Đại Lý Sách & Truyện Bản Quyền',
   description:
-    'The modern book marketplace. Buy and sell books with ease, discover great reads, and connect with book lovers.',
-  keywords: ['books', 'marketplace', 'buy books', 'sell books', 'bookstore'],
+    'Đại lý phân phối Manga, Light Novel và Sách bản quyền trực tiếp. Đặt mua nhanh chóng, ưu đãi lớn!',
+  keywords: ['books', 'manga', 'light novel', 'bookstore', 'boki'],
+  icons: {
+    icon: '/brand/logo.png',
+    shortcut: '/brand/logo.png',
+    apple: '/brand/logo.png',
+  },
 };
 
 export default function RootLayout({
@@ -19,18 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <AuthProvider>
           <CartProvider>
-            <Header />
-            <main style={{ flex: 1 }}>{children}</main>
-            <Footer />
-            <PhoneVerificationModal />
+            <StorefrontLayoutWrapper>{children}</StorefrontLayoutWrapper>
           </CartProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
+
 

@@ -1,13 +1,13 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Book, CartItem } from '@/types';
+import type { Book, BookVariant, CartItem } from '@/types';
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (book: Book, quantity: number) => void;
-  removeFromCart: (bookId: string) => void;
-  updateQuantity: (bookId: string, quantity: number) => void;
+  addToCart: (book: Book, quantity: number, selectedVariant?: BookVariant) => void;
+  removeFromCart: (bookId: string, variantId?: string) => void;
+  updateQuantity: (bookId: string, quantity: number, variantId?: string) => void;
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
@@ -39,12 +39,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cartItems, isLoaded]);
 
-  const addToCart = (book: Book, quantity: number) => {
+  const addToCart = (book: Book, quantity: number, selectedVariant?: BookVariant) => {
     setCartItems((prevItems) => {
-      const existingItemIdx = prevItems.findIndex((item) => item.book.id === book.id);
+      const existingItemIdx = prevItems.findIndex(
+        (item) => item.book.id === book.id && item.selectedVariant?.id === selectedVariant?.id
+      );
+
+      const maxStock = selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity;
+
       if (existingItemIdx > -1) {
         const existingItem = prevItems[existingItemIdx];
-        const newQuantity = Math.min(existingItem.quantity + quantity, book.stockQuantity);
+        const newQuantity = Math.min(existingItem.quantity + quantity, maxStock);
         const updatedItems = [...prevItems];
         updatedItems[existingItemIdx] = {
           ...existingItem,
@@ -52,21 +57,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         };
         return updatedItems;
       } else {
-        const addedQuantity = Math.min(quantity, book.stockQuantity);
-        return [...prevItems, { book, quantity: addedQuantity }];
+        const addedQuantity = Math.min(quantity, maxStock);
+        return [...prevItems, { book, selectedVariant, quantity: addedQuantity }];
       }
     });
   };
 
-  const removeFromCart = (bookId: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.book.id !== bookId));
+  const removeFromCart = (bookId: string, variantId?: string) => {
+    setCartItems((prevItems) =>
+      prevItems.filter(
+        (item) => !(item.book.id === bookId && item.selectedVariant?.id === variantId)
+      )
+    );
   };
 
-  const updateQuantity = (bookId: string, quantity: number) => {
+  const updateQuantity = (bookId: string, quantity: number, variantId?: string) => {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
-        if (item.book.id === bookId) {
-          const newQty = Math.max(1, Math.min(quantity, item.book.stockQuantity));
+        if (item.book.id === bookId && item.selectedVariant?.id === variantId) {
+          const maxStock = item.selectedVariant ? item.selectedVariant.stockQuantity : item.book.stockQuantity;
+          const newQty = Math.max(1, Math.min(quantity, maxStock));
           return { ...item, quantity: newQty };
         }
         return item;
@@ -79,7 +89,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const cartTotal = cartItems.reduce((total, item) => total + item.quantity * item.book.price, 0);
+  const cartTotal = cartItems.reduce((total, item) => {
+    const itemPrice = item.selectedVariant ? item.selectedVariant.price : item.book.price;
+    return total + item.quantity * itemPrice;
+  }, 0);
 
   return (
     <CartContext.Provider

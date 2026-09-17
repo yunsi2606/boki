@@ -84,6 +84,13 @@
             <version>${mapstruct.version}</version>
         </dependency>
 
+        <!-- Cloudflare R2 / AWS S3 SDK -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.25.10</version>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

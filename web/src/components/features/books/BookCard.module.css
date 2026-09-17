@@ -1,0 +1,218 @@
+.bookCard {
+  background: #ffffff;
+  border-radius: var(--radius-xl, 16px);
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.04));
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.bookCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  border-color: #fcd0d7;
+}
+
+.coverWrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 135%; /* 3:4 aspect ratio */
+  background: #f8f9fa;
+  overflow: hidden;
+}
+
+.coverImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.bookCard:hover .coverImage {
+  transform: scale(1.05);
+}
+
+.heartBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.heartBtn:hover {
+  transform: scale(1.1);
+  background: #ffffff;
+}
+
+.heartBtnActive {
+  background: #ffffff;
+}
+
+.cardTag {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(33, 37, 41, 0.75);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.variantBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+  z-index: 2;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.discountBadge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #ee4d2d;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.infoWrapper {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.publisherName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #868e96;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.bookTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1.35;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 38px;
+}
+
+.bookAuthor {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ratingWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.starIcon {
+  color: #ffc107;
+}
+
+.ratingVal {
+  font-weight: 700;
+  color: #343a40;
+}
+
+.dotDivider {
+  color: #ced4da;
+}
+
+.viewText {
+  color: #868e96;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px dashed #f1f3f5;
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.bookPrice {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ee4d2d;
+}
+
+.originalPrice {
+  font-size: 11px;
+  color: #adb5bd;
+  text-decoration: line-through;
+}
+
+.addToCartBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addToCartBtn:hover {
+  background: #ee4d2d;
+  border-color: #ee4d2d;
+  color: #ffffff;
+  transform: scale(1.05);
+}

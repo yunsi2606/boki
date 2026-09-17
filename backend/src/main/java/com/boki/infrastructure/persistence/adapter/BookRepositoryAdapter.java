@@ -28,6 +28,18 @@ public class BookRepositoryAdapter implements BookRepository {
     @Override
     public Book save(Book book) {
         BookJpaEntity entity = BookPersistenceMapper.toJpaEntity(book);
+        if (book.getId() != null && book.getId().value() != null) {
+            Optional<BookJpaEntity> existingOpt = jpaRepository.findById(book.getId().value());
+            if (existingOpt.isPresent()) {
+                BookJpaEntity existing = existingOpt.get();
+                if ((entity.getVariants() == null || entity.getVariants().isEmpty()) && existing.getVariants() != null && !existing.getVariants().isEmpty()) {
+                    entity.setVariants(existing.getVariants());
+                }
+                if ((entity.getImages() == null || entity.getImages().isEmpty()) && existing.getImages() != null && !existing.getImages().isEmpty()) {
+                    entity.setImages(existing.getImages());
+                }
+            }
+        }
         BookJpaEntity savedEntity = jpaRepository.save(entity);
         return BookPersistenceMapper.toDomainModel(savedEntity);
     }
@@ -35,6 +47,12 @@ public class BookRepositoryAdapter implements BookRepository {
     @Override
     public Optional<Book> findById(BookId id) {
         return jpaRepository.findById(id.value())
+                .map(BookPersistenceMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<Book> findBySlug(String slug) {
+        return jpaRepository.findBySlug(slug)
                 .map(BookPersistenceMapper::toDomainModel);
     }
 
@@ -86,7 +104,21 @@ public class BookRepositoryAdapter implements BookRepository {
     }
 
     @Override
+    public List<Book> searchAll(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return jpaRepository.searchAllBooks(query, pageable)
+                .getContent().stream()
+                .map(BookPersistenceMapper::toDomainModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteById(BookId id) {
         jpaRepository.deleteById(id.value());
+    }
+
+    @Override
+    public void incrementViews(BookId id) {
+        jpaRepository.incrementViewsCount(id.value());
     }
 }

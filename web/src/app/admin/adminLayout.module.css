@@ -1,0 +1,210 @@
+/* Admin Layout Styles */
+
+.adminContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: #F8F9FA;
+  font-family: var(--font-family-sans);
+}
+
+.sidebar {
+  width: 260px;
+  background: #111827;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-sticky);
+  border-right: 1px solid #1F2937;
+}
+
+.sidebarHeader {
+  padding: 24px 20px;
+  border-bottom: 1px solid #1F2937;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.logoBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #FFFFFF;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2px;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #FF8066 0%, #EE4D2D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navMenu {
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  color: #9CA3AF;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.navItem:hover {
+  background: #1F2937;
+  color: #FFFFFF;
+}
+
+.navItemActive {
+  background: #EE4D2D;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(238, 77, 45, 0.35);
+}
+
+.navIcon {
+  font-size: 18px;
+}
+
+.sidebarFooter {
+  padding: 20px 16px;
+  border-top: 1px solid #1F2937;
+}
+
+.storefrontBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  background: #1F2937;
+  color: #F3F4F6;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+}
+
+.storefrontBtn:hover {
+  background: #374151;
+  color: #FFFFFF;
+}
+
+.mainWrapper {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.topHeader {
+  height: 70px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E9ECEF;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.adminUser {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adminAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #EE4D2D, #FF9800);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adminInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.adminName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.adminRole {
+  font-size: 11px;
+  color: #EE4D2D;
+  font-weight: 600;
+}
+
+.contentArea {
+  padding: 32px;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+  }
+  .navName, .logoText, .adminInfo {
+    display: none;
+  }
+  .mainWrapper {
+    margin-left: 70px;
+  }
+}

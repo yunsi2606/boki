@@ -8,6 +8,8 @@ public record CreateOrderRequest(
         String shippingAddress,
 
         @NotEmpty(message = "Order must contain at least one item")
-        List<OrderItemRequest> items
+        List<OrderItemRequest> items,
+
+        String paymentMethod
 ) {
 }

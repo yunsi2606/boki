@@ -9,12 +9,6 @@ import java.util.List;
 
 /**
  * Book aggregate root.
- * <p>
- * Business rules:
- * - Price must be non-negative
- * - Stock must be non-negative
- * - Only the seller can modify the book
- * - A book can only be sold if it is ACTIVE and has stock > 0
  */
 public class Book {
 
@@ -24,8 +18,21 @@ public class Book {
     private String title;
     private String author;
     private String isbn;
+    private String publisher;
+    private String supplier;
+    private Integer publicationYear;
+    private String language;
+    private String format;
+    private Integer numberOfPages;
+    private Integer weightGrams;
+    private String dimensions;
+    private String translator;
     private String description;
     private Price price;
+    private Price originalPrice;
+    private int viewsCount = 0;
+    private java.math.BigDecimal rating = java.math.BigDecimal.valueOf(5.0);
+    private int reviewsCount = 0;
     private BookCondition condition;
     private BookStatus status;
     private int stockQuantity;
@@ -76,8 +83,13 @@ public class Book {
      */
     public static Book reconstitute(
             BookId id, UserId sellerId, Integer categoryId,
-            String title, String author, String isbn, String description,
-            Price price, BookCondition condition, BookStatus status,
+            String title, String author, String isbn,
+            String publisher, String supplier, Integer publicationYear,
+            String language, String format, Integer numberOfPages,
+            Integer weightGrams, String dimensions, String translator,
+            String description, Price price, Price originalPrice,
+            int viewsCount, java.math.BigDecimal rating, int reviewsCount,
+            BookCondition condition, BookStatus status,
             int stockQuantity, List<String> imageUrls, Instant createdAt, Instant updatedAt, String createdBy
     ) {
         Book book = new Book();
@@ -87,8 +99,21 @@ public class Book {
         book.title = title;
         book.author = author;
         book.isbn = isbn;
+        book.publisher = publisher;
+        book.supplier = supplier;
+        book.publicationYear = publicationYear;
+        book.language = language;
+        book.format = format;
+        book.numberOfPages = numberOfPages;
+        book.weightGrams = weightGrams;
+        book.dimensions = dimensions;
+        book.translator = translator;
         book.description = description;
         book.price = price;
+        book.originalPrice = originalPrice;
+        book.viewsCount = viewsCount;
+        book.rating = rating != null ? rating : java.math.BigDecimal.valueOf(5.0);
+        book.reviewsCount = reviewsCount;
         book.condition = condition;
         book.status = status;
         book.stockQuantity = stockQuantity;
@@ -132,12 +157,25 @@ public class Book {
         this.updatedAt = Instant.now();
     }
 
-    public void updateDetails(String title, String author, String isbn, String description, Integer categoryId) {
+    public void updateDetails(
+            String title, String author, String isbn, String description, Integer categoryId,
+            String publisher, String supplier, Integer publicationYear, String language,
+            String format, Integer numberOfPages, Integer weightGrams, String dimensions, String translator
+    ) {
         if (title != null && !title.isBlank()) this.title = title.trim();
         if (author != null && !author.isBlank()) this.author = author.trim();
         this.isbn = isbn;
         this.description = description;
         this.categoryId = categoryId;
+        this.publisher = publisher;
+        this.supplier = supplier;
+        this.publicationYear = publicationYear;
+        this.language = language;
+        this.format = format;
+        this.numberOfPages = numberOfPages;
+        this.weightGrams = weightGrams;
+        this.dimensions = dimensions;
+        this.translator = translator;
         this.updatedAt = Instant.now();
     }
 
@@ -180,8 +218,21 @@ public class Book {
     public String getTitle() { return title; }
     public String getAuthor() { return author; }
     public String getIsbn() { return isbn; }
+    public String getPublisher() { return publisher; }
+    public String getSupplier() { return supplier; }
+    public Integer getPublicationYear() { return publicationYear; }
+    public String getLanguage() { return language; }
+    public String getFormat() { return format; }
+    public Integer getNumberOfPages() { return numberOfPages; }
+    public Integer getWeightGrams() { return weightGrams; }
+    public String getDimensions() { return dimensions; }
+    public String getTranslator() { return translator; }
     public String getDescription() { return description; }
     public Price getPrice() { return price; }
+    public Price getOriginalPrice() { return originalPrice; }
+    public int getViewsCount() { return viewsCount; }
+    public java.math.BigDecimal getRating() { return rating; }
+    public int getReviewsCount() { return reviewsCount; }
     public BookCondition getCondition() { return condition; }
     public BookStatus getStatus() { return status; }
     public int getStockQuantity() { return stockQuantity; }

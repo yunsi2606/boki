@@ -24,10 +24,33 @@ public class BookJpaEntity {
     @Column(nullable = false)
     private String title;
 
+    private String slug;
+
     @Column(nullable = false)
     private String author;
 
     private String isbn;
+
+    private String publisher;
+
+    private String supplier;
+
+    @Column(name = "publication_year")
+    private Integer publicationYear;
+
+    private String language;
+
+    private String format;
+
+    @Column(name = "number_of_pages")
+    private Integer numberOfPages;
+
+    @Column(name = "weight_grams")
+    private Integer weightGrams;
+
+    private String dimensions;
+
+    private String translator;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -35,15 +58,29 @@ public class BookJpaEntity {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "original_price", precision = 12, scale = 2)
+    private BigDecimal originalPrice;
+
+    @Column(name = "views_count", nullable = false)
+    private int viewsCount = 0;
+
+    @Column(nullable = false, precision = 3, scale = 2)
+    private BigDecimal rating = BigDecimal.valueOf(5.0);
+
+    @Column(name = "reviews_count", nullable = false)
+    private int reviewsCount = 0;
+
     @Column(nullable = false, length = 3)
     private String currency = "VND";
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "book_condition")
     private BookConditionJpa condition = BookConditionJpa.GOOD;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "book_status")
     private BookStatusJpa status = BookStatusJpa.DRAFT;
 
     @Column(name = "stock_quantity", nullable = false)
@@ -60,6 +97,9 @@ public class BookJpaEntity {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BookImageJpaEntity> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<BookVariantJpaEntity> variants = new ArrayList<>();
 
     public enum BookConditionJpa {
         NEW, LIKE_NEW, GOOD, FAIR, POOR
@@ -94,17 +134,59 @@ public class BookJpaEntity {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
+    public String getSlug() { return slug; }
+    public void setSlug(String slug) { this.slug = slug; }
+
     public String getAuthor() { return author; }
     public void setAuthor(String author) { this.author = author; }
 
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
 
+    public String getPublisher() { return publisher; }
+    public void setPublisher(String publisher) { this.publisher = publisher; }
+
+    public String getSupplier() { return supplier; }
+    public void setSupplier(String supplier) { this.supplier = supplier; }
+
+    public Integer getPublicationYear() { return publicationYear; }
+    public void setPublicationYear(Integer publicationYear) { this.publicationYear = publicationYear; }
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+
+    public String getFormat() { return format; }
+    public void setFormat(String format) { this.format = format; }
+
+    public Integer getNumberOfPages() { return numberOfPages; }
+    public void setNumberOfPages(Integer numberOfPages) { this.numberOfPages = numberOfPages; }
+
+    public Integer getWeightGrams() { return weightGrams; }
+    public void setWeightGrams(Integer weightGrams) { this.weightGrams = weightGrams; }
+
+    public String getDimensions() { return dimensions; }
+    public void setDimensions(String dimensions) { this.dimensions = dimensions; }
+
+    public String getTranslator() { return translator; }
+    public void setTranslator(String translator) { this.translator = translator; }
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+
+    public BigDecimal getOriginalPrice() { return originalPrice; }
+    public void setOriginalPrice(BigDecimal originalPrice) { this.originalPrice = originalPrice; }
+
+    public int getViewsCount() { return viewsCount; }
+    public void setViewsCount(int viewsCount) { this.viewsCount = viewsCount; }
+
+    public BigDecimal getRating() { return rating; }
+    public void setRating(BigDecimal rating) { this.rating = rating; }
+
+    public int getReviewsCount() { return reviewsCount; }
+    public void setReviewsCount(int reviewsCount) { this.reviewsCount = reviewsCount; }
 
     public String getCurrency() { return currency; }
     public void setCurrency(String currency) { this.currency = currency; }
@@ -129,4 +211,7 @@ public class BookJpaEntity {
 
     public List<BookImageJpaEntity> getImages() { return images; }
     public void setImages(List<BookImageJpaEntity> images) { this.images = images; }
+
+    public List<BookVariantJpaEntity> getVariants() { return variants; }
+    public void setVariants(List<BookVariantJpaEntity> variants) { this.variants = variants; }
 }

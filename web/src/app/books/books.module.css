@@ -1,29 +1,29 @@
 .container {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6) var(--space-16);
+  padding: 32px var(--space-6) 64px;
 }
 
 .titleSection {
-  margin-bottom: var(--space-8);
+  margin-bottom: 28px;
 }
 
 .pageTitle {
   font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: #ffffff;
-  margin-bottom: var(--space-2);
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
 }
 
 .searchSummary {
   font-size: var(--font-size-sm);
-  color: var(--color-neutral-400);
+  color: #6C757D;
 }
 
 .catalogLayout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: var(--space-8);
+  grid-template-columns: 270px 1fr;
+  gap: 28px;
   align-items: start;
 }
 
@@ -35,17 +35,17 @@
 
 /* --- Sidebar Filters --- */
 .filterSidebar {
-  background: rgba(18, 18, 22, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
   border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  backdrop-filter: blur(12px);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
   position: sticky;
   top: 110px;
 }
 
 .filterGroup {
-  margin-bottom: var(--space-8);
+  margin-bottom: 28px;
 }
 
 .filterGroup:last-child {
@@ -53,10 +53,10 @@
 }
 
 .filterTitle {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  color: #ffffff;
-  margin-bottom: var(--space-4);
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 16px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -64,38 +64,39 @@
 .filterList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 10px;
 }
 
 .filterLabel {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  font-size: var(--font-size-sm);
-  color: var(--color-neutral-400);
+  gap: 10px;
+  font-size: 14px;
+  color: #495057;
   cursor: pointer;
   transition: color var(--transition-fast);
+  padding: 4px 0;
 }
 
 .filterLabel:hover {
-  color: #ffffff;
+  color: #EE4D2D;
 }
 
 .checkboxInput {
   appearance: none;
   width: 18px;
   height: 18px;
-  border: 1.5px solid var(--color-neutral-600);
-  border-radius: var(--radius-sm);
-  background: transparent;
+  border: 1.5px solid #CED4DA;
+  border-radius: 4px;
+  background: #FFFFFF;
   cursor: pointer;
   position: relative;
   transition: all var(--transition-fast);
 }
 
 .checkboxInput:checked {
-  background: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  background: #EE4D2D;
+  border-color: #EE4D2D;
 }
 
 .checkboxInput:checked::after {
@@ -114,16 +115,16 @@
   appearance: none;
   width: 18px;
   height: 18px;
-  border: 1.5px solid var(--color-neutral-600);
+  border: 1.5px solid #CED4DA;
   border-radius: 50%;
-  background: transparent;
+  background: #FFFFFF;
   cursor: pointer;
   position: relative;
   transition: all var(--transition-fast);
 }
 
 .radioInput:checked {
-  border-color: var(--color-primary-500);
+  border-color: #EE4D2D;
 }
 
 .radioInput:checked::after {
@@ -134,25 +135,25 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--color-primary-500);
+  background: #EE4D2D;
 }
 
 .activeFilterLabel {
-  color: #ffffff;
-  font-weight: var(--font-weight-semibold);
+  color: #EE4D2D;
+  font-weight: 700;
 }
 
 /* --- Search Results & Cards Grid --- */
 .resultsSection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 24px;
 }
 
 .bookGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-6);
+  gap: 20px;
 }
 
 @media (max-width: 1200px) {
@@ -164,36 +165,38 @@
 @media (max-width: 768px) {
   .bookGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
+    gap: 16px;
   }
 }
 
 /* --- Card Styles --- */
 .bookCard {
-  background: transparent;
-  border: none;
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;
   height: 100%;
   cursor: pointer;
   position: relative;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.bookCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(238, 77, 45, 0.3);
 }
 
 .coverWrapper {
   position: relative;
   width: 100%;
   padding-bottom: 133%; /* Aspect ratio 3:4 */
-  background: #121215;
-  border-radius: var(--radius-lg);
+  background: #F8F9FA;
   overflow: hidden;
-  margin-bottom: var(--space-3);
-  transition: transform var(--transition-spring), box-shadow var(--transition-base);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.bookCard:hover .coverWrapper {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .coverImage {
@@ -203,7 +206,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-lg);
   transition: transform var(--transition-slow);
 }
 
@@ -213,60 +215,60 @@
 
 .cardTag {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(0, 194, 114, 0.9);
+  top: 10px;
+  left: 10px;
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(8px);
   color: #ffffff;
-  font-size: 9px;
-  font-weight: var(--font-weight-bold);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
   z-index: 2;
 }
 
 .conditionBadge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(255, 45, 85, 0.9);
+  top: 10px;
+  right: 10px;
+  background: #EE4D2D;
   color: #ffffff;
-  font-size: 9px;
-  font-weight: var(--font-weight-bold);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
   z-index: 2;
 }
 
 .infoWrapper {
+  padding: 14px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 .bookTitle {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  color: #212529;
   margin-bottom: 4px;
   line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 2.7em;
+  height: 38px;
   transition: color var(--transition-fast);
 }
 
 .bookCard:hover .bookTitle {
-  color: var(--color-primary-300);
+  color: #EE4D2D;
 }
 
 .bookAuthor {
-  font-size: var(--font-size-xs);
-  color: var(--color-neutral-500);
-  margin-bottom: var(--space-2);
+  font-size: 12px;
+  color: #6C757D;
+  margin-bottom: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -280,19 +282,19 @@
 }
 
 .bookPrice {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  color: #EE4D2D;
 }
 
 .stockStatus {
-  font-size: 10px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-neutral-500);
+  font-size: 11px;
+  font-weight: 700;
+  color: #20C997;
 }
 
 .outOfStock {
-  color: var(--color-error-500);
+  color: #FF4757;
 }
 
 /* --- States --- */
@@ -302,16 +304,16 @@
   justify-content: center;
   align-items: center;
   min-height: 400px;
-  gap: var(--space-4);
-  color: var(--color-neutral-400);
+  gap: 16px;
+  color: #6C757D;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.05);
+  border: 3px solid #E9ECEF;
   border-radius: 50%;
-  border-top-color: var(--color-primary-500);
+  border-top-color: #EE4D2D;
   animation: spin 1s linear infinite;
 }
 
@@ -325,21 +327,22 @@
   justify-content: center;
   align-items: center;
   min-height: 350px;
-  background: rgba(18, 18, 22, 0.4);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
+  background: #FFFFFF;
+  border: 1px dashed #CED4DA;
   border-radius: var(--radius-xl);
-  padding: var(--space-10);
+  padding: 40px;
   text-align: center;
-  color: var(--color-neutral-400);
-  gap: var(--space-4);
+  color: #6C757D;
+  gap: 16px;
 }
 
 .emptyIcon {
-  color: var(--color-neutral-600);
+  color: #868E96;
 }
 
 .emptyTitle {
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  color: #ffffff;
+  font-weight: 800;
+  color: #212529;
 }
+

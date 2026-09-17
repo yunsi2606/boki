@@ -67,7 +67,11 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
                 request.imageUrls()
         );
 
-        book.updateDetails(request.title(), request.author(), request.isbn(), request.description(), request.categoryId());
+        book.updateDetails(
+                request.title(), request.author(), request.isbn(), request.description(), request.categoryId(),
+                request.publisher(), request.supplier(), request.publicationYear(), request.language(),
+                request.format(), request.numberOfPages(), request.weightGrams(), request.dimensions(), request.translator()
+        );
         
         // Auto publish listed books for immediate browsing
         book.publish();
@@ -89,7 +93,11 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
             throw new BusinessRuleException("Only the seller can modify this book listing");
         }
 
-        book.updateDetails(request.title(), request.author(), request.isbn(), request.description(), request.categoryId());
+        book.updateDetails(
+                request.title(), request.author(), request.isbn(), request.description(), request.categoryId(),
+                request.publisher(), request.supplier(), request.publicationYear(), request.language(),
+                request.format(), request.numberOfPages(), request.weightGrams(), request.dimensions(), request.translator()
+        );
         
         if (request.price() != null) {
             book.updatePrice(Price.of(request.price()));
@@ -134,8 +142,37 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
 
     @Override
     @Transactional(readOnly = true)
+    public BookResponse getBookBySlug(String slug) {
+        Book book = bookRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "slug", slug));
+        return bookDtoMapper.toResponse(book);
+    }
+
+    @Override
+    @Transactional
+    public void incrementViews(String idOrSlug) {
+        try {
+            UUID uuid = UUID.fromString(idOrSlug);
+            bookRepository.incrementViews(BookId.of(uuid));
+        } catch (IllegalArgumentException e) {
+            bookRepository.findBySlug(idOrSlug)
+                    .ifPresent(book -> bookRepository.incrementViews(book.getId()));
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<BookResponse> searchBooks(Integer categoryId, String query, int page, int size) {
         return bookRepository.searchActive(categoryId, query, page, size)
+                .stream()
+                .map(bookDtoMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookResponse> getAdminBooks(String query, int page, int size) {
+        return bookRepository.searchAll(query, page, size)
                 .stream()
                 .map(bookDtoMapper::toResponse)
                 .collect(Collectors.toList());

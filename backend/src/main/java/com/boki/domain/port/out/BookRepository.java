@@ -17,11 +17,17 @@ public interface BookRepository {
 
     Optional<Book> findById(BookId id);
 
+    Optional<Book> findBySlug(String slug);
+
     List<Book> findByStatus(BookStatus status, int page, int size);
 
     List<Book> findBySellerId(UserId sellerId);
 
     List<Book> searchActive(Integer categoryId, String query, int page, int size);
 
+    List<Book> searchAll(String query, int page, int size);
+
     void deleteById(BookId id);
+
+    void incrementViews(BookId id);
 }

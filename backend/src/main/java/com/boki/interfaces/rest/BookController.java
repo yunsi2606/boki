@@ -38,10 +38,32 @@ public class BookController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BookResponse> getBook(@PathVariable UUID id) {
-        BookResponse response = getBookUseCase.getBook(id);
+    @GetMapping("/admin")
+    public ResponseEntity<List<BookResponse>> getAdminBooks(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size
+    ) {
+        List<BookResponse> response = getBookUseCase.getAdminBooks(search, page, size);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{idOrSlug}")
+    public ResponseEntity<BookResponse> getBook(@PathVariable String idOrSlug) {
+        try {
+            UUID uuid = UUID.fromString(idOrSlug);
+            BookResponse response = getBookUseCase.getBook(uuid);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            BookResponse response = getBookUseCase.getBookBySlug(idOrSlug);
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @PostMapping("/{idOrSlug}/views")
+    public ResponseEntity<Void> incrementViews(@PathVariable String idOrSlug) {
+        getBookUseCase.incrementViews(idOrSlug);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/seller")

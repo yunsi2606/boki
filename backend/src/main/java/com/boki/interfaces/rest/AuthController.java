@@ -1,12 +1,14 @@
 package com.boki.interfaces.rest;
 
 import com.boki.application.dto.request.LoginRequest;
+import com.boki.application.dto.request.RefreshTokenRequest;
 import com.boki.application.dto.request.RegisterRequest;
 import com.boki.application.dto.request.VerifyPhoneRequest;
 import com.boki.application.dto.response.AuthResponse;
 import com.boki.application.dto.response.UserResponse;
 import com.boki.application.port.in.GetCurrentUserUseCase;
 import com.boki.application.port.in.LoginUserUseCase;
+import com.boki.application.port.in.RefreshTokenUseCase;
 import com.boki.application.port.in.RegisterUserUseCase;
 import com.boki.application.port.in.VerifyPhoneUseCase;
 import com.boki.infrastructure.security.AuthenticatedUser;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for authentication endpoints.
- * <p>
- * No business logic here — delegates entirely to use case ports.
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -27,6 +27,7 @@ public class AuthController {
 
     private final RegisterUserUseCase registerUseCase;
     private final LoginUserUseCase loginUseCase;
+    private final RefreshTokenUseCase refreshTokenUseCase;
     private final VerifyPhoneUseCase verifyPhoneUseCase;
     private final GetCurrentUserUseCase getCurrentUserUseCase;
     private final com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase;
@@ -38,6 +39,7 @@ public class AuthController {
     public AuthController(
             RegisterUserUseCase registerUseCase,
             LoginUserUseCase loginUseCase,
+            RefreshTokenUseCase refreshTokenUseCase,
             VerifyPhoneUseCase verifyPhoneUseCase,
             GetCurrentUserUseCase getCurrentUserUseCase,
             com.boki.application.port.in.LoginOAuthUseCase loginOAuthUseCase,
@@ -48,6 +50,7 @@ public class AuthController {
     ) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
+        this.refreshTokenUseCase = refreshTokenUseCase;
         this.verifyPhoneUseCase = verifyPhoneUseCase;
         this.getCurrentUserUseCase = getCurrentUserUseCase;
         this.loginOAuthUseCase = loginOAuthUseCase;
@@ -66,6 +69,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = loginUseCase.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse response = refreshTokenUseCase.refreshToken(request);
         return ResponseEntity.ok(response);
     }
 

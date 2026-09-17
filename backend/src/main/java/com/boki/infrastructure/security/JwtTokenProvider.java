@@ -22,20 +22,21 @@ public class JwtTokenProvider implements TokenService {
 
     public JwtTokenProvider(
             @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration-ms}") long expirationMs
+            @Value("${app.jwt.expiration-ms:86400000}") long expirationMs
     ) {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
 
     @Override
-    public String generateToken(UUID userId, String email, boolean phoneVerified) {
+    public String generateToken(UUID userId, String email, String role, boolean phoneVerified) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim("email", email)
+                .claim("role", role)
                 .claim("phone_verified", phoneVerified)
                 .issuedAt(now)
                 .expiration(expiry)
@@ -53,6 +54,12 @@ public class JwtTokenProvider implements TokenService {
     public String extractEmail(String token) {
         Claims claims = parseClaims(token);
         return claims.get("email", String.class);
+    }
+
+    @Override
+    public String extractRole(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("role", String.class);
     }
 
     @Override

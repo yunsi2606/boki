@@ -29,6 +29,12 @@ dist/
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
+*.pem
+*.key
+*.pfx
+*.p12
+*.jks
+*service-account*.json
 
 # IDEs
 .idea/

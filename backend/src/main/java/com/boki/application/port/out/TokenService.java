@@ -8,11 +8,13 @@ import java.util.UUID;
  */
 public interface TokenService {
 
-    String generateToken(UUID userId, String email, boolean phoneVerified);
+    String generateToken(UUID userId, String email, String role, boolean phoneVerified);
 
     UUID extractUserId(String token);
 
     String extractEmail(String token);
+
+    String extractRole(String token);
 
     boolean validateToken(String token);
 }

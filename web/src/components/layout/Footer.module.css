@@ -1,8 +1,10 @@
+/* Boki Footer Styles — Bright Theme & Floating Action Buttons */
+
 .footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  background: #000000;
-  padding: var(--space-12) 0 var(--space-8);
-  margin-top: auto;
+  border-top: 1px solid #E9ECEF;
+  background: #FFFFFF;
+  padding: 56px 0 32px;
+  margin-top: 60px;
 }
 
 .inner {
@@ -13,73 +15,215 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr;
   gap: var(--space-8);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-10);
 }
 
 .brand {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 12px;
 }
 
-.logo {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary-600);
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.logoIconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #FFF5F7;
+  border: 1px solid #FCD0D7;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2px;
+}
+
+.logoMain {
+  background: linear-gradient(135deg, #EE4D2D 0%, #FF6B81 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logoSub {
+  color: #111827;
 }
 
 .brandDesc {
-  font-size: var(--font-size-sm);
-  color: var(--color-neutral-500);
-  line-height: var(--line-height-relaxed);
-  max-width: 300px;
+  font-size: 14px;
+  color: #6C757D;
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.contactInfo {
+  font-size: 13px;
+  color: #495057;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
 }
 
 .column h4 {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-neutral-900);
-  margin-bottom: var(--space-4);
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
+  letter-spacing: 0.05em;
 }
 
 .column a {
   display: block;
-  font-size: var(--font-size-sm);
-  color: var(--color-neutral-500);
+  font-size: 14px;
+  color: #6C757D;
   text-decoration: none;
-  padding: var(--space-1) 0;
-  transition: color var(--transition-fast);
+  padding: 5px 0;
+  transition: all var(--transition-fast);
 }
 
 .column a:hover {
-  color: var(--color-primary-600);
+  color: #EE4D2D;
+  transform: translateX(2px);
+}
+
+.partnerText {
+  font-size: 13px;
+  color: #6C757D;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.paymentBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.paymentBadge {
+  background: #F8F9FA;
+  border: 1px solid #E9ECEF;
+  color: #343A40;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
 }
 
 .bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: var(--space-6);
+  border-top: 1px solid #E9ECEF;
+  padding-top: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .copyright {
-  font-size: var(--font-size-xs);
-  color: var(--color-neutral-400);
+  font-size: 13px;
+  color: #868E96;
 }
 
-@media (max-width: 768px) {
+.socialLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #6C757D;
+}
+
+.socialIcon {
+  color: #EE4D2D;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.socialIcon:hover {
+  color: #D83A1B;
+}
+
+/* --- Floating Action Buttons (FAB) --- */
+.fabContainer {
+  position: fixed;
+  bottom: 28px;
+  right: 24px;
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fabItem {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all var(--transition-fast);
+}
+
+.fabItem:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.fabZalo {
+  background: #0068FF;
+}
+
+.fabMessenger {
+  background: linear-gradient(135deg, #0084FF, #A824FB);
+}
+
+.fabShopee {
+  background: #EE4D2D;
+}
+
+.fabTop {
+  background: #212529;
+  font-size: 16px;
+}
+
+@media (max-width: 992px) {
   .grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
   .grid {
     grid-template-columns: 1fr;
   }
+  .fabContainer {
+    bottom: 16px;
+    right: 16px;
+  }
 }
+

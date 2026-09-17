@@ -2,6 +2,7 @@ package com.boki.domain.port.out;
 
 import com.boki.domain.model.order.Order;
 import com.boki.domain.model.order.OrderId;
+import com.boki.domain.model.order.OrderStatus;
 import com.boki.domain.model.user.UserId;
 
 import java.util.List;
@@ -16,5 +17,9 @@ public interface OrderRepository {
 
     Optional<Order> findById(OrderId id);
 
+    Optional<Order> findByTrackingNumber(String trackingNumber);
+
     List<Order> findByBuyerId(UserId buyerId);
+
+    List<Order> searchOrders(OrderStatus status, String search, int page, int size);
 }

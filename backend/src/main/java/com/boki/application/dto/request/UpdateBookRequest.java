@@ -8,6 +8,15 @@ public record UpdateBookRequest(
         String title,
         String author,
         String isbn,
+        String publisher,
+        String supplier,
+        Integer publicationYear,
+        String language,
+        String format,
+        Integer numberOfPages,
+        Integer weightGrams,
+        String dimensions,
+        String translator,
         String description,
 
         @DecimalMin(value = "0.0", inclusive = true, message = "Price must be non-negative")

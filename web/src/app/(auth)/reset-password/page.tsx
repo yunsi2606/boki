@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, Suspense, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/services/authService';
@@ -10,7 +10,7 @@ import Card from '@/components/ui/Card';
 import type { ApiError } from '@/types';
 import styles from '../auth.module.css';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -59,67 +59,79 @@ export default function ResetPasswordPage() {
   const isInvalidLink = !token || !email;
 
   return (
+    <Card className={styles.card} glass>
+      <div className={styles.header}>
+        <Link href="/" className={styles.brandLogoLink}>
+          <img src="/brand/logo.png" alt="Boki Logo" className={styles.brandLogo} />
+        </Link>
+        <h1>Set new password</h1>
+        <p>Choose a strong password for your account.</p>
+      </div>
+
+      {error && <div className={styles.error}>{error}</div>}
+
+      {success ? (
+        <div className={styles.success}>
+          ✅ <strong>Password updated!</strong>
+          <br />
+          Redirecting you to sign in…
+        </div>
+      ) : isInvalidLink ? (
+        <div className={styles.error}>
+          This reset link is invalid or has expired.{' '}
+          <Link href="/forgot-password">Request a new one</Link>.
+        </div>
+      ) : (
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div>
+            <Input
+              label="Email address"
+              type="email"
+              value={email}
+              onChange={() => {}}
+              readOnly
+              autoComplete="email"
+            />
+            <p className={styles.inputHint}>Confirmed from your reset link</p>
+          </div>
+          <Input
+            label="New password"
+            type="password"
+            placeholder="At least 8 characters"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+          />
+          <Input
+            label="Confirm new password"
+            type="password"
+            placeholder="Repeat your new password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+          />
+          <Button type="submit" fullWidth isLoading={isLoading}>
+            Reset password
+          </Button>
+        </form>
+      )}
+
+      <div className={styles.footer}>
+        <Link href="/login">Back to sign in</Link>
+      </div>
+    </Card>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
     <div className={styles.page}>
-      <Card className={styles.card} glass>
-        <div className={styles.header}>
-          <h1>Set new password</h1>
-          <p>Choose a strong password for your account.</p>
-        </div>
-
-        {error && <div className={styles.error}>{error}</div>}
-
-        {success ? (
-          <div className={styles.success}>
-            ✅ <strong>Password updated!</strong>
-            <br />
-            Redirecting you to sign in…
-          </div>
-        ) : isInvalidLink ? (
-          <div className={styles.error}>
-            This reset link is invalid or has expired.{' '}
-            <Link href="/forgot-password">Request a new one</Link>.
-          </div>
-        ) : (
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <div>
-              <Input
-                label="Email address"
-                type="email"
-                value={email}
-                onChange={() => {}}
-                readOnly
-                autoComplete="email"
-              />
-              <p className={styles.inputHint}>Confirmed from your reset link</p>
-            </div>
-            <Input
-              label="New password"
-              type="password"
-              placeholder="At least 8 characters"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-            />
-            <Input
-              label="Confirm new password"
-              type="password"
-              placeholder="Repeat your new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-            />
-            <Button type="submit" fullWidth isLoading={isLoading}>
-              Reset password
-            </Button>
-          </form>
-        )}
-
-        <div className={styles.footer}>
-          <Link href="/login">Back to sign in</Link>
-        </div>
-      </Card>
+      <Suspense fallback={<div style={{ color: '#666', textAlign: 'center', padding: '40px' }}>Loading...</div>}>
+        <ResetPasswordForm />
+      </Suspense>
     </div>
   );
 }
+

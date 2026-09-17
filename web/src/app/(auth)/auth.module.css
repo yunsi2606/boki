@@ -22,6 +22,27 @@
   margin-bottom: var(--space-8);
 }
 
+.brandLogoLink {
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  transition: transform var(--transition-fast);
+}
+
+.brandLogoLink:hover {
+  transform: scale(1.06);
+}
+
+.brandLogo {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+  filter: drop-shadow(0 6px 14px rgba(238, 77, 45, 0.18));
+}
+
 .header h1 {
   font-size: var(--font-size-2xl);
   margin-bottom: var(--space-2);

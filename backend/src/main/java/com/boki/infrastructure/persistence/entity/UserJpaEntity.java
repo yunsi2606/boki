@@ -32,7 +32,8 @@ public class UserJpaEntity {
     private String avatarUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
+    @Column(nullable = false, columnDefinition = "user_role")
     private UserRoleJpa role;
 
     @Column(name = "email_verified", nullable = false)

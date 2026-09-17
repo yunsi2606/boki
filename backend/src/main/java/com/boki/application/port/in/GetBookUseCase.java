@@ -8,7 +8,13 @@ public interface GetBookUseCase {
 
     BookResponse getBook(UUID bookId);
 
+    BookResponse getBookBySlug(String slug);
+
     List<BookResponse> searchBooks(Integer categoryId, String query, int page, int size);
 
+    List<BookResponse> getAdminBooks(String query, int page, int size);
+
     List<BookResponse> getSellerBooks(String sellerEmail);
+
+    void incrementViews(String idOrSlug);
 }

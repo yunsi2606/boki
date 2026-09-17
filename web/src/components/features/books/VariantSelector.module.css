@@ -1,0 +1,105 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-heading, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.selectedName {
+  font-size: 0.8rem;
+  color: var(--brand-primary, #0284c7);
+  font-weight: 600;
+}
+
+.pillGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pillBtn {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+  text-align: left;
+}
+
+.pillBtn:hover {
+  border-color: var(--brand-primary, #0284c7);
+  background: #f0f9ff;
+}
+
+.pillActive {
+  border-color: var(--brand-primary, #0284c7);
+  background: #e0f2fe;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+}
+
+.pillHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.variantName {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #ff4757;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.pillPriceRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.825rem;
+}
+
+.price {
+  font-weight: 800;
+  color: #ee4d2d;
+}
+
+.originalPrice {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.outOfStock {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f8fafc;
+}

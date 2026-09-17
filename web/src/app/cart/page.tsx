@@ -7,6 +7,7 @@ import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import Button from '@/components/ui/Button';
 import CheckoutModal from '@/components/features/order/CheckoutModal';
+import { getBookUrl } from '@/lib/slug';
 import styles from './cart.module.css';
 
 export default function CartPage() {
@@ -21,27 +22,23 @@ export default function CartPage() {
 
   const handleCheckoutClick = () => {
     if (!isAuthenticated) {
-      router.push('/login?redirectTo=/cart');
+      router.push('/login?redirectTo=/checkout');
       return;
     }
-    setCheckoutOpen(true);
+    router.push('/checkout');
   };
 
   if (cartItems.length === 0) {
     return (
       <div className={styles.emptyContainer}>
         <div className={styles.emptyCard}>
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '24px' }}>
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-          </svg>
+          <div className={styles.emptyIcon}>🛒</div>
           <h2 className={styles.emptyTitle}>Giỏ hàng của bạn đang trống</h2>
           <p className={styles.emptySubtitle}>
-            Hãy khám phá các tác phẩm thú vị và thêm chúng vào giỏ hàng của bạn nhé!
+            Hãy chọn những cuốn sách hay và tác phẩm bản quyền thú vị để lấp đầy giỏ hàng nhé!
           </p>
           <Link href="/books">
-            <Button size="lg">Tiếp tục mua sắm</Button>
+            <Button size="lg" className={styles.shopBtn}>Tiếp tục mua sắm</Button>
           </Link>
         </div>
       </div>
@@ -50,32 +47,42 @@ export default function CartPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.pageTitle}>Giỏ hàng của bạn</h1>
-      
+      <div className={styles.headerRow}>
+        <h1 className={styles.pageTitle}>Giỏ hàng của bạn</h1>
+        <span className={styles.cartBadge}>({cartItems.reduce((sum, i) => sum + i.quantity, 0)} sản phẩm)</span>
+      </div>
+
       <div className={styles.cartLayout}>
         {/* Left: Cart Items List */}
         <div className={styles.itemsSection}>
-          {cartItems.map(({ book, quantity }) => {
-            const cover = book.imageUrls && book.imageUrls.length > 0
-              ? book.imageUrls[0]
-              : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200';
-            
+          {cartItems.map(({ book, quantity, selectedVariant }) => {
+            const itemKey = selectedVariant ? `${book.id}_${selectedVariant.id}` : book.id;
+            const cover = selectedVariant?.imageUrl || book.imageUrls?.[0] || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200';
+            const unitPrice = selectedVariant ? selectedVariant.price : book.price;
+            const linkHref = getBookUrl(book, selectedVariant?.id);
+
             return (
-              <div key={book.id} className={styles.cartItemCard}>
-                <img src={cover} alt={book.title} className={styles.itemCover} />
-                
+              <div key={itemKey} className={styles.cartItemCard}>
+                <Link href={linkHref}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={cover} alt={book.title} className={styles.itemCover} />
+                </Link>
+
                 <div className={styles.itemDetails}>
                   <div className={styles.itemHeader}>
                     <div style={{ flex: 1, paddingRight: '12px' }}>
                       <h3 className={styles.itemTitle}>
-                        <Link href={`/books/${book.id}`}>{book.title}</Link>
+                        <Link href={linkHref}>
+                          {book.title} {selectedVariant ? `(${selectedVariant.name})` : ''}
+                        </Link>
                       </h3>
                       <p className={styles.itemAuthor}>Tác giả: {book.author}</p>
                     </div>
-                    
-                    <button 
-                      onClick={() => removeFromCart(book.id)} 
-                      className={styles.removeBtn} 
+
+                    <button
+                      onClick={() => removeFromCart(book.id, selectedVariant?.id)}
+                      className={styles.removeBtn}
+                      title="Xóa khỏi giỏ hàng"
                       aria-label="Xóa sản phẩm"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.0" strokeLinecap="round" strokeLinejoin="round">
@@ -84,74 +91,74 @@ export default function CartPage() {
                       </svg>
                     </button>
                   </div>
-                  
+
                   <div className={styles.itemMeta}>
-                    <span className={styles.sellerName}>Người bán: {book.sellerName}</span>
-                    <span className={styles.conditionBadge}>
-                      {book.condition === 'NEW' ? 'Mới' : 'Đã qua sử dụng'}
-                    </span>
+                    <span className={styles.sellerName}>Đơn vị: {book.publisher || 'Boki Store'}</span>
+                    {selectedVariant ? (
+                      <span className={styles.variantBadge}>{selectedVariant.name}</span>
+                    ) : (
+                      <span className={styles.conditionBadge}>
+                        {book.condition === 'NEW' ? 'Chính Hãng' : 'Sách Cũ'}
+                      </span>
+                    )}
                   </div>
-                  
+
                   <div className={styles.itemFooter}>
                     <div className={styles.qtyContainer}>
-                      <button 
-                        onClick={() => updateQuantity(book.id, quantity - 1)}
+                      <button
+                        onClick={() => updateQuantity(book.id, quantity - 1, selectedVariant?.id)}
                         className={styles.qtyBtn}
                         disabled={quantity <= 1}
                       >
                         -
                       </button>
                       <span className={styles.qtyValue}>{quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(book.id, quantity + 1)}
+                      <button
+                        onClick={() => updateQuantity(book.id, quantity + 1, selectedVariant?.id)}
                         className={styles.qtyBtn}
-                        disabled={quantity >= book.stockQuantity}
+                        disabled={quantity >= (selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity)}
                       >
                         +
                       </button>
                     </div>
-                    
-                    <span className={styles.itemPrice}>{formatPrice(book.price * quantity)}</span>
+
+                    <div className={styles.priceCol}>
+                      <span className={styles.unitPrice}>{formatPrice(unitPrice)} / cuốn</span>
+                      <span className={styles.itemPrice}>{formatPrice(unitPrice * quantity)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             );
           })}
         </div>
-        
+
         {/* Right: Summary sidebar */}
         <div className={styles.summarySection}>
           <div className={styles.summaryCard}>
             <h2 className={styles.summaryTitle}>Tóm tắt đơn hàng</h2>
-            
+
             <div className={styles.summaryRow}>
               <span>Tạm tính ({cartItems.reduce((acc, item) => acc + item.quantity, 0)} cuốn)</span>
               <span>{formatPrice(cartTotal)}</span>
             </div>
-            
+
             <div className={styles.summaryRow}>
               <span>Phí vận chuyển</span>
               <span className={styles.freeBadge}>Miễn phí</span>
             </div>
-            
+
             <div className={styles.totalRow}>
               <span>Tổng số tiền</span>
               <span className={styles.totalValue}>{formatPrice(cartTotal)}</span>
             </div>
-            
-            <Button size="lg" fullWidth onClick={handleCheckoutClick}>
+
+            <Button size="lg" fullWidth onClick={handleCheckoutClick} className={styles.checkoutBtn}>
               Tiến hành thanh toán
             </Button>
           </div>
         </div>
       </div>
-
-      <CheckoutModal
-        isOpen={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-        items={cartItems}
-        onSuccess={clearCart}
-      />
     </div>
   );
 }
