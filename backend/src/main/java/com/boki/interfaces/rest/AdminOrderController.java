@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,13 +24,16 @@ public class AdminOrderController {
 
     private final AdminManageOrderUseCase adminManageOrderUseCase;
     private final com.boki.application.service.PaymentApplicationService paymentApplicationService;
+    private final com.boki.application.service.FraudAlertStreamService fraudAlertStreamService;
 
     public AdminOrderController(
             AdminManageOrderUseCase adminManageOrderUseCase,
-            com.boki.application.service.PaymentApplicationService paymentApplicationService
+            com.boki.application.service.PaymentApplicationService paymentApplicationService,
+            com.boki.application.service.FraudAlertStreamService fraudAlertStreamService
     ) {
         this.adminManageOrderUseCase = adminManageOrderUseCase;
         this.paymentApplicationService = paymentApplicationService;
+        this.fraudAlertStreamService = fraudAlertStreamService;
     }
 
     @GetMapping
@@ -173,5 +177,83 @@ public class AdminOrderController {
                 "orderId", updated != null ? updated.id().toString() : "",
                 "paymentStatus", updated != null ? updated.paymentStatus() : ""
         ));
+    }
+
+    // =========================================================================
+    // Real-time Fraud Detection & Voice Alert Endpoints
+    // =========================================================================
+
+    @GetMapping(value = "/alerts/stream", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+    public org.springframework.web.servlet.mvc.method.annotation.SseEmitter streamFraudAlerts() {
+        return fraudAlertStreamService.createEmitter();
+    }
+
+    @GetMapping("/alerts")
+    public ResponseEntity<List<com.boki.application.service.FraudAlertStreamService.FraudAlertEvent>> getRecentFraudAlerts() {
+        return ResponseEntity.ok(fraudAlertStreamService.getRecentAlerts());
+    }
+
+    @PostMapping("/{id}/dismiss-flag")
+    public ResponseEntity<OrderResponse> dismissFraudFlag(
+            @PathVariable UUID id,
+            @RequestBody(required = false) Map<String, String> body,
+            @AuthenticationPrincipal AuthenticatedUser principal
+    ) {
+        String actor = principal != null ? principal.email() : "Admin";
+        String reason = (body != null && body.containsKey("reason"))
+                ? body.get("reason")
+                : "Quản trị viên đã kiểm tra thông tin và phê duyệt gỡ cờ rủi ro";
+        OrderResponse updated = adminManageOrderUseCase.dismissFraudFlag(id, reason, actor);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PostMapping("/simulate-fraud")
+    public ResponseEntity<com.boki.application.service.FraudAlertStreamService.FraudAlertEvent> simulateFraudOrder(
+            @RequestBody(required = false) Map<String, Object> body
+    ) {
+        BigDecimal amount = new BigDecimal("2850000");
+        String customer = "Khách vãng lai (Nguyễn Văn Hùng)";
+        String phone = "0988889999";
+        if (body != null) {
+            if (body.get("amount") != null) {
+                try {
+                    amount = new BigDecimal(body.get("amount").toString());
+                } catch (Exception ignored) {}
+            }
+            if (body.get("customerName") != null) {
+                customer = body.get("customerName").toString();
+            }
+            if (body.get("customerPhone") != null) {
+                phone = body.get("customerPhone").toString();
+            }
+        }
+
+        UUID fakeOrderId = UUID.randomUUID();
+        String fakeCode = "BOKI" + fakeOrderId.toString().substring(0, 8).toUpperCase();
+        java.text.DecimalFormat df = new java.text.DecimalFormat("#,###");
+        String voiceMsg = String.format("Cảnh báo: Phát hiện đơn hàng khả nghi có rủi ro cao từ tài khoản vãng lai! Tổng giá trị %s đồng. Hệ thống Autopilot đã tạm giữ đơn, yêu cầu kiểm tra thủ công!",
+                df.format(amount));
+
+        com.boki.application.service.FraudAlertStreamService.FraudAlertEvent event =
+                new com.boki.application.service.FraudAlertStreamService.FraudAlertEvent(
+                        fakeOrderId,
+                        fakeCode,
+                        customer,
+                        phone,
+                        true,
+                        amount,
+                        85,
+                        "SUSPICIOUS",
+                        List.of(
+                                "Tài khoản vãng lai (Guest) đột ngột đặt đơn giá trị cao (" + df.format(amount) + "đ, vượt ngưỡng an toàn 1.500.000đ)",
+                                "Phương thức thanh toán COD giá trị cao, tiềm ẩn rủi ro boom hàng",
+                                "Số lượng sách đặt bất thường (Tổng 12 cuốn, dấu hiệu mua gom hoặc đầu cơ)"
+                        ),
+                        java.time.Instant.now(),
+                        voiceMsg
+                );
+
+        fraudAlertStreamService.broadcastAlert(event);
+        return ResponseEntity.ok(event);
     }
 }

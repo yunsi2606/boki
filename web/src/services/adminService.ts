@@ -271,4 +271,38 @@ export const adminService = {
   async updatePaymentConfigs(configs: Record<string, string>): Promise<void> {
     await api.put('/admin/config', configs);
   },
+
+  // Fraud Detection & Autopilot Order Management
+  async dismissFraudFlag(orderId: string, reason?: string): Promise<AdminOrder> {
+    return api.post<AdminOrder>(`/admin/orders/${orderId}/dismiss-flag`, { reason });
+  },
+
+  async getRecentFraudAlerts(): Promise<import('@/types').FraudAlertEvent[]> {
+    try {
+      return await api.get<import('@/types').FraudAlertEvent[]>('/admin/orders/alerts');
+    } catch {
+      return [];
+    }
+  },
+
+  async simulateFraudOrder(payload?: { amount?: number; customerName?: string; customerPhone?: string }): Promise<import('@/types').FraudAlertEvent> {
+    return api.post<import('@/types').FraudAlertEvent>('/admin/orders/simulate-fraud', payload || {});
+  },
+
+  async getAutopilotConfigs(): Promise<Record<string, string>> {
+    try {
+      const configs = await api.get<{ configKey: string; configValue: string }[]>('/admin/config');
+      const map: Record<string, string> = {};
+      configs.forEach((c) => {
+        map[c.configKey] = c.configValue;
+      });
+      return map;
+    } catch {
+      return {};
+    }
+  },
+
+  async updateAutopilotConfigs(configs: Record<string, string>): Promise<void> {
+    await api.put('/admin/config', configs);
+  },
 };

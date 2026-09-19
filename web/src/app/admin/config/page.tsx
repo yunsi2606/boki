@@ -8,10 +8,11 @@ import HeroBanner from '@/components/features/home/HeroBanner';
 import CarrierConfigTab from '@/components/features/admin/config/CarrierConfigTab';
 import PaymentConfigTab from '@/components/features/admin/config/PaymentConfigTab';
 import StoreGeneralTab from '@/components/features/admin/config/StoreGeneralTab';
+import FraudAutopilotConfigTab from '@/components/features/admin/config/FraudAutopilotConfigTab';
 import styles from './adminConfig.module.css';
 
 export default function AdminConfigPage() {
-  const [activeTab, setActiveTab] = useState<'CARRIERS' | 'PAYMENTS' | 'HOMEPAGE' | 'GENERAL'>('CARRIERS');
+  const [activeTab, setActiveTab] = useState<'CARRIERS' | 'PAYMENTS' | 'AUTOPILOT' | 'HOMEPAGE' | 'GENERAL'>('CARRIERS');
   const [config, setConfig] = useState<HomepageConfig>(defaultHomepageConfig);
   const [loading, setLoading] = useState(true);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -134,12 +135,14 @@ export default function AdminConfigPage() {
           <h1 className={styles.pageTitle}>
             {activeTab === 'CARRIERS' && 'Cấu Hình Đơn Vị Vận Chuyển'}
             {activeTab === 'PAYMENTS' && 'Cấu Hình Cổng Thanh Toán Trực Tuyến'}
+            {activeTab === 'AUTOPILOT' && 'Cấu Hình Fraud Detection & Autopilot Duyệt Đơn'}
             {activeTab === 'HOMEPAGE' && 'Cấu Hình Trang Chủ & Hero Banner'}
             {activeTab === 'GENERAL' && 'Cấu Hình Cửa Hàng & Kho Xuất Hàng'}
           </h1>
           <p className={styles.pageSubtitle}>
             {activeTab === 'CARRIERS' && 'Bật/tắt 6 đối tác vận chuyển (SPX, J&T, GHN, GHTK, Viettel Post, VNPost), cước phí & API'}
             {activeTab === 'PAYMENTS' && 'Quản lý tài khoản SePay VietQR, MoMo Gateway, VNPay & thử nghiệm Webhook IPN'}
+            {activeTab === 'AUTOPILOT' && 'Thiết lập thuật toán nhận diện rủi ro AI, ngưỡng cảnh báo giọng nói & quy trình tự động duyệt đơn'}
             {activeTab === 'HOMEPAGE' && 'Chỉnh sửa nội dung banner, kéo thả sắp xếp Side Cards & tải ảnh trực tiếp'}
             {activeTab === 'GENERAL' && 'Tên cửa hàng, hotline hỗ trợ, email và địa chỉ kho gửi in trên vận đơn'}
           </p>
@@ -175,6 +178,13 @@ export default function AdminConfigPage() {
         </button>
         <button
           type="button"
+          className={`${styles.configTabBtn} ${activeTab === 'AUTOPILOT' ? styles.configTabActive : ''}`}
+          onClick={() => setActiveTab('AUTOPILOT')}
+        >
+          <span>🤖 AI & Autopilot</span>
+        </button>
+        <button
+          type="button"
           className={`${styles.configTabBtn} ${activeTab === 'HOMEPAGE' ? styles.configTabActive : ''}`}
           onClick={() => setActiveTab('HOMEPAGE')}
         >
@@ -192,6 +202,8 @@ export default function AdminConfigPage() {
       {activeTab === 'CARRIERS' && <CarrierConfigTab onSuccessNotice={showNotice} />}
 
       {activeTab === 'PAYMENTS' && <PaymentConfigTab onSuccessNotice={showNotice} />}
+
+      {activeTab === 'AUTOPILOT' && <FraudAutopilotConfigTab onSuccessNotice={showNotice} />}
 
       {activeTab === 'GENERAL' && <StoreGeneralTab onSuccessNotice={showNotice} />}
 

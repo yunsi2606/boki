@@ -38,4 +38,6 @@ public interface AdminManageOrderUseCase {
     CarrierFeeEstimateResponse estimateCarrierFee(CalculateFeeRequest request);
 
     OrderResponse processCarrierWebhook(com.boki.application.dto.request.GhnWebhookPayload payload);
+
+    OrderResponse dismissFraudFlag(UUID orderId, String reason, String actor);
 }
