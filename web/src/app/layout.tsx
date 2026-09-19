@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/hooks/useAuth';
 import { CartProvider } from '@/hooks/useCart';
 import StorefrontLayoutWrapper from '@/components/layout/StorefrontLayoutWrapper';
+import ActivityTrackerListener from '@/components/common/ActivityTrackerListener';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <AuthProvider>
           <CartProvider>
+            <ActivityTrackerListener />
             <StorefrontLayoutWrapper>{children}</StorefrontLayoutWrapper>
           </CartProvider>
         </AuthProvider>

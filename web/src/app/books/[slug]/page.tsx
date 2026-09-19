@@ -14,6 +14,7 @@ import { extractBookId } from '@/lib/slug';
 import { BookDetailSkeleton } from '@/components/ui/Skeleton';
 import { checkoutNavigationService } from '@/services/checkoutNavigationService';
 import { BarChartIcon } from '@/components/ui/LineIcons';
+import { activityTracker } from '@/services/activityTracker';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -91,6 +92,12 @@ function BookDetailsContent() {
         if (!hasIncrementedRef.current) {
           hasIncrementedRef.current = true;
           bookService.incrementViews(id).catch(() => {});
+          activityTracker.trackBookView(
+            data.id,
+            data.title,
+            data.price,
+            getCategoryName(data.categoryId)
+          );
         }
       } catch (err) {
         console.error('Failed to load book detail:', err);
@@ -109,6 +116,17 @@ function BookDetailsContent() {
       quantity: 1,
       selectedVariant: selectedVariant || undefined,
     };
+    activityTracker.trackCartAction(
+      'ADD_TO_CART',
+      book.id,
+      book.title,
+      selectedVariant ? selectedVariant.price : book.price,
+      1
+    );
+    activityTracker.trackCheckoutStep('Mua ngay từ trang chi tiết', {
+      bookId: book.id,
+      bookTitle: book.title,
+    });
     if (!isAuthenticated) {
       checkoutNavigationService.navigateToCheckout(router, [checkoutItem], { source: 'buy_now' });
       router.push(`/login?redirectTo=/checkout`);
@@ -121,6 +139,13 @@ function BookDetailsContent() {
   const handleAddToCart = () => {
     if (!book) return;
     addToCart(book, 1, selectedVariant || undefined);
+    activityTracker.trackCartAction(
+      'ADD_TO_CART',
+      book.id,
+      book.title,
+      selectedVariant ? selectedVariant.price : book.price,
+      1
+    );
     setAdded(true);
     setTimeout(() => {
       setAdded(false);

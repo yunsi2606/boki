@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import Button from '@/components/ui/Button';
+import { activityTracker } from '@/services/activityTracker';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -24,6 +25,7 @@ export default function Header() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      activityTracker.trackSearch(searchQuery.trim());
       router.push(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
     } else {
       router.push('/books');

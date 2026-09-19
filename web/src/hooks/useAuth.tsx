@@ -10,6 +10,7 @@ import {
 } from 'react';
 import type { User, AuthResponse } from '@/types';
 import { authService } from '@/services/authService';
+import { activityTracker } from '@/services/activityTracker';
 import { REFRESH_TOKEN_STORAGE_KEY, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '@/lib/constants';
 
 interface AuthContextType {
@@ -75,16 +76,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(TOKEN_STORAGE_KEY, accessToken);
     if (refToken) localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, refToken);
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(response.user));
+
+    activityTracker.trackAuth('LOGIN', response.user?.email);
   }, []);
 
   const logout = useCallback(() => {
+    if (user?.email) {
+      activityTracker.trackAuth('LOGOUT', user.email);
+    }
     setToken(null);
     setRefreshToken(null);
     setUser(null);
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
     localStorage.removeItem(USER_STORAGE_KEY);
-  }, []);
+  }, [user?.email]);
 
   const updateUser = useCallback((updatedUser: User) => {
     setUser(updatedUser);

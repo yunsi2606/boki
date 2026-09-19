@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button';
 import CheckoutModal from '@/components/features/order/CheckoutModal';
 import { getBookUrl } from '@/lib/slug';
 import { checkoutNavigationService } from '@/services/checkoutNavigationService';
+import { activityTracker } from '@/services/activityTracker';
 import { ShoppingCartIcon } from '@/components/ui/LineIcons';
 import styles from './cart.module.css';
 
@@ -23,6 +24,11 @@ export default function CartPage() {
   };
 
   const handleCheckoutClick = () => {
+    activityTracker.trackCheckoutStep('Bắt đầu thanh toán từ Giỏ hàng', {
+      totalItems: cartItems.reduce((acc, i) => acc + i.quantity, 0),
+      cartTotal,
+    });
+
     if (!isAuthenticated) {
       checkoutNavigationService.navigateToCheckout(router, cartItems, { source: 'cart' });
       router.push('/login?redirectTo=/checkout');
@@ -30,6 +36,22 @@ export default function CartPage() {
     }
     // Smooth state navigation without exposing order data on URL bar
     checkoutNavigationService.navigateToCheckout(router, cartItems, { source: 'cart' });
+  };
+
+  const handleRemoveItem = (bookId: string, title: string, variantId?: string, price?: number) => {
+    removeFromCart(bookId, variantId);
+    activityTracker.trackCartAction('REMOVE_FROM_CART', bookId, title, price);
+  };
+
+  const handleUpdateQty = (
+    bookId: string,
+    title: string,
+    newQty: number,
+    variantId?: string,
+    price?: number
+  ) => {
+    updateQuantity(bookId, newQty, variantId);
+    activityTracker.trackCartAction('UPDATE_CART_QTY', bookId, title, price, newQty);
   };
 
   if (cartItems.length === 0) {
@@ -86,7 +108,7 @@ export default function CartPage() {
                     </div>
 
                     <button
-                      onClick={() => removeFromCart(book.id, selectedVariant?.id)}
+                      onClick={() => handleRemoveItem(book.id, book.title, selectedVariant?.id, unitPrice)}
                       className={styles.removeBtn}
                       title="Xóa khỏi giỏ hàng"
                       aria-label="Xóa sản phẩm"
@@ -112,7 +134,7 @@ export default function CartPage() {
                   <div className={styles.itemFooter}>
                     <div className={styles.qtyContainer}>
                       <button
-                        onClick={() => updateQuantity(book.id, quantity - 1, selectedVariant?.id)}
+                        onClick={() => handleUpdateQty(book.id, book.title, quantity - 1, selectedVariant?.id, unitPrice)}
                         className={styles.qtyBtn}
                         disabled={quantity <= 1}
                       >
@@ -120,7 +142,7 @@ export default function CartPage() {
                       </button>
                       <span className={styles.qtyValue}>{quantity}</span>
                       <button
-                        onClick={() => updateQuantity(book.id, quantity + 1, selectedVariant?.id)}
+                        onClick={() => handleUpdateQty(book.id, book.title, quantity + 1, selectedVariant?.id, unitPrice)}
                         className={styles.qtyBtn}
                         disabled={quantity >= (selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity)}
                       >

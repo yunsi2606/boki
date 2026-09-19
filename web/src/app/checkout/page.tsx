@@ -13,6 +13,7 @@ import PaymentMethodSelector, { PaymentMethod } from '@/components/features/chec
 import CheckoutSummary from '@/components/features/checkout/CheckoutSummary';
 import SePayQrModal from '@/components/features/checkout/SePayQrModal';
 import { paymentService } from '@/services/paymentService';
+import { activityTracker } from '@/services/activityTracker';
 import {
   BoltIcon,
   CheckCircleIcon,
@@ -30,6 +31,12 @@ export default function CheckoutPage() {
   // Smooth state transition: prioritize state passed via checkoutNavigationService
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>(cartItems);
   const [appliedVoucherCode, setAppliedVoucherCode] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    activityTracker.trackCheckoutStep('Mở trang thanh toán', {
+      isAuthenticated,
+    });
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const navState = checkoutNavigationService.getCheckoutState();
@@ -160,6 +167,20 @@ export default function CheckoutPage() {
         guestEmail: isGuestOrder ? (formData.email?.trim() || undefined) : undefined,
         voucherCode: effectiveVoucher,
       });
+
+      // Track order placement event
+      activityTracker.trackOrderPlaced(
+        newOrder.id,
+        newOrder.totalAmount || 0,
+        paymentMethod,
+        itemsPayload.length,
+        {
+          isGuest: isGuestOrder,
+          shippingProvince: formData.province,
+          voucherApplied: !!effectiveVoucher,
+          voucherCode: effectiveVoucher,
+        }
+      );
 
       clearCart();
       checkoutNavigationService.clearCheckoutState();
@@ -423,7 +444,10 @@ export default function CheckoutPage() {
 
           <PaymentMethodSelector
             selectedMethod={paymentMethod}
-            onSelect={setPaymentMethod}
+            onSelect={(method) => {
+              setPaymentMethod(method);
+              activityTracker.trackCheckoutStep('Chọn phương thức thanh toán', { paymentMethod: method });
+            }}
           />
         </div>
 
@@ -433,7 +457,12 @@ export default function CheckoutPage() {
             items={activeCheckoutItems}
             onSubmit={handlePlaceOrder}
             submitting={submitting}
-            onVoucherChange={setAppliedVoucherCode}
+            onVoucherChange={(code) => {
+              setAppliedVoucherCode(code);
+              if (code) {
+                activityTracker.trackVoucherApplied(code, true);
+              }
+            }}
           />
         </div>
       </div>
