@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { voucherService } from '@/services/voucherService';
 import type { Voucher, VoucherValidationResult } from '@/types/voucher';
 import type { CartItem } from '@/types';
+import { TicketIcon, ClockIcon } from '@/components/ui/LineIcons';
 import styles from './VoucherSelectorModal.module.css';
 
 interface VoucherSelectorModalProps {
@@ -82,7 +83,7 @@ export default function VoucherSelectorModal({
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.titleGroup}>
-            <span className={styles.icon}>🎟️</span>
+            <TicketIcon size={22} color="#6366f1" />
             <h3 className={styles.title}>Chọn Boki Voucher</h3>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
@@ -161,7 +162,10 @@ export default function VoucherSelectorModal({
                     <h4 className={styles.ticketTitle}>{v.title}</h4>
                     <p className={styles.ticketDesc}>{v.description}</p>
                     {!res.isEligible && res.reason && (
-                      <div className={styles.ineligibleReason}>⚠️ {res.reason}</div>
+                      <div className={styles.ineligibleReason} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <ClockIcon size={14} color="#e11d48" />
+                        <span>{res.reason}</span>
+                      </div>
                     )}
                   </div>
 

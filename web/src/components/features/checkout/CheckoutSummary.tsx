@@ -1,60 +1,103 @@
 'use client';
 
-import React, { useState } from 'react';
-import type { CartItem } from '@/types';
+import React, { useState, useEffect } from 'react';
+import type { CartItem, PricingResponse, CalculatePricingPayload } from '@/types';
 import type { Voucher, VoucherValidationResult } from '@/types/voucher';
 import { voucherService } from '@/services/voucherService';
+import { orderService } from '@/services/orderService';
 import VoucherSelectorModal from './VoucherSelectorModal';
+import { TicketIcon, LockIcon, CheckCircleIcon, CrownIcon, TagIcon } from '@/components/ui/LineIcons';
 import styles from './CheckoutSummary.module.css';
 
 interface CheckoutSummaryProps {
   items: CartItem[];
-  onSubmit: () => void;
+  onSubmit: (voucherCode?: string) => void;
   submitting?: boolean;
+  onVoucherChange?: (code?: string) => void;
 }
 
-export default function CheckoutSummary({ items, onSubmit, submitting = false }: CheckoutSummaryProps) {
+export default function CheckoutSummary({
+  items,
+  onSubmit,
+  submitting = false,
+  onVoucherChange,
+}: CheckoutSummaryProps) {
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
-  const [discountAmount, setDiscountAmount] = useState(0);
   const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
+  const [serverPricing, setServerPricing] = useState<PricingResponse | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const formatPrice = (val: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
   };
 
-  const subtotal = items.reduce((sum, item) => {
+  const clientSubtotal = items.reduce((sum, item) => {
     const price = item.selectedVariant ? item.selectedVariant.price : item.book.price;
     return sum + price * item.quantity;
   }, 0);
 
-  const shippingFee = subtotal >= 300000 || subtotal === 0 ? 0 : 22000;
+  const clientShippingFee = clientSubtotal >= 300000 || clientSubtotal === 0 ? 0 : 22000;
 
-  // Re-evaluate discount if subtotal or selected voucher changes
-  React.useEffect(() => {
-    if (selectedVoucher) {
-      const res = voucherService.validateVoucher(selectedVoucher, subtotal, shippingFee, items);
-      if (res.isEligible) {
-        setDiscountAmount(res.discountAmount);
-      } else {
-        setSelectedVoucher(null);
-        setDiscountAmount(0);
-      }
-    } else {
-      setDiscountAmount(0);
+  // Server-authoritative pricing evaluation
+  useEffect(() => {
+    if (items.length === 0) {
+      setServerPricing(null);
+      return;
     }
-  }, [selectedVoucher, subtotal, shippingFee, items]);
 
-  const grandTotal = Math.max(0, subtotal + shippingFee - discountAmount);
+    let isSubscribed = true;
+
+    const queryServerPricing = async () => {
+      setIsCalculating(true);
+      try {
+        const payload: CalculatePricingPayload = {
+          items: items.map((i) => ({
+            bookId: i.book.id,
+            variantId: i.selectedVariant?.id,
+            quantity: i.quantity,
+          })),
+          voucherCode: selectedVoucher?.code,
+          shippingFee: clientShippingFee,
+        };
+
+        const result = await orderService.calculatePricing(payload);
+        if (isSubscribed) {
+          setServerPricing(result);
+        }
+      } catch (err) {
+        console.warn('Server pricing check returned error, falling back to local calculation:', err);
+      } finally {
+        if (isSubscribed) {
+          setIsCalculating(false);
+        }
+      }
+    };
+
+    queryServerPricing();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [items, selectedVoucher, clientShippingFee]);
 
   const handleVoucherSelected = (res: VoucherValidationResult | null) => {
     if (!res) {
       setSelectedVoucher(null);
-      setDiscountAmount(0);
+      onVoucherChange?.(undefined);
     } else {
       setSelectedVoucher(res.voucher);
-      setDiscountAmount(res.discountAmount);
+      onVoucherChange?.(res.voucher.code);
     }
   };
+
+  // Pricing values (server prioritized, fallback to client)
+  const displaySubtotal = serverPricing ? serverPricing.subtotal : clientSubtotal;
+  const displayShipping = serverPricing ? serverPricing.shippingFee : clientShippingFee;
+  const memberDiscount = serverPricing ? serverPricing.memberDiscountAmount : 0;
+  const voucherDiscount = serverPricing ? serverPricing.voucherDiscountAmount : 0;
+  const displayFinalTotal = serverPricing
+    ? serverPricing.finalTotal
+    : Math.max(0, clientSubtotal + clientShippingFee - (selectedVoucher ? 0 : 0));
 
   return (
     <div className={styles.card}>
@@ -99,19 +142,51 @@ export default function CheckoutSummary({ items, onSubmit, submitting = false }:
           className={styles.voucherSelectBtn}
           onClick={() => setIsVoucherModalOpen(true)}
         >
-          <span style={{ fontSize: '16px' }}>🎟️</span>
-          <span style={{ flex: 1, textAlign: 'left', fontWeight: 600 }}>
+          <TicketIcon size={18} color="#6366f1" />
+          <span style={{ flex: 1, textAlign: 'left', fontWeight: 600, marginLeft: '4px' }}>
             {selectedVoucher ? `Voucher: ${selectedVoucher.code}` : 'Chọn hoặc Nhập mã giảm giá'}
           </span>
           <span style={{ color: '#ff4d4f', fontSize: '13px', fontWeight: 700 }}>
-            {selectedVoucher ? `Giảm ${formatPrice(discountAmount)}` : 'Chọn mã >'}
+            {voucherDiscount > 0
+              ? `Giảm ${formatPrice(voucherDiscount)}`
+              : selectedVoucher
+              ? selectedVoucher.code
+              : 'Chọn mã >'}
           </span>
         </button>
       </div>
 
       {selectedVoucher && (
-        <div className={styles.voucherSuccess}>
-          ✓ Áp dụng mã <strong>{selectedVoucher.code}</strong>: Giảm {formatPrice(discountAmount)}
+        <div className={styles.voucherSuccess} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CheckCircleIcon size={16} color="#16a34a" />
+          <span>
+            Đã áp dụng mã <strong>{selectedVoucher.code}</strong>
+            {voucherDiscount > 0 && `: Tiết kiệm ${formatPrice(voucherDiscount)}`}
+          </span>
+        </div>
+      )}
+
+      {/* Member Tier Announcement if active */}
+      {serverPricing && serverPricing.memberTier && serverPricing.memberTier !== 'STANDARD' && (
+        <div
+          style={{
+            margin: '8px 0 16px',
+            padding: '10px 14px',
+            background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+            border: '1px solid #fde68a',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '13px',
+            color: '#b45309',
+            fontWeight: 600,
+          }}
+        >
+          <CrownIcon size={18} color="#d97706" />
+          <span>
+            Hạng {serverPricing.memberTier}: Giảm {serverPricing.memberDiscountPercent}% trên đơn
+          </span>
         </div>
       )}
 
@@ -119,30 +194,47 @@ export default function CheckoutSummary({ items, onSubmit, submitting = false }:
       <div className={styles.priceBreakdown}>
         <div className={styles.priceRow}>
           <span>Tạm tính</span>
-          <span>{formatPrice(subtotal)}</span>
+          <span>{formatPrice(displaySubtotal)}</span>
         </div>
+
+        {/* Member tier discount row */}
+        {memberDiscount > 0 && (
+          <div className={styles.priceRow} style={{ color: '#b45309', fontWeight: 600 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <CrownIcon size={14} color="#d97706" />
+              <span>Ưu đãi thành viên ({serverPricing?.memberTier})</span>
+            </span>
+            <span>-{formatPrice(memberDiscount)}</span>
+          </div>
+        )}
+
+        {/* Voucher discount row */}
+        {voucherDiscount > 0 && (
+          <div className={styles.priceRow} style={{ color: '#16a34a', fontWeight: 600 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <TagIcon size={14} color="#16a34a" />
+              <span>Giảm giá Voucher ({selectedVoucher?.code})</span>
+            </span>
+            <span className={styles.discountValue}>-{formatPrice(voucherDiscount)}</span>
+          </div>
+        )}
 
         <div className={styles.priceRow}>
           <span>Phí vận chuyển</span>
-          {shippingFee === 0 ? (
+          {displayShipping === 0 ? (
             <span className={styles.freeShipping}>Miễn phí</span>
           ) : (
-            <span>{formatPrice(shippingFee)}</span>
+            <span>{formatPrice(displayShipping)}</span>
           )}
         </div>
-
-        {discountAmount > 0 && (
-          <div className={styles.priceRow}>
-            <span>Giảm giá Voucher</span>
-            <span className={styles.discountValue}>-{formatPrice(discountAmount)}</span>
-          </div>
-        )}
 
         <div className={styles.totalDivider}></div>
 
         <div className={styles.grandTotalRow}>
           <span className={styles.grandTotalLabel}>Tổng số tiền</span>
-          <span className={styles.grandTotalValue}>{formatPrice(grandTotal)}</span>
+          <span className={styles.grandTotalValue}>
+            {isCalculating ? '...' : formatPrice(displayFinalTotal)}
+          </span>
         </div>
       </div>
 
@@ -150,22 +242,23 @@ export default function CheckoutSummary({ items, onSubmit, submitting = false }:
       <button
         type="button"
         className={styles.submitBtn}
-        onClick={onSubmit}
+        onClick={() => onSubmit(selectedVoucher?.code)}
         disabled={submitting || items.length === 0}
       >
         {submitting ? 'Đang xử lý đặt hàng...' : 'ĐẶT HÀNG NGAY'}
       </button>
 
-      <div className={styles.securityNote}>
-        🔒 Thông tin thanh toán & địa chỉ được bảo mật 100%
+      <div className={styles.securityNote} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+        <LockIcon size={14} color="#64748b" />
+        <span>Thông tin thanh toán & địa chỉ được đối soát bảo mật 100%</span>
       </div>
 
       {/* Voucher Selector Modal */}
       <VoucherSelectorModal
         isOpen={isVoucherModalOpen}
         onClose={() => setIsVoucherModalOpen(false)}
-        subtotal={subtotal}
-        shippingFee={shippingFee}
+        subtotal={displaySubtotal}
+        shippingFee={displayShipping}
         items={items}
         selectedVoucher={selectedVoucher}
         onSelectVoucher={handleVoucherSelected}

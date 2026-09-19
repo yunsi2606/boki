@@ -12,6 +12,8 @@ import VariantSelector from '@/components/features/books/VariantSelector';
 import styles from './page.module.css';
 import { extractBookId } from '@/lib/slug';
 import { BookDetailSkeleton } from '@/components/ui/Skeleton';
+import { checkoutNavigationService } from '@/services/checkoutNavigationService';
+import { BarChartIcon } from '@/components/ui/LineIcons';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -102,12 +104,18 @@ function BookDetailsContent() {
 
   const handleBuyNow = () => {
     if (!book) return;
+    const checkoutItem = {
+      book,
+      quantity: 1,
+      selectedVariant: selectedVariant || undefined,
+    };
     if (!isAuthenticated) {
+      checkoutNavigationService.navigateToCheckout(router, [checkoutItem], { source: 'buy_now' });
       router.push(`/login?redirectTo=/checkout`);
       return;
     }
     addToCart(book, 1, selectedVariant || undefined);
-    router.push('/checkout');
+    checkoutNavigationService.navigateToCheckout(router, [checkoutItem], { source: 'buy_now' });
   };
 
   const handleAddToCart = () => {
@@ -310,8 +318,9 @@ function BookDetailsContent() {
           {/* Publishing Metadata Specifications Table */}
           {(book.publisher || book.supplier || book.publicationYear || book.language || book.format || book.numberOfPages || book.weightGrams || book.dimensions || book.translator) && (
             <div className={styles.specsSection}>
-              <h3 className={styles.specsTitle}>
-                <span>📊</span> Thông Số Xuất Bản Chi Tiết
+              <h3 className={styles.specsTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <BarChartIcon size={20} color="#0284c7" />
+                <span>Thông Số Xuất Bản Chi Tiết</span>
               </h3>
               <div className={styles.specsGrid}>
                 {book.publisher && (

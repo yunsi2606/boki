@@ -7,6 +7,9 @@ export interface User {
   avatarUrl: string | null;
   role: 'BUYER' | 'SELLER' | 'ADMIN';
   emailVerified: boolean;
+  memberTier?: 'STANDARD' | 'SILVER' | 'GOLD' | 'PLATINUM' | string;
+  totalSpent?: number;
+  loyaltyPoints?: number;
   createdAt: string;
 }
 
@@ -203,9 +206,41 @@ export interface Order {
   paymentCode?: string;
   paidAt?: string;
   items: OrderItem[];
+  subtotalAmount?: number;
+  memberTier?: string;
+  memberDiscountAmount?: number;
+  voucherCode?: string;
+  voucherDiscountAmount?: number;
   timelines?: OrderTimeline[];
+  riskScore?: number;
+  riskLevel?: 'SAFE' | 'WARNING' | 'SUSPICIOUS';
+  riskReasons?: string[];
+  isFlagged?: boolean;
+  isGuest?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface FraudAlertEvent {
+  orderId: string;
+  orderCode: string;
+  customerName: string;
+  customerPhone: string;
+  isGuest: boolean;
+  totalAmount: number;
+  riskScore: number;
+  riskLevel: 'SAFE' | 'WARNING' | 'SUSPICIOUS';
+  riskReasons: string[];
+  timestamp: string;
+  voiceMessage: string;
+}
+
+export interface AutopilotConfig {
+  autopilotEnabled: boolean;
+  fraudGuestMaxAmount: number;
+  fraudCodMaxAmount: number;
+  fraudRiskThreshold: number;
+  fraudVoiceAlertEnabled: boolean;
 }
 
 export interface PushShippingPayload {
@@ -254,6 +289,29 @@ export interface CreateOrderPayload {
   shippingAddress: string;
   items: CreateOrderItemPayload[];
   paymentMethod?: string;
+  isGuest?: boolean;
+  guestName?: string;
+  guestPhone?: string;
+  guestEmail?: string;
+  voucherCode?: string;
+}
+
+export interface CalculatePricingPayload {
+  items: CreateOrderItemPayload[];
+  voucherCode?: string;
+  shippingFee?: number;
+}
+
+export interface PricingResponse {
+  subtotal: number;
+  memberTier: string;
+  memberDiscountPercent: number;
+  memberDiscountAmount: number;
+  voucherCode?: string | null;
+  voucherDiscountAmount: number;
+  shippingFee: number;
+  finalTotal: number;
+  pricingMessage?: string | null;
 }
 
 export interface PaymentInitResponse {

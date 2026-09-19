@@ -7,6 +7,7 @@ import styles from './AddressForm.module.css';
 export interface AddressFormData {
   fullName: string;
   phoneNumber: string;
+  email?: string;
   province: string;
   provinceCode: number | null;
   district: string;
@@ -21,9 +22,10 @@ interface AddressFormProps {
   formData: AddressFormData;
   onChange: (updatedData: Partial<AddressFormData>) => void;
   errors?: Record<string, string>;
+  isGuest?: boolean;
 }
 
-export default function AddressForm({ formData, onChange, errors = {} }: AddressFormProps) {
+export default function AddressForm({ formData, onChange, errors = {}, isGuest = false }: AddressFormProps) {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
@@ -184,6 +186,21 @@ export default function AddressForm({ formData, onChange, errors = {} }: Address
             onChange={(e) => onChange({ phoneNumber: e.target.value })}
           />
           {errors.phoneNumber && <span className={styles.errorText}>{errors.phoneNumber}</span>}
+        </div>
+
+        {/* Email Address (Mandatory for Guest to track orders) */}
+        <div className={`${styles.fieldGroup} ${isGuest ? styles.fullWidth : ''}`}>
+          <label className={styles.label}>
+            Email nhận thông tin đơn hàng{isGuest && <span className={styles.required}>*</span>}
+          </label>
+          <input
+            type="email"
+            className={styles.input}
+            placeholder="Ví dụ: khachhang@gmail.com"
+            value={formData.email || ''}
+            onChange={(e) => onChange({ email: e.target.value })}
+          />
+          {errors.email && <span className={styles.errorText}>{errors.email}</span>}
         </div>
 
         {/* Province / City Select */}

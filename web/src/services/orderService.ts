@@ -1,9 +1,13 @@
 import { api } from './api';
-import type { Order, CreateOrderPayload } from '@/types';
+import type { Order, CreateOrderPayload, CalculatePricingPayload, PricingResponse } from '@/types';
 
 export const orderService = {
   createOrder: async (payload: CreateOrderPayload): Promise<Order> => {
     return api.post<Order>('/orders', payload);
+  },
+
+  calculatePricing: async (payload: CalculatePricingPayload): Promise<PricingResponse> => {
+    return api.post<PricingResponse>('/orders/calculate-pricing', payload);
   },
 
   getOrder: async (id: string): Promise<Order> => {

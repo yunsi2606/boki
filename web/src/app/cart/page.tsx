@@ -8,6 +8,8 @@ import { useAuth } from '@/hooks/useAuth';
 import Button from '@/components/ui/Button';
 import CheckoutModal from '@/components/features/order/CheckoutModal';
 import { getBookUrl } from '@/lib/slug';
+import { checkoutNavigationService } from '@/services/checkoutNavigationService';
+import { ShoppingCartIcon } from '@/components/ui/LineIcons';
 import styles from './cart.module.css';
 
 export default function CartPage() {
@@ -22,17 +24,21 @@ export default function CartPage() {
 
   const handleCheckoutClick = () => {
     if (!isAuthenticated) {
+      checkoutNavigationService.navigateToCheckout(router, cartItems, { source: 'cart' });
       router.push('/login?redirectTo=/checkout');
       return;
     }
-    router.push('/checkout');
+    // Smooth state navigation without exposing order data on URL bar
+    checkoutNavigationService.navigateToCheckout(router, cartItems, { source: 'cart' });
   };
 
   if (cartItems.length === 0) {
     return (
       <div className={styles.emptyContainer}>
         <div className={styles.emptyCard}>
-          <div className={styles.emptyIcon}>🛒</div>
+          <div className={styles.emptyIcon}>
+            <ShoppingCartIcon size={56} color="#94a3b8" />
+          </div>
           <h2 className={styles.emptyTitle}>Giỏ hàng của bạn đang trống</h2>
           <p className={styles.emptySubtitle}>
             Hãy chọn những cuốn sách hay và tác phẩm bản quyền thú vị để lấp đầy giỏ hàng nhé!
