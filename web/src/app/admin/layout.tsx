@@ -12,6 +12,7 @@ import {
   ClockIcon,
   LockIcon,
   GlobeIcon,
+  ActivityIcon,
 } from '@/components/ui/LineIcons';
 import styles from './adminLayout.module.css';
 
@@ -20,6 +21,7 @@ const navItems = [
   { name: 'Quản lý sách', path: '/admin/books', icon: <BookOpenIcon size={20} /> },
   { name: 'Quản lý đơn hàng', path: '/admin/orders', icon: <PackageIcon size={20} /> },
   { name: 'Mã giảm giá', path: '/admin/vouchers', icon: <TicketIcon size={20} /> },
+  { name: 'Nhật ký & Hành vi', path: '/admin/activity', icon: <ActivityIcon size={20} /> },
   { name: 'Cấu hình trang chủ', path: '/admin/config', icon: <LayoutTemplateIcon size={20} /> },
 ];
 

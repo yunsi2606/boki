@@ -12,6 +12,7 @@ import { WaybillPrintModal } from '@/components/features/admin/orders/WaybillPri
 import { FraudAlertBanner } from '@/components/features/admin/orders/FraudAlertBanner';
 import { useFraudAlertStream } from '@/hooks/useFraudAlertStream';
 import { voiceAlertService } from '@/services/voiceAlertService';
+import { activityTracker } from '@/services/activityTracker';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -80,6 +81,7 @@ export default function AdminOrdersPage() {
       const updated = await adminService.updateOrderStatus(orderId, 'CONFIRMED');
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, ...updated } : o)));
       showNotice('success', `Đã duyệt xác nhận đơn #${orderId.slice(0, 8)} thành công!`);
+      activityTracker.trackAdminAction('CONFIRM_ORDER', `Đơn #${orderId.slice(0, 8)}`, { orderId, newStatus: 'CONFIRMED' });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Duyệt đơn thất bại';
       showNotice('error', errorMsg);
@@ -95,6 +97,7 @@ export default function AdminOrdersPage() {
       const updated = await adminService.updateOrderStatus(orderId, 'DELIVERED');
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, ...updated } : o)));
       showNotice('success', `Đã đánh dấu giao thành công đơn #${orderId.slice(0, 8)}!`);
+      activityTracker.trackAdminAction('DELIVER_ORDER', `Đơn #${orderId.slice(0, 8)}`, { orderId, newStatus: 'DELIVERED' });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Cập nhật trạng thái thất bại';
       showNotice('error', errorMsg);
@@ -113,6 +116,7 @@ export default function AdminOrdersPage() {
       const updated = await adminService.updateOrderStatus(orderId, 'RETURNED');
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, ...updated } : o)));
       showNotice('success', `Đã cập nhật trạng thái Hoàn hàng cho đơn #${orderId.slice(0, 8)}`);
+      activityTracker.trackAdminAction('RETURN_ORDER', `Đơn #${orderId.slice(0, 8)}`, { orderId, newStatus: 'RETURNED' });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Cập nhật thất bại';
       showNotice('error', errorMsg);
@@ -125,6 +129,11 @@ export default function AdminOrdersPage() {
   const handleShippingSuccess = (updatedOrder: AdminOrder) => {
     setOrders((prev) => prev.map((o) => (o.id === updatedOrder.id ? { ...o, ...updatedOrder } : o)));
     showNotice('success', `Đã đẩy đơn #${updatedOrder.id.slice(0, 8)} sang ${updatedOrder.carrierName} (Mã VĐ: ${updatedOrder.trackingNumber})!`);
+    activityTracker.trackAdminAction('SHIP_ORDER', `Đơn #${updatedOrder.id.slice(0, 8)}`, {
+      orderId: updatedOrder.id,
+      carrier: updatedOrder.carrierName,
+      trackingNumber: updatedOrder.trackingNumber,
+    });
   };
 
   // Callback when order is cancelled successfully
@@ -133,6 +142,7 @@ export default function AdminOrdersPage() {
       prev.map((o) => (o.id === orderId ? { ...o, status: 'CANCELLED', cancelReason: reason } : o))
     );
     showNotice('success', `Đã hủy đơn hàng #${orderId.slice(0, 8)} và hoàn tồn kho thành công.`);
+    activityTracker.trackAdminAction('CANCEL_ORDER', `Đơn #${orderId.slice(0, 8)}`, { orderId, reason });
   };
 
   // Filter & Search logic
