@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { AdminOrder } from '@/services/adminService';
 import { adminService } from '@/services/adminService';
 import { paymentService } from '@/services/paymentService';
+import { RiskAssessmentCard } from './RiskAssessmentCard';
 import styles from './OrderDetailModal.module.css';
 
 interface OrderDetailModalProps {
@@ -160,12 +161,18 @@ export function OrderDetailModal({
 
         {/* Body */}
         <div className={styles.modalBody}>
+          {/* AI Risk Assessment Card */}
+          <RiskAssessmentCard
+            order={order}
+            onOrderUpdated={onUpdateOrder}
+            onRequestCancel={() => onOpenCancel(order)}
+          />
+
           {/* Two-Column Info Cards */}
           <div className={styles.gridTwoCols}>
             {/* Customer Details */}
             <div className={styles.infoCard}>
               <div className={styles.cardTitle}>
-                <span>👤</span>
                 <span>Thông Tin Khách Hàng</span>
               </div>
               <div className={styles.infoRow}>
@@ -189,7 +196,6 @@ export function OrderDetailModal({
             {/* Shipping & Carrier Info */}
             <div className={styles.infoCard}>
               <div className={styles.cardTitle}>
-                <span>🚚</span>
                 <span>Vận Chuyển & Giao Nhận</span>
               </div>
               <div className={styles.infoRow}>
@@ -307,7 +313,6 @@ export function OrderDetailModal({
             <div className={styles.infoCard} style={{ gridColumn: 'span 2' }}>
               <div className={styles.cardTitle} style={{ justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>💳</span>
                   <span>Phương Thức & Tình Trạng Thanh Toán</span>
                 </div>
                 {order.paymentStatus !== 'PAID' && (
@@ -354,7 +359,7 @@ export function OrderDetailModal({
                     )}
                     {(!order.paymentMethod || order.paymentMethod === 'COD') && (
                       <>
-                        <span style={{ fontSize: '1.2rem' }}>💵</span>
+                        <Image src="/wallets/cod.svg" alt="COD" width={22} height={22} style={{ objectFit: 'contain' }} />
                         <span>Thanh toán khi nhận hàng (COD)</span>
                       </>
                     )}
@@ -487,7 +492,6 @@ export function OrderDetailModal({
           {/* Order Timeline / Audit Stepper */}
           <div className={styles.timelineSection}>
             <div className={styles.cardTitle}>
-              <span>⏱️</span>
               <span>Lịch Sử Hành Trình & Nhật Ký Xử Lý Đơn Hàng</span>
             </div>
 
@@ -516,7 +520,6 @@ export function OrderDetailModal({
         {/* Footer Actions */}
         <div className={styles.modalFooter}>
           <button type="button" className={styles.printBtn} onClick={() => onOpenPrint(order)}>
-            <span>🖨️</span>
             <span>In Phiếu Giao Hàng</span>
           </button>
 
@@ -537,7 +540,6 @@ export function OrderDetailModal({
                 style={{ background: '#7c3aed' }}
                 onClick={() => onOpenShipping(order)}
               >
-                <span>🚚</span>
                 <span>Đẩy Đơn Sang ĐVVC</span>
               </button>
             )}

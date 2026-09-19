@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
+import Image from 'next/image';
 import { adminService, type AdminOrder } from '@/services/adminService';
 import styles from './adminOrders.module.css';
 import { TableSkeleton } from '@/components/ui/Skeleton';
@@ -8,6 +9,9 @@ import { ShippingModal } from '@/components/features/admin/orders/ShippingModal'
 import { OrderDetailModal } from '@/components/features/admin/orders/OrderDetailModal';
 import { CancelOrderModal } from '@/components/features/admin/orders/CancelOrderModal';
 import { WaybillPrintModal } from '@/components/features/admin/orders/WaybillPrintModal';
+import { FraudAlertBanner } from '@/components/features/admin/orders/FraudAlertBanner';
+import { useFraudAlertStream } from '@/hooks/useFraudAlertStream';
+import { voiceAlertService } from '@/services/voiceAlertService';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -24,6 +28,28 @@ export default function AdminOrdersPage() {
 
   // Notification banner
   const [notice, setNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [muted, setMuted] = useState(false);
+
+  useEffect(() => {
+    setMuted(voiceAlertService.isMuted());
+  }, []);
+
+  const toggleMute = () => {
+    const next = !muted;
+    setMuted(next);
+    voiceAlertService.setMuted(next);
+  };
+
+  const handleTestVoice = async () => {
+    await voiceAlertService.testVoiceAlert();
+  };
+
+  const { latestAlert, dismissLatestAlert } = useFraudAlertStream({
+    enableVoiceAlert: !muted,
+    onNewAlert: () => {
+      loadOrders();
+    },
+  });
 
   const showNotice = (type: 'success' | 'error', message: string) => {
     setNotice({ type, message });
@@ -113,7 +139,9 @@ export default function AdminOrdersPage() {
   const filteredOrders = useMemo(() => {
     return orders.filter((o) => {
       // Tab filter
-      if (activeTab !== 'ALL' && o.status !== activeTab) {
+      if (activeTab === 'FLAGGED') {
+        if (!o.isFlagged) return false;
+      } else if (activeTab !== 'ALL' && o.status !== activeTab) {
         return false;
       }
       // Search filter
@@ -135,6 +163,7 @@ export default function AdminOrdersPage() {
   const counts = useMemo(() => {
     return {
       ALL: orders.length,
+      FLAGGED: orders.filter((o) => o.isFlagged).length,
       PENDING: orders.filter((o) => o.status === 'PENDING').length,
       CONFIRMED: orders.filter((o) => o.status === 'CONFIRMED').length,
       SHIPPED: orders.filter((o) => o.status === 'SHIPPED').length,
@@ -208,6 +237,16 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
+      {/* Realtime Fraud Alert Banner */}
+      <FraudAlertBanner
+        alert={latestAlert}
+        onDismiss={dismissLatestAlert}
+        onInspectOrder={(orderId) => {
+          const found = orders.find((o) => o.id === orderId);
+          if (found) setDetailOrder(found);
+        }}
+      />
+
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
@@ -215,6 +254,24 @@ export default function AdminOrdersPage() {
           <p className={styles.pageSubtitle}>
             Theo dõi trạng thái đơn hàng, kết nối đơn vị vận chuyển (GHN, GHTK, Viettel Post) và in vận đơn
           </p>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="button"
+            className={`${styles.voiceBtn} ${muted ? '' : styles.voiceBtnActive}`}
+            onClick={toggleMute}
+            title={muted ? 'Đang TẮT cảnh báo giọng nói (Bấm để BẬT)' : 'Đang BẬT cảnh báo giọng nói (Bấm để TẮT)'}
+          >
+            {muted ? '🔇 Âm thanh: Tắt' : '🔊 Voice Alert: Bật'}
+          </button>
+          <button
+            type="button"
+            className={styles.voiceBtn}
+            onClick={handleTestVoice}
+            title="Thử nghiệm âm thanh chuông và giọng nói tiếng Việt"
+          >
+            🧪 Thử Voice Alert
+          </button>
         </div>
       </div>
 
@@ -246,6 +303,14 @@ export default function AdminOrdersPage() {
         >
           Tất cả ({counts.ALL})
         </button>
+        {counts.FLAGGED > 0 && (
+          <button
+            className={`${styles.tabBtn} ${styles.tabFlagged} ${activeTab === 'FLAGGED' ? styles.tabFlaggedActive : ''}`}
+            onClick={() => setActiveTab('FLAGGED')}
+          >
+            🚨 Đơn khả nghi ({counts.FLAGGED})
+          </button>
+        )}
         <button
           className={`${styles.tabBtn} ${activeTab === 'PENDING' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('PENDING')}
@@ -312,7 +377,7 @@ export default function AdminOrdersPage() {
                 filteredOrders.map((ord) => {
                   const isActionLoading = actionLoadingId === ord.id;
                   return (
-                    <tr key={ord.id}>
+                    <tr key={ord.id} className={ord.isFlagged ? styles.flaggedRow : ''}>
                       <td>
                         <button
                           onClick={() => setDetailOrder(ord)}
@@ -326,7 +391,19 @@ export default function AdminOrdersPage() {
                       <td className={styles.dateCell}>{formatDate(ord.createdAt)}</td>
                       <td>
                         <div className={styles.customerBox}>
-                          <span className={styles.customerName}>{ord.customerName || 'Khách vãng lai'}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <span className={styles.customerName}>{ord.customerName || (ord.isGuest ? 'Khách vãng lai' : 'Khách hàng')}</span>
+                            {ord.isGuest && (
+                              <span style={{ fontSize: '0.65rem', background: '#fee2e2', color: '#b91c1c', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>
+                                Guest
+                              </span>
+                            )}
+                            {ord.isFlagged && (
+                              <span className={styles.flagBadge} title={ord.riskReasons?.join('\n')}>
+                                ⚠️ AI gắn cờ ({ord.riskScore}/100)
+                              </span>
+                            )}
+                          </div>
                           <span className={styles.customerPhone}>{ord.customerPhone || '—'}</span>
                         </div>
                       </td>
@@ -355,16 +432,41 @@ export default function AdminOrdersPage() {
                             style={{
                               fontSize: '0.7rem',
                               fontWeight: 700,
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              display: 'inline-block',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
                               background: ord.paymentStatus === 'PAID' ? '#dcfce7' : '#fef3c7',
                               color: ord.paymentStatus === 'PAID' ? '#166534' : '#b45309',
                               border: `1px solid ${ord.paymentStatus === 'PAID' ? '#bbf7d0' : '#fde68a'}`,
                             }}
                           >
-                            {ord.paymentMethod === 'BANKING' ? '🏦 VietQR' : ord.paymentMethod === 'MOMO' ? '🟣 MoMo' : ord.paymentMethod === 'VNPAY' ? '🔴 VNPay' : '💵 COD'}
-                            {' '}{ord.paymentStatus === 'PAID' ? '✓' : '•'}
+                            {ord.paymentMethod === 'BANKING' && (
+                              <>
+                                <Image src="/wallets/sepay.png" alt="VietQR" width={14} height={14} style={{ objectFit: 'contain', borderRadius: '2px' }} />
+                                <span>VietQR</span>
+                              </>
+                            )}
+                            {ord.paymentMethod === 'MOMO' && (
+                              <>
+                                <Image src="/wallets/momo.png" alt="MoMo" width={14} height={14} style={{ objectFit: 'contain', borderRadius: '2px' }} />
+                                <span>MoMo</span>
+                              </>
+                            )}
+                            {ord.paymentMethod === 'VNPAY' && (
+                              <>
+                                <Image src="/wallets/vnpay.png" alt="VNPay" width={14} height={14} style={{ objectFit: 'contain', borderRadius: '2px' }} />
+                                <span>VNPay</span>
+                              </>
+                            )}
+                            {(!ord.paymentMethod || ord.paymentMethod === 'COD') && (
+                              <>
+                                <Image src="/wallets/cod.svg" alt="COD" width={14} height={14} style={{ objectFit: 'contain' }} />
+                                <span>COD</span>
+                              </>
+                            )}
+                            <span style={{ marginLeft: '2px', fontWeight: 800 }}>{ord.paymentStatus === 'PAID' ? '✓' : '•'}</span>
                           </span>
                         </div>
                       </td>
@@ -406,7 +508,7 @@ export default function AdminOrdersPage() {
                                 disabled={isActionLoading}
                                 title="Đẩy đơn sang ĐVVC"
                               >
-                                🚚 Đẩy ĐVVC
+                                Đẩy ĐVVC
                               </button>
                               <button
                                 className={`${styles.btnAction} ${styles.btnCancelAction}`}
@@ -457,7 +559,7 @@ export default function AdminOrdersPage() {
                               disabled={isActionLoading}
                               title="In phiếu giao hàng"
                             >
-                              🖨 In
+                              In
                             </button>
                           )}
 

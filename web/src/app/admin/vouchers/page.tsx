@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { voucherService } from '@/services/voucherService';
 import type { Voucher, VoucherDiscountType, VoucherType, UserScope } from '@/types/voucher';
 import styles from './adminVouchers.module.css';
-
 import { VoucherGridSkeleton } from '@/components/ui/Skeleton';
+import { TicketIcon, CheckCircleIcon, BarChartIcon } from '@/components/ui/LineIcons';
 
 export default function AdminVouchersPage() {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -141,7 +141,9 @@ export default function AdminVouchersPage() {
       {/* Stats Dashboard */}
       <div className={styles.statsRow}>
         <div className={styles.statCard}>
-          <div className={styles.statIcon}>🎟️</div>
+          <div className={styles.statIcon} style={{ background: '#ede9fe', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <TicketIcon size={24} color="#6366f1" />
+          </div>
           <div>
             <h3 className={styles.statVal}>{vouchers.length}</h3>
             <p className={styles.statLabel}>Tổng số Mã Voucher</p>
@@ -149,8 +151,8 @@ export default function AdminVouchersPage() {
         </div>
 
         <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ background: '#dcfce7', color: '#16a34a' }}>
-            🟢
+          <div className={styles.statIcon} style={{ background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CheckCircleIcon size={24} color="#16a34a" />
           </div>
           <div>
             <h3 className={styles.statVal}>{totalActive}</h3>
@@ -159,8 +161,8 @@ export default function AdminVouchersPage() {
         </div>
 
         <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ background: '#e0f2fe', color: '#0284c7' }}>
-            📊
+          <div className={styles.statIcon} style={{ background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <BarChartIcon size={24} color="#0284c7" />
           </div>
           <div>
             <h3 className={styles.statVal}>{totalUsed}</h3>

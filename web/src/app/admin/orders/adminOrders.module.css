@@ -343,3 +343,66 @@
   font-size: 16px;
 }
 
+/* Fraud Detection & Autopilot Highlighting */
+.flaggedRow {
+  background-color: #fffafa !important;
+  box-shadow: inset 4px 0 0 #ef4444;
+}
+
+.flagBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.725rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tabFlagged {
+  border-color: #fca5a5 !important;
+  color: #dc2626 !important;
+}
+
+.tabFlagged:hover {
+  background: #fef2f2 !important;
+}
+
+.tabFlaggedActive {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3) !important;
+}
+
+.voiceBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  color: #334155;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.voiceBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.voiceBtnActive {
+  border-color: #ef4444;
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+

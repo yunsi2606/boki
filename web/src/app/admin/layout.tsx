@@ -3,14 +3,24 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  BarChartIcon,
+  BookOpenIcon,
+  PackageIcon,
+  TicketIcon,
+  LayoutTemplateIcon,
+  ClockIcon,
+  LockIcon,
+  GlobeIcon,
+} from '@/components/ui/LineIcons';
 import styles from './adminLayout.module.css';
 
 const navItems = [
-  { name: 'Tổng quan', path: '/admin', icon: '📊' },
-  { name: 'Quản lý sách', path: '/admin/books', icon: '📚' },
-  { name: 'Quản lý đơn hàng', path: '/admin/orders', icon: '📦' },
-  { name: 'Mã giảm giá', path: '/admin/vouchers', icon: '🎟️' },
-  { name: 'Cấu hình trang chủ', path: '/admin/config', icon: '🖼️' },
+  { name: 'Tổng quan', path: '/admin', icon: <BarChartIcon size={20} /> },
+  { name: 'Quản lý sách', path: '/admin/books', icon: <BookOpenIcon size={20} /> },
+  { name: 'Quản lý đơn hàng', path: '/admin/orders', icon: <PackageIcon size={20} /> },
+  { name: 'Mã giảm giá', path: '/admin/vouchers', icon: <TicketIcon size={20} /> },
+  { name: 'Cấu hình trang chủ', path: '/admin/config', icon: <LayoutTemplateIcon size={20} /> },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +34,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
         <div style={{ textAlign: 'center', color: '#64748b' }}>
-          <div style={{ fontSize: '32px', marginBottom: '12px', animation: 'spin 1s linear infinite' }}>⏳</div>
+          <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'center', animation: 'spin 1.5s linear infinite' }}>
+            <ClockIcon size={36} color="#6366f1" />
+          </div>
           <p style={{ fontWeight: 500 }}>Đang kiểm tra quyền truy cập Admin...</p>
         </div>
       </div>
@@ -35,7 +47,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', padding: '24px' }}>
         <div style={{ background: '#fff', borderRadius: '20px', padding: '40px', maxWidth: '460px', width: '100%', textAlign: 'center', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '56px', marginBottom: '16px' }}>🔒</div>
+          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <LockIcon size={36} color="#ef4444" />
+            </div>
+          </div>
           <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>Yêu Cầu Quyền Admin</h2>
           <p style={{ color: '#64748b', fontSize: '14px', lineHeight: '1.6', marginBottom: '28px' }}>
             Bạn cần đăng nhập tài khoản có phân quyền <strong>ADMIN</strong> hoặc <strong>SELLER</strong> để vào khu vực Quản trị BokiStore.
@@ -54,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 boxShadow: '0 4px 12px rgba(37,99,235,0.25)'
               }}
             >
-              🔑 Đăng nhập ngay
+              Đăng nhập ngay
             </button>
             <Link
               href="/"
@@ -69,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 alignItems: 'center'
               }}
             >
-              🏠 Về trang chủ
+              Về trang chủ
             </Link>
           </div>
         </div>
@@ -108,7 +124,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className={styles.sidebarFooter}>
           <Link href="/" className={styles.storefrontBtn}>
-            <span>🌐 Xem Cửa hàng</span>
+            <GlobeIcon size={18} />
+            <span>Xem Cửa hàng</span>
           </Link>
         </div>
       </aside>

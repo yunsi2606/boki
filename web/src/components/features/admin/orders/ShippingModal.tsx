@@ -202,7 +202,6 @@ export function ShippingModal({ order, isOpen, onClose, onConfirm }: ShippingMod
       <div className={styles.modalCard} onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
         <div className={styles.modalHeader}>
           <div className={styles.headerTitle}>
-            <span>🚚</span>
             <span>Bàn Giao & Đẩy Đơn Sang ĐVVC</span>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
@@ -491,8 +490,8 @@ export function ShippingModal({ order, isOpen, onClose, onConfirm }: ShippingMod
               {submitting
                 ? 'Đang xử lý...'
                 : fulfillmentMode === 'AUTO'
-                ? '🚀 Đẩy Đơn Qua GHN Gateway'
-                : `✓ Liên Kết Vận Đơn ${selectedCarrierObj.name}`}
+                  ? 'Đẩy Đơn Qua GHN Gateway'
+                  : `✓ Liên Kết Vận Đơn ${selectedCarrierObj.name}`}
             </button>
           </div>
         </form>
