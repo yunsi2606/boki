@@ -66,10 +66,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extractToken(HttpServletRequest request) {
+        // 1. High-priority: Secure HttpOnly Cookie (prevents identity spoofing)
+        String cookieToken = CookieUtil.extractCookie(request, CookieUtil.AUTH_COOKIE_NAME);
+        if (StringUtils.hasText(cookieToken)) {
+            return cookieToken;
+        }
+
+        // 2. Authorization Header fallback
         String header = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(header) && header.startsWith(BEARER_PREFIX)) {
             return header.substring(BEARER_PREFIX.length());
         }
+
+        // 3. Query Parameter fallback (for EventSource SSE / downloads)
+        String queryToken = request.getParameter("token");
+        if (StringUtils.hasText(queryToken)) {
+            return queryToken;
+        }
+
         return null;
     }
 }

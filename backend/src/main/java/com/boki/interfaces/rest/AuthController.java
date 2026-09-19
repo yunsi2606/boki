@@ -12,6 +12,8 @@ import com.boki.application.port.in.RefreshTokenUseCase;
 import com.boki.application.port.in.RegisterUserUseCase;
 import com.boki.application.port.in.VerifyPhoneUseCase;
 import com.boki.infrastructure.security.AuthenticatedUser;
+import com.boki.infrastructure.security.CookieUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,35 +63,59 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(
+            @Valid @RequestBody RegisterRequest request,
+            HttpServletResponse httpResponse
+    ) {
         AuthResponse response = registerUseCase.register(request);
+        CookieUtil.setAuthCookie(httpResponse, response.accessToken());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse httpResponse
+    ) {
         AuthResponse response = loginUseCase.login(request);
+        CookieUtil.setAuthCookie(httpResponse, response.accessToken());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<AuthResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request,
+            HttpServletResponse httpResponse
+    ) {
         AuthResponse response = refreshTokenUseCase.refreshToken(request);
+        CookieUtil.setAuthCookie(httpResponse, response.accessToken());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse httpResponse) {
+        CookieUtil.clearAuthCookie(httpResponse);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify-phone")
     public ResponseEntity<AuthResponse> verifyPhone(
             @AuthenticationPrincipal AuthenticatedUser principal,
-            @Valid @RequestBody VerifyPhoneRequest request
+            @Valid @RequestBody VerifyPhoneRequest request,
+            HttpServletResponse httpResponse
     ) {
         AuthResponse response = verifyPhoneUseCase.verifyPhone(principal.userId(), request);
+        CookieUtil.setAuthCookie(httpResponse, response.accessToken());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/oauth")
-    public ResponseEntity<AuthResponse> loginOAuth(@Valid @RequestBody com.boki.application.dto.request.OAuthLoginRequest request) {
+    public ResponseEntity<AuthResponse> loginOAuth(
+            @Valid @RequestBody com.boki.application.dto.request.OAuthLoginRequest request,
+            HttpServletResponse httpResponse
+    ) {
         AuthResponse response = loginOAuthUseCase.loginOAuth(request);
+        CookieUtil.setAuthCookie(httpResponse, response.accessToken());
         return ResponseEntity.ok(response);
     }
 

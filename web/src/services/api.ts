@@ -37,6 +37,7 @@ async function apiFetch<T>(
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    credentials: 'include',
     ...options,
     headers,
   });
@@ -51,6 +52,7 @@ async function apiFetch<T>(
         try {
           const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ refreshToken }),
           });
@@ -72,6 +74,7 @@ async function apiFetch<T>(
             // Retry original request with new access token
             (headers as Record<string, string>)['Authorization'] = `Bearer ${newAccessToken}`;
             const retryRes = await fetch(`${API_BASE_URL}${endpoint}`, {
+              credentials: 'include',
               ...options,
               headers,
             });
