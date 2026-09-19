@@ -29,6 +29,16 @@ public record OrderResponse(
         List<OrderItemResponse> items,
         List<OrderTimelineResponse> timelines,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        Integer riskScore,
+        String riskLevel,
+        List<String> riskReasons,
+        Boolean isFlagged,
+        Boolean isGuest,
+        BigDecimal subtotalAmount,
+        String memberTier,
+        BigDecimal memberDiscountAmount,
+        String voucherCode,
+        BigDecimal voucherDiscountAmount
 ) {
 }

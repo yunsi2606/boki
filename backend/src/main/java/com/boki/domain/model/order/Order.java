@@ -40,8 +40,27 @@ public class Order {
     private String paymentCode;
     private Instant paidAt;
 
+    // Fraud Detection & Risk fields
+    private Integer riskScore;
+    private String riskLevel;
+    private String riskReasons;
+    private Boolean isFlagged;
+
+    // Guest checkout fields
+    private Boolean isGuest;
+    private String guestName;
+    private String guestPhone;
+    private String guestEmail;
+
     // Timeline / Audit events
     private List<OrderTimeline> timelines;
+
+    // Server Pricing Breakdown
+    private BigDecimal subtotalAmount;
+    private String memberTier;
+    private BigDecimal memberDiscountAmount;
+    private String voucherCode;
+    private BigDecimal voucherDiscountAmount;
 
     private Order() {
         this.items = new ArrayList<>();
@@ -50,6 +69,16 @@ public class Order {
         this.weightGrams = 500;
         this.paymentMethod = PaymentMethod.COD;
         this.paymentStatus = PaymentStatus.UNPAID;
+        this.riskScore = 0;
+        this.riskLevel = "SAFE";
+        this.riskReasons = null;
+        this.isFlagged = false;
+        this.isGuest = false;
+        this.subtotalAmount = BigDecimal.ZERO;
+        this.memberTier = "STANDARD";
+        this.memberDiscountAmount = BigDecimal.ZERO;
+        this.voucherCode = null;
+        this.voucherDiscountAmount = BigDecimal.ZERO;
     }
 
     public static Order create(UserId buyerId, List<OrderItem> items, String shippingAddress, String currency, PaymentMethod paymentMethod) {
@@ -64,9 +93,14 @@ public class Order {
         order.id = OrderId.generate();
         order.buyerId = buyerId;
         order.items = new ArrayList<>(items);
-        order.totalAmount = items.stream()
+        order.subtotalAmount = items.stream()
                 .map(OrderItem::subtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        order.totalAmount = order.subtotalAmount;
+        order.memberTier = "STANDARD";
+        order.memberDiscountAmount = BigDecimal.ZERO;
+        order.voucherCode = null;
+        order.voucherDiscountAmount = BigDecimal.ZERO;
         order.currency = currency != null ? currency : "VND";
         order.status = OrderStatus.PENDING;
         order.shippingAddress = shippingAddress;
@@ -75,6 +109,10 @@ public class Order {
         order.createdBy = buyerId.toString();
         order.shippingFee = BigDecimal.ZERO;
         order.weightGrams = 500;
+        order.riskScore = 0;
+        order.riskLevel = "SAFE";
+        order.isFlagged = false;
+        order.isGuest = false;
 
         order.paymentMethod = paymentMethod != null ? paymentMethod : PaymentMethod.COD;
         order.paymentStatus = PaymentStatus.UNPAID;
@@ -104,7 +142,11 @@ public class Order {
             Instant estimatedDelivery, Integer weightGrams, String cancelReason,
             String cancelledBy, String carrierStatus,
             PaymentMethod paymentMethod, PaymentStatus paymentStatus, String paymentCode, Instant paidAt,
-            List<OrderTimeline> timelines
+            Integer riskScore, String riskLevel, String riskReasons, Boolean isFlagged,
+            Boolean isGuest, String guestName, String guestPhone, String guestEmail,
+            List<OrderTimeline> timelines,
+            BigDecimal subtotalAmount, String memberTier, BigDecimal memberDiscountAmount,
+            String voucherCode, BigDecimal voucherDiscountAmount
     ) {
         Order order = new Order();
         order.id = id;
@@ -129,11 +171,68 @@ public class Order {
         order.paymentStatus = paymentStatus != null ? paymentStatus : PaymentStatus.UNPAID;
         order.paymentCode = paymentCode;
         order.paidAt = paidAt;
+        order.riskScore = riskScore != null ? riskScore : 0;
+        order.riskLevel = riskLevel != null ? riskLevel : "SAFE";
+        order.riskReasons = riskReasons;
+        order.isFlagged = isFlagged != null ? isFlagged : false;
+        order.isGuest = isGuest != null ? isGuest : false;
+        order.guestName = guestName;
+        order.guestPhone = guestPhone;
+        order.guestEmail = guestEmail;
         order.timelines = timelines != null ? new ArrayList<>(timelines) : new ArrayList<>();
+        order.subtotalAmount = subtotalAmount != null ? subtotalAmount : totalAmount;
+        order.memberTier = memberTier != null ? memberTier : "STANDARD";
+        order.memberDiscountAmount = memberDiscountAmount != null ? memberDiscountAmount : BigDecimal.ZERO;
+        order.voucherCode = voucherCode;
+        order.voucherDiscountAmount = voucherDiscountAmount != null ? voucherDiscountAmount : BigDecimal.ZERO;
         return order;
     }
 
+    public void applyServerPricing(BigDecimal subtotal, String memberTier, BigDecimal memberDiscount, String voucherCode, BigDecimal voucherDiscount) {
+        this.subtotalAmount = subtotal != null ? subtotal : BigDecimal.ZERO;
+        this.memberTier = memberTier != null ? memberTier : "STANDARD";
+        this.memberDiscountAmount = memberDiscount != null ? memberDiscount : BigDecimal.ZERO;
+        this.voucherCode = voucherCode;
+        this.voucherDiscountAmount = voucherDiscount != null ? voucherDiscount : BigDecimal.ZERO;
+
+        BigDecimal payable = this.subtotalAmount
+                .subtract(this.memberDiscountAmount)
+                .subtract(this.voucherDiscountAmount);
+        if (payable.compareTo(BigDecimal.ZERO) < 0) {
+            payable = BigDecimal.ZERO;
+        }
+        this.totalAmount = payable.add(this.shippingFee != null ? this.shippingFee : BigDecimal.ZERO);
+        this.updatedAt = Instant.now();
+    }
+
     // ---- State Machine & Business Methods ----
+
+    public void markAsGuest(String name, String phone, String email) {
+        this.isGuest = true;
+        this.guestName = name;
+        this.guestPhone = phone;
+        this.guestEmail = email;
+    }
+
+    public void applyRiskAssessment(int score, String level, String reasons, boolean flagged) {
+        this.riskScore = score;
+        this.riskLevel = level != null ? level : "SAFE";
+        this.riskReasons = reasons;
+        this.isFlagged = flagged;
+        this.updatedAt = Instant.now();
+    }
+
+    public void dismissFlag(String actor, String reason) {
+        this.isFlagged = false;
+        this.updatedAt = Instant.now();
+        this.timelines.add(OrderTimeline.create(
+                this.id,
+                this.status.name(),
+                "Gỡ cờ cảnh báo rủi ro",
+                "Quản trị viên đã kiểm tra thủ công và gỡ cờ rủi ro gian lận. Lý do: " + (reason != null ? reason : "Đã xác minh thông tin khách hàng an toàn."),
+                actor != null ? actor : "Admin"
+        ));
+    }
 
     public void confirm(String actor) {
         if (status != OrderStatus.PENDING) {
@@ -408,6 +507,21 @@ public class Order {
     public PaymentStatus getPaymentStatus() { return paymentStatus; }
     public String getPaymentCode() { return paymentCode; }
     public Instant getPaidAt() { return paidAt; }
+
+    public Integer getRiskScore() { return riskScore != null ? riskScore : 0; }
+    public String getRiskLevel() { return riskLevel != null ? riskLevel : "SAFE"; }
+    public String getRiskReasons() { return riskReasons; }
+    public Boolean getIsFlagged() { return isFlagged != null ? isFlagged : false; }
+    public Boolean getIsGuest() { return isGuest != null ? isGuest : false; }
+    public String getGuestName() { return guestName; }
+    public String getGuestPhone() { return guestPhone; }
+    public String getGuestEmail() { return guestEmail; }
+
+    public BigDecimal getSubtotalAmount() { return subtotalAmount != null ? subtotalAmount : totalAmount; }
+    public String getMemberTier() { return memberTier != null ? memberTier : "STANDARD"; }
+    public BigDecimal getMemberDiscountAmount() { return memberDiscountAmount != null ? memberDiscountAmount : BigDecimal.ZERO; }
+    public String getVoucherCode() { return voucherCode; }
+    public BigDecimal getVoucherDiscountAmount() { return voucherDiscountAmount != null ? voucherDiscountAmount : BigDecimal.ZERO; }
 
     public List<OrderTimeline> getTimelines() { return Collections.unmodifiableList(timelines); }
 }

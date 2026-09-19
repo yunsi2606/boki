@@ -16,6 +16,13 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
     java.util.Optional<OrderJpaEntity> findByTrackingNumber(String trackingNumber);
     java.util.Optional<OrderJpaEntity> findByPaymentCode(String paymentCode);
 
+    List<OrderJpaEntity> findByIsFlaggedTrueOrderByCreatedAtDesc();
+    long countByIsFlaggedTrue();
+
+    long countByGuestPhoneAndCreatedAtAfter(String guestPhone, java.time.Instant after);
+    long countByBuyerIdAndCreatedAtAfter(UUID buyerId, java.time.Instant after);
+    long countByBuyerIdAndStatus(UUID buyerId, OrderJpaEntity.OrderStatusJpa status);
+
     Page<OrderJpaEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Page<OrderJpaEntity> findByStatusOrderByCreatedAtDesc(OrderJpaEntity.OrderStatusJpa status, Pageable pageable);

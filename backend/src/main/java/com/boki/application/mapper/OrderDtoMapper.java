@@ -22,10 +22,12 @@ public class OrderDtoMapper {
 
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
-    public OrderDtoMapper(BookRepository bookRepository, UserRepository userRepository) {
+    public OrderDtoMapper(BookRepository bookRepository, UserRepository userRepository, com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
     }
 
     public OrderResponse toResponse(Order order) {
@@ -43,29 +45,46 @@ public class OrderDtoMapper {
                 .collect(Collectors.toList())
                 : Collections.emptyList();
 
-        // Resolve customer name and phone from User or parse from shippingAddress
+        // Resolve customer name and phone from User or guest fields or parse from shippingAddress
         String customerName = "Khách hàng Boki";
         String customerPhone = "---";
 
-        Optional<User> buyerOpt = userRepository.findById(order.getBuyerId());
-        if (buyerOpt.isPresent()) {
-            User buyer = buyerOpt.get();
-            if (buyer.getDisplayName() != null && !buyer.getDisplayName().isBlank()) {
-                customerName = buyer.getDisplayName();
-            }
-            if (buyer.getPhoneNumber() != null && buyer.getPhoneNumber().value() != null && !buyer.getPhoneNumber().value().isBlank()) {
-                customerPhone = buyer.getPhoneNumber().value();
+        if (Boolean.TRUE.equals(order.getIsGuest())) {
+            customerName = (order.getGuestName() != null && !order.getGuestName().isBlank())
+                    ? order.getGuestName() : "Khách vãng lai";
+            customerPhone = (order.getGuestPhone() != null && !order.getGuestPhone().isBlank())
+                    ? order.getGuestPhone() : "---";
+        } else {
+            Optional<User> buyerOpt = userRepository.findById(order.getBuyerId());
+            if (buyerOpt.isPresent()) {
+                User buyer = buyerOpt.get();
+                if (buyer.getDisplayName() != null && !buyer.getDisplayName().isBlank()) {
+                    customerName = buyer.getDisplayName();
+                }
+                if (buyer.getPhoneNumber() != null && buyer.getPhoneNumber().value() != null && !buyer.getPhoneNumber().value().isBlank()) {
+                    customerPhone = buyer.getPhoneNumber().value();
+                }
             }
         }
 
         // Fallback: parse from shippingAddress formatted as "Name | SĐT: Phone | Address..."
         if (order.getShippingAddress() != null && order.getShippingAddress().contains("|")) {
             String[] parts = order.getShippingAddress().split("\\|");
-            if (parts.length > 0 && !parts[0].trim().isBlank()) {
+            if (parts.length > 0 && !parts[0].trim().isBlank() && ("Khách hàng Boki".equals(customerName) || "Khách vãng lai".equals(customerName))) {
                 customerName = parts[0].trim();
             }
-            if (parts.length > 1 && parts[1].contains("SĐT:")) {
+            if (parts.length > 1 && parts[1].contains("SĐT:") && "---".equals(customerPhone)) {
                 customerPhone = parts[1].replace("SĐT:", "").trim();
+            }
+        }
+
+        List<String> riskReasonsList = Collections.emptyList();
+        if (order.getRiskReasons() != null && !order.getRiskReasons().isBlank()) {
+            try {
+                riskReasonsList = objectMapper.readValue(order.getRiskReasons(),
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            } catch (Exception e) {
+                riskReasonsList = List.of(order.getRiskReasons());
             }
         }
 
@@ -93,7 +112,17 @@ public class OrderDtoMapper {
                 itemResponses,
                 timelineResponses,
                 order.getCreatedAt(),
-                order.getUpdatedAt()
+                order.getUpdatedAt(),
+                order.getRiskScore(),
+                order.getRiskLevel(),
+                riskReasonsList,
+                order.getIsFlagged(),
+                order.getIsGuest(),
+                order.getSubtotalAmount(),
+                order.getMemberTier(),
+                order.getMemberDiscountAmount(),
+                order.getVoucherCode(),
+                order.getVoucherDiscountAmount()
         );
     }
 

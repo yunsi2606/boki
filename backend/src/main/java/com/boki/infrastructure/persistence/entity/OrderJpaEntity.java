@@ -69,6 +69,45 @@ public class OrderJpaEntity {
     @Column(name = "paid_at")
     private Instant paidAt;
 
+    @Column(name = "risk_score")
+    private Integer riskScore = 0;
+
+    @Column(name = "risk_level", length = 20)
+    private String riskLevel = "SAFE";
+
+    @Column(name = "risk_reasons", columnDefinition = "TEXT")
+    private String riskReasons;
+
+    @Column(name = "is_flagged")
+    private Boolean isFlagged = false;
+
+    @Column(name = "is_guest")
+    private Boolean isGuest = false;
+
+    @Column(name = "guest_email")
+    private String guestEmail;
+
+    @Column(name = "guest_name")
+    private String guestName;
+
+    @Column(name = "guest_phone", length = 50)
+    private String guestPhone;
+
+    @Column(name = "subtotal_amount", precision = 14, scale = 2)
+    private BigDecimal subtotalAmount;
+
+    @Column(name = "member_tier", length = 30)
+    private String memberTier;
+
+    @Column(name = "member_discount_amount", precision = 14, scale = 2)
+    private BigDecimal memberDiscountAmount = BigDecimal.ZERO;
+
+    @Column(name = "voucher_code", length = 50)
+    private String voucherCode;
+
+    @Column(name = "voucher_discount_amount", precision = 14, scale = 2)
+    private BigDecimal voucherDiscountAmount = BigDecimal.ZERO;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -175,9 +214,48 @@ public class OrderJpaEntity {
     public Instant getPaidAt() { return paidAt; }
     public void setPaidAt(Instant paidAt) { this.paidAt = paidAt; }
 
+    public Integer getRiskScore() { return riskScore; }
+    public void setRiskScore(Integer riskScore) { this.riskScore = riskScore; }
+
+    public String getRiskLevel() { return riskLevel; }
+    public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
+
+    public String getRiskReasons() { return riskReasons; }
+    public void setRiskReasons(String riskReasons) { this.riskReasons = riskReasons; }
+
+    public Boolean getIsFlagged() { return isFlagged; }
+    public void setIsFlagged(Boolean isFlagged) { this.isFlagged = isFlagged; }
+
+    public Boolean getIsGuest() { return isGuest; }
+    public void setIsGuest(Boolean isGuest) { this.isGuest = isGuest; }
+
+    public String getGuestEmail() { return guestEmail; }
+    public void setGuestEmail(String guestEmail) { this.guestEmail = guestEmail; }
+
+    public String getGuestName() { return guestName; }
+    public void setGuestName(String guestName) { this.guestName = guestName; }
+
+    public String getGuestPhone() { return guestPhone; }
+    public void setGuestPhone(String guestPhone) { this.guestPhone = guestPhone; }
+
     public List<OrderItemJpaEntity> getItems() { return items; }
     public void setItems(List<OrderItemJpaEntity> items) { this.items = items; }
 
     public List<OrderTimelineJpaEntity> getTimelines() { return timelines; }
     public void setTimelines(List<OrderTimelineJpaEntity> timelines) { this.timelines = timelines; }
+
+    public BigDecimal getSubtotalAmount() { return subtotalAmount; }
+    public void setSubtotalAmount(BigDecimal subtotalAmount) { this.subtotalAmount = subtotalAmount; }
+
+    public String getMemberTier() { return memberTier; }
+    public void setMemberTier(String memberTier) { this.memberTier = memberTier; }
+
+    public BigDecimal getMemberDiscountAmount() { return memberDiscountAmount; }
+    public void setMemberDiscountAmount(BigDecimal memberDiscountAmount) { this.memberDiscountAmount = memberDiscountAmount; }
+
+    public String getVoucherCode() { return voucherCode; }
+    public void setVoucherCode(String voucherCode) { this.voucherCode = voucherCode; }
+
+    public BigDecimal getVoucherDiscountAmount() { return voucherDiscountAmount; }
+    public void setVoucherDiscountAmount(BigDecimal voucherDiscountAmount) { this.voucherDiscountAmount = voucherDiscountAmount; }
 }

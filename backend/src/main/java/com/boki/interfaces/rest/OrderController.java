@@ -31,8 +31,19 @@ public class OrderController {
             @AuthenticationPrincipal AuthenticatedUser principal,
             @Valid @RequestBody CreateOrderRequest request
     ) {
-        OrderResponse response = createOrderUseCase.createOrder(request, principal.email());
+        String email = principal != null ? principal.email() : null;
+        OrderResponse response = createOrderUseCase.createOrder(request, email);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/calculate-pricing")
+    public ResponseEntity<com.boki.application.dto.response.PricingResponse> calculatePricing(
+            @AuthenticationPrincipal AuthenticatedUser principal,
+            @Valid @RequestBody com.boki.application.dto.request.CalculatePricingRequest request
+    ) {
+        String email = principal != null ? principal.email() : null;
+        com.boki.application.dto.response.PricingResponse response = createOrderUseCase.calculatePricing(request, email);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id:[0-9a-fA-F\\-]{36}}")

@@ -1,6 +1,7 @@
 package com.boki.application.service;
 
 import com.boki.application.dto.request.CalculateFeeRequest;
+import com.boki.application.dto.request.CalculatePricingRequest;
 import com.boki.application.dto.request.CreateOrderRequest;
 import com.boki.application.dto.request.OrderItemRequest;
 import com.boki.application.dto.request.PushShippingRequest;
@@ -8,6 +9,7 @@ import com.boki.application.dto.request.UpdateShippingInfoRequest;
 import com.boki.application.dto.response.CarrierFeeEstimateResponse;
 import com.boki.application.dto.response.OrderResponse;
 import com.boki.application.dto.response.OrderTimelineResponse;
+import com.boki.application.dto.response.PricingResponse;
 import com.boki.application.dto.response.PrintWaybillResponse;
 import com.boki.application.exception.BusinessRuleException;
 import com.boki.application.exception.ResourceNotFoundException;
@@ -20,6 +22,7 @@ import com.boki.domain.model.book.BookId;
 import com.boki.domain.model.order.*;
 import com.boki.domain.model.user.Email;
 import com.boki.domain.model.user.User;
+import com.boki.domain.model.user.UserId;
 import com.boki.domain.port.out.BookRepository;
 import com.boki.domain.port.out.OrderRepository;
 import com.boki.domain.port.out.UserRepository;
@@ -46,6 +49,10 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
     private final BookVariantJpaRepository variantRepository;
     private final ShippingCarrierService shippingCarrierService;
     private final OrderDtoMapper orderDtoMapper;
+    private final FraudDetectionService fraudDetectionService;
+    private final AutopilotOrderService autopilotOrderService;
+    private final ServerPricingService serverPricingService;
+    private final MemberTierService memberTierService;
 
     public OrderApplicationService(
             OrderRepository orderRepository,
@@ -53,7 +60,11 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
             UserRepository userRepository,
             BookVariantJpaRepository variantRepository,
             ShippingCarrierService shippingCarrierService,
-            OrderDtoMapper orderDtoMapper
+            OrderDtoMapper orderDtoMapper,
+            FraudDetectionService fraudDetectionService,
+            AutopilotOrderService autopilotOrderService,
+            ServerPricingService serverPricingService,
+            MemberTierService memberTierService
     ) {
         this.orderRepository = orderRepository;
         this.bookRepository = bookRepository;
@@ -61,16 +72,28 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
         this.variantRepository = variantRepository;
         this.shippingCarrierService = shippingCarrierService;
         this.orderDtoMapper = orderDtoMapper;
+        this.fraudDetectionService = fraudDetectionService;
+        this.autopilotOrderService = autopilotOrderService;
+        this.serverPricingService = serverPricingService;
+        this.memberTierService = memberTierService;
     }
 
     @Override
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request, String buyerEmail) {
-        User buyer = userRepository.findByEmail(Email.of(buyerEmail))
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", buyerEmail));
+        boolean isGuest = Boolean.TRUE.equals(request.isGuest()) || buyerEmail == null || buyerEmail.isBlank();
+        UserId buyerUserId;
 
-        if (!buyer.isPhoneVerified()) {
-            throw new BusinessRuleException("Số điện thoại của bạn chưa được xác thực. Vui lòng xác thực SĐT trước khi đặt hàng.");
+        if (isGuest) {
+            buyerUserId = UserId.of(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        } else {
+            User buyer = userRepository.findByEmail(Email.of(buyerEmail))
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "email", buyerEmail));
+
+            if (!buyer.isPhoneVerified()) {
+                throw new BusinessRuleException("Số điện thoại của bạn chưa được xác thực. Vui lòng xác thực SĐT trước khi đặt hàng.");
+            }
+            buyerUserId = buyer.getId();
         }
 
         List<OrderItem> domainItems = new ArrayList<>();
@@ -108,15 +131,79 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
         }
 
         Order order = Order.create(
-                buyer.getId(),
+                buyerUserId,
                 domainItems,
                 request.shippingAddress(),
                 "VND",
                 com.boki.domain.model.order.PaymentMethod.fromString(request.paymentMethod())
         );
 
+        if (isGuest) {
+            order.markAsGuest(request.guestName(), request.guestPhone(), request.guestEmail());
+        }
+
+        // --- SERVER-AUTHORITATIVE PRICING & VOUCHER VERIFICATION ---
+        ServerPricingService.ServerPricingResult pricing = serverPricingService.calculatePricing(
+                request.items(),
+                buyerUserId.value(),
+                request.voucherCode(),
+                order.getShippingFee()
+        );
+
+        order.applyServerPricing(
+                pricing.subtotal(),
+                pricing.memberTier().name(),
+                pricing.memberDiscountAmount(),
+                pricing.voucherCode(),
+                pricing.voucherDiscountAmount()
+        );
+
+        if (pricing.voucherCode() != null && pricing.voucherDiscountAmount().compareTo(BigDecimal.ZERO) > 0) {
+            serverPricingService.recordVoucherUsage(pricing.voucherCode());
+        }
+
+        if (!isGuest) {
+            memberTierService.recordCompletedOrderSpend(buyerUserId.value(), pricing.finalTotal());
+        }
+
+        // --- FRAUD DETECTION & AUTOPILOT ENGINE ---
+        FraudDetectionService.RiskAssessmentResult risk = fraudDetectionService.evaluateOrderRisk(order);
+        order.applyRiskAssessment(risk.riskScore(), risk.riskLevel(), risk.riskReasonsJson(), risk.isFlagged());
+        autopilotOrderService.processAutopilotDecision(order, risk);
+
         Order savedOrder = orderRepository.save(order);
         return orderDtoMapper.toResponse(savedOrder);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PricingResponse calculatePricing(CalculatePricingRequest request, String buyerEmail) {
+        UUID buyerUserId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        if (buyerEmail != null && !buyerEmail.isBlank()) {
+            java.util.Optional<User> buyerOpt = userRepository.findByEmail(Email.of(buyerEmail));
+            if (buyerOpt.isPresent()) {
+                buyerUserId = buyerOpt.get().getId().value();
+            }
+        }
+
+        ServerPricingService.ServerPricingResult res = serverPricingService.calculatePricing(
+                request.items(),
+                buyerUserId,
+                request.voucherCode(),
+                request.shippingFee()
+        );
+
+        return new PricingResponse(
+                res.subtotal(),
+                res.memberTier().name(),
+                res.memberDiscountPercent(),
+                res.memberDiscountAmount(),
+                res.voucherCode(),
+                res.voucherDiscountAmount(),
+                res.shippingFee(),
+                res.finalTotal(),
+                res.pricingMessage()
+        );
     }
 
     @Override
@@ -436,6 +523,24 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
 
         Order saved = orderRepository.save(order);
         log.info("Order {} updated via GHN webhook -> Status={}, CarrierStatus={}", saved.getId().value(), saved.getStatus(), saved.getCarrierStatus());
+        return orderDtoMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse dismissFraudFlag(UUID orderId, String reason, String actor) {
+        Order order = orderRepository.findById(OrderId.of(orderId))
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        order.dismissFlag(actor != null ? actor : "Admin", reason);
+
+        // If order was held in PENDING due to fraud flag, automatically confirm it upon manual dismissal
+        if (order.getStatus() == OrderStatus.PENDING) {
+            order.confirm(actor != null ? actor : "Admin");
+        }
+
+        Order saved = orderRepository.save(order);
+        log.info("Fraud flag dismissed for order #{}: new status={}", order.getPaymentCode(), saved.getStatus());
         return orderDtoMapper.toResponse(saved);
     }
 }

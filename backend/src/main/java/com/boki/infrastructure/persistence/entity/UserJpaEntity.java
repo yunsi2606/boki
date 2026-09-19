@@ -51,6 +51,15 @@ public class UserJpaEntity {
     @Column(name = "created_by")
     private String createdBy;
 
+    @Column(name = "member_tier", length = 30)
+    private String memberTier = "STANDARD";
+
+    @Column(name = "total_spent", precision = 14, scale = 2)
+    private java.math.BigDecimal totalSpent = java.math.BigDecimal.ZERO;
+
+    @Column(name = "loyalty_points")
+    private Integer loyaltyPoints = 0;
+
     public enum UserRoleJpa {
         BUYER, SELLER, ADMIN
     }
@@ -95,4 +104,13 @@ public class UserJpaEntity {
 
     public String getCreatedBy() { return createdBy; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+
+    public String getMemberTier() { return memberTier; }
+    public void setMemberTier(String memberTier) { this.memberTier = memberTier; }
+
+    public java.math.BigDecimal getTotalSpent() { return totalSpent; }
+    public void setTotalSpent(java.math.BigDecimal totalSpent) { this.totalSpent = totalSpent; }
+
+    public Integer getLoyaltyPoints() { return loyaltyPoints; }
+    public void setLoyaltyPoints(Integer loyaltyPoints) { this.loyaltyPoints = loyaltyPoints; }
 }

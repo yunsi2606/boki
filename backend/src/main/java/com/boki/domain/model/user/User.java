@@ -22,6 +22,9 @@ public class User {
     private UserRole role;
     private boolean emailVerified;
     private boolean active;
+    private MemberTier memberTier = MemberTier.STANDARD;
+    private java.math.BigDecimal totalSpent = java.math.BigDecimal.ZERO;
+    private int loyaltyPoints = 0;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
@@ -76,6 +79,7 @@ public class User {
             UserId id, Email email, String passwordHash, String displayName,
             PhoneNumber phoneNumber, boolean phoneVerified, String avatarUrl,
             UserRole role, boolean emailVerified, boolean active,
+            MemberTier memberTier, java.math.BigDecimal totalSpent, Integer loyaltyPoints,
             Instant createdAt, Instant updatedAt, String createdBy
     ) {
         User user = new User();
@@ -89,6 +93,9 @@ public class User {
         user.role = role;
         user.emailVerified = emailVerified;
         user.active = active;
+        user.memberTier = memberTier != null ? memberTier : MemberTier.STANDARD;
+        user.totalSpent = totalSpent != null ? totalSpent : java.math.BigDecimal.ZERO;
+        user.loyaltyPoints = loyaltyPoints != null ? loyaltyPoints : 0;
         user.createdAt = createdAt;
         user.updatedAt = updatedAt;
         user.createdBy = createdBy;
@@ -159,4 +166,7 @@ public class User {
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
     public String getCreatedBy() { return createdBy; }
+    public MemberTier getMemberTier() { return memberTier; }
+    public java.math.BigDecimal getTotalSpent() { return totalSpent; }
+    public int getLoyaltyPoints() { return loyaltyPoints; }
 }

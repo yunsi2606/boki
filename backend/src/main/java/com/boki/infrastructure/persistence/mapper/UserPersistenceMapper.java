@@ -28,10 +28,14 @@ public final class UserPersistenceMapper {
         entity.setCreatedAt(user.getCreatedAt());
         entity.setUpdatedAt(user.getUpdatedAt());
         entity.setCreatedBy(user.getCreatedBy());
+        entity.setMemberTier(user.getMemberTier() != null ? user.getMemberTier().name() : "STANDARD");
+        entity.setTotalSpent(user.getTotalSpent() != null ? user.getTotalSpent() : java.math.BigDecimal.ZERO);
+        entity.setLoyaltyPoints(user.getLoyaltyPoints());
         return entity;
     }
 
     public static User toDomainModel(UserJpaEntity entity) {
+        MemberTier tier = entity.getMemberTier() != null ? MemberTier.fromString(entity.getMemberTier()) : MemberTier.STANDARD;
         return User.reconstitute(
                 UserId.of(entity.getId()),
                 Email.of(entity.getEmail()),
@@ -43,6 +47,9 @@ public final class UserPersistenceMapper {
                 UserRole.valueOf(entity.getRole().name()),
                 entity.isEmailVerified(),
                 entity.isActive(),
+                tier,
+                entity.getTotalSpent(),
+                entity.getLoyaltyPoints(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getCreatedBy()

@@ -39,9 +39,22 @@ public final class OrderPersistenceMapper {
         entity.setPaymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : "UNPAID");
         entity.setPaymentCode(order.getPaymentCode());
         entity.setPaidAt(order.getPaidAt());
+        entity.setRiskScore(order.getRiskScore());
+        entity.setRiskLevel(order.getRiskLevel());
+        entity.setRiskReasons(order.getRiskReasons());
+        entity.setIsFlagged(order.getIsFlagged());
+        entity.setIsGuest(order.getIsGuest());
+        entity.setGuestEmail(order.getGuestEmail());
+        entity.setGuestName(order.getGuestName());
+        entity.setGuestPhone(order.getGuestPhone());
         entity.setCreatedAt(order.getCreatedAt());
         entity.setUpdatedAt(order.getUpdatedAt());
         entity.setCreatedBy(order.getCreatedBy());
+        entity.setSubtotalAmount(order.getSubtotalAmount());
+        entity.setMemberTier(order.getMemberTier());
+        entity.setMemberDiscountAmount(order.getMemberDiscountAmount());
+        entity.setVoucherCode(order.getVoucherCode());
+        entity.setVoucherDiscountAmount(order.getVoucherDiscountAmount());
 
         if (order.getItems() != null) {
             for (OrderItem item : order.getItems()) {
@@ -125,7 +138,20 @@ public final class OrderPersistenceMapper {
                 com.boki.domain.model.order.PaymentStatus.fromString(entity.getPaymentStatus()),
                 entity.getPaymentCode(),
                 entity.getPaidAt(),
-                timelines
+                entity.getRiskScore(),
+                entity.getRiskLevel(),
+                entity.getRiskReasons(),
+                entity.getIsFlagged(),
+                entity.getIsGuest(),
+                entity.getGuestName(),
+                entity.getGuestPhone(),
+                entity.getGuestEmail(),
+                timelines,
+                entity.getSubtotalAmount(),
+                entity.getMemberTier(),
+                entity.getMemberDiscountAmount(),
+                entity.getVoucherCode(),
+                entity.getVoucherDiscountAmount()
         );
     }
 }

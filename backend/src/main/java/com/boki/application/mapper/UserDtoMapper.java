@@ -22,7 +22,10 @@ public final class UserDtoMapper {
                 user.getAvatarUrl(),
                 user.getRole().name(),
                 user.isEmailVerified(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                user.getMemberTier() != null ? user.getMemberTier().name() : "STANDARD",
+                user.getTotalSpent(),
+                user.getLoyaltyPoints()
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.boki.application.dto.response;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -12,5 +13,8 @@ public record UserResponse(
         String avatarUrl,
         String role,
         boolean emailVerified,
-        Instant createdAt
+        Instant createdAt,
+        String memberTier,
+        BigDecimal totalSpent,
+        Integer loyaltyPoints
 ) {}
