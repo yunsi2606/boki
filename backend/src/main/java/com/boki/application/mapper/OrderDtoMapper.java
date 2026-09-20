@@ -41,6 +41,7 @@ public class OrderDtoMapper {
 
         List<OrderTimelineResponse> timelineResponses = order.getTimelines() != null
                 ? order.getTimelines().stream()
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
                 .map(this::toTimelineResponse)
                 .collect(Collectors.toList())
                 : Collections.emptyList();

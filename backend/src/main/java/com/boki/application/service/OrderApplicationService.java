@@ -362,6 +362,7 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
         return order.getTimelines().stream()
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
                 .map(tl -> new OrderTimelineResponse(
                         tl.getId(),
                         tl.getStatus(),
