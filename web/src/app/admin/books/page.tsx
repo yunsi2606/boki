@@ -9,6 +9,7 @@ import { categoryService } from '@/services/categoryService';
 import styles from './adminBooks.module.css';
 
 import { TableSkeleton } from '@/components/ui/Skeleton';
+import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/books/PreOrderBadge';
 
 export default function AdminBooksPage() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -36,6 +37,9 @@ export default function AdminBooksPage() {
     coverUrl: '',
     condition: 'NEW' as Book['condition'],
     status: 'ACTIVE' as Book['status'],
+    isPreOrder: false,
+    preOrderMode: 'SPECIFIC' as 'SPECIFIC' | 'INDEFINITE',
+    preOrderDays: 14,
 
     // Optional Fields (Can be Null / Blank)
     isbn: '',
@@ -71,6 +75,9 @@ export default function AdminBooksPage() {
       coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300',
       condition: 'NEW',
       status: 'ACTIVE',
+      isPreOrder: false,
+      preOrderMode: 'SPECIFIC',
+      preOrderDays: 14,
       isbn: '',
       publisher: '',
       supplier: '',
@@ -98,6 +105,9 @@ export default function AdminBooksPage() {
       coverUrl: book.imageUrls?.[0] || '',
       condition: book.condition || 'NEW',
       status: book.status || 'ACTIVE',
+      isPreOrder: Boolean(book.isPreOrder),
+      preOrderMode: book.isPreOrder && (book.preOrderDays === null || book.preOrderDays === undefined) ? 'INDEFINITE' : 'SPECIFIC',
+      preOrderDays: book.preOrderDays || 14,
       isbn: book.isbn || '',
       publisher: book.publisher || '',
       supplier: book.supplier || '',
@@ -153,6 +163,10 @@ export default function AdminBooksPage() {
       condition: formData.condition,
       stockQuantity: Number(formData.stockQuantity),
       imageUrls: [formData.coverUrl || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300'],
+      isPreOrder: formData.isPreOrder,
+      preOrderDays: formData.isPreOrder
+        ? (formData.preOrderMode === 'SPECIFIC' && formData.preOrderDays ? Number(formData.preOrderDays) : null)
+        : null,
       isbn: formData.isbn || undefined,
       publisher: formData.publisher || undefined,
       supplier: formData.supplier || undefined,
@@ -277,7 +291,12 @@ export default function AdminBooksPage() {
                     />
                   </td>
                   <td className={styles.titleCell}>
-                    <strong>{book.title}</strong>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <strong>{book.title}</strong>
+                      {book.isPreOrder && (
+                        <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} size="sm" />
+                      )}
+                    </div>
                     <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>Tác giả: {book.author}</div>
                     {book.isbn && <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>ISBN: {book.isbn}</div>}
                   </td>
@@ -452,6 +471,117 @@ export default function AdminBooksPage() {
                         onChange={(url) => setFormData({ ...formData, coverUrl: url })}
                         placeholder="Tải ảnh bìa sách từ máy tính hoặc nhập link..."
                       />
+                    </div>
+
+                    {/* Pre-Order Configuration Box */}
+                    <div style={{
+                      marginTop: '8px',
+                      padding: '16px',
+                      background: formData.isPreOrder ? '#fff7ed' : '#f8fafc',
+                      border: formData.isPreOrder ? '1.5px solid #fdba74' : '1px solid #e2e8f0',
+                      borderRadius: '12px',
+                      transition: 'all 0.2s ease',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <strong style={{ fontSize: '14px', color: formData.isPreOrder ? '#c2410c' : '#1e293b' }}>
+                            Sản phẩm đặt hàng trước (Pre-order)
+                          </strong>
+                          <p style={{ fontSize: '12px', color: '#64748b', margin: '3px 0 0 0' }}>
+                            Bật tùy chọn này nếu sách chưa phát hành hoặc đang in/về kho.
+                          </p>
+                        </div>
+                        <label style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={formData.isPreOrder}
+                            onChange={(e) => setFormData({ ...formData, isPreOrder: e.target.checked })}
+                            style={{ width: '18px', height: '18px', accentColor: '#ea580c', cursor: 'pointer' }}
+                          />
+                        </label>
+                      </div>
+
+                      {formData.isPreOrder && (
+                        <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px dashed #fed7aa' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#9a3412', display: 'block', marginBottom: '8px' }}>
+                            Cấu hình thời gian đặt trước:
+                          </label>
+
+                          <div style={{ display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer', color: '#7c2d12' }}>
+                              <input
+                                type="radio"
+                                name="preOrderMode"
+                                value="SPECIFIC"
+                                checked={formData.preOrderMode === 'SPECIFIC'}
+                                onChange={() => setFormData({ ...formData, preOrderMode: 'SPECIFIC' })}
+                                style={{ accentColor: '#ea580c' }}
+                              />
+                              Có số ngày cụ thể (Ví dụ: 14 ngày)
+                            </label>
+
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer', color: '#7c2d12' }}>
+                              <input
+                                type="radio"
+                                name="preOrderMode"
+                                value="INDEFINITE"
+                                checked={formData.preOrderMode === 'INDEFINITE'}
+                                onChange={() => setFormData({ ...formData, preOrderMode: 'INDEFINITE' })}
+                                style={{ accentColor: '#ea580c' }}
+                              />
+                              Không xác định ngày (Chỉ hiện "Đặt hàng trước")
+                            </label>
+                          </div>
+
+                          {formData.preOrderMode === 'SPECIFIC' && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px' }}>
+                              <label style={{ fontSize: '13px', color: '#9a3412', whiteSpace: 'nowrap' }}>
+                                Số ngày dự kiến chờ sách:
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="180"
+                                value={formData.preOrderDays}
+                                onChange={(e) => setFormData({ ...formData, preOrderDays: parseInt(e.target.value) || 0 })}
+                                style={{
+                                  width: '100px',
+                                  padding: '6px 10px',
+                                  borderRadius: '6px',
+                                  border: '1px solid #fdba74',
+                                  fontSize: '14px',
+                                  fontWeight: 700,
+                                  color: '#c2410c',
+                                  background: '#ffffff',
+                                }}
+                              />
+                              <span style={{ fontSize: '13px', color: '#9a3412' }}>ngày</span>
+                            </div>
+                          )}
+
+                          {/* Live preview banner */}
+                          <div style={{
+                            marginTop: '12px',
+                            padding: '8px 12px',
+                            background: '#ffffff',
+                            borderRadius: '8px',
+                            border: '1px solid #ffedd5',
+                            fontSize: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}>
+                            <span style={{ color: '#7c2d12' }}>
+                              Hiển thị trên web: <strong>{formData.preOrderMode === 'SPECIFIC' && formData.preOrderDays > 0 ? `Đặt hàng trước (${formData.preOrderDays} ngày)` : 'Đặt hàng trước'}</strong>
+                            </span>
+                            {formData.preOrderMode === 'SPECIFIC' && formData.preOrderDays > 0 && (
+                              <span style={{ color: '#047857', fontWeight: 600 }}>
+                                Dự kiến giao: {getEstimatedDeliveryDate(formData.preOrderDays)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </>
                 )}

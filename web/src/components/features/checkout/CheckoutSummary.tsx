@@ -7,6 +7,7 @@ import { voucherService } from '@/services/voucherService';
 import { orderService } from '@/services/orderService';
 import VoucherSelectorModal from './VoucherSelectorModal';
 import { TicketIcon, LockIcon, CheckCircleIcon, CrownIcon, TagIcon } from '@/components/ui/LineIcons';
+import PreOrderBadge from '@/components/features/books/PreOrderBadge';
 import styles from './CheckoutSummary.module.css';
 
 interface CheckoutSummaryProps {
@@ -122,6 +123,11 @@ export default function CheckoutSummary({
               <img src={cover} alt={item.book.title} className={styles.itemCover} />
               <div className={styles.itemInfo}>
                 <h4 className={styles.itemTitle}>{item.book.title}</h4>
+                {item.book.isPreOrder && (
+                  <div style={{ marginTop: '3px', marginBottom: '3px' }}>
+                    <PreOrderBadge isPreOrder={item.book.isPreOrder} preOrderDays={item.book.preOrderDays} />
+                  </div>
+                )}
                 {item.selectedVariant && (
                   <span className={styles.variantTag}>{item.selectedVariant.name}</span>
                 )}

@@ -11,6 +11,7 @@ import { getBookUrl } from '@/lib/slug';
 import { checkoutNavigationService } from '@/services/checkoutNavigationService';
 import { activityTracker } from '@/services/activityTracker';
 import { ShoppingCartIcon } from '@/components/ui/LineIcons';
+import PreOrderBadge from '@/components/features/books/PreOrderBadge';
 import styles from './cart.module.css';
 
 export default function CartPage() {
@@ -99,11 +100,16 @@ export default function CartPage() {
                 <div className={styles.itemDetails}>
                   <div className={styles.itemHeader}>
                     <div style={{ flex: 1, paddingRight: '12px' }}>
-                      <h3 className={styles.itemTitle}>
-                        <Link href={linkHref}>
-                          {book.title} {selectedVariant ? `(${selectedVariant.name})` : ''}
-                        </Link>
-                      </h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                        <h3 className={styles.itemTitle} style={{ margin: 0 }}>
+                          <Link href={linkHref}>
+                            {book.title} {selectedVariant ? `(${selectedVariant.name})` : ''}
+                          </Link>
+                        </h3>
+                        {book.isPreOrder && (
+                          <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} />
+                        )}
+                      </div>
                       <p className={styles.itemAuthor}>Tác giả: {book.author}</p>
                     </div>
 
@@ -144,7 +150,7 @@ export default function CartPage() {
                       <button
                         onClick={() => handleUpdateQty(book.id, book.title, quantity + 1, selectedVariant?.id, unitPrice)}
                         className={styles.qtyBtn}
-                        disabled={quantity >= (selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity)}
+                        disabled={!book.isPreOrder && quantity >= (selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity)}
                       >
                         +
                       </button>

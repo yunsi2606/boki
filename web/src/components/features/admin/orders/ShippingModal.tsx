@@ -361,7 +361,7 @@ export function ShippingModal({ order, isOpen, onClose, onConfirm }: ShippingMod
                   className={`${styles.modeTabBtn} ${fulfillmentMode === 'AUTO' ? styles.modeTabBtnActive : ''}`}
                   onClick={() => setFulfillmentMode('AUTO')}
                 >
-                  <span>⚡ Tự Động Qua Cổng GHN API</span>
+                  <span>Tự Động Qua Cổng GHN API</span>
                 </button>
               )}
               <button
@@ -369,7 +369,7 @@ export function ShippingModal({ order, isOpen, onClose, onConfirm }: ShippingMod
                 className={`${styles.modeTabBtn} ${fulfillmentMode === 'MANUAL' ? styles.modeTabBtnActive : ''}`}
                 onClick={() => setFulfillmentMode('MANUAL')}
               >
-                <span>✏️ Tạo Trên Portal/App {selectedCarrierObj.name} & Nhập Mã Thủ Công</span>
+                <span>Tạo Trên Portal/App {selectedCarrierObj.name} & Nhập Mã Thủ Công</span>
               </button>
             </div>
           </div>

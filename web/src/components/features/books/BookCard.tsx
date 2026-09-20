@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { Book, BookVariant } from '@/types';
 import styles from './BookCard.module.css';
 import { getBookUrl } from '@/lib/slug';
+import PreOrderBadge from './PreOrderBadge';
 
 interface BookCardProps {
   book: Book;
@@ -142,7 +143,11 @@ export default function BookCard({
           </button>
         )}
 
-        <span className={styles.cardTag}>{book.condition === 'NEW' ? 'Chính Hãng' : 'Sách Cũ'}</span>
+        {book.isPreOrder ? (
+          <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} size="sm" floating />
+        ) : (
+          <span className={styles.cardTag}>{book.condition === 'NEW' ? 'Chính Hãng' : 'Sách Cũ'}</span>
+        )}
         {discountPercent > 0 && <span className={styles.discountBadge}>-{discountPercent}%</span>}
       </div>
 

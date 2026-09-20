@@ -15,6 +15,7 @@ import { BookDetailSkeleton } from '@/components/ui/Skeleton';
 import { checkoutNavigationService } from '@/services/checkoutNavigationService';
 import { BarChartIcon } from '@/components/ui/LineIcons';
 import { activityTracker } from '@/services/activityTracker';
+import PreOrderBadge, { PreOrderDeliveryEstimate } from '@/components/features/books/PreOrderBadge';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -276,6 +277,9 @@ function BookDetailsContent() {
           </div>
 
           <div className={styles.metaRow}>
+            {book.isPreOrder && (
+              <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} size="md" />
+            )}
             <span className={`${styles.badge} ${styles.badgeVip}`}>✓ Chính hãng</span>
             <span className={`${styles.badge} ${styles.badgeCondition}`}>
               Tình trạng: {getConditionLabel(book.condition)}
@@ -310,7 +314,11 @@ function BookDetailsContent() {
             </div>
 
             <div className={styles.stockBadgeContainer}>
-              {currentStock === 0 ? (
+              {book.isPreOrder ? (
+                <span className={styles.inStockBadge} style={{ background: '#fff7ed', color: '#c2410c', borderColor: '#fed7aa' }}>
+                  <span className={styles.stockDot} style={{ background: '#ea580c' }}></span> Hàng đặt trước (Pre-order) {currentStock > 0 ? `• Còn ${currentStock} suất` : ''}
+                </span>
+              ) : currentStock === 0 ? (
                 <span className={styles.outOfStockBadge}>🔴 Đã hết hàng</span>
               ) : (
                 <span className={styles.inStockBadge}>
@@ -320,23 +328,28 @@ function BookDetailsContent() {
             </div>
           </div>
 
+          {/* Pre-Order Delivery Estimation Box */}
+          {book.isPreOrder && (
+            <PreOrderDeliveryEstimate isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} />
+          )}
+
           <div className={styles.actionsRow}>
             <Button
               size="lg"
               variant="secondary"
               onClick={handleAddToCart}
-              disabled={currentStock === 0}
+              disabled={!book.isPreOrder && currentStock === 0}
               className={styles.cartButton}
             >
-              {added ? 'Đã thêm! ✔' : 'Thêm vào giỏ'}
+              {added ? 'Đã thêm! ✔' : (book.isPreOrder ? 'Thêm vào giỏ (Đặt trước)' : 'Thêm vào giỏ')}
             </Button>
             <Button
               size="lg"
               onClick={handleBuyNow}
-              disabled={currentStock === 0}
+              disabled={!book.isPreOrder && currentStock === 0}
               className={styles.buyButton}
             >
-              {currentStock === 0 ? 'Đã hết hàng' : 'Mua ngay'}
+              {book.isPreOrder ? 'Đặt trước ngay' : (currentStock === 0 ? 'Đã hết hàng' : 'Mua ngay')}
             </Button>
           </div>
 
