@@ -102,6 +102,8 @@ export interface Book {
   condition: 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
   status: 'DRAFT' | 'ACTIVE' | 'SOLD' | 'ARCHIVED';
   stockQuantity: number;
+  isPreOrder?: boolean;
+  preOrderDays?: number | null;
   viewsCount?: number;
   rating?: number;
   reviewsCount?: number;
@@ -128,6 +130,8 @@ export interface CreateBookPayload {
   price: number;
   condition: string;
   stockQuantity: number;
+  isPreOrder?: boolean;
+  preOrderDays?: number | null;
   categoryId?: number;
   imageUrls?: string[];
 }
@@ -149,6 +153,8 @@ export interface UpdateBookPayload {
   price?: number;
   condition?: string;
   stockQuantity?: number;
+  isPreOrder?: boolean;
+  preOrderDays?: number | null;
   categoryId?: number;
   imageUrls?: string[];
 }

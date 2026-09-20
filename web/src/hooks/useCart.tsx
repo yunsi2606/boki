@@ -45,7 +45,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         (item) => item.book.id === book.id && item.selectedVariant?.id === selectedVariant?.id
       );
 
-      const maxStock = selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity;
+      const stock = selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity;
+      const maxStock = book.isPreOrder ? Math.max(stock, 99) : stock;
 
       if (existingItemIdx > -1) {
         const existingItem = prevItems[existingItemIdx];
@@ -75,7 +76,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
         if (item.book.id === bookId && item.selectedVariant?.id === variantId) {
-          const maxStock = item.selectedVariant ? item.selectedVariant.stockQuantity : item.book.stockQuantity;
+          const stock = item.selectedVariant ? item.selectedVariant.stockQuantity : item.book.stockQuantity;
+          const maxStock = item.book.isPreOrder ? Math.max(stock, 99) : stock;
           const newQty = Math.max(1, Math.min(quantity, maxStock));
           return { ...item, quantity: newQty };
         }
