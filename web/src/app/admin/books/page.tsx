@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import type { Book, BookVariant, Category } from '@/types';
 import ImageUploadInput from '@/components/ui/ImageUploadInput';
 import VariantManagerModal from '@/components/features/books/VariantManagerModal';
+import QuickAddCategoryModal from '@/components/features/admin/books/QuickAddCategoryModal';
 import { bookService } from '@/services/bookService';
 import { categoryService } from '@/services/categoryService';
 import styles from './adminBooks.module.css';
@@ -43,6 +44,9 @@ export default function AdminBooksPage() {
   // Variant Modal State
   const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
   const [selectedBookForVariants, setSelectedBookForVariants] = useState<Book | null>(null);
+
+  // Quick Add Category Modal State
+  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
 
   // Form Active Tab
   const [activeTab, setActiveTab] = useState<'required' | 'optional'>('required');
@@ -210,6 +214,18 @@ export default function AdminBooksPage() {
   const handleOpenVariantModal = (book: Book) => {
     setSelectedBookForVariants(book);
     setIsVariantModalOpen(true);
+  };
+
+  const handleCategoryCreated = (newCategory: Category) => {
+    setCategories((prev) => {
+      if (prev.some((c) => c.id === newCategory.id)) return prev;
+      return [...prev, newCategory];
+    });
+    setFormData((prev) => ({ ...prev, categoryId: newCategory.id }));
+  };
+
+  const handleSelectExistingCategory = (existingCategory: Category) => {
+    setFormData((prev) => ({ ...prev, categoryId: existingCategory.id }));
   };
 
   const handleSaveVariants = async (updatedVariants: BookVariant[]) => {
@@ -547,10 +563,38 @@ export default function AdminBooksPage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label>Danh Mục Sách <span style={{ color: '#ef4444' }}>*</span></label>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                          <label style={{ margin: 0 }}>Danh Mục Sách <span style={{ color: '#ef4444' }}>*</span></label>
+                          <button
+                            type="button"
+                            onClick={() => setIsAddCategoryModalOpen(true)}
+                            style={{
+                              background: '#f0f9ff',
+                              border: '1px solid #bae6fd',
+                              borderRadius: '6px',
+                              padding: '3px 8px',
+                              fontSize: '11.5px',
+                              fontWeight: 600,
+                              color: '#0284c7',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            + Thêm mới
+                          </button>
+                        </div>
                         <select
                           value={formData.categoryId}
-                          onChange={(e) => setFormData({ ...formData, categoryId: parseInt(e.target.value) })}
+                          onChange={(e) => {
+                            if (e.target.value === '__add_new__') {
+                              setIsAddCategoryModalOpen(true);
+                              return;
+                            }
+                            setFormData({ ...formData, categoryId: parseInt(e.target.value) });
+                          }}
                           className={styles.formInput}
                         >
                           {categories.length > 0 ? (
@@ -567,6 +611,9 @@ export default function AdminBooksPage() {
                               <option value={4}>Kỹ Năng Sống</option>
                             </>
                           )}
+                          <option value="__add_new__" style={{ fontWeight: 600, color: '#2563eb' }}>
+                            + Thêm danh mục mới...
+                          </option>
                         </select>
                       </div>
                     </div>
@@ -963,6 +1010,15 @@ export default function AdminBooksPage() {
           onSaveVariants={handleSaveVariants}
         />
       )}
+
+      {/* Quick Add Category Modal */}
+      <QuickAddCategoryModal
+        isOpen={isAddCategoryModalOpen}
+        onClose={() => setIsAddCategoryModalOpen(false)}
+        existingCategories={categories}
+        onCategoryCreated={handleCategoryCreated}
+        onSelectExisting={handleSelectExistingCategory}
+      />
     </div>
   );
 }

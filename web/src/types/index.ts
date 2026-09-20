@@ -369,6 +369,19 @@ export interface Category {
   parentId: number | null;
 }
 
+export interface CreateCategoryPayload {
+  name: string;
+  description?: string;
+  parentId?: number;
+}
+
+export interface CategoryCheckResult {
+  isValid: boolean;
+  suitabilityMessage: string;
+  isExactDuplicate: boolean;
+  similarCategories: Category[];
+}
+
 export interface UpdateProfilePayload {
   displayName?: string;
   avatarUrl?: string;
