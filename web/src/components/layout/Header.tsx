@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import Button from '@/components/ui/Button';
 import { activityTracker } from '@/services/activityTracker';
+import UserAvatarDropdown from './UserAvatarDropdown';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -58,9 +59,6 @@ export default function Header() {
               <Link href="/" className={styles.navLinkActive}>Trang chủ</Link>
               <Link href="/books" className={styles.navLink}>Cửa hàng</Link>
               <Link href="/#vouchers" className={styles.navLink}>Mã giảm giá</Link>
-              {isAuthenticated && (
-                <Link href="/orders/history" className={styles.navLink}>Đơn hàng của tôi</Link>
-              )}
               {user?.role === 'ADMIN' && (
                 <Link href="/admin" className={styles.adminPortalBtn}>
                   Trang Admin
@@ -89,20 +87,7 @@ export default function Header() {
 
               {/* User Account / Auth Buttons */}
               {isAuthenticated ? (
-                <div className={styles.userMenu}>
-                  <div className={styles.avatarRing}>
-                    <div className={styles.avatar}>
-                      {user?.avatarUrl ? (
-                        <img src={user.avatarUrl} alt={user.displayName || 'User'} className={styles.avatarImg} />
-                      ) : (
-                        <span>{initials}</span>
-                      )}
-                    </div>
-                  </div>
-                  <button onClick={logout} className={styles.logoutBtn}>
-                    Đăng xuất
-                  </button>
-                </div>
+                <UserAvatarDropdown user={user} onLogout={logout} />
               ) : (
                 <div className={styles.authButtons}>
                   <Link href="/login" className={styles.loginLink}>
@@ -115,6 +100,7 @@ export default function Header() {
               )}
             </div>
           </div>
+
 
           {/* Row 2: Category Trigger + Search Bar */}
           <div className={styles.bottomRow}>

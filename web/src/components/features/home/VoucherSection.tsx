@@ -31,7 +31,7 @@ export default function VoucherSection({ vouchers, onShowNotification }: Voucher
       <div className="container">
         <div className={styles.sectionHeader}>
           <div>
-            <h2 className={styles.sectionTitle}>🎟️ Mã Khuyến Mãi Đang Có</h2>
+            <h2 className={styles.sectionTitle}>Mã Khuyến Mãi Đang Có</h2>
             <p className={styles.sectionSub}>Lưu ngay voucher để áp dụng khi thanh toán đơn hàng</p>
           </div>
         </div>
