@@ -22,7 +22,9 @@ const getStatusClassAndText = (status: string) => {
     case 'SHIPPED':
       return { className: styles.statusShipped, text: 'Đang vận chuyển' };
     case 'DELIVERED':
-      return { className: styles.statusDelivered, text: 'Hoàn thành' };
+      return { className: styles.statusDelivered, text: 'Đã giao hàng' };
+    case 'COMPLETED':
+      return { className: styles.statusCompleted, text: 'Hoàn thành' };
     case 'RETURNED':
       return { className: styles.statusReturned, text: 'Hoàn hàng' };
     case 'CANCELLED':
@@ -43,6 +45,7 @@ export default function OrderHistoryPage() {
   // QR Modal State for paying unpaid banking orders
   const [sepayData, setSepayData] = useState<PaymentInitResponse | null>(null);
   const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  const [completingOrderId, setCompletingOrderId] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -58,6 +61,23 @@ export default function OrderHistoryPage() {
       ...prev,
       [orderId]: !prev[orderId],
     }));
+  };
+
+  const handleConfirmReceived = async (orderId: string) => {
+    if (!window.confirm('Bạn xác nhận đã nhận được kiện hàng này đầy đủ và muốn hoàn thành đơn hàng? Số tiền đơn hàng sẽ được tích lũy vào tài khoản thành viên của bạn.')) {
+      return;
+    }
+    try {
+      setCompletingOrderId(orderId);
+      await orderService.completeOrder(orderId);
+      alert('Cảm ơn bạn! Đơn hàng đã hoàn thành và số tiền đã được tích lũy vào tài khoản thành viên của bạn.');
+      await fetchOrders();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Xác nhận nhận hàng thất bại';
+      alert(msg);
+    } finally {
+      setCompletingOrderId(null);
+    }
   };
 
   // Authenticate user check
@@ -181,7 +201,13 @@ export default function OrderHistoryPage() {
           className={`${styles.filterBtn} ${activeTab === 'DELIVERED' ? styles.filterBtnActive : ''}`}
           onClick={() => setActiveTab('DELIVERED')}
         >
-          Hoàn thành ({orders.filter((o) => o.status === 'DELIVERED').length})
+          Đã giao hàng ({orders.filter((o) => o.status === 'DELIVERED').length})
+        </button>
+        <button
+          className={`${styles.filterBtn} ${activeTab === 'COMPLETED' ? styles.filterBtnActive : ''}`}
+          onClick={() => setActiveTab('COMPLETED')}
+        >
+          Hoàn thành ({orders.filter((o) => o.status === 'COMPLETED').length})
         </button>
         <button
           className={`${styles.filterBtn} ${activeTab === 'RETURNED' ? styles.filterBtnActive : ''}`}
@@ -412,6 +438,32 @@ export default function OrderHistoryPage() {
                       >
                         {payingOrderId === order.id ? 'Đang xử lý...' : '⚡ Thanh toán ngay'}
                       </button>
+                    )}
+                    {order.status === 'DELIVERED' && (
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmReceived(order.id)}
+                        disabled={completingOrderId === order.id}
+                        className={styles.btnCompleteOrder}
+                        title="Xác nhận đã nhận hàng và tích lũy tiền vào tài khoản"
+                      >
+                        {completingOrderId === order.id ? 'Đang hoàn tất...' : '✓ Đã nhận được hàng'}
+                      </button>
+                    )}
+                    {order.status === 'COMPLETED' && (
+                      <span
+                        style={{
+                          marginTop: '6px',
+                          fontSize: '12px',
+                          color: '#059669',
+                          fontWeight: 700,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        ✓ Đơn hàng hoàn tất
+                      </span>
                     )}
                   </div>
                 </div>

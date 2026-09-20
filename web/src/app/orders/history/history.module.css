@@ -167,9 +167,38 @@
 }
 
 .statusDelivered {
+  background: #e6f7ff;
+  color: #0284c7;
+  border: 1px solid #bae0ff;
+}
+
+.statusCompleted {
   background: #f6ffed;
   color: #389e0d;
   border: 1px solid #b7eb8f;
+}
+
+.btnCompleteOrder {
+  margin-top: 8px;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btnCompleteOrder:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
 }
 
 .statusCancelled {

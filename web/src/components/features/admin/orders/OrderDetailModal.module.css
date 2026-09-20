@@ -55,7 +55,8 @@
 .status_PENDING { background: #fef3c7; color: #b45309; }
 .status_CONFIRMED { background: #e0f2fe; color: #0369a1; }
 .status_SHIPPED { background: #e0e7ff; color: #4338ca; }
-.status_DELIVERED { background: #dcfce7; color: #15803d; }
+.status_DELIVERED { background: #e0f2fe; color: #0284c7; }
+.status_COMPLETED { background: #dcfce7; color: #15803d; }
 .status_CANCELLED { background: #fee2e2; color: #b91c1c; }
 .status_RETURNED { background: #ffedd5; color: #c2410c; }
 

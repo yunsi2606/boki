@@ -705,6 +705,11 @@
 }
 
 .status_DELIVERED {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.status_COMPLETED {
   background: #dcfce7;
   color: #15803d;
 }

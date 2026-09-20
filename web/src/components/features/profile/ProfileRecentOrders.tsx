@@ -37,6 +37,8 @@ export default function ProfileRecentOrders({ orders }: ProfileRecentOrdersProps
         return 'Đang vận chuyển';
       case 'DELIVERED':
         return 'Đã giao hàng';
+      case 'COMPLETED':
+        return 'Hoàn thành';
       case 'RETURNED':
         return 'Hoàn hàng';
       case 'CANCELLED':

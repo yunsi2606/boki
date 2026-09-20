@@ -59,8 +59,14 @@ export function OrderDetailModal({
   };
 
   const handleDeliverOrder = async () => {
-    if (confirm('Xác nhận đơn hàng đã được giao thành công tới khách hàng?')) {
+    if (confirm('Xác nhận đơn hàng đã được giao tới khách hàng?')) {
       await onUpdateStatus(order.id, 'DELIVERED');
+    }
+  };
+
+  const handleCompleteOrder = async () => {
+    if (confirm('Xác nhận hoàn thành đơn hàng? Tiền chi tiêu sẽ được tích lũy vào tài khoản khách hàng.')) {
+      await onUpdateStatus(order.id, 'COMPLETED');
     }
   };
 
@@ -150,6 +156,7 @@ export function OrderDetailModal({
               {order.status === 'CONFIRMED' && 'Đã xác nhận'}
               {order.status === 'SHIPPED' && 'Đang vận chuyển'}
               {order.status === 'DELIVERED' && 'Đã giao hàng'}
+              {order.status === 'COMPLETED' && 'Hoàn thành'}
               {order.status === 'CANCELLED' && 'Đã hủy'}
               {order.status === 'RETURNED' && 'Hoàn hàng / Thất bại'}
             </span>
@@ -571,11 +578,11 @@ export function OrderDetailModal({
                 <button
                   type="button"
                   className={styles.primaryActionBtn}
-                  style={{ background: '#16a34a' }}
+                  style={{ background: '#0284c7' }}
                   onClick={handleDeliverOrder}
                 >
                   <span>✓</span>
-                  <span>Giao Thành Công</span>
+                  <span>Đã Giao Hàng</span>
                 </button>
                 <button
                   type="button"
@@ -589,8 +596,21 @@ export function OrderDetailModal({
               </>
             )}
 
+            {/* DELIVERED -> Complete Order Button */}
+            {order.status === 'DELIVERED' && (
+              <button
+                type="button"
+                className={styles.primaryActionBtn}
+                style={{ background: '#059669' }}
+                onClick={handleCompleteOrder}
+              >
+                <span>✓</span>
+                <span>Hoàn Tất Đơn Hàng</span>
+              </button>
+            )}
+
             {/* Cancel Order Button */}
-            {order.status !== 'DELIVERED' && order.status !== 'CANCELLED' && order.status !== 'RETURNED' && (
+            {order.status !== 'DELIVERED' && order.status !== 'COMPLETED' && order.status !== 'CANCELLED' && order.status !== 'RETURNED' && (
               <button type="button" className={styles.cancelActionBtn} onClick={() => onOpenCancel(order)}>
                 <span>✕ Hủy Đơn</span>
               </button>

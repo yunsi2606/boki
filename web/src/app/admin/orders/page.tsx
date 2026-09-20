@@ -90,16 +90,32 @@ export default function AdminOrdersPage() {
     }
   };
 
-  // Contextual Action: Hoàn thành giao (SHIPPED -> DELIVERED)
+  // Contextual Action: Xác nhận đã giao (SHIPPED -> DELIVERED)
   const handleDeliverOrder = async (orderId: string) => {
     try {
       setActionLoadingId(orderId);
       const updated = await adminService.updateOrderStatus(orderId, 'DELIVERED');
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, ...updated } : o)));
-      showNotice('success', `Đã đánh dấu giao thành công đơn #${orderId.slice(0, 8)}!`);
+      showNotice('success', `Đã cập nhật trạng thái đã giao cho đơn #${orderId.slice(0, 8)}!`);
       activityTracker.trackAdminAction('DELIVER_ORDER', `Đơn #${orderId.slice(0, 8)}`, { orderId, newStatus: 'DELIVERED' });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Cập nhật trạng thái thất bại';
+      showNotice('error', errorMsg);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  // Contextual Action: Hoàn tất đơn hàng (DELIVERED -> COMPLETED)
+  const handleCompleteOrder = async (orderId: string) => {
+    try {
+      setActionLoadingId(orderId);
+      const updated = await adminService.updateOrderStatus(orderId, 'COMPLETED');
+      setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, ...updated } : o)));
+      showNotice('success', `Đã hoàn thành đơn #${orderId.slice(0, 8)}! Tiền chi tiêu đã tích lũy vào tài khoản khách.`);
+      activityTracker.trackAdminAction('COMPLETE_ORDER', `Đơn #${orderId.slice(0, 8)}`, { orderId, newStatus: 'COMPLETED' });
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Hoàn tất đơn thất bại';
       showNotice('error', errorMsg);
     } finally {
       setActionLoadingId(null);
@@ -178,6 +194,7 @@ export default function AdminOrdersPage() {
       CONFIRMED: orders.filter((o) => o.status === 'CONFIRMED').length,
       SHIPPED: orders.filter((o) => o.status === 'SHIPPED').length,
       DELIVERED: orders.filter((o) => o.status === 'DELIVERED').length,
+      COMPLETED: orders.filter((o) => o.status === 'COMPLETED').length,
       RETURNED: orders.filter((o) => o.status === 'RETURNED').length,
       CANCELLED: orders.filter((o) => o.status === 'CANCELLED').length,
     };
@@ -208,6 +225,8 @@ export default function AdminOrdersPage() {
       case 'SHIPPED':
         return 'Đang giao';
       case 'DELIVERED':
+        return 'Đã giao';
+      case 'COMPLETED':
         return 'Hoàn thành';
       case 'RETURNED':
         return 'Hoàn hàng';
@@ -343,7 +362,13 @@ export default function AdminOrdersPage() {
           className={`${styles.tabBtn} ${activeTab === 'DELIVERED' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('DELIVERED')}
         >
-          Hoàn thành ({counts.DELIVERED})
+          Đã giao ({counts.DELIVERED})
+        </button>
+        <button
+          className={`${styles.tabBtn} ${activeTab === 'COMPLETED' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('COMPLETED')}
+        >
+          Hoàn thành ({counts.COMPLETED})
         </button>
         <button
           className={`${styles.tabBtn} ${activeTab === 'RETURNED' ? styles.tabActive : ''}`}
@@ -538,9 +563,9 @@ export default function AdminOrdersPage() {
                                 className={`${styles.btnAction} ${styles.btnSuccessAction}`}
                                 onClick={() => handleDeliverOrder(ord.id)}
                                 disabled={isActionLoading}
-                                title="Xác nhận khách đã nhận hàng và hoàn thành đơn"
+                                title="Xác nhận bưu kiện đã giao đến khách"
                               >
-                                {isActionLoading ? '...' : '✓ Hoàn thành'}
+                                {isActionLoading ? '...' : '✓ Đã giao'}
                               </button>
                               <button
                                 className={`${styles.btnAction} ${styles.btnReturnAction}`}
@@ -561,15 +586,38 @@ export default function AdminOrdersPage() {
                             </>
                           )}
 
-                          {/* DELIVERED: In vận đơn */}
+                          {/* DELIVERED: Hoàn thành đơn, In vận đơn */}
                           {ord.status === 'DELIVERED' && (
+                            <>
+                              <button
+                                className={`${styles.btnAction} ${styles.btnPrimaryAction}`}
+                                style={{ background: '#059669', borderColor: '#059669', color: '#ffffff' }}
+                                onClick={() => handleCompleteOrder(ord.id)}
+                                disabled={isActionLoading}
+                                title="Hoàn tất đơn và tích lũy tiền vào tài khoản khách hàng"
+                              >
+                                {isActionLoading ? '...' : '✓ Hoàn thành'}
+                              </button>
+                              <button
+                                className={`${styles.btnAction} ${styles.btnPrintAction}`}
+                                onClick={() => setPrintOrder(ord)}
+                                disabled={isActionLoading}
+                                title="In phiếu giao hàng"
+                              >
+                                🖨 In
+                              </button>
+                            </>
+                          )}
+
+                          {/* COMPLETED: In vận đơn */}
+                          {ord.status === 'COMPLETED' && (
                             <button
                               className={`${styles.btnAction} ${styles.btnPrintAction}`}
                               onClick={() => setPrintOrder(ord)}
                               disabled={isActionLoading}
                               title="In phiếu giao hàng"
                             >
-                              In
+                              🖨 In
                             </button>
                           )}
 
