@@ -93,13 +93,14 @@ export default function VariantManagerModal({
       }
     }
 
-    // If hasVariantImages is false, clear all image URLs so all variants rely strictly on text names and parent cover
     const finalVariants = hasVariantImages
       ? variants
       : variants.map((v) => ({ ...v, imageUrl: '' }));
     onSaveVariants(finalVariants);
     onClose();
   };
+
+  const totalStock = variants.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0);
 
   return (
     <div className={styles.backdrop}>
@@ -112,6 +113,28 @@ export default function VariantManagerModal({
         </div>
 
         <div className={styles.content}>
+          {/* Real-time Synchronized Inventory Banner */}
+          <div className={styles.stockSummaryBanner}>
+            <div className={styles.stockSummaryLeft}>
+              <div className={styles.stockSummaryIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+              </div>
+              <div>
+                <div className={styles.stockSummaryTitle}>Tổng tồn kho của sách</div>
+                <div className={styles.stockSummarySubtitle}>
+                  Tự động đồng bộ và cộng dồn từ {variants.length} phân loại hàng
+                </div>
+              </div>
+            </div>
+            <div className={styles.stockSummaryValue}>
+              {totalStock} cuốn
+            </div>
+          </div>
+
           <div className={styles.imageModeToggle}>
             <label className={styles.checkboxGroup}>
               <input
@@ -126,7 +149,7 @@ export default function VariantManagerModal({
                 }}
               />
               <span>
-                🖼️ Tải hình ảnh riêng cho tất cả phân loại (Nếu tắt, tất cả phân loại sẽ dùng chung ảnh bìa sách chính)
+                Tải hình ảnh riêng cho từng phân loại (Nếu tắt, các phân loại sẽ dùng ảnh bìa chính của sách)
               </span>
             </label>
           </div>

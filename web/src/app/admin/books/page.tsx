@@ -96,12 +96,17 @@ export default function AdminBooksPage() {
   const handleOpenEditModal = (book: Book) => {
     setEditingBook(book);
     setActiveTab('required');
+    const hasVariants = Boolean(book.variants && book.variants.length > 0);
+    const computedStock = hasVariants
+      ? book.variants!.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
+      : (book.stockQuantity || 0);
+
     setFormData({
       title: book.title || '',
       author: book.author || '',
       categoryId: book.categoryId || 1,
       price: book.price || 0,
-      stockQuantity: book.stockQuantity || 0,
+      stockQuantity: computedStock,
       coverUrl: book.imageUrls?.[0] || '',
       condition: book.condition || 'NEW',
       status: book.status || 'ACTIVE',
@@ -130,19 +135,33 @@ export default function AdminBooksPage() {
 
   const handleSaveVariants = async (updatedVariants: BookVariant[]) => {
     if (!selectedBookForVariants) return;
+    const totalVariantStock = updatedVariants.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0);
     try {
       const saved = await bookService.saveVariants(selectedBookForVariants.id, updatedVariants);
+      const finalStock = saved && saved.length > 0
+        ? saved.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
+        : totalVariantStock;
       setBooks((prev) =>
         prev.map((b) =>
-          b.id === selectedBookForVariants.id ? { ...b, variants: saved } : b
+          b.id === selectedBookForVariants.id
+            ? { ...b, variants: saved, stockQuantity: finalStock }
+            : b
         )
       );
-      alert('Đã lưu danh sách phân loại hàng thành công vào hệ thống!');
+      setSelectedBookForVariants((prev) =>
+        prev ? { ...prev, variants: saved, stockQuantity: finalStock } : null
+      );
+      alert('Đã lưu danh sách phân loại hàng và đồng bộ tồn kho thành công!');
     } catch {
       setBooks((prev) =>
         prev.map((b) =>
-          b.id === selectedBookForVariants.id ? { ...b, variants: updatedVariants } : b
+          b.id === selectedBookForVariants.id
+            ? { ...b, variants: updatedVariants, stockQuantity: totalVariantStock }
+            : b
         )
+      );
+      setSelectedBookForVariants((prev) =>
+        prev ? { ...prev, variants: updatedVariants, stockQuantity: totalVariantStock } : null
       );
       alert('Đã lưu danh sách phân loại hàng thành công!');
     }
@@ -155,13 +174,18 @@ export default function AdminBooksPage() {
       return;
     }
 
+    const hasVariants = Boolean(editingBook?.variants && editingBook.variants.length > 0);
+    const resolvedStock = hasVariants
+      ? editingBook!.variants!.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
+      : Number(formData.stockQuantity);
+
     const payload = {
       title: formData.title,
       author: formData.author,
       categoryId: Number(formData.categoryId),
       price: Number(formData.price),
       condition: formData.condition,
-      stockQuantity: Number(formData.stockQuantity),
+      stockQuantity: resolvedStock,
       imageUrls: [formData.coverUrl || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300'],
       isPreOrder: formData.isPreOrder,
       preOrderDays: formData.isPreOrder
@@ -188,7 +212,17 @@ export default function AdminBooksPage() {
           ...payload,
           updatedAt: new Date().toISOString(),
         }));
-        setBooks((prev) => prev.map((b) => (b.id === editingBook.id ? (updated as Book) : b)));
+        setBooks((prev) =>
+          prev.map((b) =>
+            b.id === editingBook.id
+              ? {
+                  ...(updated as Book),
+                  variants: editingBook.variants,
+                  stockQuantity: resolvedStock,
+                }
+              : b
+          )
+        );
       } else {
         // Create new via API or local creation
         const created = await bookService.createBook(payload).catch(() => ({
@@ -278,70 +312,85 @@ export default function AdminBooksPage() {
               </tr>
             </thead>
             <tbody>
-            {filteredBooks.map((book) => {
-              const variantCount = book.variants?.length || 0;
-              return (
-                <tr key={book.id}>
-                  <td>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={book.imageUrls?.[0] || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=100'}
-                      alt={book.title}
-                      className={styles.bookThumb}
-                    />
-                  </td>
-                  <td className={styles.titleCell}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                      <strong>{book.title}</strong>
-                      {book.isPreOrder && (
-                        <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} size="sm" />
-                      )}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>Tác giả: {book.author}</div>
-                    {book.isbn && <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>ISBN: {book.isbn}</div>}
-                  </td>
-                  <td style={{ fontSize: '0.8rem', color: '#475569' }}>
-                    <div><strong>{book.publisher || '---'}</strong></div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Phát hành: {book.supplier || '---'}</div>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      onClick={() => handleOpenVariantModal(book)}
-                      className={styles.editBtn}
-                      style={{ background: '#f0f9ff', color: '#0284c7', borderColor: '#bae6fd' }}
-                    >
-                      ⚙️ {variantCount > 0 ? `${variantCount} phân loại` : '+ Thêm phân loại'}
-                    </button>
-                  </td>
-                  <td className={styles.priceCell}>{formatPrice(book.price)}</td>
-                  <td>
-                    <span className={book.stockQuantity === 0 ? styles.stockEmpty : styles.stockNormal}>
-                      {book.stockQuantity === 0 ? 'Hết hàng (0)' : `${book.stockQuantity} cuốn`}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={book.status === 'ACTIVE' ? styles.statusActive : styles.statusDraft}>
-                      {book.status === 'ACTIVE' ? 'Đang bán' : 'Tạm ẩn'}
-                    </span>
-                  </td>
-                  <td>
-                    <div className={styles.actionBtns}>
-                      <button onClick={() => handleOpenEditModal(book)} className={styles.editBtn}>
-                        Sửa
+              {filteredBooks.map((book) => {
+                const variantCount = book.variants?.length || 0;
+                return (
+                  <tr key={book.id}>
+                    <td>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={book.imageUrls?.[0] || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=100'}
+                        alt={book.title}
+                        className={styles.bookThumb}
+                      />
+                    </td>
+                    <td className={styles.titleCell}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <strong>{book.title}</strong>
+                        {book.isPreOrder && (
+                          <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} size="sm" />
+                        )}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>Tác giả: {book.author}</div>
+                      {book.isbn && <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>ISBN: {book.isbn}</div>}
+                    </td>
+                    <td style={{ fontSize: '0.8rem', color: '#475569' }}>
+                      <div><strong>{book.publisher || '---'}</strong></div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Phát hành: {book.supplier || '---'}</div>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenVariantModal(book)}
+                        className={styles.editBtn}
+                        style={{ background: '#f0f9ff', color: '#0284c7', borderColor: '#bae6fd' }}
+                      >
+                        {variantCount > 0 ? `${variantCount} phân loại` : '+ Thêm phân loại'}
                       </button>
-                      <button onClick={() => handleDeleteBook(book.id)} className={styles.deleteBtn}>
-                        Xóa
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    )}
+                    </td>
+                    <td className={styles.priceCell}>{formatPrice(book.price)}</td>
+                    <td>
+                      {(() => {
+                        const totalStock = (book.variants && book.variants.length > 0)
+                          ? book.variants.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
+                          : (book.stockQuantity || 0);
+
+                        return (
+                          <div>
+                            <span className={totalStock === 0 ? styles.stockEmpty : styles.stockNormal}>
+                              {totalStock === 0 ? 'Hết hàng (0)' : `${totalStock} cuốn`}
+                            </span>
+                            {variantCount > 0 && (
+                              <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '3px' }}>
+                                Đồng bộ từ {variantCount} phân loại
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </td>
+                    <td>
+                      <span className={book.status === 'ACTIVE' ? styles.statusActive : styles.statusDraft}>
+                        {book.status === 'ACTIVE' ? 'Đang bán' : 'Tạm ẩn'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.actionBtns}>
+                        <button onClick={() => handleOpenEditModal(book)} className={styles.editBtn}>
+                          Sửa
+                        </button>
+                        <button onClick={() => handleDeleteBook(book.id)} className={styles.deleteBtn}>
+                          Xóa
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Add / Edit Comprehensive Book Modal */}
       {isModalOpen && (
@@ -370,7 +419,7 @@ export default function AdminBooksPage() {
                   color: activeTab === 'required' ? '#ee4d2d' : '#64748b',
                 }}
               >
-                📌 1. Thông Tin Bắt Buộc (*)
+                1. Thông Tin Bắt Buộc (*)
               </button>
               <button
                 type="button"
@@ -381,7 +430,7 @@ export default function AdminBooksPage() {
                   color: activeTab === 'optional' ? '#2563eb' : '#64748b',
                 }}
               >
-                📝 2. Chi Tiết Xuất Bản
+                2. Chi Tiết Xuất Bản
               </button>
             </div>
 
@@ -454,13 +503,59 @@ export default function AdminBooksPage() {
 
                       <div className={styles.formGroup}>
                         <label>Số Lượng Tồn Kho <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input
-                          type="number"
-                          required
-                          value={formData.stockQuantity}
-                          onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) || 0 })}
-                          className={styles.formInput}
-                        />
+                        {editingBook && editingBook.variants && editingBook.variants.length > 0 ? (
+                          <div>
+                            <input
+                              type="number"
+                              disabled
+                              value={editingBook.variants.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)}
+                              className={styles.formInput}
+                              style={{ background: '#f8fafc', cursor: 'not-allowed', color: '#1e293b', fontWeight: 700 }}
+                            />
+                            <div style={{
+                              marginTop: '6px',
+                              fontSize: '0.75rem',
+                              color: '#0369a1',
+                              background: '#f0f9ff',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              border: '1px solid #bae6fd',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: '8px',
+                            }}>
+                              <span>Đồng bộ tự động từ {editingBook.variants.length} phân loại</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setIsModalOpen(false);
+                                  handleOpenVariantModal(editingBook);
+                                }}
+                                style={{
+                                  background: '#0284c7',
+                                  color: '#ffffff',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  padding: '4px 10px',
+                                  fontSize: '0.72rem',
+                                  cursor: 'pointer',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Quản lý phân loại
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <input
+                            type="number"
+                            required
+                            value={formData.stockQuantity}
+                            onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) || 0 })}
+                            className={styles.formInput}
+                          />
+                        )}
                       </div>
                     </div>
 

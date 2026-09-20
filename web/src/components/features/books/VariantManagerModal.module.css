@@ -68,6 +68,57 @@
   gap: 20px;
 }
 
+.stockSummaryBanner {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stockSummaryLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stockSummaryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #d1fae5;
+  color: #059669;
+}
+
+.stockSummaryTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.stockSummarySubtitle {
+  font-size: 0.75rem;
+  color: #047857;
+  margin-top: 2px;
+}
+
+.stockSummaryValue {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #059669;
+  background: #ffffff;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  border: 1px solid #6ee7b7;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
 .imageModeToggle {
   background: #f0f9ff;
   border: 1px solid #bae6fd;
