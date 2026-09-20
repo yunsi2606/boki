@@ -294,6 +294,12 @@ public class Order {
         this.carrierStatus = "DELIVERED";
         this.updatedAt = Instant.now();
 
+        // Auto-mark payment as PAID if not already paid (e.g. COD cash collected upon delivery)
+        if (this.paymentStatus != PaymentStatus.PAID) {
+            this.paymentStatus = PaymentStatus.PAID;
+            this.paidAt = Instant.now();
+        }
+
         this.timelines.add(OrderTimeline.create(
                 this.id,
                 OrderStatus.DELIVERED.name(),
