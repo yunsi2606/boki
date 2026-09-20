@@ -269,7 +269,7 @@ export function OrderDetailModal({
                             }}
                             title="Mở website của ĐVVC để tra cứu lộ trình bưu kiện trực tiếp"
                           >
-                            <span>🔎</span> Tra cứu {order.carrierName} ↗
+                            Tra cứu {order.carrierName} ↗
                           </a>
                         )}
                         {(name.includes('ghn') || name.includes('giao hàng nhanh') || name.includes('giao hang nhanh')) && (
@@ -281,7 +281,7 @@ export function OrderDetailModal({
                               disabled={updatingCod}
                               title="Cập nhật số tiền COD trực tiếp trên cổng GHN"
                             >
-                              💰 Sửa COD (GHN)
+                              Sửa COD
                             </button>
                             <button
                               type="button"
@@ -290,7 +290,7 @@ export function OrderDetailModal({
                               disabled={updatingInfo}
                               title="Cập nhật địa chỉ và ghi chú giao hàng trên cổng GHN"
                             >
-                              ✏️ Sửa địa chỉ (GHN)
+                              Sửa địa chỉ
                             </button>
                           </>
                         )}
@@ -300,7 +300,7 @@ export function OrderDetailModal({
                           onClick={() => onOpenPrint(order)}
                           title="In phiếu vận đơn giao hàng"
                         >
-                          🖨️ In vận đơn
+                          In vận đơn
                         </button>
                       </>
                     );

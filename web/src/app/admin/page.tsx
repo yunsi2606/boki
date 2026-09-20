@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
       case 'SHIPPED':
         return <span className={`${styles.statusBadge} ${styles.badgeShipped}`}>Đang giao</span>;
       case 'DELIVERED':
-        return <span className={`${styles.statusBadge} ${styles.badgeDelivered}`}>Đã giao</span>;
+        return <span className={`${styles.statusBadge} ${styles.badgeDelivered}`}>Hoàn thành</span>;
       case 'CANCELLED':
         return <span className={`${styles.statusBadge} ${styles.badgeCancelled}`}>Đã hủy</span>;
     }

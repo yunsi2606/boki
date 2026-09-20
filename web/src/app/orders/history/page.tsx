@@ -22,7 +22,7 @@ const getStatusClassAndText = (status: string) => {
     case 'SHIPPED':
       return { className: styles.statusShipped, text: 'Đang vận chuyển' };
     case 'DELIVERED':
-      return { className: styles.statusDelivered, text: 'Đã giao hàng' };
+      return { className: styles.statusDelivered, text: 'Hoàn thành' };
     case 'RETURNED':
       return { className: styles.statusReturned, text: 'Hoàn hàng' };
     case 'CANCELLED':
@@ -181,7 +181,7 @@ export default function OrderHistoryPage() {
           className={`${styles.filterBtn} ${activeTab === 'DELIVERED' ? styles.filterBtnActive : ''}`}
           onClick={() => setActiveTab('DELIVERED')}
         >
-          Đã giao hàng ({orders.filter((o) => o.status === 'DELIVERED').length})
+          Hoàn thành ({orders.filter((o) => o.status === 'DELIVERED').length})
         </button>
         <button
           className={`${styles.filterBtn} ${activeTab === 'RETURNED' ? styles.filterBtnActive : ''}`}

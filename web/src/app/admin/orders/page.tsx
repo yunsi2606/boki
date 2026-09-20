@@ -208,7 +208,7 @@ export default function AdminOrdersPage() {
       case 'SHIPPED':
         return 'Đang giao';
       case 'DELIVERED':
-        return 'Đã giao';
+        return 'Hoàn thành';
       case 'RETURNED':
         return 'Hoàn hàng';
       case 'CANCELLED':
@@ -343,7 +343,7 @@ export default function AdminOrdersPage() {
           className={`${styles.tabBtn} ${activeTab === 'DELIVERED' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('DELIVERED')}
         >
-          Đã giao ({counts.DELIVERED})
+          Hoàn thành ({counts.DELIVERED})
         </button>
         <button
           className={`${styles.tabBtn} ${activeTab === 'RETURNED' ? styles.tabActive : ''}`}
@@ -538,9 +538,9 @@ export default function AdminOrdersPage() {
                                 className={`${styles.btnAction} ${styles.btnSuccessAction}`}
                                 onClick={() => handleDeliverOrder(ord.id)}
                                 disabled={isActionLoading}
-                                title="Xác nhận khách đã nhận hàng"
+                                title="Xác nhận khách đã nhận hàng và hoàn thành đơn"
                               >
-                                {isActionLoading ? '...' : '✓ Đã giao'}
+                                {isActionLoading ? '...' : '✓ Hoàn thành'}
                               </button>
                               <button
                                 className={`${styles.btnAction} ${styles.btnReturnAction}`}
