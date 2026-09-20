@@ -34,6 +34,10 @@ public class BookRepositoryAdapter implements BookRepository {
                 BookJpaEntity existing = existingOpt.get();
                 if ((entity.getVariants() == null || entity.getVariants().isEmpty()) && existing.getVariants() != null && !existing.getVariants().isEmpty()) {
                     entity.setVariants(existing.getVariants());
+                    int totalVariantStock = existing.getVariants().stream()
+                            .mapToInt(com.boki.infrastructure.persistence.entity.BookVariantJpaEntity::getStockQuantity)
+                            .sum();
+                    entity.setStockQuantity(totalVariantStock);
                 }
                 if ((entity.getImages() == null || entity.getImages().isEmpty()) && existing.getImages() != null && !existing.getImages().isEmpty()) {
                     entity.setImages(existing.getImages());

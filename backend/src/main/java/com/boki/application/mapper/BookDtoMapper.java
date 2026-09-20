@@ -53,7 +53,9 @@ public class BookDtoMapper {
                             v.getUpdatedAt()
                     ))
                     .toList();
-        }
+        int effectiveStock = (variants != null && !variants.isEmpty())
+                ? variants.stream().mapToInt(BookVariantResponse::stockQuantity).sum()
+                : book.getStockQuantity();
 
         return new BookResponse(
                 book.getId().value(),
@@ -79,7 +81,7 @@ public class BookDtoMapper {
                 book.getPrice().currency(),
                 book.getCondition().name(),
                 book.getStatus().name(),
-                book.getStockQuantity(),
+                effectiveStock,
                 book.isPreOrder(),
                 book.getPreOrderDays(),
                 book.getViewsCount(),

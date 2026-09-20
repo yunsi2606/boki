@@ -27,15 +27,18 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final BookDtoMapper bookDtoMapper;
+    private final com.boki.infrastructure.persistence.repository.BookVariantJpaRepository variantRepository;
 
     public BookApplicationService(
             BookRepository bookRepository,
             UserRepository userRepository,
-            BookDtoMapper bookDtoMapper
+            BookDtoMapper bookDtoMapper,
+            com.boki.infrastructure.persistence.repository.BookVariantJpaRepository variantRepository
     ) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.bookDtoMapper = bookDtoMapper;
+        this.variantRepository = variantRepository;
     }
 
     @Override
@@ -107,7 +110,14 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         if (request.condition() != null) {
             book.updateCondition(BookCondition.valueOf(request.condition().toUpperCase()));
         }
-        if (request.stockQuantity() != null) {
+        List<com.boki.infrastructure.persistence.entity.BookVariantJpaEntity> variants =
+                variantRepository.findByBookId(bookId);
+        if (variants != null && !variants.isEmpty()) {
+            int totalVariantStock = variants.stream()
+                    .mapToInt(com.boki.infrastructure.persistence.entity.BookVariantJpaEntity::getStockQuantity)
+                    .sum();
+            book.updateStockQuantity(totalVariantStock);
+        } else if (request.stockQuantity() != null) {
             book.updateStockQuantity(request.stockQuantity());
         }
         if (request.imageUrls() != null) {
