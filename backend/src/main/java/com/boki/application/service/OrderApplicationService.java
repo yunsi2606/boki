@@ -162,10 +162,6 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
             serverPricingService.recordVoucherUsage(pricing.voucherCode());
         }
 
-        if (!isGuest) {
-            memberTierService.recordCompletedOrderSpend(buyerUserId.value(), pricing.finalTotal());
-        }
-
         // --- FRAUD DETECTION & AUTOPILOT ENGINE ---
         FraudDetectionService.RiskAssessmentResult risk = fraudDetectionService.evaluateOrderRisk(order);
         order.applyRiskAssessment(risk.riskScore(), risk.riskLevel(), risk.riskReasonsJson(), risk.isFlagged());
@@ -234,6 +230,31 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public OrderResponse confirmOrderReceived(UUID orderId, String buyerEmail) {
+        User buyer = userRepository.findByEmail(Email.of(buyerEmail))
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", buyerEmail));
+
+        Order order = orderRepository.findById(OrderId.of(orderId))
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getBuyerId().equals(buyer.getId())) {
+            throw new BusinessRuleException("Bạn không có quyền xác nhận đơn hàng này.");
+        }
+
+        String actor = (buyer.getDisplayName() != null && !buyer.getDisplayName().isBlank())
+                ? buyer.getDisplayName() : buyerEmail;
+
+        order.complete(actor);
+        if (!Boolean.TRUE.equals(order.getIsGuest()) && order.getBuyerId() != null) {
+            memberTierService.recordCompletedOrderSpend(order.getBuyerId().value(), order.getTotalAmount());
+        }
+
+        Order saved = orderRepository.save(order);
+        return orderDtoMapper.toResponse(saved);
+    }
+
     // =========================================================================
     // Admin Order Management & Strict State Machine Operations
     // =========================================================================
@@ -260,6 +281,12 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
         switch (newStatus) {
             case CONFIRMED -> order.confirm(actor != null ? actor : "Admin");
             case DELIVERED -> order.deliver(actor != null ? actor : "Admin");
+            case COMPLETED -> {
+                order.complete(actor != null ? actor : "Admin");
+                if (!Boolean.TRUE.equals(order.getIsGuest()) && order.getBuyerId() != null) {
+                    memberTierService.recordCompletedOrderSpend(order.getBuyerId().value(), order.getTotalAmount());
+                }
+            }
             case RETURNED -> order.markReturned(reason != null ? reason : "Giao hàng thất bại / Hoàn trả", actor != null ? actor : "Admin");
             case SHIPPED -> {
                 // If transitioning to SHIPPED directly, check if carrier info is present
@@ -335,8 +362,8 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
         Order order = orderRepository.findById(OrderId.of(orderId))
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
-        if (order.getStatus() == OrderStatus.DELIVERED) {
-            throw new BusinessRuleException("Không thể hủy đơn hàng đã giao thành công (DELIVERED).");
+        if (order.getStatus() == OrderStatus.DELIVERED || order.getStatus() == OrderStatus.COMPLETED) {
+            throw new BusinessRuleException("Không thể hủy đơn hàng đã giao thành công hoặc đã hoàn thành.");
         }
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new BusinessRuleException("Đơn hàng này đã được hủy trước đó.");

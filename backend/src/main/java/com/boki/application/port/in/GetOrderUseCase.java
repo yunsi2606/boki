@@ -9,4 +9,6 @@ public interface GetOrderUseCase {
     OrderResponse getOrder(UUID orderId, String email);
 
     List<OrderResponse> getBuyerOrders(String buyerEmail);
+    
+    OrderResponse confirmOrderReceived(UUID orderId, String buyerEmail);
 }

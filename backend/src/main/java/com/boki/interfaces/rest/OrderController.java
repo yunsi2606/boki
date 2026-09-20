@@ -70,4 +70,16 @@ public class OrderController {
         List<OrderResponse> response = getOrderUseCase.getBuyerOrders(principal.email());
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{id:[0-9a-fA-F\\-]{36}}/complete")
+    public ResponseEntity<OrderResponse> completeOrder(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal AuthenticatedUser principal
+    ) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        OrderResponse response = getOrderUseCase.confirmOrderReceived(id, principal.email());
+        return ResponseEntity.ok(response);
+    }
 }

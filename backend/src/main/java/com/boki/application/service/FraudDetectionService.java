@@ -78,7 +78,8 @@ public class FraudDetectionService {
         } else {
             // Check member with 0 completed orders
             try {
-                long completed = orderJpaRepository.countByBuyerIdAndStatus(order.getBuyerId().value(), OrderJpaEntity.OrderStatusJpa.DELIVERED);
+                long completed = orderJpaRepository.countByBuyerIdAndStatus(order.getBuyerId().value(), OrderJpaEntity.OrderStatusJpa.COMPLETED)
+                        + orderJpaRepository.countByBuyerIdAndStatus(order.getBuyerId().value(), OrderJpaEntity.OrderStatusJpa.DELIVERED);
                 if (completed == 0 && total.compareTo(new BigDecimal("1200000")) >= 0) {
                     score += 25;
                     reasons.add(String.format("Tài khoản thành viên mới chưa có lịch sử mua thành công đặt đơn giá trị lớn (%s)", VND_FORMAT.format(total)));

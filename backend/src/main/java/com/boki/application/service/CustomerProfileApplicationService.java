@@ -64,12 +64,13 @@ public class CustomerProfileApplicationService {
 
         long totalOrders = orders.size();
         long completedOrders = orders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.DELIVERED)
+                .filter(o -> o.getStatus() == OrderStatus.COMPLETED)
                 .count();
         long activeOrders = orders.stream()
                 .filter(o -> o.getStatus() == OrderStatus.PENDING ||
                              o.getStatus() == OrderStatus.CONFIRMED ||
-                             o.getStatus() == OrderStatus.SHIPPED)
+                             o.getStatus() == OrderStatus.SHIPPED ||
+                             o.getStatus() == OrderStatus.DELIVERED)
                 .count();
         long cancelledOrders = orders.stream()
                 .filter(o -> o.getStatus() == OrderStatus.CANCELLED ||
