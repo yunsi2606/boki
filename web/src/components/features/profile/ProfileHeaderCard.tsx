@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { User } from '@/types';
-import { ShieldCheckIcon, CrownIcon } from '@/components/ui/LineIcons';
+import { ShieldCheckIcon, CameraIcon } from '@/components/ui/LineIcons';
+import { mediaService } from '@/services/mediaService';
+import { customerProfileService } from '@/services/customerProfileService';
 import ProfileEditModal from './ProfileEditModal';
 import styles from './profile.module.css';
 
@@ -13,6 +15,8 @@ interface ProfileHeaderCardProps {
 
 export default function ProfileHeaderCard({ user, onUserUpdated }: ProfileHeaderCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
 
   const initials = user?.displayName
     ?.split(' ')
@@ -22,6 +26,29 @@ export default function ProfileHeaderCard({ user, onUserUpdated }: ProfileHeader
     .slice(0, 2) || 'U';
 
   const tier = (user?.memberTier || 'STANDARD').toUpperCase();
+
+  const handleDirectAvatarUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Vui lòng chọn file hình ảnh (PNG, JPG, WEBP...)');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const res = await mediaService.uploadMedia(file);
+      const updated = await customerProfileService.updateProfileDetails({
+        displayName: user.displayName || 'Khách hàng Boki',
+        avatarUrl: res.url,
+        phoneNumber: user.phoneNumber || undefined,
+      });
+      onUserUpdated(updated);
+    } catch (err: any) {
+      console.error('Failed to upload avatar to Cloudflare R2', err);
+      alert(err?.message || 'Tải ảnh đại diện lên Cloudflare R2 thất bại. Vui lòng thử lại!');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -45,7 +72,35 @@ export default function ProfileHeaderCard({ user, onUserUpdated }: ProfileHeader
               ) : (
                 <span>{initials}</span>
               )}
+
+              {uploadingAvatar && (
+                <div className={styles.avatarUploadingOverlay}>
+                  <span>Đang tải...</span>
+                </div>
+              )}
             </div>
+
+            <input
+              ref={avatarFileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  handleDirectAvatarUpload(e.target.files[0]);
+                }
+              }}
+            />
+
+            <button
+              type="button"
+              className={styles.avatarCameraBtn}
+              onClick={() => avatarFileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              title="Đổi ảnh đại diện (Tải lên Cloudflare R2)"
+            >
+              <CameraIcon size={14} />
+            </button>
           </div>
 
           <div className={styles.userDetails}>
