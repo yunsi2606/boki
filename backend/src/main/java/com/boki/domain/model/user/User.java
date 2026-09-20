@@ -25,6 +25,19 @@ public class User {
     private MemberTier memberTier = MemberTier.STANDARD;
     private java.math.BigDecimal totalSpent = java.math.BigDecimal.ZERO;
     private int loyaltyPoints = 0;
+    private Instant tierUpgradedAt = Instant.now();
+    private Instant tierExpiresAt = Instant.now().plus(365, java.time.temporal.ChronoUnit.DAYS);
+    private java.math.BigDecimal cycleSpent = java.math.BigDecimal.ZERO;
+    private String shippingFullName;
+    private String shippingPhone;
+    private String shippingProvince;
+    private Integer shippingProvinceCode;
+    private String shippingDistrict;
+    private Integer shippingDistrictCode;
+    private String shippingWard;
+    private Integer shippingWardCode;
+    private String shippingStreetAddress;
+    private String shippingDeliveryNote;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
@@ -32,6 +45,7 @@ public class User {
     private User() {
         // For framework / mapper use
     }
+
 
     /**
      * Factory: create a new user via email/password registration.
@@ -80,6 +94,12 @@ public class User {
             PhoneNumber phoneNumber, boolean phoneVerified, String avatarUrl,
             UserRole role, boolean emailVerified, boolean active,
             MemberTier memberTier, java.math.BigDecimal totalSpent, Integer loyaltyPoints,
+            Instant tierUpgradedAt, Instant tierExpiresAt, java.math.BigDecimal cycleSpent,
+            String shippingFullName, String shippingPhone,
+            String shippingProvince, Integer shippingProvinceCode,
+            String shippingDistrict, Integer shippingDistrictCode,
+            String shippingWard, Integer shippingWardCode,
+            String shippingStreetAddress, String shippingDeliveryNote,
             Instant createdAt, Instant updatedAt, String createdBy
     ) {
         User user = new User();
@@ -96,6 +116,19 @@ public class User {
         user.memberTier = memberTier != null ? memberTier : MemberTier.STANDARD;
         user.totalSpent = totalSpent != null ? totalSpent : java.math.BigDecimal.ZERO;
         user.loyaltyPoints = loyaltyPoints != null ? loyaltyPoints : 0;
+        user.tierUpgradedAt = tierUpgradedAt != null ? tierUpgradedAt : Instant.now();
+        user.tierExpiresAt = tierExpiresAt != null ? tierExpiresAt : Instant.now().plus(365, java.time.temporal.ChronoUnit.DAYS);
+        user.cycleSpent = cycleSpent != null ? cycleSpent : (totalSpent != null ? totalSpent : java.math.BigDecimal.ZERO);
+        user.shippingFullName = shippingFullName;
+        user.shippingPhone = shippingPhone;
+        user.shippingProvince = shippingProvince;
+        user.shippingProvinceCode = shippingProvinceCode;
+        user.shippingDistrict = shippingDistrict;
+        user.shippingDistrictCode = shippingDistrictCode;
+        user.shippingWard = shippingWard;
+        user.shippingWardCode = shippingWardCode;
+        user.shippingStreetAddress = shippingStreetAddress;
+        user.shippingDeliveryNote = shippingDeliveryNote;
         user.createdAt = createdAt;
         user.updatedAt = updatedAt;
         user.createdBy = createdBy;
@@ -103,6 +136,39 @@ public class User {
     }
 
     // ---- Business Methods ----
+
+    public void updateShippingAddress(
+            String fullName, String phone,
+            String province, Integer provinceCode,
+            String district, Integer districtCode,
+            String ward, Integer wardCode,
+            String streetAddress, String deliveryNote
+    ) {
+        this.shippingFullName = fullName != null ? fullName.trim() : null;
+        this.shippingPhone = phone != null ? phone.trim() : null;
+        this.shippingProvince = province != null ? province.trim() : null;
+        this.shippingProvinceCode = provinceCode;
+        this.shippingDistrict = district != null ? district.trim() : null;
+        this.shippingDistrictCode = districtCode;
+        this.shippingWard = ward != null ? ward.trim() : null;
+        this.shippingWardCode = wardCode;
+        this.shippingStreetAddress = streetAddress != null ? streetAddress.trim() : null;
+        this.shippingDeliveryNote = deliveryNote != null ? deliveryNote.trim() : null;
+        this.updatedAt = Instant.now();
+    }
+
+    public void updateProfileDetails(String displayName, String avatarUrl, PhoneNumber phoneNumber) {
+        if (displayName != null && !displayName.isBlank()) {
+            this.displayName = displayName.trim();
+        }
+        if (avatarUrl != null) {
+            this.avatarUrl = avatarUrl.isBlank() ? null : avatarUrl.trim();
+        }
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
+        }
+        this.updatedAt = Instant.now();
+    }
 
     public void verifyPhone(PhoneNumber phone) {
         this.phoneNumber = phone;
@@ -169,4 +235,17 @@ public class User {
     public MemberTier getMemberTier() { return memberTier; }
     public java.math.BigDecimal getTotalSpent() { return totalSpent; }
     public int getLoyaltyPoints() { return loyaltyPoints; }
+    public Instant getTierUpgradedAt() { return tierUpgradedAt; }
+    public Instant getTierExpiresAt() { return tierExpiresAt; }
+    public java.math.BigDecimal getCycleSpent() { return cycleSpent; }
+    public String getShippingFullName() { return shippingFullName; }
+    public String getShippingPhone() { return shippingPhone; }
+    public String getShippingProvince() { return shippingProvince; }
+    public Integer getShippingProvinceCode() { return shippingProvinceCode; }
+    public String getShippingDistrict() { return shippingDistrict; }
+    public Integer getShippingDistrictCode() { return shippingDistrictCode; }
+    public String getShippingWard() { return shippingWard; }
+    public Integer getShippingWardCode() { return shippingWardCode; }
+    public String getShippingStreetAddress() { return shippingStreetAddress; }
+    public String getShippingDeliveryNote() { return shippingDeliveryNote; }
 }

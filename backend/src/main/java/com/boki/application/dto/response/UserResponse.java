@@ -16,5 +16,19 @@ public record UserResponse(
         Instant createdAt,
         String memberTier,
         BigDecimal totalSpent,
-        Integer loyaltyPoints
+        Integer loyaltyPoints,
+        Instant tierUpgradedAt,
+        Instant tierExpiresAt,
+        BigDecimal cycleSpent,
+        String shippingFullName,
+        String shippingPhone,
+        String shippingProvince,
+        Integer shippingProvinceCode,
+        String shippingDistrict,
+        Integer shippingDistrictCode,
+        String shippingWard,
+        Integer shippingWardCode,
+        String shippingStreetAddress,
+        String shippingDeliveryNote
 ) {}
+

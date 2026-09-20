@@ -23,6 +23,9 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
     long countByBuyerIdAndCreatedAtAfter(UUID buyerId, java.time.Instant after);
     long countByBuyerIdAndStatus(UUID buyerId, OrderJpaEntity.OrderStatusJpa status);
 
+    @Query("SELECT COALESCE(SUM(o.memberDiscountAmount), 0) FROM OrderJpaEntity o WHERE o.buyerId = :buyerId")
+    java.math.BigDecimal sumMemberDiscountAmountByBuyerId(@Param("buyerId") UUID buyerId);
+
     Page<OrderJpaEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Page<OrderJpaEntity> findByStatusOrderByCreatedAtDesc(OrderJpaEntity.OrderStatusJpa status, Pageable pageable);

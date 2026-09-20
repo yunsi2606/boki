@@ -25,7 +25,21 @@ public final class UserDtoMapper {
                 user.getCreatedAt(),
                 user.getMemberTier() != null ? user.getMemberTier().name() : "STANDARD",
                 user.getTotalSpent(),
-                user.getLoyaltyPoints()
+                user.getLoyaltyPoints(),
+                user.getTierUpgradedAt(),
+                user.getTierExpiresAt(),
+                user.getCycleSpent(),
+                user.getShippingFullName(),
+                user.getShippingPhone(),
+                user.getShippingProvince(),
+                user.getShippingProvinceCode(),
+                user.getShippingDistrict(),
+                user.getShippingDistrictCode(),
+                user.getShippingWard(),
+                user.getShippingWardCode(),
+                user.getShippingStreetAddress(),
+                user.getShippingDeliveryNote()
         );
     }
+
 }

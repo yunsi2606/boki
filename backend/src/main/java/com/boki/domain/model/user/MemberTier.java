@@ -9,7 +9,8 @@ public enum MemberTier {
     STANDARD("Thành Viên Tiêu Chuẩn", 0.00, BigDecimal.ZERO),
     SILVER("Thành Viên Bạc", 0.03, new BigDecimal("1000000")),
     GOLD("Thành Viên Vàng", 0.05, new BigDecimal("3000000")),
-    PLATINUM("Thành Viên Bạch Kim (VIP)", 0.10, new BigDecimal("7000000"));
+    PLATINUM("Thành Viên Bạch Kim (VIP)", 0.10, new BigDecimal("7000000")),
+    DIAMOND("Thành Viên Kim Cương (VVIP)", 0.15, new BigDecimal("15000000"));
 
     private final String displayName;
     private final double discountRate;
@@ -37,6 +38,16 @@ public enum MemberTier {
         return minSpentThreshold;
     }
 
+    public MemberTier getNextTier() {
+        return switch (this) {
+            case STANDARD -> SILVER;
+            case SILVER -> GOLD;
+            case GOLD -> PLATINUM;
+            case PLATINUM -> DIAMOND;
+            case DIAMOND -> null;
+        };
+    }
+
     public static MemberTier fromString(String value) {
         if (value == null || value.isBlank()) {
             return STANDARD;
@@ -52,6 +63,9 @@ public enum MemberTier {
         if (totalSpent == null || totalSpent.compareTo(BigDecimal.ZERO) <= 0) {
             return STANDARD;
         }
+        if (totalSpent.compareTo(DIAMOND.minSpentThreshold) >= 0) {
+            return DIAMOND;
+        }
         if (totalSpent.compareTo(PLATINUM.minSpentThreshold) >= 0) {
             return PLATINUM;
         }
@@ -64,3 +78,4 @@ public enum MemberTier {
         return STANDARD;
     }
 }
+

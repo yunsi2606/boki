@@ -33,8 +33,12 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/oauth",
-            "/api/auth/verify-email"
+            "/api/auth/verify-email",
+            "/api/users/profile",
+            "/api/users/profile/summary",
+            "/api/users/profile/address"
     );
+
 
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;

@@ -60,9 +60,49 @@ public class UserJpaEntity {
     @Column(name = "loyalty_points")
     private Integer loyaltyPoints = 0;
 
+    @Column(name = "tier_upgraded_at")
+    private Instant tierUpgradedAt = Instant.now();
+
+    @Column(name = "tier_expires_at")
+    private Instant tierExpiresAt = Instant.now().plus(365, java.time.temporal.ChronoUnit.DAYS);
+
+    @Column(name = "cycle_spent", precision = 14, scale = 2)
+    private java.math.BigDecimal cycleSpent = java.math.BigDecimal.ZERO;
+
+    @Column(name = "shipping_full_name", length = 150)
+    private String shippingFullName;
+
+    @Column(name = "shipping_phone", length = 20)
+    private String shippingPhone;
+
+    @Column(name = "shipping_province", length = 100)
+    private String shippingProvince;
+
+    @Column(name = "shipping_province_code")
+    private Integer shippingProvinceCode;
+
+    @Column(name = "shipping_district", length = 100)
+    private String shippingDistrict;
+
+    @Column(name = "shipping_district_code")
+    private Integer shippingDistrictCode;
+
+    @Column(name = "shipping_ward", length = 100)
+    private String shippingWard;
+
+    @Column(name = "shipping_ward_code")
+    private Integer shippingWardCode;
+
+    @Column(name = "shipping_street_address", length = 255)
+    private String shippingStreetAddress;
+
+    @Column(name = "shipping_delivery_note", length = 500)
+    private String shippingDeliveryNote;
+
     public enum UserRoleJpa {
         BUYER, SELLER, ADMIN
     }
+
 
     // --- Getters & Setters ---
 
@@ -113,4 +153,44 @@ public class UserJpaEntity {
 
     public Integer getLoyaltyPoints() { return loyaltyPoints; }
     public void setLoyaltyPoints(Integer loyaltyPoints) { this.loyaltyPoints = loyaltyPoints; }
+
+    public Instant getTierUpgradedAt() { return tierUpgradedAt; }
+    public void setTierUpgradedAt(Instant tierUpgradedAt) { this.tierUpgradedAt = tierUpgradedAt; }
+
+    public Instant getTierExpiresAt() { return tierExpiresAt; }
+    public void setTierExpiresAt(Instant tierExpiresAt) { this.tierExpiresAt = tierExpiresAt; }
+
+    public java.math.BigDecimal getCycleSpent() { return cycleSpent; }
+    public void setCycleSpent(java.math.BigDecimal cycleSpent) { this.cycleSpent = cycleSpent; }
+
+    public String getShippingFullName() { return shippingFullName; }
+    public void setShippingFullName(String shippingFullName) { this.shippingFullName = shippingFullName; }
+
+    public String getShippingPhone() { return shippingPhone; }
+    public void setShippingPhone(String shippingPhone) { this.shippingPhone = shippingPhone; }
+
+    public String getShippingProvince() { return shippingProvince; }
+    public void setShippingProvince(String shippingProvince) { this.shippingProvince = shippingProvince; }
+
+    public Integer getShippingProvinceCode() { return shippingProvinceCode; }
+    public void setShippingProvinceCode(Integer shippingProvinceCode) { this.shippingProvinceCode = shippingProvinceCode; }
+
+    public String getShippingDistrict() { return shippingDistrict; }
+    public void setShippingDistrict(String shippingDistrict) { this.shippingDistrict = shippingDistrict; }
+
+    public Integer getShippingDistrictCode() { return shippingDistrictCode; }
+    public void setShippingDistrictCode(Integer shippingDistrictCode) { this.shippingDistrictCode = shippingDistrictCode; }
+
+    public String getShippingWard() { return shippingWard; }
+    public void setShippingWard(String shippingWard) { this.shippingWard = shippingWard; }
+
+    public Integer getShippingWardCode() { return shippingWardCode; }
+    public void setShippingWardCode(Integer shippingWardCode) { this.shippingWardCode = shippingWardCode; }
+
+    public String getShippingStreetAddress() { return shippingStreetAddress; }
+    public void setShippingStreetAddress(String shippingStreetAddress) { this.shippingStreetAddress = shippingStreetAddress; }
+
+    public String getShippingDeliveryNote() { return shippingDeliveryNote; }
+    public void setShippingDeliveryNote(String shippingDeliveryNote) { this.shippingDeliveryNote = shippingDeliveryNote; }
 }
+

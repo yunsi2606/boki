@@ -31,6 +31,19 @@ public final class UserPersistenceMapper {
         entity.setMemberTier(user.getMemberTier() != null ? user.getMemberTier().name() : "STANDARD");
         entity.setTotalSpent(user.getTotalSpent() != null ? user.getTotalSpent() : java.math.BigDecimal.ZERO);
         entity.setLoyaltyPoints(user.getLoyaltyPoints());
+        entity.setTierUpgradedAt(user.getTierUpgradedAt());
+        entity.setTierExpiresAt(user.getTierExpiresAt());
+        entity.setCycleSpent(user.getCycleSpent() != null ? user.getCycleSpent() : java.math.BigDecimal.ZERO);
+        entity.setShippingFullName(user.getShippingFullName());
+        entity.setShippingPhone(user.getShippingPhone());
+        entity.setShippingProvince(user.getShippingProvince());
+        entity.setShippingProvinceCode(user.getShippingProvinceCode());
+        entity.setShippingDistrict(user.getShippingDistrict());
+        entity.setShippingDistrictCode(user.getShippingDistrictCode());
+        entity.setShippingWard(user.getShippingWard());
+        entity.setShippingWardCode(user.getShippingWardCode());
+        entity.setShippingStreetAddress(user.getShippingStreetAddress());
+        entity.setShippingDeliveryNote(user.getShippingDeliveryNote());
         return entity;
     }
 
@@ -50,9 +63,23 @@ public final class UserPersistenceMapper {
                 tier,
                 entity.getTotalSpent(),
                 entity.getLoyaltyPoints(),
+                entity.getTierUpgradedAt(),
+                entity.getTierExpiresAt(),
+                entity.getCycleSpent(),
+                entity.getShippingFullName(),
+                entity.getShippingPhone(),
+                entity.getShippingProvince(),
+                entity.getShippingProvinceCode(),
+                entity.getShippingDistrict(),
+                entity.getShippingDistrictCode(),
+                entity.getShippingWard(),
+                entity.getShippingWardCode(),
+                entity.getShippingStreetAddress(),
+                entity.getShippingDeliveryNote(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getCreatedBy()
         );
     }
 }
+
