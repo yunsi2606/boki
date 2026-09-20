@@ -127,41 +127,43 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
 
-          <table className={styles.ordersTable}>
-            <thead>
-              <tr>
-                <th>Mã Đơn</th>
-                <th>Khách Hàng</th>
-                <th>Ngày Tạo</th>
-                <th>Tổng Tiền</th>
-                <th>Trạng Thái</th>
-                <th>Thao Tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentOrders.slice(0, 5).map((order) => (
-                <tr key={order.id}>
-                  <td className={styles.orderIdCell}>#{order.id.slice(0, 8)}</td>
-                  <td>{order.buyerId?.slice(0, 8) || 'Khách vãng lai'}</td>
-                  <td>{new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
-                  <td className={styles.amountCell}>{formatCurrency(order.totalAmount)}</td>
-                  <td>{getStatusBadge(order.status)}</td>
-                  <td>
-                    <Link href={`/admin/orders?highlight=${order.id}`} className={styles.actionBtn}>
-                      Chi tiết
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-              {recentOrders.length === 0 && (
+          <div className={styles.tableWrapper}>
+            <table className={styles.ordersTable}>
+              <thead>
                 <tr>
-                  <td colSpan={6} className={styles.emptyRow}>
-                    Chưa có đơn hàng nào phát sinh
-                  </td>
+                  <th>Mã Đơn</th>
+                  <th>Khách Hàng</th>
+                  <th>Ngày Tạo</th>
+                  <th>Tổng Tiền</th>
+                  <th>Trạng Thái</th>
+                  <th>Thao Tác</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentOrders.slice(0, 5).map((order) => (
+                  <tr key={order.id}>
+                    <td className={styles.orderIdCell}>#{order.id.slice(0, 8)}</td>
+                    <td>{order.buyerId?.slice(0, 8) || 'Khách vãng lai'}</td>
+                    <td>{new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
+                    <td className={styles.amountCell}>{formatCurrency(order.totalAmount)}</td>
+                    <td>{getStatusBadge(order.status)}</td>
+                    <td>
+                      <Link href={`/admin/orders?highlight=${order.id}`} className={styles.actionBtn}>
+                        Chi tiết
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+                {recentOrders.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className={styles.emptyRow}>
+                      Chưa có đơn hàng nào phát sinh
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Quick Actions & Store Settings */}

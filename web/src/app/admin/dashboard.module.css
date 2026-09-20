@@ -115,39 +115,68 @@
   color: #111827;
 }
 
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
+
 .viewAllLink {
   font-size: 13px;
   font-weight: 700;
   color: #EE4D2D;
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
+.viewAllLink:hover {
+  color: #C83214;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ordersTable,
 .dataTable {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
 }
 
+.ordersTable th,
 .dataTable th {
-  padding: 12px 14px;
+  padding: 14px 16px;
   font-size: 12px;
   font-weight: 800;
   color: #6C757D;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 2px solid #E9ECEF;
+  white-space: nowrap;
 }
 
+.ordersTable td,
 .dataTable td {
-  padding: 14px;
+  padding: 16px;
   font-size: 14px;
   color: #212529;
   border-bottom: 1px solid #E9ECEF;
+  vertical-align: middle;
 }
 
+.ordersTable tbody tr:hover,
+.dataTable tbody tr:hover {
+  background-color: #F8F9FA;
+}
+
+.orderIdCell,
 .orderId {
-  font-weight: 800;
+  font-weight: 700;
   color: #EE4D2D;
+  font-family: monospace;
+  font-size: 13px;
 }
 
 .customerBox {
@@ -165,9 +194,41 @@
   color: #6C757D;
 }
 
+.amountCell,
 .orderAmount {
   font-weight: 800;
   color: #111827;
+  white-space: nowrap;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #EE4D2D;
+  background: #FFF0F3;
+  border: 1px solid #FFE0E6;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.actionBtn:hover {
+  background: #EE4D2D;
+  color: #FFFFFF;
+  border-color: #EE4D2D;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 40px !important;
+  color: #6C757D;
+  font-style: italic;
 }
 
 .statusBadge {
