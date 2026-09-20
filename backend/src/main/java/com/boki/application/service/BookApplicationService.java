@@ -72,6 +72,8 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
                 request.publisher(), request.supplier(), request.publicationYear(), request.language(),
                 request.format(), request.numberOfPages(), request.weightGrams(), request.dimensions(), request.translator()
         );
+
+        book.updatePreOrder(request.isPreOrder(), request.preOrderDays());
         
         // Auto publish listed books for immediate browsing
         book.publish();
@@ -110,6 +112,9 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         }
         if (request.imageUrls() != null) {
             book.updateImages(request.imageUrls());
+        }
+        if (request.isPreOrder() != null) {
+            book.updatePreOrder(request.isPreOrder(), request.preOrderDays());
         }
 
         Book savedBook = bookRepository.save(book);

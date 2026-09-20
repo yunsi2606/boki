@@ -35,6 +35,9 @@ public record CreateBookRequest(
 
         Integer categoryId,
 
-        List<String> imageUrls
+        List<String> imageUrls,
+
+        Boolean isPreOrder,
+        Integer preOrderDays
 ) {
 }

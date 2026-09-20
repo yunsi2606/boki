@@ -80,6 +80,8 @@ public class BookDtoMapper {
                 book.getCondition().name(),
                 book.getStatus().name(),
                 book.getStockQuantity(),
+                book.isPreOrder(),
+                book.getPreOrderDays(),
                 book.getViewsCount(),
                 book.getRating(),
                 book.getReviewsCount(),

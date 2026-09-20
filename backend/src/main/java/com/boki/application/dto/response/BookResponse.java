@@ -30,6 +30,8 @@ public record BookResponse(
         String condition,
         String status,
         int stockQuantity,
+        boolean isPreOrder,
+        Integer preOrderDays,
         int viewsCount,
         BigDecimal rating,
         int reviewsCount,
