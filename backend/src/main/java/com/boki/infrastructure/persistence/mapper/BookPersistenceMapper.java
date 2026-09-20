@@ -26,15 +26,7 @@ public final class BookPersistenceMapper {
         entity.setSlug(com.boki.infrastructure.util.SlugUtils.slugify(book.getTitle()));
         entity.setAuthor(book.getAuthor());
         entity.setIsbn(book.getIsbn());
-        entity.setPublisher(book.getPublisher());
-        entity.setSupplier(book.getSupplier());
-        entity.setPublicationYear(book.getPublicationYear());
-        entity.setLanguage(book.getLanguage());
-        entity.setFormat(book.getFormat());
-        entity.setNumberOfPages(book.getNumberOfPages());
-        entity.setWeightGrams(book.getWeightGrams());
-        entity.setDimensions(book.getDimensions());
-        entity.setTranslator(book.getTranslator());
+        entity.setPublicationDetails(book.getPublicationDetails());
         entity.setDescription(book.getDescription());
         entity.setPrice(book.getPrice().amount());
         entity.setOriginalPrice(book.getOriginalPrice() != null ? book.getOriginalPrice().amount() : null);
@@ -84,15 +76,7 @@ public final class BookPersistenceMapper {
                 entity.getTitle(),
                 entity.getAuthor(),
                 entity.getIsbn(),
-                entity.getPublisher(),
-                entity.getSupplier(),
-                entity.getPublicationYear(),
-                entity.getLanguage(),
-                entity.getFormat(),
-                entity.getNumberOfPages(),
-                entity.getWeightGrams(),
-                entity.getDimensions(),
-                entity.getTranslator(),
+                entity.getPublicationDetails(),
                 entity.getDescription(),
                 Price.of(entity.getPrice(), entity.getCurrency()),
                 entity.getOriginalPrice() != null ? Price.of(entity.getOriginalPrice(), entity.getCurrency()) : null,

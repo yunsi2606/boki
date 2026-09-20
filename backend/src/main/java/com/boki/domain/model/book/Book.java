@@ -5,7 +5,9 @@ import com.boki.domain.model.user.UserId;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Book aggregate root.
@@ -18,15 +20,7 @@ public class Book {
     private String title;
     private String author;
     private String isbn;
-    private String publisher;
-    private String supplier;
-    private Integer publicationYear;
-    private String language;
-    private String format;
-    private Integer numberOfPages;
-    private Integer weightGrams;
-    private String dimensions;
-    private String translator;
+    private Map<String, String> publicationDetails = new LinkedHashMap<>();
     private String description;
     private Price price;
     private Price originalPrice;
@@ -80,24 +74,33 @@ public class Book {
         return book;
     }
 
+    public static Book create(
+            UserId sellerId, String title, String author,
+            Price price, BookCondition condition, int stockQuantity,
+            List<String> imageUrls, Map<String, String> publicationDetails
+    ) {
+        Book book = create(sellerId, title, author, price, condition, stockQuantity, imageUrls);
+        if (publicationDetails != null) {
+            book.publicationDetails = new LinkedHashMap<>(publicationDetails);
+        }
+        return book;
+    }
+
     /**
      * Reconstitute from persistence.
      */
     public static Book reconstitute(
             BookId id, UserId sellerId, Integer categoryId,
             String title, String author, String isbn,
-            String publisher, String supplier, Integer publicationYear,
-            String language, String format, Integer numberOfPages,
-            Integer weightGrams, String dimensions, String translator,
+            Map<String, String> publicationDetails,
             String description, Price price, Price originalPrice,
             int viewsCount, java.math.BigDecimal rating, int reviewsCount,
             BookCondition condition, BookStatus status,
             int stockQuantity, List<String> imageUrls, Instant createdAt, Instant updatedAt, String createdBy
     ) {
         return reconstitute(
-                id, sellerId, categoryId, title, author, isbn, publisher, supplier,
-                publicationYear, language, format, numberOfPages, weightGrams, dimensions,
-                translator, description, price, originalPrice, viewsCount, rating,
+                id, sellerId, categoryId, title, author, isbn, publicationDetails,
+                description, price, originalPrice, viewsCount, rating,
                 reviewsCount, condition, status, stockQuantity, false, null, imageUrls, createdAt, updatedAt, createdBy
         );
     }
@@ -105,9 +108,7 @@ public class Book {
     public static Book reconstitute(
             BookId id, UserId sellerId, Integer categoryId,
             String title, String author, String isbn,
-            String publisher, String supplier, Integer publicationYear,
-            String language, String format, Integer numberOfPages,
-            Integer weightGrams, String dimensions, String translator,
+            Map<String, String> publicationDetails,
             String description, Price price, Price originalPrice,
             int viewsCount, java.math.BigDecimal rating, int reviewsCount,
             BookCondition condition, BookStatus status,
@@ -121,15 +122,7 @@ public class Book {
         book.title = title;
         book.author = author;
         book.isbn = isbn;
-        book.publisher = publisher;
-        book.supplier = supplier;
-        book.publicationYear = publicationYear;
-        book.language = language;
-        book.format = format;
-        book.numberOfPages = numberOfPages;
-        book.weightGrams = weightGrams;
-        book.dimensions = dimensions;
-        book.translator = translator;
+        book.publicationDetails = publicationDetails != null ? new LinkedHashMap<>(publicationDetails) : new LinkedHashMap<>();
         book.description = description;
         book.price = price;
         book.originalPrice = originalPrice;
@@ -172,10 +165,15 @@ public class Book {
             throw new IllegalArgumentException("Quantity must be positive");
         }
         if (this.stockQuantity < quantity) {
-            throw new IllegalStateException("Insufficient stock: available=" + stockQuantity + ", requested=" + quantity);
+            if (this.isPreOrder) {
+                this.stockQuantity = 0;
+            } else {
+                throw new IllegalStateException("Insufficient stock: available=" + stockQuantity + ", requested=" + quantity);
+            }
+        } else {
+            this.stockQuantity -= quantity;
         }
-        this.stockQuantity -= quantity;
-        if (this.stockQuantity == 0) {
+        if (this.stockQuantity == 0 && !this.isPreOrder) {
             this.status = BookStatus.SOLD;
         }
         this.updatedAt = Instant.now();
@@ -183,23 +181,16 @@ public class Book {
 
     public void updateDetails(
             String title, String author, String isbn, String description, Integer categoryId,
-            String publisher, String supplier, Integer publicationYear, String language,
-            String format, Integer numberOfPages, Integer weightGrams, String dimensions, String translator
+            Map<String, String> publicationDetails
     ) {
         if (title != null && !title.isBlank()) this.title = title.trim();
         if (author != null && !author.isBlank()) this.author = author.trim();
         this.isbn = isbn;
         this.description = description;
         this.categoryId = categoryId;
-        this.publisher = publisher;
-        this.supplier = supplier;
-        this.publicationYear = publicationYear;
-        this.language = language;
-        this.format = format;
-        this.numberOfPages = numberOfPages;
-        this.weightGrams = weightGrams;
-        this.dimensions = dimensions;
-        this.translator = translator;
+        if (publicationDetails != null) {
+            this.publicationDetails = new LinkedHashMap<>(publicationDetails);
+        }
         this.updatedAt = Instant.now();
     }
 
@@ -242,15 +233,15 @@ public class Book {
     public String getTitle() { return title; }
     public String getAuthor() { return author; }
     public String getIsbn() { return isbn; }
-    public String getPublisher() { return publisher; }
-    public String getSupplier() { return supplier; }
-    public Integer getPublicationYear() { return publicationYear; }
-    public String getLanguage() { return language; }
-    public String getFormat() { return format; }
-    public Integer getNumberOfPages() { return numberOfPages; }
-    public Integer getWeightGrams() { return weightGrams; }
-    public String getDimensions() { return dimensions; }
-    public String getTranslator() { return translator; }
+    public Map<String, String> getPublicationDetails() { return Collections.unmodifiableMap(publicationDetails); }
+    public String getPublisher() {
+        if (publicationDetails == null) return null;
+        return publicationDetails.getOrDefault("Nhà xuất bản", publicationDetails.get("publisher"));
+    }
+    public String getSupplier() {
+        if (publicationDetails == null) return null;
+        return publicationDetails.getOrDefault("Công ty phát hành", publicationDetails.get("supplier"));
+    }
     public String getDescription() { return description; }
     public Price getPrice() { return price; }
     public Price getOriginalPrice() { return originalPrice; }

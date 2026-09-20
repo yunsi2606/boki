@@ -3,6 +3,7 @@ package com.boki.application.dto.response;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public record BookResponse(
@@ -16,13 +17,7 @@ public record BookResponse(
         String isbn,
         String publisher,
         String supplier,
-        Integer publicationYear,
-        String language,
-        String format,
-        Integer numberOfPages,
-        Integer weightGrams,
-        String dimensions,
-        String translator,
+        Map<String, String> publicationDetails,
         String description,
         BigDecimal price,
         BigDecimal originalPrice,

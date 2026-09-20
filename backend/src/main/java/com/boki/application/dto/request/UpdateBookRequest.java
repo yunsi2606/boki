@@ -3,21 +3,14 @@ package com.boki.application.dto.request;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public record UpdateBookRequest(
         String title,
         String author,
         String isbn,
-        String publisher,
-        String supplier,
-        Integer publicationYear,
-        String language,
-        String format,
-        Integer numberOfPages,
-        Integer weightGrams,
-        String dimensions,
-        String translator,
         String description,
+        Map<String, String> publicationDetails,
 
         @DecimalMin(value = "0.0", inclusive = true, message = "Price must be non-negative")
         BigDecimal price,

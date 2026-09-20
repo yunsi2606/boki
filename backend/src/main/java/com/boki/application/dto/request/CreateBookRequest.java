@@ -3,6 +3,7 @@ package com.boki.application.dto.request;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public record CreateBookRequest(
         @NotBlank(message = "Title is required")
@@ -12,16 +13,8 @@ public record CreateBookRequest(
         String author,
 
         String isbn,
-        String publisher,
-        String supplier,
-        Integer publicationYear,
-        String language,
-        String format,
-        Integer numberOfPages,
-        Integer weightGrams,
-        String dimensions,
-        String translator,
         String description,
+        Map<String, String> publicationDetails,
 
         @NotNull(message = "Price is required")
         @DecimalMin(value = "0.0", inclusive = true, message = "Price must be non-negative")

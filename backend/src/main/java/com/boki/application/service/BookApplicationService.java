@@ -72,8 +72,7 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
 
         book.updateDetails(
                 request.title(), request.author(), request.isbn(), request.description(), request.categoryId(),
-                request.publisher(), request.supplier(), request.publicationYear(), request.language(),
-                request.format(), request.numberOfPages(), request.weightGrams(), request.dimensions(), request.translator()
+                request.publicationDetails()
         );
 
         book.updatePreOrder(request.isPreOrder(), request.preOrderDays());
@@ -100,8 +99,7 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
 
         book.updateDetails(
                 request.title(), request.author(), request.isbn(), request.description(), request.categoryId(),
-                request.publisher(), request.supplier(), request.publicationYear(), request.language(),
-                request.format(), request.numberOfPages(), request.weightGrams(), request.dimensions(), request.translator()
+                request.publicationDetails()
         );
         
         if (request.price() != null) {
