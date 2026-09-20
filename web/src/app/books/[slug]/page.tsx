@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
@@ -73,6 +73,27 @@ function BookDetailsContent() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [added, setAdded] = useState(false);
   const hasIncrementedRef = useRef(false);
+
+  const displaySpecs = useMemo(() => {
+    if (!book) return [];
+    if (book.publicationDetails && Object.keys(book.publicationDetails).length > 0) {
+      return Object.entries(book.publicationDetails).filter(
+        ([_, val]) => val !== undefined && val !== null && String(val).trim() !== ''
+      );
+    }
+    // Fallback to legacy fields if publicationDetails is absent
+    const legacy: [string, string][] = [];
+    if (book.publisher) legacy.push(['Nhà xuất bản', book.publisher]);
+    if (book.supplier) legacy.push(['Công ty phát hành', book.supplier]);
+    if (book.publicationYear) legacy.push(['Năm xuất bản', String(book.publicationYear)]);
+    if (book.language) legacy.push(['Ngôn ngữ', book.language]);
+    if (book.format) legacy.push(['Hình thức bìa', book.format]);
+    if (book.numberOfPages) legacy.push(['Số trang', `${book.numberOfPages} trang`]);
+    if (book.weightGrams) legacy.push(['Trọng lượng', `${book.weightGrams} g`]);
+    if (book.dimensions) legacy.push(['Kích thước', book.dimensions]);
+    if (book.translator) legacy.push(['Dịch giả', book.translator]);
+    return legacy;
+  }, [book]);
 
   useEffect(() => {
     if (!id) return;
@@ -184,9 +205,11 @@ function BookDetailsContent() {
       ? book.imageUrls[activeImageIdx]
       : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300');
 
+
+  const currentOriginalPrice = selectedVariant && selectedVariant.originalPrice
+    ? selectedVariant.originalPrice
+    : (book.originalPrice || book.price);
   const currentPrice = selectedVariant ? selectedVariant.price : book.price;
-  const rawOriginal = selectedVariant ? selectedVariant.originalPrice : book.originalPrice;
-  const currentOriginalPrice = rawOriginal && rawOriginal > currentPrice ? rawOriginal : 0;
   const currentStock = selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity;
 
   const rating = book.rating !== undefined && book.rating !== null ? Number(book.rating).toFixed(1) : '5.0';
@@ -354,67 +377,19 @@ function BookDetailsContent() {
           </div>
 
           {/* Publishing Metadata Specifications Table */}
-          {(book.publisher || book.supplier || book.publicationYear || book.language || book.format || book.numberOfPages || book.weightGrams || book.dimensions || book.translator) && (
+          {displaySpecs.length > 0 && (
             <div className={styles.specsSection}>
               <h3 className={styles.specsTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <BarChartIcon size={20} color="#0284c7" />
                 <span>Thông Số Xuất Bản Chi Tiết</span>
               </h3>
               <div className={styles.specsGrid}>
-                {book.publisher && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Nhà xuất bản:</span>
-                    <strong className={styles.specValue}>{book.publisher}</strong>
+                {displaySpecs.map(([label, value]) => (
+                  <div key={label} className={styles.specRow}>
+                    <span className={styles.specLabel}>{label}:</span>
+                    <strong className={styles.specValue}>{value}</strong>
                   </div>
-                )}
-                {book.supplier && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Công ty phát hành:</span>
-                    <strong className={styles.specValue}>{book.supplier}</strong>
-                  </div>
-                )}
-                {book.publicationYear && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Năm xuất bản:</span>
-                    <strong className={styles.specValue}>{book.publicationYear}</strong>
-                  </div>
-                )}
-                {book.language && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Ngôn ngữ:</span>
-                    <strong className={styles.specValue}>{book.language}</strong>
-                  </div>
-                )}
-                {book.format && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Hình thức bìa:</span>
-                    <strong className={styles.specValue}>{book.format}</strong>
-                  </div>
-                )}
-                {book.numberOfPages && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Số trang:</span>
-                    <strong className={styles.specValue}>{book.numberOfPages} trang</strong>
-                  </div>
-                )}
-                {book.weightGrams && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Trọng lượng:</span>
-                    <strong className={styles.specValue}>{book.weightGrams} g</strong>
-                  </div>
-                )}
-                {book.dimensions && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Kích thước:</span>
-                    <strong className={styles.specValue}>{book.dimensions}</strong>
-                  </div>
-                )}
-                {book.translator && (
-                  <div className={styles.specRow}>
-                    <span className={styles.specLabel}>Dịch giả:</span>
-                    <strong className={styles.specValue}>{book.translator}</strong>
-                  </div>
-                )}
+                ))}
               </div>
             </div>
           )}

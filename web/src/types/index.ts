@@ -86,6 +86,7 @@ export interface Book {
   slug?: string;
   author: string;
   isbn: string | null;
+  publicationDetails?: Record<string, string>;
   publisher?: string | null;
   supplier?: string | null;
   publicationYear?: number | null;
@@ -117,6 +118,7 @@ export interface CreateBookPayload {
   title: string;
   author: string;
   isbn?: string;
+  publicationDetails?: Record<string, string>;
   publisher?: string;
   supplier?: string;
   publicationYear?: number;
@@ -140,6 +142,7 @@ export interface UpdateBookPayload {
   title?: string;
   author?: string;
   isbn?: string;
+  publicationDetails?: Record<string, string>;
   publisher?: string;
   supplier?: string;
   publicationYear?: number;

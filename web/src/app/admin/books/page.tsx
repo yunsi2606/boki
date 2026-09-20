@@ -11,6 +11,27 @@ import styles from './adminBooks.module.css';
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/books/PreOrderBadge';
 
+export interface SpecificationItem {
+  id: string;
+  key: string;
+  value: string;
+}
+
+const COMMON_SPEC_SUGGESTIONS = [
+  'Nhà xuất bản',
+  'Công ty phát hành',
+  'Năm xuất bản',
+  'Ngôn ngữ',
+  'Hình thức bìa',
+  'Số trang',
+  'Trọng lượng (gam)',
+  'Kích thước',
+  'Dịch giả',
+  'Độ tuổi',
+  'Số tập',
+  'Bộ sách',
+];
+
 export default function AdminBooksPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -41,17 +62,19 @@ export default function AdminBooksPage() {
     preOrderMode: 'SPECIFIC' as 'SPECIFIC' | 'INDEFINITE',
     preOrderDays: 14,
 
-    // Optional Fields (Can be Null / Blank)
+    // Dynamic Publishing Attributes (Key-Value)
     isbn: '',
-    publisher: '',
-    supplier: '',
-    publicationYear: new Date().getFullYear(),
-    language: 'Tiếng Việt',
-    format: 'Bìa Mềm',
-    numberOfPages: '',
-    weightGrams: '',
-    dimensions: '',
-    translator: '',
+    publicationDetails: [
+      { id: '1', key: 'Nhà xuất bản', value: '' },
+      { id: '2', key: 'Công ty phát hành', value: '' },
+      { id: '3', key: 'Năm xuất bản', value: String(new Date().getFullYear()) },
+      { id: '4', key: 'Ngôn ngữ', value: 'Tiếng Việt' },
+      { id: '5', key: 'Hình thức bìa', value: 'Bìa Mềm' },
+      { id: '6', key: 'Số trang', value: '' },
+      { id: '7', key: 'Trọng lượng (gam)', value: '' },
+      { id: '8', key: 'Kích thước', value: '' },
+      { id: '9', key: 'Dịch giả', value: '' },
+    ] as SpecificationItem[],
     description: '',
   });
 
@@ -62,6 +85,32 @@ export default function AdminBooksPage() {
       categoryService.getCategories().then((cats) => setCategories(cats || [])).catch(() => setCategories([])),
     ]).finally(() => setLoading(false));
   }, []);
+
+  const handleAddSpecItem = (keyName: string = '', valName: string = '') => {
+    setFormData((prev) => ({
+      ...prev,
+      publicationDetails: [
+        ...prev.publicationDetails,
+        { id: `spec_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`, key: keyName, value: valName },
+      ],
+    }));
+  };
+
+  const handleUpdateSpecItem = (id: string, field: 'key' | 'value', value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      publicationDetails: prev.publicationDetails.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
+
+  const handleRemoveSpecItem = (id: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      publicationDetails: prev.publicationDetails.filter((item) => item.id !== id),
+    }));
+  };
 
   const handleOpenAddModal = () => {
     setEditingBook(null);
@@ -79,15 +128,17 @@ export default function AdminBooksPage() {
       preOrderMode: 'SPECIFIC',
       preOrderDays: 14,
       isbn: '',
-      publisher: '',
-      supplier: '',
-      publicationYear: new Date().getFullYear(),
-      language: 'Tiếng Việt',
-      format: 'Bìa Mềm',
-      numberOfPages: '',
-      weightGrams: '',
-      dimensions: '',
-      translator: '',
+      publicationDetails: [
+        { id: '1', key: 'Nhà xuất bản', value: '' },
+        { id: '2', key: 'Công ty phát hành', value: '' },
+        { id: '3', key: 'Năm xuất bản', value: String(new Date().getFullYear()) },
+        { id: '4', key: 'Ngôn ngữ', value: 'Tiếng Việt' },
+        { id: '5', key: 'Hình thức bìa', value: 'Bìa Mềm' },
+        { id: '6', key: 'Số trang', value: '' },
+        { id: '7', key: 'Trọng lượng (gam)', value: '' },
+        { id: '8', key: 'Kích thước', value: '' },
+        { id: '9', key: 'Dịch giả', value: '' },
+      ],
       description: '',
     });
     setIsModalOpen(true);
@@ -100,6 +151,42 @@ export default function AdminBooksPage() {
     const computedStock = hasVariants
       ? book.variants!.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
       : (book.stockQuantity || 0);
+
+    let detailsList: SpecificationItem[] = [];
+    if (book.publicationDetails && Object.keys(book.publicationDetails).length > 0) {
+      detailsList = Object.entries(book.publicationDetails).map(([k, v], idx) => ({
+        id: `pd_${idx}_${Date.now()}`,
+        key: k,
+        value: String(v ?? ''),
+      }));
+    } else {
+      const legacy: Array<{ key: string; value: string }> = [];
+      if (book.publisher) legacy.push({ key: 'Nhà xuất bản', value: book.publisher });
+      if (book.supplier) legacy.push({ key: 'Công ty phát hành', value: book.supplier });
+      if (book.publicationYear) legacy.push({ key: 'Năm xuất bản', value: String(book.publicationYear) });
+      if (book.language) legacy.push({ key: 'Ngôn ngữ', value: book.language });
+      if (book.format) legacy.push({ key: 'Hình thức bìa', value: book.format });
+      if (book.numberOfPages) legacy.push({ key: 'Số trang', value: String(book.numberOfPages) });
+      if (book.weightGrams) legacy.push({ key: 'Trọng lượng (gam)', value: String(book.weightGrams) });
+      if (book.dimensions) legacy.push({ key: 'Kích thước', value: book.dimensions });
+      if (book.translator) legacy.push({ key: 'Dịch giả', value: book.translator });
+
+      detailsList = legacy.map((item, idx) => ({
+        id: `pd_leg_${idx}`,
+        key: item.key,
+        value: item.value,
+      }));
+    }
+
+    if (detailsList.length === 0) {
+      detailsList = [
+        { id: '1', key: 'Nhà xuất bản', value: '' },
+        { id: '2', key: 'Công ty phát hành', value: '' },
+        { id: '3', key: 'Năm xuất bản', value: String(new Date().getFullYear()) },
+        { id: '4', key: 'Ngôn ngữ', value: 'Tiếng Việt' },
+        { id: '5', key: 'Hình thức bìa', value: 'Bìa Mềm' },
+      ];
+    }
 
     setFormData({
       title: book.title || '',
@@ -114,15 +201,7 @@ export default function AdminBooksPage() {
       preOrderMode: book.isPreOrder && (book.preOrderDays === null || book.preOrderDays === undefined) ? 'INDEFINITE' : 'SPECIFIC',
       preOrderDays: book.preOrderDays || 14,
       isbn: book.isbn || '',
-      publisher: book.publisher || '',
-      supplier: book.supplier || '',
-      publicationYear: book.publicationYear || new Date().getFullYear(),
-      language: book.language || 'Tiếng Việt',
-      format: book.format || 'Bìa Mềm',
-      numberOfPages: book.numberOfPages ? String(book.numberOfPages) : '',
-      weightGrams: book.weightGrams ? String(book.weightGrams) : '',
-      dimensions: book.dimensions || '',
-      translator: book.translator || '',
+      publicationDetails: detailsList,
       description: book.description || '',
     });
     setIsModalOpen(true);
@@ -179,6 +258,15 @@ export default function AdminBooksPage() {
       ? editingBook!.variants!.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
       : Number(formData.stockQuantity);
 
+    const pubDetailsRecord: Record<string, string> = {};
+    formData.publicationDetails.forEach((item) => {
+      const k = item.key.trim();
+      const v = item.value.trim();
+      if (k && v) {
+        pubDetailsRecord[k] = v;
+      }
+    });
+
     const payload = {
       title: formData.title,
       author: formData.author,
@@ -192,15 +280,9 @@ export default function AdminBooksPage() {
         ? (formData.preOrderMode === 'SPECIFIC' && formData.preOrderDays ? Number(formData.preOrderDays) : null)
         : null,
       isbn: formData.isbn || undefined,
-      publisher: formData.publisher || undefined,
-      supplier: formData.supplier || undefined,
-      publicationYear: formData.publicationYear ? Number(formData.publicationYear) : undefined,
-      language: formData.language || undefined,
-      format: formData.format || undefined,
-      numberOfPages: formData.numberOfPages ? Number(formData.numberOfPages) : undefined,
-      weightGrams: formData.weightGrams ? Number(formData.weightGrams) : undefined,
-      dimensions: formData.dimensions || undefined,
-      translator: formData.translator || undefined,
+      publicationDetails: pubDetailsRecord,
+      publisher: pubDetailsRecord['Nhà xuất bản'] || pubDetailsRecord['publisher'] || undefined,
+      supplier: pubDetailsRecord['Công ty phát hành'] || pubDetailsRecord['supplier'] || undefined,
       description: formData.description || undefined,
     };
 
@@ -681,14 +763,23 @@ export default function AdminBooksPage() {
                   </>
                 )}
 
-                {/* TAB 2: OPTIONAL METADATA FIELDS (CAN BE NULL) */}
+                {/* TAB 2: DYNAMIC PUBLICATION DETAILS (KEY-VALUE JSONB) */}
                 {activeTab === 'optional' && (
                   <>
-                    <div style={{ padding: '10px 14px', background: '#f8fafc', borderRadius: '10px', fontSize: '12px', color: '#64748b', border: '1px solid #e2e8f0' }}>
-                      💡 Các trường dưới đây <strong>không bắt buộc</strong>. Nếu không có dữ liệu, hệ thống sẽ lưu giá trị NULL mà không gây lỗi.
+                    <div style={{
+                      padding: '12px 16px',
+                      background: '#eff6ff',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      color: '#1e40af',
+                      border: '1px solid #bfdbfe',
+                      lineHeight: '1.5',
+                    }}>
+                      Thông số xuất bản được lưu trữ linh hoạt dưới dạng <strong>Key - Value (JSONB)</strong>. Bạn có thể tự do thêm, sửa, xóa bất kỳ thuộc tính nào hoặc dùng các gợi ý nhanh bên dưới.
                     </div>
 
-                    <div className={styles.formRow}>
+                    {/* Standard Book Attributes */}
+                    <div className={styles.formRow} style={{ marginTop: '14px' }}>
                       <div className={styles.formGroup}>
                         <label>Mã ISBN / Barcode</label>
                         <input
@@ -699,120 +790,136 @@ export default function AdminBooksPage() {
                           className={styles.formInput}
                         />
                       </div>
+                    </div>
 
-                      <div className={styles.formGroup}>
-                        <label>Nhà Xuất Bản (NXB)</label>
-                        <input
-                          type="text"
-                          value={formData.publisher}
-                          onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
-                          placeholder="e.g. NXB Kim Đồng, NXB Trẻ..."
-                          className={styles.formInput}
-                        />
+                    {/* Quick suggestion chips */}
+                    <div style={{ marginTop: '12px', marginBottom: '8px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>
+                        Gợi ý thông số nhanh (Bấm để thêm):
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {COMMON_SPEC_SUGGESTIONS.map((sug) => {
+                          const isAlreadyAdded = formData.publicationDetails.some(
+                            (item) => item.key.toLowerCase().trim() === sug.toLowerCase().trim()
+                          );
+                          return (
+                            <button
+                              key={sug}
+                              type="button"
+                              onClick={() => {
+                                if (!isAlreadyAdded) {
+                                  handleAddSpecItem(sug, '');
+                                }
+                              }}
+                              disabled={isAlreadyAdded}
+                              style={{
+                                padding: '4px 10px',
+                                borderRadius: '20px',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                border: isAlreadyAdded ? '1px solid #e2e8f0' : '1px solid #cbd5e1',
+                                background: isAlreadyAdded ? '#f1f5f9' : '#ffffff',
+                                color: isAlreadyAdded ? '#94a3b8' : '#334155',
+                                cursor: isAlreadyAdded ? 'default' : 'pointer',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              {isAlreadyAdded ? `Đã có: ${sug}` : `+ ${sug}`}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label>Công Ty Phát Hành / Supplier</label>
-                        <input
-                          type="text"
-                          value={formData.supplier}
-                          onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                          placeholder="e.g. IPM, Nhã Nam, Amak Books..."
-                          className={styles.formInput}
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label>Năm Xuất Bản</label>
-                        <input
-                          type="number"
-                          value={formData.publicationYear}
-                          onChange={(e) => setFormData({ ...formData, publicationYear: parseInt(e.target.value) || 0 })}
-                          placeholder="e.g. 2026"
-                          className={styles.formInput}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label>Ngôn Ngữ</label>
-                        <input
-                          type="text"
-                          value={formData.language}
-                          onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                          placeholder="e.g. Tiếng Việt, Tiếng Anh..."
-                          className={styles.formInput}
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label>Hình Thức Bìa </label>
-                        <select
-                          value={formData.format}
-                          onChange={(e) => setFormData({ ...formData, format: e.target.value })}
-                          className={styles.formInput}
+                    {/* Dynamic Key-Value Editor List */}
+                    <div style={{ marginTop: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                          Danh Sách Thuộc Tính Xuất Bản ({formData.publicationDetails.length})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleAddSpecItem('', '')}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#2563eb',
+                            color: '#ffffff',
+                            borderRadius: '8px',
+                            border: 'none',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
                         >
-                          <option value="Bìa Mềm">Bìa Mềm</option>
-                          <option value="Bìa Cứng">Bìa Cứng</option>
-                          <option value="Bìa Tay Áo">Bìa Tay Áo (Dust Jacket)</option>
-                          <option value="Boxset">Boxset</option>
-                        </select>
+                          + Thêm thông số mới
+                        </button>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {formData.publicationDetails.map((item) => (
+                          <div
+                            key={item.id}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '180px 1fr 40px',
+                              gap: '8px',
+                              alignItems: 'center',
+                              background: '#f8fafc',
+                              padding: '8px 10px',
+                              borderRadius: '8px',
+                              border: '1px solid #e2e8f0',
+                            }}
+                          >
+                            <input
+                              type="text"
+                              value={item.key}
+                              onChange={(e) => handleUpdateSpecItem(item.id, 'key', e.target.value)}
+                              placeholder="Tên thông số (Key)..."
+                              className={styles.formInput}
+                              style={{ padding: '7px 10px', fontSize: '13px', background: '#ffffff' }}
+                            />
+                            <input
+                              type="text"
+                              value={item.value}
+                              onChange={(e) => handleUpdateSpecItem(item.id, 'value', e.target.value)}
+                              placeholder="Giá trị (Value)..."
+                              className={styles.formInput}
+                              style={{ padding: '7px 10px', fontSize: '13px', background: '#ffffff' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSpecItem(item.id)}
+                              title="Xóa thuộc tính này"
+                              style={{
+                                width: '34px',
+                                height: '34px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: '#fee2e2',
+                                color: '#dc2626',
+                                border: '1px solid #fca5a5',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 700,
+                              }}
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label>Số Trang</label>
-                        <input
-                          type="number"
-                          value={formData.numberOfPages}
-                          onChange={(e) => setFormData({ ...formData, numberOfPages: e.target.value })}
-                          placeholder="e.g. 350"
-                          className={styles.formInput}
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label>Trọng Lượng (gam)</label>
-                        <input
-                          type="number"
-                          value={formData.weightGrams}
-                          onChange={(e) => setFormData({ ...formData, weightGrams: e.target.value })}
-                          placeholder="e.g. 400"
-                          className={styles.formInput}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label>Kích Thước (cm)</label>
-                        <input
-                          type="text"
-                          value={formData.dimensions}
-                          onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
-                          placeholder="e.g. 13 x 20.5 cm"
-                          className={styles.formInput}
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label>Dịch Giả</label>
-                        <input
-                          type="text"
-                          value={formData.translator}
-                          onChange={(e) => setFormData({ ...formData, translator: e.target.value })}
-                          placeholder="Tên người dịch (nếu có)..."
-                          className={styles.formInput}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label>Mô Tả Nội Dung Chi Tiết </label>
+                    {/* Description Block */}
+                    <div className={styles.formGroup} style={{ marginTop: '16px' }}>
+                      <label>Mô Tả Nội Dung Chi Tiết</label>
                       <textarea
                         rows={4}
                         value={formData.description}
@@ -829,11 +936,11 @@ export default function AdminBooksPage() {
               <div className={styles.modalActions}>
                 {activeTab === 'required' ? (
                   <button type="button" onClick={() => setActiveTab('optional')} className={styles.cancelBtn}>
-                    Chuyển Sang Nhập Metadata (Chi Tiết) ➔
+                    Chuyển Sang Nhập Metadata (Chi Tiết) &rarr;
                   </button>
                 ) : (
                   <button type="button" onClick={() => setActiveTab('required')} className={styles.cancelBtn}>
-                    ⬅ Quay Lại Thông Tin Bắt Buộc
+                    &larr; Quay Lại Thông Tin Bắt Buộc
                   </button>
                 )}
                 <button type="submit" className={styles.saveBtn}>
