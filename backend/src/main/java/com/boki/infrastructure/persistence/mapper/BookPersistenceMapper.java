@@ -45,6 +45,8 @@ public final class BookPersistenceMapper {
         entity.setCondition(BookJpaEntity.BookConditionJpa.valueOf(book.getCondition().name()));
         entity.setStatus(BookJpaEntity.BookStatusJpa.valueOf(book.getStatus().name()));
         entity.setStockQuantity(book.getStockQuantity());
+        entity.setPreOrder(book.isPreOrder());
+        entity.setPreOrderDays(book.getPreOrderDays());
         entity.setCreatedAt(book.getCreatedAt());
         entity.setUpdatedAt(book.getUpdatedAt());
         entity.setCreatedBy(book.getCreatedBy());
@@ -100,6 +102,8 @@ public final class BookPersistenceMapper {
                 BookCondition.valueOf(entity.getCondition().name()),
                 BookStatus.valueOf(entity.getStatus().name()),
                 entity.getStockQuantity(),
+                entity.isPreOrder(),
+                entity.getPreOrderDays(),
                 imageUrls,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),

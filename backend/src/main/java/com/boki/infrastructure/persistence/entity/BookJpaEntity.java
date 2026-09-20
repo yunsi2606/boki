@@ -86,6 +86,12 @@ public class BookJpaEntity {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity = 1;
 
+    @Column(name = "is_pre_order", nullable = false)
+    private boolean isPreOrder = false;
+
+    @Column(name = "pre_order_days")
+    private Integer preOrderDays;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -214,4 +220,10 @@ public class BookJpaEntity {
 
     public List<BookVariantJpaEntity> getVariants() { return variants; }
     public void setVariants(List<BookVariantJpaEntity> variants) { this.variants = variants; }
+
+    public boolean isPreOrder() { return isPreOrder; }
+    public void setPreOrder(boolean preOrder) { isPreOrder = preOrder; }
+
+    public Integer getPreOrderDays() { return preOrderDays; }
+    public void setPreOrderDays(Integer preOrderDays) { this.preOrderDays = preOrderDays; }
 }
