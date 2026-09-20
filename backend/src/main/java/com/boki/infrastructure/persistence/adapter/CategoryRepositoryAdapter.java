@@ -35,6 +35,36 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
         return jpaRepository.findById(id).map(this::toDomain);
     }
 
+    @Override
+    public Category save(Category category) {
+        CategoryJpaEntity entity = new CategoryJpaEntity();
+        if (category.getId() > 0) {
+            entity.setId(category.getId());
+        }
+        entity.setName(category.getName());
+        entity.setSlug(category.getSlug());
+        entity.setDescription(category.getDescription());
+        entity.setParentId(category.getParentId());
+
+        CategoryJpaEntity saved = jpaRepository.save(entity);
+        return toDomain(saved);
+    }
+
+    @Override
+    public boolean existsByNameIgnoreCase(String name) {
+        return jpaRepository.existsByNameIgnoreCase(name);
+    }
+
+    @Override
+    public boolean existsBySlug(String slug) {
+        return jpaRepository.existsBySlug(slug);
+    }
+
+    @Override
+    public Optional<Category> findByNameIgnoreCase(String name) {
+        return jpaRepository.findByNameIgnoreCase(name).map(this::toDomain);
+    }
+
     private Category toDomain(CategoryJpaEntity entity) {
         return Category.reconstitute(
                 entity.getId(),

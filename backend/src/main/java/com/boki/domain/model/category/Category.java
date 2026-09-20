@@ -22,6 +22,13 @@ public class Category {
         this.parentId = parentId;
     }
 
+    public static Category create(String name, String slug, String description, Integer parentId) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Category name cannot be blank");
+        }
+        return new Category(0, name.trim(), slug, description != null ? description.trim() : null, parentId);
+    }
+
     /**
      * Reconstitute from persistence. Used by infrastructure mappers only.
      */

@@ -13,4 +13,12 @@ public interface CategoryRepository {
     List<Category> findAll();
 
     Optional<Category> findById(int id);
+
+    Category save(Category category);
+
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsBySlug(String slug);
+
+    Optional<Category> findByNameIgnoreCase(String name);
 }
