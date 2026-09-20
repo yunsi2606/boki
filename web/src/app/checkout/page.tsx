@@ -51,17 +51,17 @@ export default function CheckoutPage() {
   }, [cartItems]);
 
   const [formData, setFormData] = useState<AddressFormData>({
-    fullName: user?.displayName || '',
-    phoneNumber: user?.phoneNumber || '',
+    fullName: user?.shippingFullName || user?.displayName || '',
+    phoneNumber: user?.shippingPhone || user?.phoneNumber || '',
     email: user?.email || '',
-    province: '',
-    provinceCode: null,
-    district: '',
-    districtCode: null,
-    ward: '',
-    wardCode: null,
-    streetAddress: '',
-    note: '',
+    province: user?.shippingProvince || '',
+    provinceCode: user?.shippingProvinceCode ?? null,
+    district: user?.shippingDistrict || '',
+    districtCode: user?.shippingDistrictCode ?? null,
+    ward: user?.shippingWard || '',
+    wardCode: user?.shippingWardCode ?? null,
+    streetAddress: user?.shippingStreetAddress || '',
+    note: user?.shippingDeliveryNote || '',
   });
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('COD');
@@ -70,17 +70,25 @@ export default function CheckoutPage() {
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [sepayData, setSepayData] = useState<PaymentInitResponse | null>(null);
 
-  // Update name/phone/email when user profile is loaded
+  // Auto-fill name, phone, email, and default shipping address from user profile
   useEffect(() => {
     if (user) {
       setFormData((prev) => ({
-        ...prev,
-        fullName: prev.fullName || user.displayName || '',
-        phoneNumber: prev.phoneNumber || user.phoneNumber || '',
+        fullName: prev.fullName || user.shippingFullName || user.displayName || '',
+        phoneNumber: prev.phoneNumber || user.shippingPhone || user.phoneNumber || '',
         email: prev.email || user.email || '',
+        province: prev.province || user.shippingProvince || '',
+        provinceCode: prev.provinceCode ?? user.shippingProvinceCode ?? null,
+        district: prev.district || user.shippingDistrict || '',
+        districtCode: prev.districtCode ?? user.shippingDistrictCode ?? null,
+        ward: prev.ward || user.shippingWard || '',
+        wardCode: prev.wardCode ?? user.shippingWardCode ?? null,
+        streetAddress: prev.streetAddress || user.shippingStreetAddress || '',
+        note: prev.note || user.shippingDeliveryNote || '',
       }));
     }
   }, [user]);
+
 
   const handleFormDataChange = (updatedFields: Partial<AddressFormData>) => {
     setFormData((prev) => ({ ...prev, ...updatedFields }));

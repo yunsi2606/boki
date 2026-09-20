@@ -7,11 +7,25 @@ export interface User {
   avatarUrl: string | null;
   role: 'BUYER' | 'SELLER' | 'ADMIN';
   emailVerified: boolean;
-  memberTier?: 'STANDARD' | 'SILVER' | 'GOLD' | 'PLATINUM' | string;
+  memberTier?: 'STANDARD' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND' | string;
   totalSpent?: number;
   loyaltyPoints?: number;
+  tierUpgradedAt?: string;
+  tierExpiresAt?: string;
+  cycleSpent?: number;
+  shippingFullName?: string | null;
+  shippingPhone?: string | null;
+  shippingProvince?: string | null;
+  shippingProvinceCode?: number | null;
+  shippingDistrict?: string | null;
+  shippingDistrictCode?: number | null;
+  shippingWard?: string | null;
+  shippingWardCode?: number | null;
+  shippingStreetAddress?: string | null;
+  shippingDeliveryNote?: string | null;
   createdAt: string;
 }
+
 
 export interface AuthResponse {
   token: string;
