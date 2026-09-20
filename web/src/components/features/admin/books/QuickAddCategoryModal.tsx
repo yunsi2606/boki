@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { Category, CategoryCheckResult } from '@/types';
 import { categoryService } from '@/services/categoryService';
 
@@ -19,6 +20,7 @@ export default function QuickAddCategoryModal({
   onCategoryCreated,
   onSelectExisting,
 }: QuickAddCategoryModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [parentId, setParentId] = useState<number | null>(null);
@@ -30,6 +32,10 @@ export default function QuickAddCategoryModal({
   const [errorMessage, setErrorMessage] = useState('');
 
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Reset state when opening
   useEffect(() => {
@@ -113,7 +119,7 @@ export default function QuickAddCategoryModal({
     };
   }, [name, existingCategories]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleUseExisting = (category: Category) => {
     if (onSelectExisting) {
@@ -171,17 +177,17 @@ export default function QuickAddCategoryModal({
     !checking
   );
 
-  return (
+  const modalContent = (
     <div
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(4px)',
+        background: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(6px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 9999,
+        zIndex: 100005, // strictly higher than book modal (z-index: 99999)
         padding: '16px',
       }}
       onClick={onClose}
@@ -194,8 +200,10 @@ export default function QuickAddCategoryModal({
           maxWidth: '560px',
           maxHeight: '90vh',
           overflowY: 'auto',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.35)',
           border: '1px solid #e2e8f0',
+          position: 'relative',
+          zIndex: 100006,
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -596,4 +604,6 @@ export default function QuickAddCategoryModal({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }
