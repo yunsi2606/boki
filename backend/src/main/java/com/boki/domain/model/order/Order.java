@@ -304,8 +304,30 @@ public class Order {
                 this.id,
                 OrderStatus.DELIVERED.name(),
                 "Giao hàng thành công",
-                "Khách hàng đã nhận được kiện hàng và hoàn tất đơn đặt.",
+                "Đơn vị vận chuyển đã giao kiện hàng đến người nhận.",
                 actor != null ? actor : "Carrier"
+        ));
+    }
+
+    public void complete(String actor) {
+        if (status != OrderStatus.DELIVERED && status != OrderStatus.SHIPPED) {
+            throw new IllegalStateException("Chỉ đơn hàng ĐÃ GIAO (DELIVERED) hoặc ĐANG GIAO (SHIPPED) mới có thể chuyển sang HOÀN THÀNH.");
+        }
+        this.status = OrderStatus.COMPLETED;
+        this.carrierStatus = "DELIVERED";
+        this.updatedAt = Instant.now();
+
+        if (this.paymentStatus != PaymentStatus.PAID) {
+            this.paymentStatus = PaymentStatus.PAID;
+            this.paidAt = Instant.now();
+        }
+
+        this.timelines.add(OrderTimeline.create(
+                this.id,
+                OrderStatus.COMPLETED.name(),
+                "Đơn hàng hoàn tất",
+                "Đơn hàng đã được xác nhận hoàn tất thành công. Tiền chi tiêu đã được tích lũy vào tài khoản khách hàng.",
+                actor != null ? actor : "System"
         ));
     }
 
@@ -328,7 +350,7 @@ public class Order {
     }
 
     public void cancelWithReason(String reason, String cancelledBy) {
-        if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED || status == OrderStatus.RETURNED) {
+        if (status == OrderStatus.DELIVERED || status == OrderStatus.COMPLETED || status == OrderStatus.CANCELLED || status == OrderStatus.RETURNED) {
             throw new IllegalStateException("Không thể hủy đơn hàng đã ở trạng thái: " + status);
         }
         this.status = OrderStatus.CANCELLED;
@@ -403,7 +425,7 @@ public class Order {
 
         String lowerStatus = this.carrierStatus != null ? this.carrierStatus : "";
         if ("delivered".equalsIgnoreCase(lowerStatus)) {
-            if (this.status != OrderStatus.DELIVERED) {
+            if (this.status != OrderStatus.DELIVERED && this.status != OrderStatus.COMPLETED) {
                 this.status = OrderStatus.DELIVERED;
             }
         } else if ("cancel".equalsIgnoreCase(lowerStatus)) {

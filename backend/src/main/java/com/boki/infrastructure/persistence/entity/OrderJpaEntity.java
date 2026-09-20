@@ -125,7 +125,7 @@ public class OrderJpaEntity {
     private List<OrderTimelineJpaEntity> timelines = new ArrayList<>();
 
     public enum OrderStatusJpa {
-        PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED, RETURNED
+        PENDING, CONFIRMED, SHIPPED, DELIVERED, COMPLETED, CANCELLED, RETURNED
     }
 
     // --- Helper methods for relationship ---
