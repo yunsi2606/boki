@@ -132,13 +132,13 @@ async function apiFetch<T>(
 export const api = {
   get: <T>(endpoint: string) => apiFetch<T>(endpoint, { method: 'GET' }),
 
-  post: <T>(endpoint: string, body: unknown) =>
+  post: <T>(endpoint: string, body: unknown = {}) =>
     apiFetch<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(body),
     }),
 
-  put: <T>(endpoint: string, body: unknown) =>
+  put: <T>(endpoint: string, body: unknown = {}) =>
     apiFetch<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(body),
@@ -146,7 +146,7 @@ export const api = {
 
   delete: <T>(endpoint: string) => apiFetch<T>(endpoint, { method: 'DELETE' }),
 
-  patch: <T>(endpoint: string, body: unknown) =>
+  patch: <T>(endpoint: string, body: unknown = {}) =>
     apiFetch<T>(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(body),

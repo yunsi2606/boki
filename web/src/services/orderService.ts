@@ -17,4 +17,8 @@ export const orderService = {
   getBuyerOrders: async (): Promise<Order[]> => {
     return api.get<Order[]>('/orders/buyer');
   },
+
+  completeOrder: async (id: string): Promise<Order> => {
+    return api.put<Order>(`/orders/${id}/complete`, {});
+  },
 };

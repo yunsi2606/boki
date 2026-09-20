@@ -205,7 +205,7 @@ export interface Order {
   customerPhone?: string;
   totalAmount: number;
   currency: string;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'RETURNED';
+  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'COMPLETED' | 'CANCELLED' | 'RETURNED';
   shippingAddress: string;
   carrierName?: string;
   trackingNumber?: string;
