@@ -53,6 +53,8 @@ public class BookDtoMapper {
                             v.getUpdatedAt()
                     ))
                     .toList();
+        }
+
         int effectiveStock = (variants != null && !variants.isEmpty())
                 ? variants.stream().mapToInt(BookVariantResponse::stockQuantity).sum()
                 : book.getStockQuantity();
