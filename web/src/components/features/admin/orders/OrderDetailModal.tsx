@@ -497,17 +497,38 @@ export function OrderDetailModal({
 
             {order.timelines && order.timelines.length > 0 ? (
               <div className={styles.timelineList}>
-                {order.timelines.map((tl, i) => (
-                  <div key={tl.id || i} className={styles.timelineItem}>
-                    <div className={styles.timelineDot}></div>
-                    <div className={styles.timelineHeader}>
-                      <span className={styles.timelineTitle}>{tl.title}</span>
-                      <span className={styles.timelineTime}>{formatDate(tl.createdAt)}</span>
+                {[...order.timelines]
+                  .sort(
+                    (a, b) =>
+                      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                  )
+                  .map((tl, i) => (
+                    <div key={tl.id || i} className={styles.timelineItem}>
+                      <div className={styles.timelineDot}></div>
+                      <div className={styles.timelineHeader}>
+                        <span className={styles.timelineTitle}>{tl.title}</span>
+                        {i === 0 && (
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: 800,
+                              color: '#047857',
+                              background: '#d1fae5',
+                              border: '1px solid #a7f3d0',
+                              padding: '1px 6px',
+                              borderRadius: '9999px',
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            Mới nhất
+                          </span>
+                        )}
+                        <span className={styles.timelineTime}>{formatDate(tl.createdAt)}</span>
+                      </div>
+                      {tl.description && <div className={styles.timelineDesc}>{tl.description}</div>}
+                      <div className={styles.timelineActor}>Thực hiện: <strong>{tl.actor}</strong></div>
                     </div>
-                    {tl.description && <div className={styles.timelineDesc}>{tl.description}</div>}
-                    <div className={styles.timelineActor}>Thực hiện: <strong>{tl.actor}</strong></div>
-                  </div>
-                ))}
+                  ))}
               </div>
             ) : (
               <p style={{ fontSize: '0.85rem', color: '#94a3b8', fontStyle: 'italic', margin: '8px 0 0 0' }}>

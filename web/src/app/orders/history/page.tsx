@@ -9,6 +9,7 @@ import { orderService } from '@/services/orderService';
 import { paymentService } from '@/services/paymentService';
 import SePayQrModal from '@/components/features/checkout/SePayQrModal';
 import type { Order, PaymentInitResponse } from '@/types';
+import { TruckIcon, MapPinIcon } from '@/components/ui/LineIcons';
 import styles from './history.module.css';
 import { OrderListSkeleton } from '@/components/ui/Skeleton';
 
@@ -289,7 +290,8 @@ export default function OrderHistoryPage() {
                   <div className={styles.carrierSection}>
                     <div className={styles.carrierDetails}>
                       <span className={styles.carrierBadge}>
-                        🚚 {order.carrierName}
+                        <TruckIcon size={15} color="#0284c7" />
+                        <span>{order.carrierName}</span>
                       </span>
                       {order.trackingNumber && (
                         <span>
@@ -308,22 +310,49 @@ export default function OrderHistoryPage() {
                   </div>
                 )}
 
-                {/* Customer Timeline Details */}
+                {/* Customer Timeline Details (Sorted Newest to Oldest) */}
                 {isTimelineOpen && order.timelines && order.timelines.length > 0 && (
                   <div className={styles.customerTimeline}>
                     <h5 className={styles.timelineHeading}>
-                      <span>📍</span> Lịch sử tiến trình đơn hàng
+                      <MapPinIcon size={16} color="#EE4D2D" />
+                      <span>Lịch sử tiến trình đơn hàng</span>
                     </h5>
                     <div className={styles.timelineList}>
-                      {order.timelines.map((t) => (
-                        <div key={t.id} className={styles.timelineItem}>
-                          <div>
-                            <span className={styles.timelineEventTitle}>{t.title}</span>
-                            <span className={styles.timelineTime}>{formatDate(t.createdAt)}</span>
-                          </div>
-                          {t.description && <p className={styles.timelineDesc}>{t.description}</p>}
-                        </div>
-                      ))}
+                      {[...order.timelines]
+                        .sort(
+                          (a, b) =>
+                            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                        )
+                        .map((t, idx) => {
+                          const isLatest = idx === 0;
+                          return (
+                            <div
+                              key={t.id}
+                              className={`${styles.timelineItem} ${
+                                isLatest ? styles.timelineItemLatest : ''
+                              }`}
+                            >
+                              <div className={styles.timelineItemHeader}>
+                                <span
+                                  className={`${styles.timelineEventTitle} ${
+                                    isLatest ? styles.timelineEventTitleLatest : ''
+                                  }`}
+                                >
+                                  {t.title}
+                                </span>
+                                {isLatest && (
+                                  <span className={styles.latestBadge}>Mới nhất</span>
+                                )}
+                                <span className={styles.timelineTime}>
+                                  {formatDate(t.createdAt)}
+                                </span>
+                              </div>
+                              {t.description && (
+                                <p className={styles.timelineDesc}>{t.description}</p>
+                              )}
+                            </div>
+                          );
+                        })}
                     </div>
                   </div>
                 )}

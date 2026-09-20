@@ -279,31 +279,64 @@
   content: '';
   position: absolute;
   left: -13px;
-  top: 4px;
+  top: 5px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #0284c7;
+  background: #94a3b8;
   border: 2px solid #ffffff;
+  transition: all 0.2s ease;
+}
+
+.timelineItemLatest::before {
+  background: #10b981;
+  width: 10px;
+  height: 10px;
+  left: -14px;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+.timelineItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .timelineEventTitle {
   font-size: 13px;
-  font-weight: 700;
-  color: #1e293b;
+  font-weight: 600;
+  color: #475569;
+}
+
+.timelineEventTitleLatest {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.latestBadge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #047857;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .timelineTime {
   font-size: 11px;
   color: #94a3b8;
-  margin-left: 8px;
   font-weight: normal;
 }
 
 .timelineDesc {
   font-size: 12px;
   color: #64748b;
-  margin-top: 2px;
+  margin-top: 3px;
+  line-height: 1.4;
 }
 
 .cancelReasonAlert {
