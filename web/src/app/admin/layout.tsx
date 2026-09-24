@@ -15,6 +15,7 @@ import {
   ActivityIcon,
   FileTextIcon,
 } from '@/components/ui/LineIcons';
+import { Bot } from 'lucide-react';
 import styles from './adminLayout.module.css';
 
 const navItems = [
@@ -24,6 +25,7 @@ const navItems = [
   { name: 'Quản lý đơn hàng', path: '/admin/orders', icon: <PackageIcon size={20} /> },
   { name: 'Mã giảm giá', path: '/admin/vouchers', icon: <TicketIcon size={20} /> },
   { name: 'Nhật ký & Hành vi', path: '/admin/activity', icon: <ActivityIcon size={20} /> },
+  { name: 'AI Chatbot Analytics', path: '/admin/chat-analytics', icon: <Bot size={20} /> },
   { name: 'Cấu hình trang chủ', path: '/admin/config', icon: <LayoutTemplateIcon size={20} /> },
 ];
 

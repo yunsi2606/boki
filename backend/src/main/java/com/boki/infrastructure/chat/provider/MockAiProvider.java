@@ -57,6 +57,15 @@ public class MockAiProvider implements AiProvider {
                 boolean outOnly = lower.contains("đã hết") || lower.contains("hết sạch");
                 return AiResponse.withTool("getLowStock", Map.of("outOfStockOnly", outOnly), "Đang kiểm tra dữ liệu kho hàng...", getProviderName());
             }
+            if ((lower.contains("duyệt đơn") || lower.contains("xác nhận đơn") || lower.contains("hủy đơn") || lower.contains("huỷ đơn") || lower.contains("giao đơn"))
+                    && ORDER_CODE_PATTERN.matcher(msg).find()) {
+                Matcher matcher = ORDER_CODE_PATTERN.matcher(msg);
+                matcher.find();
+                String code = matcher.group(1);
+                String actionType = (lower.contains("hủy đơn") || lower.contains("huỷ đơn")) ? "CANCEL_ORDER"
+                        : (lower.contains("giao đơn") ? "SHIP_ORDER" : "APPROVE_ORDER");
+                return AiResponse.withTool("proposeOrderAction", Map.of("orderCode", code, "actionType", actionType), "Đang khởi tạo lệnh phê duyệt an toàn cho đơn " + code + "...", getProviderName());
+            }
             if (lower.contains("chờ duyệt") || lower.contains("cần duyệt") || lower.contains("tình hình đơn") || lower.contains("trạng thái đơn")) {
                 return AiResponse.withTool("getOrderMetrics", Map.of(), "Đang thống kê dữ liệu đơn hàng...", getProviderName());
             }

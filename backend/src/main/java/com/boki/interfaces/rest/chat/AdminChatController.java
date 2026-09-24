@@ -29,15 +29,18 @@ public class AdminChatController {
     private final AiOrchestrator aiOrchestrator;
     private final ToolRouter toolRouter;
     private final ChatAuditLogJpaRepository auditLogRepository;
+    private final com.boki.application.chat.confirmation.ChatConfirmationService chatConfirmationService;
 
     public AdminChatController(
             AiOrchestrator aiOrchestrator,
             ToolRouter toolRouter,
-            ChatAuditLogJpaRepository auditLogRepository
+            ChatAuditLogJpaRepository auditLogRepository,
+            com.boki.application.chat.confirmation.ChatConfirmationService chatConfirmationService
     ) {
         this.aiOrchestrator = aiOrchestrator;
         this.toolRouter = toolRouter;
         this.auditLogRepository = auditLogRepository;
+        this.chatConfirmationService = chatConfirmationService;
     }
 
     @PostMapping("/message")
@@ -53,6 +56,25 @@ public class AdminChatController {
 
         ChatResponseDto response = aiOrchestrator.processMessage(request, adminId, role, clientIp);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<Map<String, Object>> confirmAction(
+            @Valid @RequestBody com.boki.interfaces.rest.chat.dto.ConfirmationRequestDto request,
+            @AuthenticationPrincipal AuthenticatedUser authUser
+    ) {
+        UUID adminId = authUser.userId();
+        Map<String, Object> result = chatConfirmationService.processConfirmation(request, adminId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/logs")
+    public ResponseEntity<org.springframework.data.domain.Page<com.boki.infrastructure.persistence.entity.ChatAuditLogJpaEntity>> getAuditLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(auditLogRepository.findAllByOrderByCreatedAtDesc(pageRequest));
     }
 
     @GetMapping("/briefing")
@@ -71,10 +93,10 @@ public class AdminChatController {
     @GetMapping("/shortcuts")
     public ResponseEntity<List<Map<String, String>>> getShortcuts() {
         return ResponseEntity.ok(List.of(
-                Map.of("label", "📊 Doanh thu hôm nay", "prompt", "Doanh thu hôm nay sao rồi?"),
-                Map.of("label", "📦 Đơn hàng cần duyệt", "prompt", "Có bao nhiêu đơn hàng đang chờ duyệt?"),
-                Map.of("label", "⚠️ Cảnh báo tồn kho thấp", "prompt", "Những tựa sách nào sắp hết hàng?"),
-                Map.of("label", "🚨 Quét bất thường", "prompt", "Hôm nay có gì bất thường trong vận hành không?")
+                Map.of("label", "Doanh thu hôm nay", "prompt", "Doanh thu hôm nay sao rồi?"),
+                Map.of("label", "Đơn hàng cần duyệt", "prompt", "Có bao nhiêu đơn hàng đang chờ duyệt?"),
+                Map.of("label", "Cảnh báo tồn kho thấp", "prompt", "Những tựa sách nào sắp hết hàng?"),
+                Map.of("label", "Quét bất thường", "prompt", "Hôm nay có gì bất thường trong vận hành không?")
         ));
     }
 

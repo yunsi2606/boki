@@ -8,6 +8,7 @@ import { dispatchChatAction } from '../actions/ActionDispatcher';
 import MetricCard from '../cards/MetricCard';
 import OrderCard from '../cards/OrderCard';
 import BookCard from '../cards/BookCard';
+import AdminConfirmationModal, { ConfirmationPayload } from './AdminConfirmationModal';
 import type { ChatAction } from '@/types/chat';
 import styles from '../styles/adminChatbot.module.css';
 
@@ -19,6 +20,7 @@ export default function AdminChatWindow({ onClose }: AdminChatWindowProps) {
   const router = useRouter();
   const { messages, loading, sendMessage, clearHistory } = useConversation(true);
   const [inputText, setInputText] = useState('');
+  const [pendingConfirmation, setPendingConfirmation] = useState<ConfirmationPayload | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +43,29 @@ export default function AdminChatWindow({ onClose }: AdminChatWindowProps) {
   };
 
   const handleActionClick = (action: ChatAction) => {
-    dispatchChatAction(action, { router });
+    if (action.type === 'REQUIRE_CONFIRMATION' && action.payload?.ticketId) {
+      setPendingConfirmation({
+        ticketId: action.payload.ticketId,
+        actionType: action.payload.actionType,
+        actionName: action.payload.actionName,
+        orderId: action.payload.orderId,
+        orderCode: action.payload.orderCode,
+        totalAmount: action.payload.totalAmount,
+      });
+      return;
+    }
+
+    dispatchChatAction(action, {
+      router,
+      onConfirmAction: (ticketId, actionType) => {
+        setPendingConfirmation({
+          ticketId,
+          actionType,
+          orderId: action.payload?.orderId,
+          orderCode: action.payload?.orderCode,
+        });
+      },
+    });
   };
 
   const formatText = (content: string) => {
@@ -195,6 +219,18 @@ export default function AdminChatWindow({ onClose }: AdminChatWindowProps) {
           <Send size={15} />
         </button>
       </div>
+
+      {pendingConfirmation && (
+        <AdminConfirmationModal
+          payload={pendingConfirmation}
+          onClose={() => setPendingConfirmation(null)}
+          onComplete={(_success, message) => {
+            const ticketId = pendingConfirmation.ticketId;
+            setPendingConfirmation(null);
+            sendMessage(`Đã xử lý vé xác thực ${ticketId}: ${message}`);
+          }}
+        />
+      )}
     </div>
   );
 }

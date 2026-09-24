@@ -51,4 +51,18 @@ export const chatService = {
   getAdminAnalytics: (): Promise<any> => {
     return api.get<any>('/admin/chat/analytics', { bypassCache: true });
   },
+
+  /**
+   * Xác nhận hoặc từ chối hành động quản trị 2 bước
+   */
+  confirmAdminAction: (ticketId: string, confirmed: boolean): Promise<any> => {
+    return api.post<any>('/admin/chat/confirm', { ticketId, confirmed });
+  },
+
+  /**
+   * Lấy danh sách lịch sử kiểm tra (Audit Logs) của Chatbot
+   */
+  getAdminAuditLogs: (page: number = 0, size: number = 15): Promise<any> => {
+    return api.get<any>(`/admin/chat/logs?page=${page}&size=${size}`, { bypassCache: true });
+  },
 };
