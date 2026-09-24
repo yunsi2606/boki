@@ -15,6 +15,6 @@ import java.util.UUID;
 public interface BookVariantJpaRepository extends JpaRepository<BookVariantJpaEntity, UUID> {
     List<BookVariantJpaEntity> findByBookId(UUID bookId);
 
-    @Query("SELECT v FROM BookVariantJpaEntity v WHERE v.book.id IN :bookIds")
+    @Query("SELECT v FROM BookVariantJpaEntity v JOIN FETCH v.book WHERE v.book.id IN :bookIds")
     List<BookVariantJpaEntity> findByBookIds(@Param("bookIds") Collection<UUID> bookIds);
 }

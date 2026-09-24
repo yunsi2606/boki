@@ -9,6 +9,8 @@ import com.boki.domain.port.out.UserRepository;
 import com.boki.infrastructure.persistence.entity.BookVariantJpaEntity;
 import com.boki.infrastructure.persistence.repository.BookVariantJpaRepository;
 import com.boki.infrastructure.util.SlugUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -19,10 +21,16 @@ public class BookDtoMapper {
 
     private final UserRepository userRepository;
     private final BookVariantJpaRepository variantRepository;
+    private final ObjectMapper objectMapper;
 
-    public BookDtoMapper(UserRepository userRepository, BookVariantJpaRepository variantRepository) {
+    public BookDtoMapper(
+            UserRepository userRepository,
+            BookVariantJpaRepository variantRepository,
+            ObjectMapper objectMapper
+    ) {
         this.userRepository = userRepository;
         this.variantRepository = variantRepository;
+        this.objectMapper = objectMapper;
     }
 
     public BookResponse toResponse(Book book) {
@@ -116,16 +124,25 @@ public class BookDtoMapper {
     }
 
     private BookVariantResponse toVariantResponse(BookVariantJpaEntity v) {
+        Map<String, String> attrMap = null;
+        if (v.getAttributesJson() != null && !v.getAttributesJson().isBlank()) {
+            try {
+                attrMap = objectMapper.readValue(v.getAttributesJson(), new TypeReference<Map<String, String>>() {});
+            } catch (Exception ignored) {}
+        }
+
+        String bookIdStr = v.getBook() != null ? v.getBook().getId().toString() : null;
+
         return new BookVariantResponse(
                 v.getId().toString(),
-                v.getBook().getId().toString(),
+                bookIdStr,
                 v.getSku(),
                 v.getName(),
                 v.getPrice(),
                 v.getOriginalPrice(),
                 v.getStockQuantity(),
                 v.getImageUrl(),
-                null,
+                attrMap,
                 v.getAttributesJson(),
                 v.isStandaloneDisplay(),
                 v.getCreatedAt(),

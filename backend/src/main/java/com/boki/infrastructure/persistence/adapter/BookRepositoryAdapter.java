@@ -109,8 +109,14 @@ public class BookRepositoryAdapter implements BookRepository {
 
     @Override
     public List<Book> searchAll(String query, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return jpaRepository.searchAllBooks(query, pageable)
+        Pageable pageable = PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        if (query != null && !query.trim().isEmpty()) {
+            return jpaRepository.searchAllBooks(query.trim(), pageable)
+                    .getContent().stream()
+                    .map(BookPersistenceMapper::toDomainModel)
+                    .collect(Collectors.toList());
+        }
+        return jpaRepository.findAll(pageable)
                 .getContent().stream()
                 .map(BookPersistenceMapper::toDomainModel)
                 .collect(Collectors.toList());

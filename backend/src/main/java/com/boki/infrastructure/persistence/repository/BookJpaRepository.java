@@ -45,7 +45,8 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
     );
 
     @Query("SELECT b FROM BookJpaEntity b WHERE " +
-           "(:query IS NULL OR :query = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
+           "LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<BookJpaEntity> searchAllBooks(@Param("query") String query, Pageable pageable);
 
     @org.springframework.data.jpa.repository.Modifying
