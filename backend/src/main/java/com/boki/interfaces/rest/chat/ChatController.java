@@ -85,9 +85,18 @@ public class ChatController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "GUEST";
         }
-        return authentication.getAuthorities().stream()
-                .findFirst()
-                .map(a -> a.getAuthority().replace("ROLE_", ""))
-                .orElse("BUYER");
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_ADMIN"));
+        if (isAdmin) return "ADMIN";
+
+        boolean isSeller = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SELLER"));
+        if (isSeller) return "SELLER";
+
+        boolean isBuyer = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_BUYER"));
+        if (isBuyer) return "BUYER";
+
+        return "BUYER";
     }
 }

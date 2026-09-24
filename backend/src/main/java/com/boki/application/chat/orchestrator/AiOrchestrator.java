@@ -60,12 +60,18 @@ public class AiOrchestrator {
         String userMsg = request.message().trim();
 
         // 1. Khởi tạo / cập nhật Conversation Context & Page Context
-        ConversationState state = contextManager.getOrCreateSession(request.sessionId(), userId, userRole, request.currentPath());
-        ToolExecutionContext executionContext = new ToolExecutionContext(
-                userId, userRole, state.getSessionId(), request.currentPath(), state.getPageContext(), state
-        );
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(userRole) 
+                || "SELLER".equalsIgnoreCase(userRole)
+                || (request.currentPath() != null && request.currentPath().startsWith("/admin"));
+        String effectiveRole = userRole;
+        if (isAdmin && (effectiveRole == null || (!"ADMIN".equalsIgnoreCase(effectiveRole) && !"SELLER".equalsIgnoreCase(effectiveRole)))) {
+            effectiveRole = "ADMIN";
+        }
 
-        boolean isAdmin = "ADMIN".equalsIgnoreCase(userRole) || "SELLER".equalsIgnoreCase(userRole);
+        ConversationState state = contextManager.getOrCreateSession(request.sessionId(), userId, effectiveRole, request.currentPath());
+        ToolExecutionContext executionContext = new ToolExecutionContext(
+                userId, effectiveRole, state.getSessionId(), request.currentPath(), state.getPageContext(), state
+        );
         List<String> toolsInvoked = new ArrayList<>();
         String responseText;
         ChatActionType actionType = ChatActionType.NONE;

@@ -40,22 +40,31 @@ public class MockAiProvider implements AiProvider {
         String lower = msg.toLowerCase();
         ConversationState state = request.conversationState();
         PageContext pageCtx = state != null ? state.getPageContext() : PageContext.unknown();
-        boolean isAdmin = state != null && ("ADMIN".equalsIgnoreCase(state.getUserRole()) || "SELLER".equalsIgnoreCase(state.getUserRole()));
+        boolean isAdmin = (state != null && ("ADMIN".equalsIgnoreCase(state.getUserRole()) || "SELLER".equalsIgnoreCase(state.getUserRole())))
+                || (pageCtx != null && pageCtx.isAdministrative())
+                || (state != null && state.getCurrentPath() != null && state.getCurrentPath().startsWith("/admin"));
 
         // --- 1. ADMIN INTENTS ---
         if (isAdmin) {
-            if (lower.contains("bản tin") || lower.contains("briefing") || lower.contains("tóm tắt") || lower.contains("hôm nay thế nào") || lower.contains("chào buổi sáng")) {
-                return AiResponse.withTool("getDailyBriefing", Map.of(), "Đang tổng hợp Bản tin Hoạt động Điều hành...", getProviderName());
-            }
-            if (lower.contains("doanh thu") || lower.contains("doanh số") || lower.contains("bán được bao nhiêu") || lower.contains("thu nhập")) {
+            // Specific: Doanh thu
+            if (lower.contains("doanh thu") || lower.contains("doanh số") || lower.contains("bán được bao nhiêu") || lower.contains("thu nhập") || lower.contains("tiền thu")) {
                 return AiResponse.withTool("getRevenue", Map.of(), "Đang phân tích số liệu doanh thu...", getProviderName());
             }
+
+            // Specific: Cảnh báo bất thường / Gian lận
             if (lower.contains("bất thường") || lower.contains("nghi vấn") || lower.contains("gian lận") || lower.contains("có gì lạ")) {
                 return AiResponse.withTool("detectAnomalies", Map.of(), "Đang quét các dấu hiệu vận hành bất thường...", getProviderName());
             }
+
+            // Specific: Tồn kho thấp / Hết hàng
             if (lower.contains("tồn kho") || lower.contains("sắp hết") || lower.contains("hết hàng")) {
                 boolean outOnly = lower.contains("đã hết") || lower.contains("hết sạch");
                 return AiResponse.withTool("getLowStock", Map.of("outOfStockOnly", outOnly), "Đang kiểm tra dữ liệu kho hàng...", getProviderName());
+            }
+
+            // General: Bản tin điều hành / Tóm tắt tổng quan
+            if (lower.contains("bản tin") || lower.contains("briefing") || lower.contains("tóm tắt") || lower.contains("hôm nay thế nào") || lower.contains("chào buổi sáng") || lower.contains("tổng quan hôm nay")) {
+                return AiResponse.withTool("getDailyBriefing", Map.of(), "Đang tổng hợp Bản tin Hoạt động Điều hành...", getProviderName());
             }
             if ((lower.contains("duyệt đơn") || lower.contains("xác nhận đơn") || lower.contains("hủy đơn") || lower.contains("huỷ đơn") || lower.contains("giao đơn"))
                     && ORDER_CODE_PATTERN.matcher(msg).find()) {

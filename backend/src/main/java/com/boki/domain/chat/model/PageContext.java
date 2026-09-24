@@ -31,4 +31,11 @@ public record PageContext(
     public static PageContext of(PageType pageType, String entityId, String entitySlug, Map<String, Object> metadata) {
         return new PageContext(pageType, entityId, entitySlug, metadata != null ? metadata : Map.of());
     }
+
+    public boolean isAdministrative() {
+        return pageType == PageType.ADMIN_DASHBOARD ||
+               pageType == PageType.ADMIN_ORDERS ||
+               pageType == PageType.ADMIN_BOOKS ||
+               pageType == PageType.ADMIN_VOUCHERS;
+    }
 }

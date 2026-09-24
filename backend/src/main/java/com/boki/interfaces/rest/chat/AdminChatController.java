@@ -121,11 +121,16 @@ public class AdminChatController {
 
     private String extractRole(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return "SELLER";
+            return "ADMIN";
         }
-        return authentication.getAuthorities().stream()
-                .findFirst()
-                .map(a -> a.getAuthority().replace("ROLE_", ""))
-                .orElse("SELLER");
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_ADMIN"));
+        if (isAdmin) return "ADMIN";
+
+        boolean isSeller = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SELLER"));
+        if (isSeller) return "SELLER";
+
+        return "ADMIN";
     }
 }

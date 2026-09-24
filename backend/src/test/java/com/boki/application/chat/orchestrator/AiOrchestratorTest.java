@@ -63,6 +63,42 @@ class AiOrchestratorTest {
         }
     }
 
+    private static class DummyDailyBriefingTool implements ChatTool {
+        @Override public String getName() { return "getDailyBriefing"; }
+        @Override public ToolMetadata getMetadata() { return ToolMetadata.admin("getDailyBriefing", "test", Map.of(), List.of()); }
+        @Override public ToolPermission getRequiredPermission() { return ToolPermission.SELLER_OR_ADMIN; }
+        @Override public ToolResult execute(ToolExecutionContext context, Map<String, Object> params) {
+            return ToolResult.ok("Bản tin Điều hành hôm nay", Map.of(), ChatActionType.DAILY_BRIEFING, List.of(), List.of());
+        }
+    }
+
+    private static class DummyRevenueTool implements ChatTool {
+        @Override public String getName() { return "getRevenue"; }
+        @Override public ToolMetadata getMetadata() { return ToolMetadata.admin("getRevenue", "test", Map.of(), List.of()); }
+        @Override public ToolPermission getRequiredPermission() { return ToolPermission.ADMIN_ONLY; }
+        @Override public ToolResult execute(ToolExecutionContext context, Map<String, Object> params) {
+            return ToolResult.ok("Doanh thu hôm nay đạt 5,000,000 đ", Map.of(), ChatActionType.ADMIN_METRIC, List.of(), List.of());
+        }
+    }
+
+    private static class DummyLowStockTool implements ChatTool {
+        @Override public String getName() { return "getLowStock"; }
+        @Override public ToolMetadata getMetadata() { return ToolMetadata.admin("getLowStock", "test", Map.of(), List.of()); }
+        @Override public ToolPermission getRequiredPermission() { return ToolPermission.SELLER_OR_ADMIN; }
+        @Override public ToolResult execute(ToolExecutionContext context, Map<String, Object> params) {
+            return ToolResult.ok("Cảnh báo Tồn kho thấp", Map.of(), ChatActionType.ADMIN_METRIC, List.of(), List.of());
+        }
+    }
+
+    private static class DummyAnomalyTool implements ChatTool {
+        @Override public String getName() { return "detectAnomalies"; }
+        @Override public ToolMetadata getMetadata() { return ToolMetadata.admin("detectAnomalies", "test", Map.of(), List.of()); }
+        @Override public ToolPermission getRequiredPermission() { return ToolPermission.ADMIN_ONLY; }
+        @Override public ToolResult execute(ToolExecutionContext context, Map<String, Object> params) {
+            return ToolResult.ok("Quét Bất thường hệ thống", Map.of(), ChatActionType.ADMIN_METRIC, List.of(), List.of());
+        }
+    }
+
     @BeforeEach
     void setUp() {
         ConversationContextManager contextManager = new ConversationContextManager();
@@ -71,7 +107,11 @@ class AiOrchestratorTest {
                 new DummyOrderTool(),
                 new DummySearchBooksTool(),
                 new DummyGetBookDetailTool(),
-                new CheckShippingFeeTool()
+                new CheckShippingFeeTool(),
+                new DummyDailyBriefingTool(),
+                new DummyRevenueTool(),
+                new DummyLowStockTool(),
+                new DummyAnomalyTool()
         ));
         MockAiProvider mockAiProvider = new MockAiProvider(contextManager);
 
@@ -134,5 +174,39 @@ class AiOrchestratorTest {
         assertTrue(res.text().contains("Boki chưa rõ câu hỏi"));
         assertFalse(res.actions().isEmpty());
         assertFalse(res.suggestions().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Admin shortcuts execute correct tools without fallback")
+    void testAdminShortcutsExecution() {
+        UUID adminId = UUID.randomUUID();
+
+        // 1. Briefing
+        ChatRequestDto req1 = new ChatRequestDto("Tóm tắt bản tin hoạt động hôm nay", "sess-admin-1", "/admin");
+        ChatResponseDto res1 = orchestrator.processMessage(req1, adminId, "ADMIN", "127.0.0.1");
+        assertNotNull(res1);
+        assertEquals(ChatActionType.DAILY_BRIEFING, res1.actionType());
+        assertTrue(res1.text().contains("Bản tin Điều hành"));
+
+        // 2. Revenue
+        ChatRequestDto req2 = new ChatRequestDto("Doanh thu hôm nay thế nào so với hôm qua?", "sess-admin-2", "/admin");
+        ChatResponseDto res2 = orchestrator.processMessage(req2, adminId, "ADMIN", "127.0.0.1");
+        assertNotNull(res2);
+        assertEquals(ChatActionType.ADMIN_METRIC, res2.actionType());
+        assertTrue(res2.text().contains("Doanh thu"));
+
+        // 3. Low stock
+        ChatRequestDto req3 = new ChatRequestDto("Những tựa sách nào sắp hết hàng?", "sess-admin-3", "/admin");
+        ChatResponseDto res3 = orchestrator.processMessage(req3, adminId, "ADMIN", "127.0.0.1");
+        assertNotNull(res3);
+        assertEquals(ChatActionType.ADMIN_METRIC, res3.actionType());
+        assertTrue(res3.text().contains("Tồn kho"));
+
+        // 4. Anomaly detection
+        ChatRequestDto req4 = new ChatRequestDto("Hôm nay có gì bất thường trong vận hành không?", "sess-admin-4", "/admin");
+        ChatResponseDto res4 = orchestrator.processMessage(req4, adminId, "ADMIN", "127.0.0.1");
+        assertNotNull(res4);
+        assertEquals(ChatActionType.ADMIN_METRIC, res4.actionType());
+        assertTrue(res4.text().contains("Bất thường"));
     }
 }
