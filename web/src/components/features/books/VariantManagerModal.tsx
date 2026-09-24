@@ -22,37 +22,44 @@ export default function VariantManagerModal({
   initialVariants = [],
   onSaveVariants,
 }: VariantManagerModalProps) {
-  const [variants, setVariants] = useState<BookVariant[]>(
-    initialVariants.length > 0
-      ? initialVariants
-      : [
-        {
-          id: `v_${Date.now()}_1`,
-          bookId,
-          name: 'Bản Thường',
-          price: 95000,
-          originalPrice: 120000,
-          stockQuantity: 20,
-          imageUrl: '',
-          isStandaloneDisplay: false,
-        },
-        {
-          id: `v_${Date.now()}_2`,
-          bookId,
-          name: 'Bản Đặc Biệt',
-          price: 145000,
-          originalPrice: 180000,
-          stockQuantity: 10,
-          imageUrl: '',
-          attributes: { Tag: 'Hot Edition' },
-          isStandaloneDisplay: true,
-        },
-      ]
-  );
-
+  const [variants, setVariants] = useState<BookVariant[]>(initialVariants);
   const [hasVariantImages, setHasVariantImages] = useState<boolean>(
     initialVariants.some((v) => Boolean(v.imageUrl))
   );
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (initialVariants && initialVariants.length > 0) {
+        setVariants(initialVariants);
+        setHasVariantImages(initialVariants.some((v) => Boolean(v.imageUrl)));
+      } else {
+        setVariants([
+          {
+            id: `v_${Date.now()}_1`,
+            bookId,
+            name: 'Bản Thường',
+            price: 95000,
+            originalPrice: 120000,
+            stockQuantity: 20,
+            imageUrl: '',
+            isStandaloneDisplay: false,
+          },
+          {
+            id: `v_${Date.now()}_2`,
+            bookId,
+            name: 'Bản Đặc Biệt',
+            price: 145000,
+            originalPrice: 180000,
+            stockQuantity: 10,
+            imageUrl: '',
+            attributes: { Tag: 'Hot Edition' },
+            isStandaloneDisplay: true,
+          },
+        ]);
+        setHasVariantImages(false);
+      }
+    }
+  }, [isOpen, bookId, initialVariants]);
 
   if (!isOpen) return null;
 

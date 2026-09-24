@@ -18,6 +18,22 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
+export class ApiRequestError extends Error {
+  status: number;
+  error: string;
+  timestamp?: string;
+  path?: string;
+
+  constructor(data: ApiError) {
+    super(data.message || data.error || 'Yêu cầu API thất bại');
+    this.name = 'ApiRequestError';
+    this.status = data.status;
+    this.error = data.error;
+    this.timestamp = data.timestamp;
+    this.path = data.path;
+  }
+}
+
 interface RequestOptions extends RequestInit {
   cacheTtlMs?: number;
   bypassCache?: boolean;
@@ -146,7 +162,7 @@ async function apiFetch<T>(
                   timestamp: new Date().toISOString(),
                   path: endpoint,
                 }));
-                throw retryError;
+                throw new ApiRequestError(retryError);
               }
 
               return retryRes.json() as Promise<T>;
@@ -182,7 +198,7 @@ async function apiFetch<T>(
         timestamp: new Date().toISOString(),
         path: endpoint,
       }));
-      throw error;
+      throw new ApiRequestError(error);
     }
 
     const data = (await response.json()) as T;
