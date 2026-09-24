@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
@@ -14,6 +14,7 @@ export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { cartCount } = useCart();
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
 
   const initials = user?.displayName
@@ -56,8 +57,9 @@ export default function Header() {
             </Link>
 
             <nav className={styles.navLinks}>
-              <Link href="/" className={styles.navLinkActive}>Trang chủ</Link>
-              <Link href="/books" className={styles.navLink}>Cửa hàng</Link>
+              <Link href="/" className={pathname === '/' ? styles.navLinkActive : styles.navLink}>Trang chủ</Link>
+              <Link href="/books" className={pathname?.startsWith('/books') ? styles.navLinkActive : styles.navLink}>Cửa hàng</Link>
+              <Link href="/blog" className={pathname?.startsWith('/blog') ? styles.navLinkActive : styles.navLink}>Bài viết</Link>
               <Link href="/#vouchers" className={styles.navLink}>Mã giảm giá</Link>
               {user?.role === 'ADMIN' && (
                 <Link href="/admin" className={styles.adminPortalBtn}>
