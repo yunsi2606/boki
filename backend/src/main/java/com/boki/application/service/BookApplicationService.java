@@ -176,19 +176,15 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
     @Override
     @Transactional(readOnly = true)
     public List<BookResponse> searchBooks(Integer categoryId, String query, int page, int size) {
-        return bookRepository.searchActive(categoryId, query, page, size)
-                .stream()
-                .map(bookDtoMapper::toResponse)
-                .collect(Collectors.toList());
+        List<Book> books = bookRepository.searchActive(categoryId, query, page, size);
+        return bookDtoMapper.toResponseList(books);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BookResponse> getAdminBooks(String query, int page, int size) {
-        return bookRepository.searchAll(query, page, size)
-                .stream()
-                .map(bookDtoMapper::toResponse)
-                .collect(Collectors.toList());
+        List<Book> books = bookRepository.searchAll(query, page, size);
+        return bookDtoMapper.toResponseList(books);
     }
 
     @Override
@@ -197,9 +193,7 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         User seller = userRepository.findByEmail(Email.of(sellerEmail))
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", sellerEmail));
 
-        return bookRepository.findBySellerId(seller.getId())
-                .stream()
-                .map(bookDtoMapper::toResponse)
-                .collect(Collectors.toList());
+        List<Book> books = bookRepository.findBySellerId(seller.getId());
+        return bookDtoMapper.toResponseList(books);
     }
 }

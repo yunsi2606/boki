@@ -86,9 +86,11 @@ public class BookJpaEntity {
     @Column(name = "created_by")
     private String createdBy;
 
+    @org.hibernate.annotations.BatchSize(size = 50)
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BookImageJpaEntity> images = new ArrayList<>();
 
+    @org.hibernate.annotations.BatchSize(size = 50)
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BookVariantJpaEntity> variants = new ArrayList<>();
 

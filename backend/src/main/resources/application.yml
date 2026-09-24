@@ -20,7 +20,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: false
+        default_batch_fetch_size: 50
+        order_inserts: true
+        order_updates: true
 
   # Flyway
   flyway:
@@ -61,5 +64,9 @@ app:
 # Server
 server:
   port: ${PORT:8080}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
   servlet:
     context-path: /
