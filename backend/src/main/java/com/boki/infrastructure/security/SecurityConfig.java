@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/refresh", "/api/auth/oauth", "/api/auth/verify-email", "/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/public/**", "/api/v1/media/**", "/api/webhooks/**", "/api/payments/**").permitAll()
+                        .requestMatchers("/api/public/**", "/api/v1/media/**", "/api/webhooks/**", "/api/payments/**", "/api/chat/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/activities", "/api/activities/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/admin/orders/alerts/stream").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders", "/api/orders/calculate-pricing").permitAll()

@@ -1,0 +1,22 @@
+package com.boki.domain.chat.model;
+
+public enum ChatActionType {
+    NONE,
+    VIEW_BOOK,
+    ADD_TO_CART,
+    REMOVE_FROM_CART,
+    APPLY_VOUCHER,
+    COPY_VOUCHER,
+    VIEW_ORDER,
+    TRACK_ORDER,
+    GO_TO_CHECKOUT,
+    NAVIGATE,
+    BOOK_LIST,
+    BOOK_COMPARE,
+    ORDER_INFO,
+    VOUCHER_LIST,
+    ADMIN_METRIC,
+    DAILY_BRIEFING,
+    REQUIRE_CONFIRMATION,
+    QUICK_ACTIONS
+}
