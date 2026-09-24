@@ -33,10 +33,8 @@ public class GetRevenueTool implements ChatTool {
                 "getRevenue",
                 "Báo cáo doanh thu có giải trình (Explainable Metrics): đối chiếu hôm nay so với hôm qua và tuần trước, phân tích biến động số đơn và AOV.",
                 Map.of(
-                        "period", "Khoảng thời gian: 'today', 'yesterday', 'this_week', 'this_month'"
-                ),
-                List.of()
-        );
+                        "period", "Khoảng thời gian: 'today', 'yesterday', 'this_week', 'this_month'"),
+                List.of());
     }
 
     @Override
@@ -62,29 +60,39 @@ public class GetRevenueTool implements ChatTool {
 
         // Đơn hôm qua
         List<OrderJpaEntity> ordersYesterday = recentOrders.stream()
-                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().isAfter(startOfYesterday) && o.getCreatedAt().isBefore(startOfToday))
+                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().isAfter(startOfYesterday)
+                        && o.getCreatedAt().isBefore(startOfToday))
                 .filter(o -> o.getStatus() != OrderJpaEntity.OrderStatusJpa.CANCELLED)
                 .toList();
 
         // Đơn cùng ngày tuần trước
         List<OrderJpaEntity> ordersLastWeek = recentOrders.stream()
-                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().isAfter(startOfSameDayLastWeek) && o.getCreatedAt().isBefore(startOfSameDayLastWeek.plus(1, ChronoUnit.DAYS)))
+                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().isAfter(startOfSameDayLastWeek)
+                        && o.getCreatedAt().isBefore(startOfSameDayLastWeek.plus(1, ChronoUnit.DAYS)))
                 .filter(o -> o.getStatus() != OrderJpaEntity.OrderStatusJpa.CANCELLED)
                 .toList();
 
-        BigDecimal revenueToday = ordersToday.stream().map(OrderJpaEntity::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal revenueYesterday = ordersYesterday.stream().map(OrderJpaEntity::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal revenueLastWeek = ordersLastWeek.stream().map(OrderJpaEntity::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal revenueToday = ordersToday.stream().map(OrderJpaEntity::getTotalAmount).reduce(BigDecimal.ZERO,
+                BigDecimal::add);
+        BigDecimal revenueYesterday = ordersYesterday.stream().map(OrderJpaEntity::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal revenueLastWeek = ordersLastWeek.stream().map(OrderJpaEntity::getTotalAmount).reduce(BigDecimal.ZERO,
+                BigDecimal::add);
 
         int countToday = ordersToday.size();
         int countYesterday = ordersYesterday.size();
 
-        BigDecimal aovToday = countToday > 0 ? revenueToday.divide(BigDecimal.valueOf(countToday), 0, RoundingMode.HALF_UP) : BigDecimal.ZERO;
-        BigDecimal aovYesterday = countYesterday > 0 ? revenueYesterday.divide(BigDecimal.valueOf(countYesterday), 0, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+        BigDecimal aovToday = countToday > 0
+                ? revenueToday.divide(BigDecimal.valueOf(countToday), 0, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+        BigDecimal aovYesterday = countYesterday > 0
+                ? revenueYesterday.divide(BigDecimal.valueOf(countYesterday), 0, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
 
         double vsYesterdayPct = calculatePct(revenueToday, revenueYesterday);
         double vsLastWeekPct = calculatePct(revenueToday, revenueLastWeek);
-        double orderChangePct = countYesterday > 0 ? ((double)(countToday - countYesterday) / countYesterday) * 100.0 : 0.0;
+        double orderChangePct = countYesterday > 0 ? ((double) (countToday - countYesterday) / countYesterday) * 100.0
+                : 0.0;
 
         Map<String, Object> metricData = new LinkedHashMap<>();
         metricData.put("revenueToday", revenueToday);
@@ -95,20 +103,29 @@ public class GetRevenueTool implements ChatTool {
         metricData.put("orderChangePct", orderChangePct);
 
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("📊 **Báo cáo Doanh thu Hôm nay:** %,.0f ₫\n\n", revenueToday.doubleValue()));
+        sb.append(String.format("**Báo cáo Doanh thu Hôm nay:** %,.0f ₫\n\n", revenueToday.doubleValue()));
         sb.append("**So sánh tăng trưởng:**\n");
-        sb.append(String.format("• So với hôm qua: %s %,.1f%%\n", vsYesterdayPct >= 0 ? "🟢 +" : "🔴 ", vsYesterdayPct));
-        sb.append(String.format("• So với cùng ngày tuần trước: %s %,.1f%%\n\n", vsLastWeekPct >= 0 ? "🟢 +" : "🔴 ", vsLastWeekPct));
+        sb.append(String.format("• So với hôm qua: %s\n", formatTrend(vsYesterdayPct)));
+        sb.append(String.format("• So với cùng ngày tuần trước: %s\n\n", formatTrend(vsLastWeekPct)));
         sb.append("**Nguyên nhân dữ liệu (Explainable Metrics):**\n");
-        sb.append(String.format("• Tổng số đơn hoàn tất: %d đơn (%s %,.1f%% so với hôm qua)\n", countToday, orderChangePct >= 0 ? "+" : "", orderChangePct));
-        sb.append(String.format("• Giá trị đơn trung bình (AOV): %,.0f ₫ (hôm qua: %,.0f ₫)\n", aovToday.doubleValue(), aovYesterday.doubleValue()));
+        sb.append(String.format("• Tổng số đơn hoàn tất: %d đơn (%s so với hôm qua)\n", countToday,
+                formatTrend(orderChangePct)));
+        sb.append(String.format("• Giá trị đơn trung bình (AOV): %,.0f ₫ (hôm qua: %,.0f ₫)\n", aovToday.doubleValue(),
+                aovYesterday.doubleValue()));
 
         List<ChatAction> actions = List.of(
                 ChatAction.of(ChatActionType.NAVIGATE, "Xem đơn hàng", Map.of("path", "/admin/orders")),
-                ChatAction.of(ChatActionType.NAVIGATE, "Xem báo cáo chi tiết", Map.of("path", "/admin/analytics"))
-        );
+                ChatAction.of(ChatActionType.NAVIGATE, "Xem báo cáo chi tiết", Map.of("path", "/admin/analytics")));
 
         return ToolResult.ok(sb.toString(), metricData, ChatActionType.ADMIN_METRIC, List.of(metricData), actions);
+    }
+
+    private String formatTrend(double pct) {
+        if (pct >= 0) {
+            return String.format("<green>+%,.1f%%</green>", pct);
+        } else {
+            return String.format("<red>%,.1f%%</red>", pct);
+        }
     }
 
     private double calculatePct(BigDecimal current, BigDecimal previous) {

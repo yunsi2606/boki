@@ -29,6 +29,42 @@ interface AuditLogDetailModalProps {
 export default function AuditLogDetailModal({ log, onClose }: AuditLogDetailModalProps) {
   if (!log) return null;
 
+  const formatText = (content: string) => {
+    if (!content) return null;
+    const lines = content.split('\n');
+
+    return lines.map((line, idx) => {
+      const parts = line.split(/(<green>[^<]+<\/green>|<red>[^<]+<\/red>|\*\*[^*]+\*\*)/g);
+      const formattedLine = parts.map((part, pIdx) => {
+        if (part.startsWith('<green>') && part.endsWith('</green>')) {
+          return (
+            <span key={pIdx} style={{ color: '#16a34a', fontWeight: 600 }}>
+              {part.slice(7, -8)}
+            </span>
+          );
+        }
+        if (part.startsWith('<red>') && part.endsWith('</red>')) {
+          return (
+            <span key={pIdx} style={{ color: '#dc2626', fontWeight: 600 }}>
+              {part.slice(5, -6)}
+            </span>
+          );
+        }
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={pIdx}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      });
+
+      return (
+        <span key={idx}>
+          {formattedLine}
+          {idx < lines.length - 1 && <br />}
+        </span>
+      );
+    });
+  };
+
   return (
     <div className={styles.modalOverlay} onClick={onClose} role="dialog" aria-modal="true">
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -95,7 +131,7 @@ export default function AuditLogDetailModal({ log, onClose }: AuditLogDetailModa
               Phản hồi từ AI Orchestrator
             </span>
             <div className={styles.detailBox}>
-              {log.botResponse}
+              {formatText(log.botResponse)}
             </div>
           </div>
 

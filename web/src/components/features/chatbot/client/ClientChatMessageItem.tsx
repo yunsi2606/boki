@@ -35,9 +35,22 @@ export default function ClientChatMessageItem({ message }: MessageItemProps) {
     const lines = content.split('\n');
 
     return lines.map((line, idx) => {
-      // Thay thế **text** bằng <strong>text</strong>
-      const parts = line.split(/(\*\*[^*]+\*\*)/g);
+      const parts = line.split(/(<green>[^<]+<\/green>|<red>[^<]+<\/red>|\*\*[^*]+\*\*)/g);
       const formattedLine = parts.map((part, pIdx) => {
+        if (part.startsWith('<green>') && part.endsWith('</green>')) {
+          return (
+            <span key={pIdx} style={{ color: '#16a34a', fontWeight: 600 }}>
+              {part.slice(7, -8)}
+            </span>
+          );
+        }
+        if (part.startsWith('<red>') && part.endsWith('</red>')) {
+          return (
+            <span key={pIdx} style={{ color: '#dc2626', fontWeight: 600 }}>
+              {part.slice(5, -6)}
+            </span>
+          );
+        }
         if (part.startsWith('**') && part.endsWith('**')) {
           return <strong key={pIdx}>{part.slice(2, -2)}</strong>;
         }

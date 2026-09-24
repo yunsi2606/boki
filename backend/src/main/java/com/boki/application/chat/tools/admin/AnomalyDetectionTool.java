@@ -36,8 +36,7 @@ public class AnomalyDetectionTool implements ChatTool {
                 "detectAnomalies",
                 "Phân tích dữ liệu vận hành để phát hiện các dấu hiệu bất thường: tỷ lệ hủy đơn tăng vọt, đơn hàng nghi vấn gian lận, tồn kho sai lệch.",
                 Map.of(),
-                List.of()
-        );
+                List.of());
     }
 
     @Override
@@ -67,7 +66,8 @@ public class AnomalyDetectionTool implements ChatTool {
             anomalyData.put("cancellationRate24h", cancelRate);
 
             if (cancelRate >= 15.0 && orders24h.size() >= 5) {
-                anomalies.add(String.format("⚠️ **Tỷ lệ hủy đơn cao bất thường:** %,.1f%% (%d/%d đơn trong 24h qua bị hủy). Hãy kiểm tra lý do hủy của khách hàng.",
+                anomalies.add(String.format(
+                        "⚠️ **Tỷ lệ hủy đơn cao bất thường:** %,.1f%% (%d/%d đơn trong 24h qua bị hủy). Hãy kiểm tra lý do hủy của khách hàng.",
                         cancelRate, cancelled24h, orders24h.size()));
             }
         }
@@ -75,12 +75,14 @@ public class AnomalyDetectionTool implements ChatTool {
         // 2. Kiểm tra đơn hàng bị gắn cờ rủi ro (Fraud / Flagged)
         long flaggedCount = allOrders.stream()
                 .filter(o -> Boolean.TRUE.equals(o.getIsFlagged()))
-                .filter(o -> o.getStatus() == OrderJpaEntity.OrderStatusJpa.PENDING || o.getStatus() == OrderJpaEntity.OrderStatusJpa.CONFIRMED)
+                .filter(o -> o.getStatus() == OrderJpaEntity.OrderStatusJpa.PENDING
+                        || o.getStatus() == OrderJpaEntity.OrderStatusJpa.CONFIRMED)
                 .count();
         anomalyData.put("flaggedOrdersCount", flaggedCount);
 
         if (flaggedCount > 0) {
-            anomalies.add(String.format("🚨 **Cảnh báo Gian lận & Rủi ro:** Phát hiện **%d** đơn hàng có dấu hiệu bất thường (đặt trùng lặp nhiều lần hoặc địa chỉ bất thường) đang chờ xử lý.",
+            anomalies.add(String.format(
+                    "🚨 **Cảnh báo Gian lận & Rủi ro:** Phát hiện **%d** đơn hàng có dấu hiệu bất thường (đặt trùng lặp nhiều lần hoặc địa chỉ bất thường) đang chờ xử lý.",
                     flaggedCount));
         }
 
@@ -91,13 +93,14 @@ public class AnomalyDetectionTool implements ChatTool {
         anomalyData.put("activeZeroStockBooksCount", zeroStockBooks.size());
 
         if (!zeroStockBooks.isEmpty()) {
-            anomalies.add(String.format("📦 **Lệch trạng thái kho:** Có **%d** tựa sách vẫn ở trạng thái ACTIVE (đang mở bán) nhưng số lượng tồn kho = 0. Cần chuyển sang DRAFT hoặc cập nhật nhập kho.",
+            anomalies.add(String.format(
+                    "**Lệch trạng thái kho:** Có **%d** tựa sách vẫn ở trạng thái ACTIVE (đang mở bán) nhưng số lượng tồn kho = 0. Cần chuyển sang DRAFT hoặc cập nhật nhập kho.",
                     zeroStockBooks.size()));
         }
 
         StringBuilder sb = new StringBuilder();
         if (anomalies.isEmpty()) {
-            sb.append("🛡️ **Báo Cáo Bất Thường BokiStore:**\n\n");
+            sb.append("**Báo Cáo Bất Thường BokiStore:**\n\n");
             sb.append("Hệ thống đã quét toàn bộ các chỉ số vận hành trong 24 giờ qua:\n");
             sb.append("• Tỷ lệ hủy đơn: Trong ngưỡng an toàn (< 10%)\n");
             sb.append("• Đơn hàng rủi ro / gian lận: 0 đơn\n");
@@ -113,7 +116,8 @@ public class AnomalyDetectionTool implements ChatTool {
 
         List<ChatAction> actions = new ArrayList<>();
         if (flaggedCount > 0) {
-            actions.add(ChatAction.of(ChatActionType.NAVIGATE, "Xem đơn gắn cờ (" + flaggedCount + ")", Map.of("path", "/admin/orders?flagged=true")));
+            actions.add(ChatAction.of(ChatActionType.NAVIGATE, "Xem đơn gắn cờ (" + flaggedCount + ")",
+                    Map.of("path", "/admin/orders?flagged=true")));
         }
         actions.add(ChatAction.of(ChatActionType.NAVIGATE, "Báo cáo phân tích", Map.of("path", "/admin/analytics")));
 

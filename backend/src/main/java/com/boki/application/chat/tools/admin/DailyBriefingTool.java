@@ -23,7 +23,8 @@ public class DailyBriefingTool implements ChatTool {
     private final BookJpaRepository bookRepository;
     private final BookVariantJpaRepository variantRepository;
 
-    public DailyBriefingTool(OrderJpaRepository orderRepository, BookJpaRepository bookRepository, BookVariantJpaRepository variantRepository) {
+    public DailyBriefingTool(OrderJpaRepository orderRepository, BookJpaRepository bookRepository,
+            BookVariantJpaRepository variantRepository) {
         this.orderRepository = orderRepository;
         this.bookRepository = bookRepository;
         this.variantRepository = variantRepository;
@@ -40,8 +41,7 @@ public class DailyBriefingTool implements ChatTool {
                 "getDailyBriefing",
                 "Tạo bản tin tóm tắt hoạt động kinh doanh tổng hợp hàng ngày (Daily Briefing): đơn mới, doanh thu, cảnh báo kho và các tiêu điểm quan trọng.",
                 Map.of(),
-                List.of()
-        );
+                List.of());
     }
 
     @Override
@@ -73,8 +73,10 @@ public class DailyBriefingTool implements ChatTool {
         List<BookJpaEntity> allBooks = bookRepository.findAll();
         List<BookVariantJpaEntity> allVariants = variantRepository.findAll();
 
-        long lowStockBooks = allBooks.stream().filter(b -> b.getStockQuantity() > 0 && b.getStockQuantity() <= 5).count();
-        long lowStockVariants = allVariants.stream().filter(v -> v.getStockQuantity() > 0 && v.getStockQuantity() <= 5).count();
+        long lowStockBooks = allBooks.stream().filter(b -> b.getStockQuantity() > 0 && b.getStockQuantity() <= 5)
+                .count();
+        long lowStockVariants = allVariants.stream().filter(v -> v.getStockQuantity() > 0 && v.getStockQuantity() <= 5)
+                .count();
         long totalLowStock = lowStockBooks + lowStockVariants;
 
         long outOfStockBooks = allBooks.stream().filter(b -> b.getStockQuantity() == 0).count();
@@ -95,20 +97,25 @@ public class DailyBriefingTool implements ChatTool {
         briefingData.put("vouchersUsedToday", vouchersUsedToday);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("🌅 **Boki AI – Bản Tin Điều Hành Hôm Nay**\n");
+        sb.append("**Boki AI – Bản Tin Điều Hành Hôm Nay**\n");
         sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-        sb.append(String.format("📦 **Đơn hàng mới:** %d đơn (%d đơn đang chờ duyệt đóng gói)\n", newOrdersCount, pendingApprovalCount));
-        sb.append(String.format("💰 **Doanh thu hôm nay:** %,.0f ₫\n", revenueToday.doubleValue()));
-        sb.append(String.format("⚠️ **Tồn kho thấp (≤ 5):** %d mặt hàng\n", totalLowStock));
-        sb.append(String.format("🔴 **Đã hết hàng (0):** %d mặt hàng\n", totalOutOfStock));
-        sb.append(String.format("🎟️ **Voucher đã áp dụng:** %d lượt\n\n", vouchersUsedToday));
+        sb.append(String.format("**Đơn hàng mới:** %d đơn (%d đơn đang chờ duyệt đóng gói)\n", newOrdersCount,
+                pendingApprovalCount));
+        sb.append(String.format("**Doanh thu hôm nay:** %,.0f ₫\n", revenueToday.doubleValue()));
+        sb.append(String.format("**Tồn kho thấp (≤ 5):** %d mặt hàng\n", totalLowStock));
+        sb.append(String.format("**Đã hết hàng (0):** %d mặt hàng\n", totalOutOfStock));
+        sb.append(String.format("**Voucher đã áp dụng:** %d lượt\n\n", vouchersUsedToday));
 
         sb.append("📌 **Tiêu điểm đáng chú ý:**\n");
         if (pendingApprovalCount > 0) {
-            sb.append(String.format("• Có **%d** đơn hàng mới đang chờ duyệt để kịp bàn giao cho bưu cục GHN/Viettel Post trong ngày.\n", pendingApprovalCount));
+            sb.append(String.format(
+                    "• Có **%d** đơn hàng mới đang chờ duyệt để kịp bàn giao cho bưu cục GHN/Viettel Post trong ngày.\n",
+                    pendingApprovalCount));
         }
         if (totalOutOfStock > 0) {
-            sb.append(String.format("• Có **%d** sản phẩm đã hết hàng trong kho, cần lên kế hoạch nhập tái bản từ NXB.\n", totalOutOfStock));
+            sb.append(
+                    String.format("• Có **%d** sản phẩm đã hết hàng trong kho, cần lên kế hoạch nhập tái bản từ NXB.\n",
+                            totalOutOfStock));
         }
         if (pendingApprovalCount == 0 && totalOutOfStock == 0) {
             sb.append("• Mọi chỉ số vận hành đang ở mức tối ưu, không có tồn đọng xử lý đơn hàng.\n");
@@ -116,12 +123,14 @@ public class DailyBriefingTool implements ChatTool {
 
         List<ChatAction> actions = new ArrayList<>();
         if (pendingApprovalCount > 0) {
-            actions.add(ChatAction.of(ChatActionType.NAVIGATE, "Duyệt " + pendingApprovalCount + " đơn chờ", Map.of("path", "/admin/orders?status=PENDING")));
+            actions.add(ChatAction.of(ChatActionType.NAVIGATE, "Duyệt " + pendingApprovalCount + " đơn chờ",
+                    Map.of("path", "/admin/orders?status=PENDING")));
         }
         if (totalLowStock > 0 || totalOutOfStock > 0) {
             actions.add(ChatAction.of(ChatActionType.NAVIGATE, "Kiểm tra kho hàng", Map.of("path", "/admin/books")));
         }
 
-        return ToolResult.ok(sb.toString(), briefingData, ChatActionType.DAILY_BRIEFING, List.of(briefingData), actions);
+        return ToolResult.ok(sb.toString(), briefingData, ChatActionType.DAILY_BRIEFING, List.of(briefingData),
+                actions);
     }
 }
