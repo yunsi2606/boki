@@ -27,6 +27,8 @@ const navItems = [
   { name: 'Cấu hình trang chủ', path: '/admin/config', icon: <LayoutTemplateIcon size={20} /> },
 ];
 
+import AdminChatbotWidget from '@/components/features/chatbot/admin/AdminChatbotWidget';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -160,6 +162,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         <main className={styles.contentArea}>{children}</main>
+        <AdminChatbotWidget />
       </div>
     </div>
   );

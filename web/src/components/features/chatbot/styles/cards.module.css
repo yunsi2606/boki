@@ -1,0 +1,300 @@
+/* Chat Rich Cards Styles */
+
+/* Book Carousel / List */
+.bookGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.bookCard {
+  display: flex;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bookCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.bookCover {
+  width: 60px;
+  height: 85px;
+  object-fit: cover;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.bookCoverPlaceholder {
+  width: 60px;
+  height: 85px;
+  background-color: #e2e8f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.bookContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bookTitle {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #0f172a;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bookAuthor {
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.bookPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.bookPrice {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #EE4D2D;
+}
+
+.bookOriginalPrice {
+  font-size: 11px;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.bookActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.btnPrimary {
+  background: #EE4D2D;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s;
+}
+
+.btnPrimary:hover {
+  background: #d83d1e;
+}
+
+.btnSecondary {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnSecondary:hover {
+  background: #e2e8f0;
+}
+
+/* Order Tracking Card */
+.orderCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.orderId {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.orderStatusBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.orderStatusSuccess {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.orderStatusWarning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.orderStatusDanger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.orderBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #475569;
+}
+
+.orderRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Voucher Card */
+.voucherCard {
+  background: #fff7ed;
+  border: 1.5px dashed #fb923c;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.voucherInfo {
+  flex: 1;
+}
+
+.voucherCode {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 14px;
+  color: #c2410c;
+  letter-spacing: 0.5px;
+}
+
+.voucherDesc {
+  font-size: 11.5px;
+  color: #7c2d12;
+  margin-top: 2px;
+}
+
+.voucherMeta {
+  font-size: 10.5px;
+  color: #9a3412;
+  margin-top: 4px;
+}
+
+.copyBtn {
+  background: #ea580c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s;
+}
+
+.copyBtn:hover {
+  background: #c2410c;
+}
+
+/* Compare Card Table */
+.compareTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.compareTable th, .compareTable td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+}
+
+.compareTable th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+}
+
+/* Admin Metric Card */
+.metricCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 8px;
+}
+
+.metricValue {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.metricBadgePositive {
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.metricBadgeNegative {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 12px;
+}

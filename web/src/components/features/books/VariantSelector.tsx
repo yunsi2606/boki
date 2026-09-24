@@ -27,7 +27,7 @@ export default function VariantSelector({
     <div className={styles.container}>
       <div className={styles.labelRow}>
         <span className={styles.title}>
-          🏷️ Chọn Phân Loại Hàng:
+          Chọn Phân Loại Hàng:
         </span>
         <span className={styles.selectedName}>{currentVariant?.name}</span>
       </div>
@@ -43,9 +43,8 @@ export default function VariantSelector({
               type="button"
               disabled={isOutOfStock}
               onClick={() => onSelectVariant(v)}
-              className={`${styles.pillBtn} ${isSelected ? styles.pillActive : ''} ${
-                isOutOfStock ? styles.outOfStock : ''
-              }`}
+              className={`${styles.pillBtn} ${isSelected ? styles.pillActive : ''} ${isOutOfStock ? styles.outOfStock : ''
+                }`}
             >
               <div className={styles.pillHeader}>
                 <span className={styles.variantName}>{v.name}</span>

@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import PhoneVerificationModal from '@/components/features/auth/PhoneVerificationModal';
+import ClientChatbotWidget from '@/components/features/chatbot/client/ClientChatbotWidget';
 
 export default function StorefrontLayoutWrapper({
   children,
@@ -23,6 +24,7 @@ export default function StorefrontLayoutWrapper({
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
       <PhoneVerificationModal />
+      <ClientChatbotWidget />
     </>
   );
 }
