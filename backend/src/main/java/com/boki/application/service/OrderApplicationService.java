@@ -34,7 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -96,6 +98,12 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
             buyerUserId = buyer.getId();
         }
 
+        Map<String, Integer> itemQuantityMap = new HashMap<>();
+        for (OrderItemRequest req : request.items()) {
+            String key = req.bookId() + (req.variantId() != null ? "_" + req.variantId() : "");
+            itemQuantityMap.merge(key, req.quantity(), Integer::sum);
+        }
+
         List<OrderItem> domainItems = new ArrayList<>();
         
         for (OrderItemRequest itemReq : request.items()) {
@@ -106,16 +114,39 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
                 throw new BusinessRuleException("Sách '" + book.getTitle() + "' hiện không khả dụng để đặt mua (Hết hàng hoặc tạm ẩn).");
             }
 
-            // Deduct variant stock if variantId is specified
+            BookVariantJpaEntity variant = null;
+            Integer effectiveMaxLimit = null;
+
+            // Determine purchase limit: variant limit takes precedence over book limit
             if (itemReq.variantId() != null) {
-                BookVariantJpaEntity variant = variantRepository.findById(itemReq.variantId()).orElse(null);
-                if (variant != null) {
-                    if (variant.getStockQuantity() < itemReq.quantity()) {
-                        throw new BusinessRuleException("Phân loại '" + variant.getName() + "' không đủ số lượng trong kho (Còn " + variant.getStockQuantity() + ")");
-                    }
-                    variant.setStockQuantity(variant.getStockQuantity() - itemReq.quantity());
-                    variantRepository.save(variant);
+                variant = variantRepository.findById(itemReq.variantId()).orElse(null);
+                if (variant != null && variant.getMaxOrderQuantity() != null && variant.getMaxOrderQuantity() > 0) {
+                    effectiveMaxLimit = variant.getMaxOrderQuantity();
                 }
+            }
+
+            if (effectiveMaxLimit == null && book.getMaxOrderQuantity() != null && book.getMaxOrderQuantity() > 0) {
+                effectiveMaxLimit = book.getMaxOrderQuantity();
+            }
+
+            String itemKey = itemReq.bookId() + (itemReq.variantId() != null ? "_" + itemReq.variantId() : "");
+            int totalRequestedQty = itemQuantityMap.getOrDefault(itemKey, itemReq.quantity());
+
+            if (effectiveMaxLimit != null && totalRequestedQty > effectiveMaxLimit) {
+                if (variant != null) {
+                    throw new BusinessRuleException("Sản phẩm '" + book.getTitle() + "' (Phiên bản: " + variant.getName() + ") giới hạn tối đa " + effectiveMaxLimit + " sản phẩm cho mỗi đơn hàng.");
+                } else {
+                    throw new BusinessRuleException("Sách '" + book.getTitle() + "' giới hạn tối đa " + effectiveMaxLimit + " cuốn cho mỗi đơn hàng.");
+                }
+            }
+
+            // Deduct variant stock if variantId is specified
+            if (variant != null) {
+                if (variant.getStockQuantity() < itemReq.quantity()) {
+                    throw new BusinessRuleException("Phân loại '" + variant.getName() + "' không đủ số lượng trong kho (Còn " + variant.getStockQuantity() + ")");
+                }
+                variant.setStockQuantity(variant.getStockQuantity() - itemReq.quantity());
+                variantRepository.save(variant);
             }
 
             // Decrement parent book inventory

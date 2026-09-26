@@ -12,6 +12,7 @@ import { checkoutNavigationService } from '@/services/checkoutNavigationService'
 import { activityTracker } from '@/services/activityTracker';
 import { ShoppingCartIcon } from '@/components/ui/LineIcons';
 import PreOrderBadge from '@/components/features/books/PreOrderBadge';
+import { getAllowedMaxQuantity, getEffectiveMaxOrderQuantity } from '@/utils/orderLimits';
 import styles from './cart.module.css';
 
 export default function CartPage() {
@@ -138,23 +139,40 @@ export default function CartPage() {
                   </div>
 
                   <div className={styles.itemFooter}>
-                    <div className={styles.qtyContainer}>
-                      <button
-                        onClick={() => handleUpdateQty(book.id, book.title, quantity - 1, selectedVariant?.id, unitPrice)}
-                        className={styles.qtyBtn}
-                        disabled={quantity <= 1}
-                      >
-                        -
-                      </button>
-                      <span className={styles.qtyValue}>{quantity}</span>
-                      <button
-                        onClick={() => handleUpdateQty(book.id, book.title, quantity + 1, selectedVariant?.id, unitPrice)}
-                        className={styles.qtyBtn}
-                        disabled={!book.isPreOrder && quantity >= (selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity)}
-                      >
-                        +
-                      </button>
-                    </div>
+                    {(() => {
+                      const allowedMax = getAllowedMaxQuantity(book, selectedVariant);
+                      const effectiveLimit = getEffectiveMaxOrderQuantity(book, selectedVariant);
+                      const isMaxReached = quantity >= allowedMax;
+
+                      return (
+                        <div className={styles.qtyGroup}>
+                          <div className={styles.qtyContainer}>
+                            <button
+                              onClick={() => handleUpdateQty(book.id, book.title, quantity - 1, selectedVariant?.id, unitPrice)}
+                              className={styles.qtyBtn}
+                              disabled={quantity <= 1}
+                              aria-label="Giảm số lượng"
+                            >
+                              -
+                            </button>
+                            <span className={styles.qtyValue}>{quantity}</span>
+                            <button
+                              onClick={() => handleUpdateQty(book.id, book.title, quantity + 1, selectedVariant?.id, unitPrice)}
+                              className={styles.qtyBtn}
+                              disabled={isMaxReached}
+                              aria-label="Tăng số lượng"
+                            >
+                              +
+                            </button>
+                          </div>
+                          {effectiveLimit && effectiveLimit > 0 && (
+                            <span className={styles.limitNotice}>
+                              Tối đa {effectiveLimit}/đơn
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
 
                     <div className={styles.priceCol}>
                       <span className={styles.unitPrice}>{formatPrice(unitPrice)} / cuốn</span>

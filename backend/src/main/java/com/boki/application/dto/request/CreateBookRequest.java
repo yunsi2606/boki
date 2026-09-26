@@ -26,6 +26,8 @@ public record CreateBookRequest(
         @Min(value = 0, message = "Stock quantity must be non-negative")
         int stockQuantity,
 
+        Integer maxOrderQuantity,
+
         Integer categoryId,
 
         List<String> imageUrls,

@@ -71,6 +71,9 @@ public class BookJpaEntity {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity = 1;
 
+    @Column(name = "max_order_quantity")
+    private Integer maxOrderQuantity;
+
     @Column(name = "is_pre_order", nullable = false)
     private boolean isPreOrder = false;
 
@@ -191,4 +194,7 @@ public class BookJpaEntity {
 
     public Integer getPreOrderDays() { return preOrderDays; }
     public void setPreOrderDays(Integer preOrderDays) { this.preOrderDays = preOrderDays; }
+
+    public Integer getMaxOrderQuantity() { return maxOrderQuantity; }
+    public void setMaxOrderQuantity(Integer maxOrderQuantity) { this.maxOrderQuantity = maxOrderQuantity; }
 }

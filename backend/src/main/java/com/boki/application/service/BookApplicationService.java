@@ -76,6 +76,7 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         );
 
         book.updatePreOrder(request.isPreOrder(), request.preOrderDays());
+        book.updateMaxOrderQuantity(request.maxOrderQuantity());
         
         // Auto publish listed books for immediate browsing
         book.publish();
@@ -123,6 +124,9 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         }
         if (request.isPreOrder() != null) {
             book.updatePreOrder(request.isPreOrder(), request.preOrderDays());
+        }
+        if (request.maxOrderQuantity() != null) {
+            book.updateMaxOrderQuantity(request.maxOrderQuantity());
         }
 
         Book savedBook = bookRepository.save(book);

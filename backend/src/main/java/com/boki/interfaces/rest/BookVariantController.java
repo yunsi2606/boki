@@ -66,6 +66,7 @@ public class BookVariantController {
                             req.price(),
                             req.originalPrice(),
                             req.stockQuantity(),
+                            req.maxOrderQuantity(),
                             req.imageUrl(),
                             req.attributes(),
                             req.attributesJson(),
@@ -98,6 +99,7 @@ public class BookVariantController {
                 entity.setPrice(req.price());
                 entity.setOriginalPrice(req.originalPrice());
                 entity.setStockQuantity(req.stockQuantity());
+                entity.setMaxOrderQuantity(req.maxOrderQuantity() != null && req.maxOrderQuantity() > 0 ? req.maxOrderQuantity() : null);
                 entity.setImageUrl(req.imageUrl());
 
                 // Convert attributes Map to JSON string if present
@@ -151,6 +153,7 @@ public class BookVariantController {
                 v.getPrice(),
                 v.getOriginalPrice(),
                 v.getStockQuantity(),
+                v.getMaxOrderQuantity(),
                 v.getImageUrl(),
                 attrMap,
                 v.getAttributesJson(),

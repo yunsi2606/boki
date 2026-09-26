@@ -25,6 +25,7 @@ public record BookResponse(
         String condition,
         String status,
         int stockQuantity,
+        Integer maxOrderQuantity,
         boolean isPreOrder,
         Integer preOrderDays,
         int viewsCount,

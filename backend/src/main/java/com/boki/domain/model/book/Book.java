@@ -30,6 +30,7 @@ public class Book {
     private BookCondition condition;
     private BookStatus status;
     private int stockQuantity;
+    private Integer maxOrderQuantity;
     private boolean isPreOrder = false;
     private Integer preOrderDays;
     private List<String> imageUrls = new ArrayList<>();
@@ -115,6 +116,24 @@ public class Book {
             int stockQuantity, boolean isPreOrder, Integer preOrderDays,
             List<String> imageUrls, Instant createdAt, Instant updatedAt, String createdBy
     ) {
+        return reconstitute(
+                id, sellerId, categoryId, title, author, isbn, publicationDetails,
+                description, price, originalPrice, viewsCount, rating, reviewsCount,
+                condition, status, stockQuantity, null, isPreOrder, preOrderDays,
+                imageUrls, createdAt, updatedAt, createdBy
+        );
+    }
+
+    public static Book reconstitute(
+            BookId id, UserId sellerId, Integer categoryId,
+            String title, String author, String isbn,
+            Map<String, String> publicationDetails,
+            String description, Price price, Price originalPrice,
+            int viewsCount, java.math.BigDecimal rating, int reviewsCount,
+            BookCondition condition, BookStatus status,
+            int stockQuantity, Integer maxOrderQuantity, boolean isPreOrder, Integer preOrderDays,
+            List<String> imageUrls, Instant createdAt, Instant updatedAt, String createdBy
+    ) {
         Book book = new Book();
         book.id = id;
         book.sellerId = sellerId;
@@ -132,6 +151,7 @@ public class Book {
         book.condition = condition;
         book.status = status;
         book.stockQuantity = stockQuantity;
+        book.maxOrderQuantity = maxOrderQuantity;
         book.isPreOrder = isPreOrder;
         book.preOrderDays = preOrderDays;
         book.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
@@ -251,12 +271,18 @@ public class Book {
     public BookCondition getCondition() { return condition; }
     public BookStatus getStatus() { return status; }
     public int getStockQuantity() { return stockQuantity; }
+    public Integer getMaxOrderQuantity() { return maxOrderQuantity; }
     public boolean isPreOrder() { return isPreOrder; }
     public Integer getPreOrderDays() { return preOrderDays; }
     public List<String> getImageUrls() { return Collections.unmodifiableList(imageUrls); }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
     public String getCreatedBy() { return createdBy; }
+
+    public void updateMaxOrderQuantity(Integer maxOrderQuantity) {
+        this.maxOrderQuantity = (maxOrderQuantity != null && maxOrderQuantity > 0) ? maxOrderQuantity : null;
+        this.updatedAt = Instant.now();
+    }
 
     public void updatePreOrder(Boolean isPreOrder, Integer preOrderDays) {
         this.isPreOrder = Boolean.TRUE.equals(isPreOrder);

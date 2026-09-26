@@ -13,7 +13,7 @@ export default function NotFound() {
             style={{ width: '80px', height: '80px', objectFit: 'contain' }}
           />
         </Link>
-        <div className={styles.badge}>🔍 404 Error</div>
+        <div className={styles.badge}>404 Error</div>
         <h1 className={styles.title}>Không Tìm Thấy Trang Hoặc Sách</h1>
         <p className={styles.subtitle}>
           Rất tiếc! Tựa sách hoặc đường dẫn bạn đang truy cập không tồn tại hoặc đã thay đổi địa chỉ.
@@ -22,12 +22,12 @@ export default function NotFound() {
         <div className={styles.actions}>
           <Link href="/">
             <Button size="lg" variant="primary" className={styles.primaryBtn}>
-              🏠 Về Trang Chủ
+              Về Trang Chủ
             </Button>
           </Link>
           <Link href="/books">
             <Button size="lg" variant="secondary">
-              📚 Khám Phá Kho Sách
+              Khám Phá Kho Sách
             </Button>
           </Link>
         </div>

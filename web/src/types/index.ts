@@ -72,6 +72,7 @@ export interface BookVariant {
   price: number;              // e.g. 145000
   originalPrice?: number;     // e.g. 180000
   stockQuantity: number;      // e.g. 15
+  maxOrderQuantity?: number;  // Giới hạn mua tối đa mỗi đơn (tùy chọn)
   imageUrl?: string;          // Variant specific image
   attributes?: Record<string, string>; // e.g. { "Loại bìa": "Bìa Cứng" }
   isStandaloneDisplay?: boolean; // Display variant as individual product card in showcase
@@ -103,6 +104,7 @@ export interface Book {
   condition: 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
   status: 'DRAFT' | 'ACTIVE' | 'SOLD' | 'ARCHIVED';
   stockQuantity: number;
+  maxOrderQuantity?: number;  // Giới hạn mua tối đa mỗi đơn (tùy chọn)
   isPreOrder?: boolean;
   preOrderDays?: number | null;
   viewsCount?: number;
@@ -132,6 +134,7 @@ export interface CreateBookPayload {
   price: number;
   condition: string;
   stockQuantity: number;
+  maxOrderQuantity?: number;
   isPreOrder?: boolean;
   preOrderDays?: number | null;
   categoryId?: number;
@@ -156,6 +159,7 @@ export interface UpdateBookPayload {
   price?: number;
   condition?: string;
   stockQuantity?: number;
+  maxOrderQuantity?: number;
   isPreOrder?: boolean;
   preOrderDays?: number | null;
   categoryId?: number;

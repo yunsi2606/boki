@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Book, BookVariant, CartItem } from '@/types';
 
+import { getAllowedMaxQuantity } from '@/utils/orderLimits';
+
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (book: Book, quantity: number, selectedVariant?: BookVariant) => void;
@@ -45,12 +47,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         (item) => item.book.id === book.id && item.selectedVariant?.id === selectedVariant?.id
       );
 
-      const stock = selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity;
-      const maxStock = book.isPreOrder ? Math.max(stock, 99) : stock;
+      const allowedMax = getAllowedMaxQuantity(book, selectedVariant);
 
       if (existingItemIdx > -1) {
         const existingItem = prevItems[existingItemIdx];
-        const newQuantity = Math.min(existingItem.quantity + quantity, maxStock);
+        const newQuantity = Math.min(existingItem.quantity + quantity, allowedMax);
         const updatedItems = [...prevItems];
         updatedItems[existingItemIdx] = {
           ...existingItem,
@@ -58,7 +59,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         };
         return updatedItems;
       } else {
-        const addedQuantity = Math.min(quantity, maxStock);
+        const addedQuantity = Math.min(quantity, allowedMax);
         return [...prevItems, { book, selectedVariant, quantity: addedQuantity }];
       }
     });
@@ -76,9 +77,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
         if (item.book.id === bookId && item.selectedVariant?.id === variantId) {
-          const stock = item.selectedVariant ? item.selectedVariant.stockQuantity : item.book.stockQuantity;
-          const maxStock = item.book.isPreOrder ? Math.max(stock, 99) : stock;
-          const newQty = Math.max(1, Math.min(quantity, maxStock));
+          const allowedMax = getAllowedMaxQuantity(item.book, item.selectedVariant);
+          const newQty = Math.max(1, Math.min(quantity, allowedMax));
           return { ...item, quantity: newQty };
         }
         return item;

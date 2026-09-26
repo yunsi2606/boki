@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button';
 import VariantSelector from '@/components/features/books/VariantSelector';
 import styles from './page.module.css';
 import { extractBookId } from '@/lib/slug';
+import { getEffectiveMaxOrderQuantity, getAllowedMaxQuantity } from '@/utils/orderLimits';
 import { BookDetailSkeleton } from '@/components/ui/Skeleton';
 import { checkoutNavigationService } from '@/services/checkoutNavigationService';
 import { BarChartIcon } from '@/components/ui/LineIcons';
@@ -60,7 +61,7 @@ function BookDetailsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
 
   const rawParam = (params.slug || params.id) as string;
   const id = extractBookId(rawParam);
@@ -72,6 +73,7 @@ function BookDetailsContent() {
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [added, setAdded] = useState(false);
+  const [limitNotice, setLimitNotice] = useState<string | null>(null);
   const hasIncrementedRef = useRef(false);
 
   const displaySpecs = useMemo(() => {
@@ -133,6 +135,17 @@ function BookDetailsContent() {
 
   const handleBuyNow = () => {
     if (!book) return;
+    const effectiveLimit = getEffectiveMaxOrderQuantity(book, selectedVariant);
+    const currentInCart = cartItems.find(
+      (item) => item.book.id === book.id && item.selectedVariant?.id === selectedVariant?.id
+    )?.quantity || 0;
+
+    if (effectiveLimit && currentInCart >= effectiveLimit) {
+      setLimitNotice(`Bạn đã có ${currentInCart} sản phẩm trong giỏ hàng. Giới hạn mua tối đa là ${effectiveLimit} sản phẩm/đơn hàng.`);
+      setTimeout(() => setLimitNotice(null), 4000);
+      return;
+    }
+
     const checkoutItem = {
       book,
       quantity: 1,
@@ -160,6 +173,17 @@ function BookDetailsContent() {
 
   const handleAddToCart = () => {
     if (!book) return;
+    const effectiveLimit = getEffectiveMaxOrderQuantity(book, selectedVariant);
+    const currentInCart = cartItems.find(
+      (item) => item.book.id === book.id && item.selectedVariant?.id === selectedVariant?.id
+    )?.quantity || 0;
+
+    if (effectiveLimit && currentInCart >= effectiveLimit) {
+      setLimitNotice(`Bạn đã có ${currentInCart} sản phẩm trong giỏ hàng. Giới hạn mua tối đa là ${effectiveLimit} sản phẩm/đơn hàng.`);
+      setTimeout(() => setLimitNotice(null), 4000);
+      return;
+    }
+
     addToCart(book, 1, selectedVariant || undefined);
     activityTracker.trackCartAction(
       'ADD_TO_CART',
@@ -211,6 +235,7 @@ function BookDetailsContent() {
     : (book.originalPrice || book.price);
   const currentPrice = selectedVariant ? selectedVariant.price : book.price;
   const currentStock = selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity;
+  const effectiveLimit = getEffectiveMaxOrderQuantity(book, selectedVariant);
 
   const rating = book.rating !== undefined && book.rating !== null ? Number(book.rating).toFixed(1) : '5.0';
   const reviewsCount = book.reviewsCount ?? 14;
@@ -342,18 +367,29 @@ function BookDetailsContent() {
                   <span className={styles.stockDot} style={{ background: '#ea580c' }}></span> Hàng đặt trước (Pre-order) {currentStock > 0 ? `• Còn ${currentStock} suất` : ''}
                 </span>
               ) : currentStock === 0 ? (
-                <span className={styles.outOfStockBadge}>🔴 Đã hết hàng</span>
+                <span className={styles.outOfStockBadge}>Đã hết hàng</span>
               ) : (
                 <span className={styles.inStockBadge}>
                   <span className={styles.stockDot}></span> Còn lại <strong>{currentStock}</strong> cuốn trong kho
                 </span>
               )}
+              {effectiveLimit ? (
+                <span className={styles.limitInfoBadge}>
+                  Giới hạn: Tối đa {effectiveLimit} sản phẩm/đơn
+                </span>
+              ) : null}
             </div>
           </div>
 
           {/* Pre-Order Delivery Estimation Box */}
           {book.isPreOrder && (
             <PreOrderDeliveryEstimate isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} />
+          )}
+
+          {limitNotice && (
+            <div className={styles.limitAlertNotice}>
+              {limitNotice}
+            </div>
           )}
 
           <div className={styles.actionsRow}>
@@ -364,7 +400,7 @@ function BookDetailsContent() {
               disabled={!book.isPreOrder && currentStock === 0}
               className={styles.cartButton}
             >
-              {added ? 'Đã thêm! ✔' : (book.isPreOrder ? 'Thêm vào giỏ (Đặt trước)' : 'Thêm vào giỏ')}
+              {added ? 'Đã thêm vào giỏ' : (book.isPreOrder ? 'Thêm vào giỏ (Đặt trước)' : 'Thêm vào giỏ')}
             </Button>
             <Button
               size="lg"

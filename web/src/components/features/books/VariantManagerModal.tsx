@@ -241,6 +241,22 @@ export default function VariantManagerModal({
                   </div>
 
                   <div className={styles.formGroup}>
+                    <label>Giới hạn mua / đơn (tùy chọn)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Không giới hạn"
+                      value={v.maxOrderQuantity ?? ''}
+                      onChange={(e) =>
+                        handleUpdateVariant(v.id, {
+                          maxOrderQuantity: e.target.value ? Math.max(1, parseInt(e.target.value) || 0) : undefined,
+                        })
+                      }
+                      className={styles.formInput}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
                     <label>Tag nhãn hiển thị (VD: Hot Edition)</label>
                     <input
                       type="text"

@@ -14,6 +14,7 @@ public record BookVariantRequest(
         BigDecimal price,
         BigDecimal originalPrice,
         int stockQuantity,
+        Integer maxOrderQuantity,
         String imageUrl,
         Map<String, String> attributes,
         String attributesJson,

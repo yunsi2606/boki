@@ -20,6 +20,8 @@ public record UpdateBookRequest(
         @Min(value = 0, message = "Stock quantity must be non-negative")
         Integer stockQuantity,
 
+        Integer maxOrderQuantity,
+
         Integer categoryId,
         
         List<String> imageUrls,

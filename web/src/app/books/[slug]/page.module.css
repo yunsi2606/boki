@@ -352,6 +352,31 @@
   font-weight: 600;
 }
 
+.limitInfoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #b45309;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.limitAlertNotice {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #b45309;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
 .actionsRow {
   display: flex;
   gap: 16px;

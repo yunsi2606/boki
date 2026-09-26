@@ -31,6 +31,9 @@ public class BookVariantJpaEntity {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity = 0;
 
+    @Column(name = "max_order_quantity")
+    private Integer maxOrderQuantity;
+
     @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
@@ -78,6 +81,9 @@ public class BookVariantJpaEntity {
 
     public int getStockQuantity() { return stockQuantity; }
     public void setStockQuantity(int stockQuantity) { this.stockQuantity = stockQuantity; }
+
+    public Integer getMaxOrderQuantity() { return maxOrderQuantity; }
+    public void setMaxOrderQuantity(Integer maxOrderQuantity) { this.maxOrderQuantity = maxOrderQuantity; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }

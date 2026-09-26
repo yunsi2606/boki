@@ -48,9 +48,14 @@ export default function VariantSelector({
             >
               <div className={styles.pillHeader}>
                 <span className={styles.variantName}>{v.name}</span>
-                {v.attributes?.['Tag'] && (
-                  <span className={styles.badge}>{v.attributes['Tag']}</span>
-                )}
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  {v.attributes?.['Tag'] && (
+                    <span className={styles.badge}>{v.attributes['Tag']}</span>
+                  )}
+                  {v.maxOrderQuantity && v.maxOrderQuantity > 0 ? (
+                    <span className={styles.limitTag}>Tối đa {v.maxOrderQuantity}/đơn</span>
+                  ) : null}
+                </div>
               </div>
 
               <div className={styles.pillPriceRow}>

@@ -11,6 +11,7 @@ import styles from './adminBooks.module.css';
 
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/books/PreOrderBadge';
+import { BookOpen } from 'lucide-react';
 
 export interface SpecificationItem {
   id: string;
@@ -62,6 +63,7 @@ export default function AdminBooksPage() {
     coverUrl: '',
     condition: 'NEW' as Book['condition'],
     status: 'ACTIVE' as Book['status'],
+    maxOrderQuantity: undefined as number | undefined,
     isPreOrder: false,
     preOrderMode: 'SPECIFIC' as 'SPECIFIC' | 'INDEFINITE',
     preOrderDays: 14,
@@ -128,6 +130,7 @@ export default function AdminBooksPage() {
       coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300',
       condition: 'NEW',
       status: 'ACTIVE',
+      maxOrderQuantity: undefined,
       isPreOrder: false,
       preOrderMode: 'SPECIFIC',
       preOrderDays: 14,
@@ -201,6 +204,7 @@ export default function AdminBooksPage() {
       coverUrl: book.imageUrls?.[0] || '',
       condition: book.condition || 'NEW',
       status: book.status || 'ACTIVE',
+      maxOrderQuantity: book.maxOrderQuantity,
       isPreOrder: Boolean(book.isPreOrder),
       preOrderMode: book.isPreOrder && (book.preOrderDays === null || book.preOrderDays === undefined) ? 'INDEFINITE' : 'SPECIFIC',
       preOrderDays: book.preOrderDays || 14,
@@ -290,6 +294,7 @@ export default function AdminBooksPage() {
       price: Number(formData.price),
       condition: formData.condition,
       stockQuantity: resolvedStock,
+      maxOrderQuantity: formData.maxOrderQuantity ? Number(formData.maxOrderQuantity) : undefined,
       imageUrls: [formData.coverUrl || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300'],
       isPreOrder: formData.isPreOrder,
       preOrderDays: formData.isPreOrder
@@ -390,7 +395,9 @@ export default function AdminBooksPage() {
         <TableSkeleton rows={6} cols={8} />
       ) : filteredBooks.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '48px 24px', background: '#ffffff', borderRadius: '16px', border: '1px dashed #cbd5e1', color: '#64748b' }}>
-          <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+            <BookOpen size={40} color="#94a3b8" />
+          </div>
           <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>Chưa có sản phẩm sách nào trong kho</h3>
           <p style={{ fontSize: '14px', margin: '0 0 16px 0' }}>Hãy bấm nút <strong>+ Thêm Sách Mới</strong> phía trên để tạo sản phẩm sách đầu tiên.</p>
         </div>
@@ -463,6 +470,11 @@ export default function AdminBooksPage() {
                                 Đồng bộ từ {variantCount} phân loại
                               </div>
                             )}
+                            {book.maxOrderQuantity && book.maxOrderQuantity > 0 ? (
+                              <div style={{ fontSize: '0.72rem', color: '#b45309', marginTop: '3px' }}>
+                                Giới hạn: {book.maxOrderQuantity}/đơn
+                              </div>
+                            ) : null}
                           </div>
                         );
                       })()}
@@ -685,6 +697,23 @@ export default function AdminBooksPage() {
                             className={styles.formInput}
                           />
                         )}
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup} style={{ width: '100%' }}>
+                        <label>Giới Hạn Mua Tối Đa Mỗi Đơn (Cuốn)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder="Không giới hạn (để trống)"
+                          value={formData.maxOrderQuantity ?? ''}
+                          onChange={(e) => setFormData({ ...formData, maxOrderQuantity: e.target.value ? Math.max(1, parseInt(e.target.value) || 0) : undefined })}
+                          className={styles.formInput}
+                        />
+                        <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                          Áp dụng cho toàn bộ sản phẩm. Nếu phân loại có cấu hình giới hạn riêng, giới hạn của phân loại sẽ được ưu tiên.
+                        </span>
                       </div>
                     </div>
 
