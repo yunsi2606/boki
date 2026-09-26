@@ -535,8 +535,53 @@
   border-color: #9ca3af;
 }
 
+/* AI Assistant Buttons */
+.aiTriggerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #FFF5F2 0%, #FFEBE6 100%);
+  color: #EE4D2D;
+  border: 1px solid rgba(238, 77, 45, 0.3);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(238, 77, 45, 0.08);
+}
+
+.aiTriggerBtn:hover {
+  background: linear-gradient(135deg, #FFEBE6 0%, #FFDFD6 100%);
+  border-color: #EE4D2D;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(238, 77, 45, 0.15);
+}
+
+.aiInlineBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFF5F2;
+  color: #EE4D2D;
+  border: 1px solid rgba(238, 77, 45, 0.2);
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.aiInlineBtn:hover {
+  background: #FFE8E2;
+  border-color: #EE4D2D;
+}
+
 @media (max-width: 1024px) {
   .formGrid {
     grid-template-columns: 1fr;
   }
 }
+

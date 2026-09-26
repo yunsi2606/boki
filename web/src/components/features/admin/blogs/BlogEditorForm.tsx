@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Sparkles } from 'lucide-react';
 import RichTextEditor from '@/components/features/editor/RichTextEditor';
 import ImageUploadInput from '@/components/ui/ImageUploadInput';
 import QuickAddBlogCategoryModal from './QuickAddBlogCategoryModal';
+import { AiBlogAssistantModal } from './ai';
 import { blogService } from '@/services/blogService';
 import type { BlogPost, CreateBlogPayload, UpdateBlogPayload, BlogCategory } from '@/types/blog';
+import type { AiBlogAppliedData } from '@/types/aiBlog';
 import styles from './adminBlogs.module.css';
 
 interface BlogEditorFormProps {
@@ -43,12 +46,36 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
     return list;
   });
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [tags, setTags] = useState<string[]>(initialBlog?.tags || []);
   const [tagInput, setTagInput] = useState('');
   const [status, setStatus] = useState<string>(initialBlog?.status || 'DRAFT');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Auto-open AI assistant if ?ai=1 is present in URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('ai') === '1' || params.get('ai') === 'true') {
+        setIsAiModalOpen(true);
+      }
+    }
+  }, []);
+
+  const handleApplyAiContent = (data: AiBlogAppliedData) => {
+    if (data.title) setTitle(data.title);
+    if (data.excerpt) setExcerpt(data.excerpt);
+    if (data.content) setContent(data.content);
+    if (data.category) {
+      setCategories((prev) => (prev.includes(data.category!) ? prev : [data.category!, ...prev]));
+      setCategory(data.category);
+    }
+    if (data.tags && data.tags.length > 0) {
+      setTags((prev) => Array.from(new Set([...prev, ...data.tags!])));
+    }
+  };
 
   // Fetch dynamic categories
   useEffect(() => {
@@ -150,6 +177,18 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
           <h1>{isEditing ? `Chỉnh sửa: ${initialBlog?.title}` : 'Viết bài mới'}</h1>
           <p>Sử dụng thanh công cụ rich text để soạn thảo nội dung phong phú cho bài viết.</p>
         </div>
+
+        <div>
+          <button
+            type="button"
+            className={styles.aiTriggerBtn}
+            onClick={() => setIsAiModalOpen(true)}
+            title="Mở trợ lý AI viết bài thông minh"
+          >
+            <Sparkles size={16} />
+            Trợ lý AI viết bài
+          </button>
+        </div>
       </div>
 
       {errorMsg && (
@@ -190,7 +229,18 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
 
           {/* Content Card with RichTextEditor */}
           <div className={styles.card}>
-            <h3 className={styles.cardTitle}>Nội dung bài viết *</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <h3 className={styles.cardTitle} style={{ margin: 0 }}>Nội dung bài viết *</h3>
+              <button
+                type="button"
+                className={styles.aiInlineBtn}
+                onClick={() => setIsAiModalOpen(true)}
+                title="Sử dụng AI để biên soạn, mở rộng hoặc trau chuốt nội dung"
+              >
+                <Sparkles size={13} />
+                Hỗ trợ với AI
+              </button>
+            </div>
             <RichTextEditor
               value={content}
               onChange={(html) => setContent(html)}
@@ -344,6 +394,16 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
         onClose={() => setIsAddCategoryModalOpen(false)}
         existingCategories={categories}
         onCategoryCreated={handleCategoryCreated}
+      />
+
+      <AiBlogAssistantModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        initialTitle={title}
+        initialContent={content}
+        initialCategory={category}
+        categories={categories}
+        onApply={handleApplyAiContent}
       />
     </div>
   );

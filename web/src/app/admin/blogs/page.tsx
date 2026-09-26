@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { Sparkles } from 'lucide-react';
 import { blogService } from '@/services/blogService';
 import type { BlogPost } from '@/types/blog';
 import styles from '@/components/features/admin/blogs/adminBlogs.module.css';
@@ -80,9 +81,14 @@ export default function AdminBlogsPage() {
           <h1>Quản lý Bài Viết & Blog</h1>
           <p>Tạo mới, chỉnh sửa, xuất bản bài viết và quản lý nội dung số của cửa hàng.</p>
         </div>
-        <Link href="/admin/blogs/new" className={styles.primaryBtn}>
-          <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span> Viết bài mới
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link href="/admin/blogs/new?ai=1" className={styles.aiTriggerBtn} title="Viết bài mới với trợ lý AI">
+            <Sparkles size={16} /> Viết bài bằng AI
+          </Link>
+          <Link href="/admin/blogs/new" className={styles.primaryBtn}>
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span> Viết bài mới
+          </Link>
+        </div>
       </div>
 
       {/* Filter Bar */}
