@@ -63,11 +63,15 @@ public final class BookPersistenceMapper {
         }
 
         List<String> imageUrls = new ArrayList<>();
-        if (entity.getImages() != null) {
-            entity.getImages().stream()
-                    .sorted((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()))
-                    .map(BookImageJpaEntity::getImageUrl)
-                    .forEach(imageUrls::add);
+        try {
+            if (entity.getImages() != null) {
+                entity.getImages().stream()
+                        .sorted((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()))
+                        .map(BookImageJpaEntity::getImageUrl)
+                        .forEach(imageUrls::add);
+            }
+        } catch (org.hibernate.LazyInitializationException ignored) {
+            // Lazy images collection not initialized and no open Hibernate session
         }
 
         return Book.reconstitute(

@@ -12,11 +12,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
+@Transactional(readOnly = true)
 public class BookRepositoryAdapter implements BookRepository {
 
     private final BookJpaRepository jpaRepository;
@@ -26,6 +29,7 @@ public class BookRepositoryAdapter implements BookRepository {
     }
 
     @Override
+    @Transactional
     public Book save(Book book) {
         BookJpaEntity entity = BookPersistenceMapper.toJpaEntity(book);
         if (book.getId() != null && book.getId().value() != null) {
@@ -123,11 +127,13 @@ public class BookRepositoryAdapter implements BookRepository {
     }
 
     @Override
+    @Transactional
     public void deleteById(BookId id) {
         jpaRepository.deleteById(id.value());
     }
 
     @Override
+    @Transactional
     public void incrementViews(BookId id) {
         jpaRepository.incrementViewsCount(id.value());
     }

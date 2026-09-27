@@ -10,12 +10,14 @@ import com.boki.infrastructure.persistence.entity.UserActivityJpaEntity;
 import com.boki.infrastructure.persistence.repository.UserActivityJpaRepository;
 import com.boki.infrastructure.persistence.repository.UserJpaRepository;
 import com.boki.infrastructure.security.AuthenticatedUser;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,23 +123,46 @@ public class UserActivityApplicationService {
             Instant toTime,
             Pageable pageable
     ) {
-        String normalizedEventType = (eventType != null && !eventType.isBlank() && !"ALL".equalsIgnoreCase(eventType))
-                ? eventType.trim().toUpperCase() : null;
-        String normalizedCategory = (eventCategory != null && !eventCategory.isBlank() && !"ALL".equalsIgnoreCase(eventCategory))
-                ? eventCategory.trim().toUpperCase() : null;
-        String normalizedSession = (sessionId != null && !sessionId.isBlank()) ? sessionId.trim() : null;
-        String normalizedSearch = (search != null && !search.isBlank()) ? search.trim() : null;
+        Specification<UserActivityJpaEntity> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-        return activityRepository.searchActivities(
-                normalizedEventType,
-                normalizedCategory,
-                normalizedSession,
-                userId,
-                normalizedSearch,
-                fromTime,
-                toTime,
-                pageable
-        ).map(this::toResponse);
+            if (eventType != null && !eventType.isBlank() && !"ALL".equalsIgnoreCase(eventType)) {
+                predicates.add(cb.equal(root.get("eventType"), eventType.trim().toUpperCase()));
+            }
+
+            if (eventCategory != null && !eventCategory.isBlank() && !"ALL".equalsIgnoreCase(eventCategory)) {
+                predicates.add(cb.equal(root.get("eventCategory"), eventCategory.trim().toUpperCase()));
+            }
+
+            if (sessionId != null && !sessionId.isBlank()) {
+                predicates.add(cb.equal(root.get("sessionId"), sessionId.trim()));
+            }
+
+            if (userId != null) {
+                predicates.add(cb.equal(root.get("userId"), userId));
+            }
+
+            if (fromTime != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), fromTime));
+            }
+
+            if (toTime != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), toTime));
+            }
+
+            if (search != null && !search.isBlank()) {
+                String pattern = "%" + search.trim().toLowerCase() + "%";
+                Predicate pathLike = cb.like(cb.lower(root.get("pagePath")), pattern);
+                Predicate targetLike = cb.like(cb.lower(root.get("targetName")), pattern);
+                Predicate emailLike = cb.like(cb.lower(root.get("userEmail")), pattern);
+                Predicate ipLike = cb.like(cb.lower(root.get("ipAddress")), pattern);
+                predicates.add(cb.or(pathLike, targetLike, emailLike, ipLike));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return activityRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
     /**

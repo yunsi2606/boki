@@ -37,6 +37,7 @@ public class AdminAiBlogService {
         this.restClient = RestClient.builder().build();
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public AiGenerateBlogResponse generateBlogContent(AiGenerateBlogRequest request) {
         Book referenceBook = null;
         if (request.bookId() != null) {
