@@ -61,6 +61,13 @@ app:
       bucket-name: ${CLOUDFLARE_R2_BUCKET_NAME:boki-media}
       public-url: ${CLOUDFLARE_R2_PUBLIC_URL:https://pub-r2.bokistore.vn}
 
+# AI Configurations (Gemini 1.5 Flash)
+boki:
+  ai:
+    gemini:
+      api-key: ${GEMINI_API_KEY:${BOKI_AI_GEMINI_API_KEY:}}
+      model: ${GEMINI_MODEL:gemini-1.5-flash}
+
 # Server
 server:
   port: ${PORT:8080}
