@@ -1,10 +1,10 @@
-/* DecorationPropertyPanel.module.css (Right Column - Property Settings) */
+/* DecorationPropertyPanel.module.css (Right Column - Clean Modern Property Settings) */
 
 .panelWrapper {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -12,16 +12,16 @@
 }
 
 .panelHeader {
-  padding: 18px 20px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #f8fafc;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .panelTitle {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: #0f172a;
   margin: 0;
@@ -30,8 +30,34 @@
   gap: 8px;
 }
 
+.selectedBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0284c7;
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
+  padding: 2px 8px;
+  border-radius: 6px;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.noSelection {
+  padding: 60px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #94a3b8;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .panelBody {
-  padding: 20px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -42,18 +68,23 @@
 .sectionGroup {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   padding-bottom: 18px;
   border-bottom: 1px solid #f1f5f9;
 }
 
+.sectionGroup:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
 .groupHeading {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 800;
-  color: #1e293b;
+  color: #475569;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin: 0;
+  letter-spacing: 0.05em;
+  margin: 0 0 2px 0;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -62,18 +93,18 @@
 .fieldGroup {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .fieldLabel {
   font-size: 12px;
   font-weight: 700;
-  color: #475569;
+  color: #334155;
 }
 
 .textInput, .selectInput {
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -85,7 +116,25 @@
 
 .textInput:focus, .selectInput:focus {
   border-color: #ee4d2d;
-  box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.15);
+  box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.12);
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxRow input[type="checkbox"] {
+  accent-color: #ee4d2d;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 /* Style Selector Radio Cards */
@@ -97,60 +146,39 @@
 
 .styleCard {
   border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px 8px;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 12px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  gap: 6px;
   cursor: pointer;
-  background: #ffffff;
   transition: all 0.2s ease;
   user-select: none;
+  color: #64748b;
 }
 
 .styleCard:hover {
+  background: #ffffff;
   border-color: #cbd5e1;
 }
 
 .styleCardActive {
-  border-color: #ee4d2d;
-  background: #fff8f6;
-  box-shadow: 0 0 0 1px #ee4d2d;
+  background: #fff5f3 !important;
+  border-color: #ee4d2d !important;
+  color: #ee4d2d !important;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.12);
 }
 
 .styleCardIcon {
-  color: #64748b;
-  margin-bottom: 4px;
-}
-
-.styleCardActive .styleCardIcon {
-  color: #ee4d2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .styleCardTitle {
   font-size: 11px;
   font-weight: 700;
-  color: #1e293b;
-}
-
-.checkboxRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
-  cursor: pointer;
-}
-
-.noSelection {
-  padding: 60px 20px;
   text-align: center;
-  color: #94a3b8;
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
 }

@@ -59,15 +59,15 @@ export default function DecorationCanvas({
     }
   };
 
-  const formatDisplayLabel = (sec: HomepageSectionConfig) => {
+  const formatDisplayBadge = (sec: HomepageSectionConfig) => {
     switch (sec.displayStyle) {
       case 'SLIDER':
         return 'Trượt Ngang';
       case 'RANKING':
-        return 'Xếp Hạng (1..10)';
+        return 'Top 10 Xếp Hạng';
       case 'GRID':
       default:
-        return `${sec.itemLimit || 8} Cuốn (Lưới)`;
+        return `Lưới ${sec.itemLimit || 8} Cuốn`;
     }
   };
 
@@ -76,7 +76,7 @@ export default function DecorationCanvas({
       <div className={styles.canvasHeader}>
         <div>
           <h3 className={styles.headerTitle}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ee4d2d" strokeWidth="2.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ee4d2d" strokeWidth="2.2">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
               <line x1="3" y1="9" x2="21" y2="9" />
               <line x1="9" y1="21" x2="9" y2="9" />
@@ -84,18 +84,18 @@ export default function DecorationCanvas({
             Bố Cục Trang Chủ (Canvas)
           </h3>
           <span className={styles.headerSubtitle}>
-            Bấm vào mục để cấu hình chi tiết tiêu đề & điều kiện load data
+            Bấm vào mục để cấu hình chi tiết tiêu đề & điều kiện ở cột phải
           </span>
         </div>
 
-        <span style={{ fontSize: '12px', fontWeight: 700, color: '#ee4d2d', background: '#fff1f0', padding: '4px 10px', borderRadius: '9999px' }}>
+        <span className={styles.countBadge}>
           {sections.length} Section
         </span>
       </div>
 
       <div className={styles.sectionStack}>
         {sections.length === 0 ? (
-          <div className={styles.emptyNotice}>Chưa có section nào. Vui lòng thêm từ cột bên trái.</div>
+          <div className={styles.emptyNotice}>Chưa có section nào. Vui lòng bấm thêm từ thư viện bên trái.</div>
         ) : (
           sections.map((sec, idx) => {
             const isSelected = selectedId === sec.id;
@@ -113,87 +113,87 @@ export default function DecorationCanvas({
                   !sec.enabled ? styles.sectionCardDisabled : ''
                 } ${isDragging ? styles.sectionCardDragging : ''}`}
               >
-                <div className={styles.leftArea}>
-                  {/* Order Controls */}
-                  <div className={styles.orderControls} onClick={(e) => e.stopPropagation()}>
-                    <button
-                      type="button"
-                      onClick={() => onReorder(idx, idx - 1)}
-                      disabled={idx === 0}
-                      className={styles.arrowBtn}
-                      title="Lên trên"
-                    >
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onReorder(idx, idx + 1)}
-                      disabled={idx === sections.length - 1}
-                      className={styles.arrowBtn}
-                      title="Xuống dưới"
-                    >
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
+                {/* Row 1: Identification & Actions */}
+                <div className={styles.cardTopRow}>
+                  <div className={styles.titleArea}>
+                    <span className={styles.orderBadge}>#{idx + 1}</span>
+                    <span className={styles.sectionTitle} title={sec.title}>{sec.title}</span>
+                    <span className={styles.tagPill}>{formatSourceLabel(sec)}</span>
                   </div>
 
-                  <span className={styles.orderNumber}>#{idx + 1}</span>
+                  <div className={styles.actionsArea} onClick={(e) => e.stopPropagation()}>
+                    {/* Active Toggle Switch */}
+                    <label className={styles.switchToggle} title={sec.enabled ? 'Đang bật hiển thị' : 'Đang ẩn'}>
+                      <input
+                        type="checkbox"
+                        checked={sec.enabled}
+                        onChange={() => onToggleEnabled(sec.id)}
+                      />
+                      <span className={styles.slider}></span>
+                    </label>
 
-                  <div className={styles.dragHandle} title="Kéo để di chuyển">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <circle cx="9" cy="6" r="1.5" />
-                      <circle cx="15" cy="6" r="1.5" />
-                      <circle cx="9" cy="12" r="1.5" />
-                      <circle cx="15" cy="12" r="1.5" />
-                      <circle cx="9" cy="18" r="1.5" />
-                      <circle cx="15" cy="18" r="1.5" />
-                    </svg>
-                  </div>
-
-                  <div className={styles.sectionInfo}>
-                    <div className={styles.titleRow}>
-                      <span className={styles.sectionTitle}>{sec.title}</span>
-                      <span className={styles.tagPill}>{formatSourceLabel(sec)}</span>
-                    </div>
-                    <div className={styles.metaRow}>
-                      <span>Kiểu: {formatDisplayLabel(sec)}</span>
-                      {sec.subtitle && (
-                        <>
-                          <span>•</span>
-                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '240px' }}>
-                            {sec.subtitle}
-                          </span>
-                        </>
-                      )}
-                    </div>
+                    {/* Delete Button */}
+                    <button
+                      type="button"
+                      onClick={() => onDeleteSection(sec.id)}
+                      className={styles.deleteBtn}
+                      title="Xóa section này"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
 
-                <div className={styles.rightArea} onClick={(e) => e.stopPropagation()}>
-                  {/* Active Toggle Switch */}
-                  <label className={styles.switchToggle} title={sec.enabled ? 'Đang bật hiển thị' : 'Đang ẩn'}>
-                    <input
-                      type="checkbox"
-                      checked={sec.enabled}
-                      onChange={() => onToggleEnabled(sec.id)}
-                    />
-                    <span className={styles.slider}></span>
-                  </label>
+                {/* Row 2: Controls & Meta Details */}
+                <div className={styles.cardBottomRow}>
+                  <div className={styles.controlsArea} onClick={(e) => e.stopPropagation()}>
+                    <div className={styles.orderControls}>
+                      <button
+                        type="button"
+                        onClick={() => onReorder(idx, idx - 1)}
+                        disabled={idx === 0}
+                        className={styles.arrowBtn}
+                        title="Di chuyển lên trên"
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onReorder(idx, idx + 1)}
+                        disabled={idx === sections.length - 1}
+                        className={styles.arrowBtn}
+                        title="Di chuyển xuống dưới"
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    </div>
 
-                  {/* Delete Button */}
-                  <button
-                    type="button"
-                    onClick={() => onDeleteSection(sec.id)}
-                    className={`${styles.iconBtn} ${styles.deleteBtn}`}
-                    title="Xóa section này"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                    <div className={styles.dragHandle} title="Kéo để di chuyển vị trí">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="9" cy="6" r="1.5" />
+                        <circle cx="15" cy="6" r="1.5" />
+                        <circle cx="9" cy="12" r="1.5" />
+                        <circle cx="15" cy="12" r="1.5" />
+                        <circle cx="9" cy="18" r="1.5" />
+                        <circle cx="15" cy="18" r="1.5" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div className={styles.metaInfo}>
+                    <span className={styles.styleBadge}>{formatDisplayBadge(sec)}</span>
+                    {sec.subtitle && (
+                      <span className={styles.subtitleText} title={sec.subtitle}>
+                        {sec.subtitle}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             );

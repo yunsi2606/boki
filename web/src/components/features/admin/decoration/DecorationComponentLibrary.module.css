@@ -1,20 +1,33 @@
-/* DecorationComponentLibrary.module.css (Shopee-style Left Palette) */
+/* DecorationComponentLibrary.module.css - Clean Modern Light Palette */
 
 .libraryWrapper {
-  background: #1e293b;
-  color: #f8fafc;
-  border-radius: 16px;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid #334155;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
 .libraryHeader {
-  padding: 16px 20px;
-  border-bottom: 1px solid #334155;
-  background: #0f172a;
+  padding: 16px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+.headerTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.headerSubtitle {
+  font-size: 11px;
+  color: #64748b;
 }
 
 .searchBox {
@@ -24,19 +37,20 @@
 
 .searchInput {
   width: 100%;
-  padding: 8px 12px 8px 34px;
-  background: #1e293b;
-  border: 1px solid #475569;
+  padding: 7px 12px 7px 32px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  color: #f8fafc;
-  font-size: 13px;
+  color: #0f172a;
+  font-size: 12px;
   outline: none;
   transition: all 0.2s ease;
 }
 
 .searchInput:focus {
+  background: #ffffff;
   border-color: #ee4d2d;
-  box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.25);
+  box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.12);
 }
 
 .searchIcon {
@@ -49,17 +63,17 @@
 
 .tabsRow {
   display: flex;
-  border-bottom: 1px solid #334155;
-  background: #0f172a;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
 .tabBtn {
   flex: 1;
-  padding: 12px 14px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 12px;
   font-weight: 700;
   text-align: center;
-  color: #94a3b8;
+  color: #64748b;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -67,28 +81,32 @@
   transition: all 0.2s ease;
 }
 
+.tabBtn:hover {
+  color: #1e293b;
+}
+
 .tabBtnActive {
   color: #ee4d2d;
+  background: #ffffff;
   border-bottom-color: #ee4d2d;
-  background: rgba(238, 77, 45, 0.05);
 }
 
 .accordionBody {
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
   overflow-y: auto;
   max-height: calc(100vh - 280px);
 }
 
 .groupTitle {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
-  color: #cbd5e1;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -97,14 +115,14 @@
 .componentGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .componentCard {
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 12px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 8px 10px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,16 +134,17 @@
 }
 
 .componentCard:hover {
+  background: #ffffff;
   border-color: #ee4d2d;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(238, 77, 45, 0.12);
 }
 
 .iconWrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: #1e293b;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: #fff5f3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,30 +156,32 @@
 .componentCard:hover .iconWrapper {
   background: #ee4d2d;
   color: #ffffff;
+  transform: scale(1.05);
 }
 
 .cardTitle {
   font-size: 12px;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #1e293b;
   line-height: 1.3;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .cardDesc {
   font-size: 10px;
-  color: #94a3b8;
+  color: #64748b;
   line-height: 1.25;
 }
 
 .badgeAuto {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  top: 6px;
+  right: 6px;
   font-size: 9px;
   font-weight: 700;
-  padding: 1px 6px;
+  padding: 1px 5px;
   border-radius: 4px;
-  background: #0284c7;
-  color: #ffffff;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #dbeafe;
 }

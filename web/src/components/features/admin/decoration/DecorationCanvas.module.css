@@ -1,47 +1,67 @@
-/* DecorationCanvas.module.css (Center Column - Layout Stack) */
+/* DecorationCanvas.module.css (Center Column - Clean Structured Layout Stack) */
 
 .canvasWrapper {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
 }
 
 .canvasHeader {
-  padding: 18px 22px;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 .headerTitle {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: #0f172a;
-  margin: 0;
+  margin: 0 0 2px 0;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .headerSubtitle {
-  font-size: 12px;
+  font-size: 11px;
   color: #64748b;
 }
 
+.countBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ee4d2d;
+  background: #fff5f3;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  border: 1px solid #fed7aa;
+}
+
 .sectionStack {
-  padding: 20px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   min-height: 480px;
   max-height: calc(100vh - 280px);
   overflow-y: auto;
+}
+
+.emptyNotice {
+  padding: 40px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
 }
 
 /* Individual Section Card on Canvas */
@@ -51,9 +71,8 @@
   border-radius: 12px;
   padding: 12px 14px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
@@ -66,8 +85,8 @@
 
 .sectionCardSelected {
   border-color: #ee4d2d !important;
-  background: #fff8f6;
-  box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.2);
+  background: #fffbfb;
+  box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.15);
 }
 
 .sectionCardDisabled {
@@ -80,33 +99,86 @@
   border: 2px dashed #ee4d2d;
 }
 
-.leftArea {
+/* Card Top Row */
+.cardTopRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  flex: 1;
 }
 
-.dragHandle {
-  color: #94a3b8;
-  cursor: grab;
+.titleArea {
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
-.dragHandle:hover {
+.orderBadge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ee4d2d;
+  background: #fff5f3;
+  padding: 2px 7px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tagPill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
   color: #475569;
+  flex-shrink: 0;
+}
+
+.actionsArea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Card Bottom Row */
+.cardBottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: 1px dashed #f1f5f9;
+}
+
+.controlsArea {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .orderControls {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 3px;
 }
 
 .arrowBtn {
-  width: 20px;
-  height: 18px;
+  width: 22px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +187,6 @@
   border-radius: 4px;
   color: #475569;
   cursor: pointer;
-  font-size: 10px;
   transition: all 0.15s ease;
 }
 
@@ -130,64 +201,52 @@
   cursor: not-allowed;
 }
 
-.orderNumber {
-  font-size: 12px;
-  font-weight: 800;
-  color: #ee4d2d;
-  width: 24px;
-  text-align: center;
-}
-
-.sectionInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-}
-
-.titleRow {
+.dragHandle {
+  color: #94a3b8;
+  cursor: grab;
   display: flex;
   align-items: center;
-  gap: 8px;
+  padding: 2px;
 }
 
-.sectionTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.tagPill {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: #f1f5f9;
+.dragHandle:hover {
   color: #475569;
 }
 
-.metaRow {
+.metaInfo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #64748b;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
 }
 
-.rightArea {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.styleBadge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #0284c7;
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.subtitleText {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Visibility Toggle */
 .switchToggle {
   position: relative;
   display: inline-block;
-  width: 36px;
-  height: 20px;
+  width: 34px;
+  height: 18px;
 }
 
 .switchToggle input {
@@ -205,7 +264,7 @@
   bottom: 0;
   background-color: #cbd5e1;
   transition: 0.25s;
-  border-radius: 34px;
+  border-radius: 9999px;
 }
 
 .slider:before {
@@ -213,50 +272,39 @@
   content: "";
   height: 14px;
   width: 14px;
-  left: 3px;
-  bottom: 3px;
+  left: 2px;
+  bottom: 2px;
   background-color: white;
   transition: 0.25s;
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .switchToggle input:checked + .slider {
-  background-color: #10b981;
+  background-color: #ee4d2d;
 }
 
 .switchToggle input:checked + .slider:before {
   transform: translateX(16px);
 }
 
-.iconBtn {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #64748b;
+/* Delete Button */
+.deleteBtn {
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.iconBtn:hover {
   background: #f8fafc;
-  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .deleteBtn:hover {
   background: #fef2f2;
+  border-color: #fecaca;
   color: #ef4444;
-  border-color: #fca5a5;
-}
-
-.emptyNotice {
-  padding: 60px 20px;
-  text-align: center;
-  color: #94a3b8;
-  font-size: 14px;
 }
