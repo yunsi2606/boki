@@ -9,10 +9,11 @@ import CarrierConfigTab from '@/components/features/admin/config/CarrierConfigTa
 import PaymentConfigTab from '@/components/features/admin/config/PaymentConfigTab';
 import StoreGeneralTab from '@/components/features/admin/config/StoreGeneralTab';
 import FraudAutopilotConfigTab from '@/components/features/admin/config/FraudAutopilotConfigTab';
+import ShopDecorationTab from '@/components/features/admin/config/ShopDecorationTab';
 import styles from './adminConfig.module.css';
 
 export default function AdminConfigPage() {
-  const [activeTab, setActiveTab] = useState<'CARRIERS' | 'PAYMENTS' | 'AUTOPILOT' | 'HOMEPAGE' | 'GENERAL'>('CARRIERS');
+  const [activeTab, setActiveTab] = useState<'DECORATION' | 'HOMEPAGE' | 'CARRIERS' | 'PAYMENTS' | 'AUTOPILOT' | 'GENERAL'>('DECORATION');
   const [config, setConfig] = useState<HomepageConfig>(defaultHomepageConfig);
   const [loading, setLoading] = useState(true);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -164,6 +165,20 @@ export default function AdminConfigPage() {
       <div className={styles.configTabs}>
         <button
           type="button"
+          className={`${styles.configTabBtn} ${activeTab === 'DECORATION' ? styles.configTabActive : ''}`}
+          onClick={() => setActiveTab('DECORATION')}
+        >
+          <span>Trang Trí Trang Chủ</span>
+        </button>
+        <button
+          type="button"
+          className={`${styles.configTabBtn} ${activeTab === 'HOMEPAGE' ? styles.configTabActive : ''}`}
+          onClick={() => setActiveTab('HOMEPAGE')}
+        >
+          <span>Banner & Quảng Cáo</span>
+        </button>
+        <button
+          type="button"
           className={`${styles.configTabBtn} ${activeTab === 'CARRIERS' ? styles.configTabActive : ''}`}
           onClick={() => setActiveTab('CARRIERS')}
         >
@@ -181,14 +196,7 @@ export default function AdminConfigPage() {
           className={`${styles.configTabBtn} ${activeTab === 'AUTOPILOT' ? styles.configTabActive : ''}`}
           onClick={() => setActiveTab('AUTOPILOT')}
         >
-          <span>🤖 AI & Autopilot</span>
-        </button>
-        <button
-          type="button"
-          className={`${styles.configTabBtn} ${activeTab === 'HOMEPAGE' ? styles.configTabActive : ''}`}
-          onClick={() => setActiveTab('HOMEPAGE')}
-        >
-          <span>Giao Diện & Banner</span>
+          <span>AI & Autopilot</span>
         </button>
         <button
           type="button"
@@ -198,6 +206,8 @@ export default function AdminConfigPage() {
           <span>Cài Đặt Chung</span>
         </button>
       </div>
+
+      {activeTab === 'DECORATION' && <ShopDecorationTab onSuccessNotice={showNotice} />}
 
       {activeTab === 'CARRIERS' && <CarrierConfigTab onSuccessNotice={showNotice} />}
 

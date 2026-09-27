@@ -46,10 +46,30 @@ export interface VoucherConfig {
   isUsedUp: boolean;
 }
 
+export type HomepageSectionType =
+  | 'BEST_SELLERS'
+  | 'HOT_RECOMMENDED'
+  | 'CATEGORY_LIST'
+  | 'DAILY_VIP'
+  | 'VOUCHERS';
+
+export interface HomepageSectionConfig {
+  id: string;
+  type: HomepageSectionType;
+  title: string;
+  subtitle?: string;
+  enabled: boolean;
+  categoryId?: number;
+  categoryName?: string;
+  itemLimit?: number;
+  badgeText?: string;
+}
+
 export interface HomepageConfig {
   hero: HeroBannerConfig;
   vouchers: VoucherConfig[];
   publishers: string[];
+  sections: HomepageSectionConfig[];
 }
 
 export const defaultHomepageConfig: HomepageConfig = {
@@ -135,4 +155,55 @@ export const defaultHomepageConfig: HomepageConfig = {
     },
   ],
   publishers: ['AZ VIỆT NAM', 'AMAK', 'KISEKI', 'CẨM PHONG', 'KIM ĐỒNG', 'NHÃ NAM'],
+  sections: [
+    {
+      id: 'sec_best_sellers',
+      type: 'BEST_SELLERS',
+      title: 'Top Sản Phẩm Bán Chạy',
+      subtitle: 'Xếp hạng 10 tựa sách & truyện tranh bán chạy nhất tuần qua',
+      enabled: true,
+      itemLimit: 10,
+    },
+    {
+      id: 'sec_hot_recommended',
+      type: 'HOT_RECOMMENDED',
+      title: 'Gợi Ý Sách & Truyện Hot',
+      subtitle: 'Khám phá các phiên bản đặc biệt, boxset giới hạn & bản thường mới nhất',
+      enabled: true,
+    },
+    {
+      id: 'sec_manga',
+      type: 'CATEGORY_LIST',
+      title: 'Truyện Tranh & Manga Nổi Bật',
+      subtitle: 'Tuyển tập các bộ truyện tranh đình đám với quà tặng và bookmark giới hạn',
+      enabled: true,
+      categoryName: 'Sách Thiếu nhi',
+      categoryId: 2,
+      itemLimit: 8,
+    },
+    {
+      id: 'sec_novels',
+      type: 'CATEGORY_LIST',
+      title: 'Tiểu Thuyết & Truyện Chữ Hay Nhất',
+      subtitle: 'Những tác phẩm văn học kinh điển & tiểu thuyết ăn khách nhất',
+      enabled: true,
+      categoryName: 'Sách Văn học',
+      categoryId: 1,
+      itemLimit: 8,
+    },
+    {
+      id: 'sec_daily_vip',
+      type: 'DAILY_VIP',
+      title: 'Sách Mới Mỗi Ngày - Dành Cho Hội Viên',
+      subtitle: 'Độc quyền trải nghiệm đọc thử trọn vẹn dành riêng cho thành viên VIP',
+      enabled: true,
+    },
+    {
+      id: 'sec_vouchers',
+      type: 'VOUCHERS',
+      title: 'Mã Giảm Giá & Ưu Đãi Vận Chuyển',
+      subtitle: 'Thu thập voucher freeship và giảm giá ngay hôm nay',
+      enabled: true,
+    },
+  ],
 };

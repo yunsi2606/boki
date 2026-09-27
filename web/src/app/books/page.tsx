@@ -2,10 +2,11 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { bookService } from '@/services/bookService';
-import type { Book } from '@/types';
-import { getBookUrl } from '@/lib/slug';
+import { useCart } from '@/hooks/useCart';
+import type { Book, BookVariant } from '@/types';
+import BookCard from '@/components/features/books/BookCard';
+import QuickVariantSelectModal from '@/components/features/books/QuickVariantSelectModal';
 import styles from './books.module.css';
 import { BookGridSkeleton } from '@/components/ui/Skeleton';
 
@@ -32,12 +33,43 @@ function BooksPageContent() {
   const searchParams = useSearchParams();
   const search = searchParams.get('search') || '';
 
+  const { addToCart } = useCart();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [quickSelectBook, setQuickSelectBook] = useState<Book | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
   
   // Filtering states
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+
+  const showNotification = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const toggleFavorite = (favKey: string) => {
+    setFavorites((prev) =>
+      prev.includes(favKey) ? prev.filter((item) => item !== favKey) : [...prev, favKey]
+    );
+  };
+
+  const handleAddToCart = (book: Book, variant?: BookVariant) => {
+    if (!variant && book.variants && book.variants.length > 0) {
+      setQuickSelectBook(book);
+      return;
+    }
+
+    addToCart(book, 1, variant);
+    const titleText = variant ? `${book.title} (${variant.name})` : book.title;
+    showNotification(`🛒 Đã thêm "${titleText}" vào giỏ hàng!`);
+  };
+
+  const handleConfirmVariantAddToCart = (book: Book, variant: BookVariant) => {
+    addToCart(book, 1, variant);
+    showNotification(`🛒 Đã thêm "${book.title} (${variant.name})" vào giỏ hàng!`);
+  };
 
   useEffect(() => {
     async function fetchBooks() {
@@ -74,12 +106,30 @@ function BooksPageContent() {
     setSelectedCategory(categoryId);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-  };
-
   return (
     <div className={styles.container}>
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+          color: '#ffffff',
+          padding: '12px 20px',
+          borderRadius: '12px',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
+          zIndex: 9999,
+          fontWeight: 600,
+          fontSize: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          border: '1px solid rgba(255,255,255,0.1)'
+        }}>
+          {notification}
+        </div>
+      )}
+
       <div className={styles.titleSection}>
         <h1 className={styles.pageTitle}>Cửa hàng sách Boki</h1>
         <p className={styles.searchSummary}>
@@ -161,41 +211,27 @@ function BooksPageContent() {
           ) : (
             <div className={styles.bookGrid}>
               {books.map((book) => {
-                const cover = book.imageUrls && book.imageUrls.length > 0
-                  ? book.imageUrls[0]
-                  : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=200';
-
                 return (
-                  <Link href={getBookUrl(book)} key={book.id} className={styles.bookCard}>
-                    <div className={styles.coverWrapper}>
-                      <img
-                        src={cover}
-                        alt={book.title}
-                        className={styles.coverImage}
-                        loading="lazy"
-                      />
-                      <span className={styles.cardTag}>{book.sellerName}</span>
-                      <span className={styles.conditionBadge}>{book.condition}</span>
-                    </div>
-                    <div className={styles.infoWrapper}>
-                      <h3 className={styles.bookTitle}>{book.title}</h3>
-                      <p className={styles.bookAuthor}>{book.author}</p>
-                      <div className={styles.priceWrapper}>
-                        <span className={styles.bookPrice}>{formatPrice(book.price)}</span>
-                        {book.stockQuantity === 0 ? (
-                          <span className={`${styles.stockStatus} ${styles.outOfStock}`}>Hết hàng</span>
-                        ) : (
-                          <span className={styles.stockStatus}>Còn {book.stockQuantity} cuốn</span>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
+                  <BookCard
+                    key={book.id}
+                    book={book}
+                    isFavorite={favorites.includes(book.id)}
+                    onToggleFavorite={toggleFavorite}
+                    onAddToCart={handleAddToCart}
+                  />
                 );
               })}
             </div>
           )}
         </main>
       </div>
+
+      <QuickVariantSelectModal
+        isOpen={!!quickSelectBook}
+        onClose={() => setQuickSelectBook(null)}
+        book={quickSelectBook}
+        onConfirmAddToCart={handleConfirmVariantAddToCart}
+      />
     </div>
   );
 }
