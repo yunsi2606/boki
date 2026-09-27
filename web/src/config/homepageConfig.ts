@@ -53,16 +53,47 @@ export type HomepageSectionType =
   | 'DAILY_VIP'
   | 'VOUCHERS';
 
+export type DataLoadSource =
+  | 'CATEGORY'
+  | 'BEST_SELLING'
+  | 'LATEST'
+  | 'DISCOUNTED'
+  | 'VIP_MEMBERS'
+  | 'FEATURED_TABS'
+  | 'VOUCHERS'
+  | 'CUSTOM_KEYWORD';
+
+export type SectionDisplayStyle =
+  | 'GRID'
+  | 'SLIDER'
+  | 'RANKING';
+
+export type SectionSortBy =
+  | 'DEFAULT'
+  | 'VIEWS_DESC'
+  | 'NEWEST'
+  | 'PRICE_ASC'
+  | 'PRICE_DESC'
+  | 'DISCOUNT_DESC';
+
 export interface HomepageSectionConfig {
   id: string;
   type: HomepageSectionType;
   title: string;
   subtitle?: string;
   enabled: boolean;
+  // Điều kiện load data động
+  dataSource: DataLoadSource;
   categoryId?: number;
   categoryName?: string;
-  itemLimit?: number;
+  keyword?: string;
+  sortBy?: SectionSortBy;
+  itemLimit: number;
+  // Kiểu hiển thị
+  displayStyle: SectionDisplayStyle;
   badgeText?: string;
+  showViewAll?: boolean;
+  viewAllUrl?: string;
 }
 
 export interface HomepageConfig {
@@ -162,7 +193,12 @@ export const defaultHomepageConfig: HomepageConfig = {
       title: 'Top Sản Phẩm Bán Chạy',
       subtitle: 'Xếp hạng 10 tựa sách & truyện tranh bán chạy nhất tuần qua',
       enabled: true,
+      dataSource: 'BEST_SELLING',
+      displayStyle: 'RANKING',
+      sortBy: 'VIEWS_DESC',
       itemLimit: 10,
+      showViewAll: true,
+      viewAllUrl: '/books',
     },
     {
       id: 'sec_hot_recommended',
@@ -170,6 +206,10 @@ export const defaultHomepageConfig: HomepageConfig = {
       title: 'Gợi Ý Sách & Truyện Hot',
       subtitle: 'Khám phá các phiên bản đặc biệt, boxset giới hạn & bản thường mới nhất',
       enabled: true,
+      dataSource: 'FEATURED_TABS',
+      displayStyle: 'GRID',
+      itemLimit: 8,
+      showViewAll: false,
     },
     {
       id: 'sec_manga',
@@ -177,9 +217,14 @@ export const defaultHomepageConfig: HomepageConfig = {
       title: 'Truyện Tranh & Manga Nổi Bật',
       subtitle: 'Tuyển tập các bộ truyện tranh đình đám với quà tặng và bookmark giới hạn',
       enabled: true,
+      dataSource: 'CATEGORY',
+      displayStyle: 'GRID',
+      sortBy: 'NEWEST',
       categoryName: 'Sách Thiếu nhi',
       categoryId: 2,
       itemLimit: 8,
+      showViewAll: true,
+      viewAllUrl: '/books?category=2',
     },
     {
       id: 'sec_novels',
@@ -187,16 +232,26 @@ export const defaultHomepageConfig: HomepageConfig = {
       title: 'Tiểu Thuyết & Truyện Chữ Hay Nhất',
       subtitle: 'Những tác phẩm văn học kinh điển & tiểu thuyết ăn khách nhất',
       enabled: true,
+      dataSource: 'CATEGORY',
+      displayStyle: 'GRID',
+      sortBy: 'VIEWS_DESC',
       categoryName: 'Sách Văn học',
       categoryId: 1,
       itemLimit: 8,
+      showViewAll: true,
+      viewAllUrl: '/books?category=1',
     },
     {
       id: 'sec_daily_vip',
       type: 'DAILY_VIP',
-      title: 'Sách Mới Mỗi Ngày - Dành Cho Hội Viên',
+      title: 'Sách Mới Mỗi Ngày – Dành Cho Hội Viên',
       subtitle: 'Độc quyền trải nghiệm đọc thử trọn vẹn dành riêng cho thành viên VIP',
       enabled: true,
+      dataSource: 'VIP_MEMBERS',
+      displayStyle: 'SLIDER',
+      itemLimit: 8,
+      showViewAll: true,
+      viewAllUrl: '/books',
     },
     {
       id: 'sec_vouchers',
@@ -204,6 +259,10 @@ export const defaultHomepageConfig: HomepageConfig = {
       title: 'Mã Giảm Giá & Ưu Đãi Vận Chuyển',
       subtitle: 'Thu thập voucher freeship và giảm giá ngay hôm nay',
       enabled: true,
+      dataSource: 'VOUCHERS',
+      displayStyle: 'GRID',
+      itemLimit: 4,
+      showViewAll: false,
     },
   ],
 };

@@ -1,0 +1,166 @@
+/* DecorationComponentLibrary.module.css (Shopee-style Left Palette) */
+
+.libraryWrapper {
+  background: #1e293b;
+  color: #f8fafc;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.libraryHeader {
+  padding: 16px 20px;
+  border-bottom: 1px solid #334155;
+  background: #0f172a;
+}
+
+.searchBox {
+  position: relative;
+  margin-top: 10px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  color: #f8fafc;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: #ee4d2d;
+  box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.25);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.tabsRow {
+  display: flex;
+  border-bottom: 1px solid #334155;
+  background: #0f172a;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabBtnActive {
+  color: #ee4d2d;
+  border-bottom-color: #ee4d2d;
+  background: rgba(238, 77, 45, 0.05);
+}
+
+.accordionBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 280px);
+}
+
+.groupTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.componentGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.componentCard {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  user-select: none;
+}
+
+.componentCard:hover {
+  border-color: #ee4d2d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.iconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ee4d2d;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.componentCard:hover .iconWrapper {
+  background: #ee4d2d;
+  color: #ffffff;
+}
+
+.cardTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.cardDesc {
+  font-size: 10px;
+  color: #94a3b8;
+  line-height: 1.25;
+}
+
+.badgeAuto {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #0284c7;
+  color: #ffffff;
+}

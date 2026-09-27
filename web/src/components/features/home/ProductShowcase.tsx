@@ -10,10 +10,16 @@ import QuickVariantSelectModal from '@/components/features/books/QuickVariantSel
 import { BookGridSkeleton } from '@/components/ui/Skeleton';
 
 interface ProductShowcaseProps {
+  title?: string;
+  subtitle?: string;
   onShowNotification: (msg: string) => void;
 }
 
-export default function ProductShowcase({ onShowNotification }: ProductShowcaseProps) {
+export default function ProductShowcase({
+  title = 'Gợi Ý Sách & Truyện Hot',
+  subtitle = 'Khám phá các phiên bản đặc biệt, boxset giới hạn & bản thường mới nhất',
+  onShowNotification,
+}: ProductShowcaseProps) {
   const { addToCart } = useCart();
   const [activeTab, setActiveTab] = useState('all');
   const [unrollVariants, setUnrollVariants] = useState(true);
@@ -53,12 +59,12 @@ export default function ProductShowcase({ onShowNotification }: ProductShowcaseP
 
     addToCart(book, 1, variant);
     const titleText = variant ? `${book.title} (${variant.name})` : book.title;
-    onShowNotification(`🛒 Đã thêm "${titleText}" vào giỏ hàng!`);
+    onShowNotification(`Đã thêm "${titleText}" vào giỏ hàng!`);
   };
 
   const handleConfirmVariantAddToCart = (book: Book, variant: BookVariant) => {
     addToCart(book, 1, variant);
-    onShowNotification(`🛒 Đã thêm "${book.title} (${variant.name})" vào giỏ hàng!`);
+    onShowNotification(`Đã thêm "${book.title} (${variant.name})" vào giỏ hàng!`);
   };
 
   // Build items array: unrolls standalone variants into individual items when unrollVariants is true!
@@ -92,10 +98,8 @@ export default function ProductShowcase({ onShowNotification }: ProductShowcaseP
       <div className="container">
         <div className={styles.productsHeader}>
           <div>
-            <h2 className={styles.sectionTitle}>Gợi Ý Sách & Truyện Hot</h2>
-            <p className={styles.sectionSubtitle}>
-              Khám phá các phiên bản đặc biệt, boxset giới hạn & bản thường mới nhất
-            </p>
+            <h2 className={styles.sectionTitle}>{title}</h2>
+            {subtitle && <p className={styles.sectionSubtitle}>{subtitle}</p>}
           </div>
 
           {/* Interactive Filter Tabs & Unroll Toggle */}

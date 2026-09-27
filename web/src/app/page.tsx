@@ -9,9 +9,7 @@ import HeroBanner from '@/components/features/home/HeroBanner';
 import CategoryCircles from '@/components/features/home/CategoryCircles';
 import VoucherSection from '@/components/features/home/VoucherSection';
 import ProductShowcase from '@/components/features/home/ProductShowcase';
-import MemberBooksSection from '@/components/features/home/MemberBooksSection';
-import BestSellersSection from '@/components/features/home/BestSellersSection';
-import CategoryBooksSection from '@/components/features/home/CategoryBooksSection';
+import DynamicBookSection from '@/components/features/home/DynamicBookSection';
 import styles from './page.module.css';
 
 export default function HomePage() {
@@ -62,39 +60,15 @@ export default function HomePage() {
         .filter((sec) => sec.enabled)
         .map((sec) => {
           switch (sec.type) {
-            case 'BEST_SELLERS':
-              return (
-                <BestSellersSection
-                  key={sec.id}
-                  title={sec.title}
-                  subtitle={sec.subtitle}
-                  itemLimit={sec.itemLimit || 10}
-                />
-              );
-
             case 'HOT_RECOMMENDED':
               return (
                 <ProductShowcase
                   key={sec.id}
-                  onShowNotification={showNotification}
-                />
-              );
-
-            case 'CATEGORY_LIST':
-              return (
-                <CategoryBooksSection
-                  key={sec.id}
                   title={sec.title}
                   subtitle={sec.subtitle}
-                  categoryId={sec.categoryId}
-                  categoryName={sec.categoryName}
-                  itemLimit={sec.itemLimit || 8}
                   onShowNotification={showNotification}
                 />
               );
-
-            case 'DAILY_VIP':
-              return <MemberBooksSection key={sec.id} />;
 
             case 'VOUCHERS':
               return (
@@ -105,8 +79,17 @@ export default function HomePage() {
                 />
               );
 
+            case 'BEST_SELLERS':
+            case 'CATEGORY_LIST':
+            case 'DAILY_VIP':
             default:
-              return null;
+              return (
+                <DynamicBookSection
+                  key={sec.id}
+                  section={sec}
+                  onShowNotification={showNotification}
+                />
+              );
           }
         })}
     </div>

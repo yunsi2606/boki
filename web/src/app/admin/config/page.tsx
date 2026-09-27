@@ -492,7 +492,7 @@ export default function AdminConfigPage() {
 
             <div className={styles.formActions}>
               <button type="submit" className={styles.submitBtn}>
-                💾 Hoàn Tất & Lưu Bố Cục Trang Chủ
+                Hoàn Tất & Lưu Bố Cục Trang Chủ
               </button>
             </div>
           </form>
