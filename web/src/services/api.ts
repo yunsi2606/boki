@@ -219,7 +219,7 @@ async function apiFetch<T>(
 
   if (method === 'GET' && !options.bypassCache) {
     inFlightRequests.set(cacheKey, fetchPromise);
-    fetchPromise.finally(() => inFlightRequests.delete(cacheKey));
+    fetchPromise.finally(() => inFlightRequests.delete(cacheKey)).catch(() => {});
   }
 
   return fetchPromise;

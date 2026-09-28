@@ -148,6 +148,17 @@ export const adminService = {
   // Config - Storefront Admin Configuration
   async getStoreConfig(): Promise<HomepageConfig> {
     try {
+      // 1. Prioritize public config endpoint (accessible to all guests & customers without 403)
+      const publicConfigs = await api.get<Record<string, string>>('/public/config');
+      if (publicConfigs && publicConfigs['homepage_config']) {
+        return JSON.parse(publicConfigs['homepage_config']);
+      }
+    } catch {
+      // Fallback to admin endpoint or local
+    }
+
+    try {
+      // 2. Fallback to admin endpoint if logged in as Admin
       const configs = await api.get<{ configKey: string; configValue: string }[]>('/admin/config');
       const item = configs.find((c) => c.configKey === 'homepage_config');
       if (item && item.configValue) {
@@ -184,11 +195,25 @@ export const adminService = {
   async getShippingCarriers(): Promise<import('@/types').CarrierConfig[]> {
     const { defaultCarrierConfigs } = await import('@/config/carrierConfig');
     try {
+      // 1. Try public endpoint first
+      const publicConfigs = await api.get<Record<string, string>>('/public/config');
+      if (publicConfigs && publicConfigs['shipping_carriers']) {
+        const savedList: import('@/types').CarrierConfig[] = JSON.parse(publicConfigs['shipping_carriers']);
+        return defaultCarrierConfigs.map((def) => {
+          const matched = savedList.find((s) => s.code === def.code);
+          return matched ? { ...def, ...matched } : def;
+        });
+      }
+    } catch {
+      // Fallback
+    }
+
+    try {
+      // 2. Try admin endpoint
       const configs = await api.get<{ configKey: string; configValue: string }[]>('/admin/config');
       const item = configs.find((c) => c.configKey === 'shipping_carriers');
       if (item && item.configValue) {
         const savedList: import('@/types').CarrierConfig[] = JSON.parse(item.configValue);
-        // Merge with defaults to ensure all fields and newly added carriers exist
         return defaultCarrierConfigs.map((def) => {
           const matched = savedList.find((s) => s.code === def.code);
           return matched ? { ...def, ...matched } : def;
@@ -225,6 +250,17 @@ export const adminService = {
   async getStoreGeneralConfig(): Promise<import('@/types').StoreGeneralConfig> {
     const { defaultStoreGeneralConfig } = await import('@/config/carrierConfig');
     try {
+      // 1. Try public endpoint first
+      const publicConfigs = await api.get<Record<string, string>>('/public/config');
+      if (publicConfigs && publicConfigs['store_general']) {
+        return { ...defaultStoreGeneralConfig, ...JSON.parse(publicConfigs['store_general']) };
+      }
+    } catch {
+      // Fallback
+    }
+
+    try {
+      // 2. Try admin endpoint
       const configs = await api.get<{ configKey: string; configValue: string }[]>('/admin/config');
       const item = configs.find((c) => c.configKey === 'store_general');
       if (item && item.configValue) {
