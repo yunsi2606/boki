@@ -54,10 +54,11 @@ public class AdminBlogController {
     @GetMapping
     public ResponseEntity<List<BlogResponse>> getAdminBlogs(
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) String type,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size
     ) {
-        return ResponseEntity.ok(getBlogsUseCase.getAdminBlogs(search, page, size));
+        return ResponseEntity.ok(getBlogsUseCase.getAdminBlogs(search, type, page, size));
     }
 
     @GetMapping("/{id}")

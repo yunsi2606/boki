@@ -5,6 +5,7 @@ import com.boki.domain.model.blog.BlogId;
 import com.boki.domain.model.blog.BlogStatus;
 import com.boki.domain.model.user.UserId;
 import com.boki.infrastructure.persistence.entity.BlogJpaEntity;
+import com.boki.infrastructure.persistence.entity.BookJpaEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,7 @@ public final class BlogPersistenceMapper {
         entity.setCoverImage(blog.getCoverImage());
         entity.setCategory(blog.getCategory());
         entity.setTags(blog.getTags().toArray(new String[0]));
+        entity.setPostType(blog.getPostType() != null ? blog.getPostType() : "REGULAR");
         entity.setStatus(blog.getStatus().name());
         entity.setViewsCount(blog.getViewsCount());
         entity.setLikesCount(blog.getLikesCount());
@@ -48,6 +50,17 @@ public final class BlogPersistenceMapper {
         List<String> tags = entity.getTags() != null
                 ? Arrays.asList(entity.getTags())
                 : List.of();
+
+        List<java.util.UUID> linkedBookIds = new java.util.ArrayList<>();
+        if (entity.getLinkedBooks() != null) {
+            try {
+                linkedBookIds = entity.getLinkedBooks().stream()
+                        .map(BookJpaEntity::getId)
+                        .toList();
+            } catch (Exception ignored) {
+                // lazy collection outside session
+            }
+        }
 
         return Blog.reconstitute(
                 BlogId.of(entity.getId()),
@@ -67,7 +80,9 @@ public final class BlogPersistenceMapper {
                 entity.isFeatured(),
                 entity.getPublishedAt(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getPostType() != null ? entity.getPostType() : "REGULAR",
+                linkedBookIds
         );
     }
 }

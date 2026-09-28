@@ -30,10 +30,11 @@ public class BlogController {
     public ResponseEntity<List<BlogResponse>> searchBlogs(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) String type,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size
     ) {
-        return ResponseEntity.ok(getBlogsUseCase.searchPublishedBlogs(category, search, page, size));
+        return ResponseEntity.ok(getBlogsUseCase.searchPublishedBlogs(category, search, type, page, size));
     }
 
     @GetMapping("/featured")

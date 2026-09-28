@@ -66,6 +66,17 @@ public class BlogJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @Column(name = "post_type", nullable = false, length = 20)
+    private String postType = "REGULAR";
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "blog_linked_books",
+            joinColumns = @JoinColumn(name = "blog_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    private List<BookJpaEntity> linkedBooks = new ArrayList<>();
+
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BlogMediaRefJpaEntity> mediaRefs = new ArrayList<>();
 
@@ -127,4 +138,10 @@ public class BlogJpaEntity {
 
     public List<BlogMediaRefJpaEntity> getMediaRefs() { return mediaRefs; }
     public void setMediaRefs(List<BlogMediaRefJpaEntity> mediaRefs) { this.mediaRefs = mediaRefs; }
+
+    public String getPostType() { return postType; }
+    public void setPostType(String postType) { this.postType = postType; }
+
+    public List<BookJpaEntity> getLinkedBooks() { return linkedBooks; }
+    public void setLinkedBooks(List<BookJpaEntity> linkedBooks) { this.linkedBooks = linkedBooks; }
 }

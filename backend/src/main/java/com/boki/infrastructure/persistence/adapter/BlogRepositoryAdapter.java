@@ -23,16 +23,26 @@ public class BlogRepositoryAdapter implements BlogRepository {
 
     private final BlogJpaRepository blogJpaRepository;
     private final BlogMediaRefJpaRepository mediaRefRepository;
+    private final com.boki.infrastructure.persistence.repository.BookJpaRepository bookJpaRepository;
 
     public BlogRepositoryAdapter(BlogJpaRepository blogJpaRepository,
-                                 BlogMediaRefJpaRepository mediaRefRepository) {
+                                 BlogMediaRefJpaRepository mediaRefRepository,
+                                 com.boki.infrastructure.persistence.repository.BookJpaRepository bookJpaRepository) {
         this.blogJpaRepository = blogJpaRepository;
         this.mediaRefRepository = mediaRefRepository;
+        this.bookJpaRepository = bookJpaRepository;
     }
 
     @Override
     public Blog save(Blog blog) {
         BlogJpaEntity entity = BlogPersistenceMapper.toJpaEntity(blog);
+        if (blog.getLinkedBookIds() != null && !blog.getLinkedBookIds().isEmpty()) {
+            List<com.boki.infrastructure.persistence.entity.BookJpaEntity> books =
+                    bookJpaRepository.findAllById(blog.getLinkedBookIds());
+            entity.setLinkedBooks(books);
+        } else {
+            entity.setLinkedBooks(new java.util.ArrayList<>());
+        }
         BlogJpaEntity saved = blogJpaRepository.save(entity);
         return BlogPersistenceMapper.toDomainModel(saved);
     }
@@ -68,19 +78,38 @@ public class BlogRepositoryAdapter implements BlogRepository {
 
     @Override
     public List<Blog> searchPublished(String category, String query, int page, int size) {
+        return searchPublished(category, query, null, page, size);
+    }
+
+    @Override
+    public List<Blog> searchPublished(String category, String query, String postType, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         boolean hasCategory = category != null && !category.isBlank() && !category.equalsIgnoreCase("Tất cả");
         boolean hasQuery = query != null && !query.isBlank();
+        boolean hasType = postType != null && !postType.isBlank() && !postType.equalsIgnoreCase("ALL");
 
         org.springframework.data.domain.Page<BlogJpaEntity> resultPage;
-        if (hasCategory && hasQuery) {
-            resultPage = blogJpaRepository.searchPublishedByCategoryAndQuery(category.trim(), query.trim(), pageable);
-        } else if (hasCategory) {
-            resultPage = blogJpaRepository.findByStatusAndCategoryOrderByPublishedAtDesc("PUBLISHED", category.trim(), pageable);
-        } else if (hasQuery) {
-            resultPage = blogJpaRepository.searchPublishedByQuery(query.trim(), pageable);
+        if (hasType) {
+            String type = postType.trim().toUpperCase();
+            if (hasCategory && hasQuery) {
+                resultPage = blogJpaRepository.searchPublishedByCategoryAndPostTypeAndQuery(category.trim(), type, query.trim(), pageable);
+            } else if (hasCategory) {
+                resultPage = blogJpaRepository.findByStatusAndCategoryAndPostTypeOrderByPublishedAtDesc("PUBLISHED", category.trim(), type, pageable);
+            } else if (hasQuery) {
+                resultPage = blogJpaRepository.searchPublishedByPostTypeAndQuery(type, query.trim(), pageable);
+            } else {
+                resultPage = blogJpaRepository.findByStatusAndPostTypeOrderByPublishedAtDesc("PUBLISHED", type, pageable);
+            }
         } else {
-            resultPage = blogJpaRepository.findByStatusOrderByPublishedAtDesc("PUBLISHED", pageable);
+            if (hasCategory && hasQuery) {
+                resultPage = blogJpaRepository.searchPublishedByCategoryAndQuery(category.trim(), query.trim(), pageable);
+            } else if (hasCategory) {
+                resultPage = blogJpaRepository.findByStatusAndCategoryOrderByPublishedAtDesc("PUBLISHED", category.trim(), pageable);
+            } else if (hasQuery) {
+                resultPage = blogJpaRepository.searchPublishedByQuery(query.trim(), pageable);
+            } else {
+                resultPage = blogJpaRepository.findByStatusOrderByPublishedAtDesc("PUBLISHED", pageable);
+            }
         }
 
         return resultPage.getContent().stream()
@@ -90,15 +119,46 @@ public class BlogRepositoryAdapter implements BlogRepository {
 
     @Override
     public List<Blog> findAll(String query, int page, int size) {
+        return findAll(query, null, page, size);
+    }
+
+    @Override
+    public List<Blog> findAll(String query, String postType, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
+        boolean hasType = postType != null && !postType.isBlank() && !postType.equalsIgnoreCase("ALL");
+        boolean hasQuery = query != null && !query.isBlank();
+
         org.springframework.data.domain.Page<BlogJpaEntity> resultPage;
-        if (query != null && !query.isBlank()) {
-            resultPage = blogJpaRepository.searchAllByQuery(query.trim(), pageable);
+        if (hasType) {
+            String type = postType.trim().toUpperCase();
+            if (hasQuery) {
+                resultPage = blogJpaRepository.searchAllByPostTypeAndQuery(type, query.trim(), pageable);
+            } else {
+                resultPage = blogJpaRepository.findAllByPostTypeOrdered(type, pageable);
+            }
         } else {
-            resultPage = blogJpaRepository.findAllOrdered(pageable);
+            if (hasQuery) {
+                resultPage = blogJpaRepository.searchAllByQuery(query.trim(), pageable);
+            } else {
+                resultPage = blogJpaRepository.findAllOrdered(pageable);
+            }
         }
 
         return resultPage.getContent().stream()
+                .map(BlogPersistenceMapper::toDomainModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Blog> findPublishedPreviewsByBookId(java.util.UUID bookId) {
+        return blogJpaRepository.findPublishedPreviewsByBookId(bookId).stream()
+                .map(BlogPersistenceMapper::toDomainModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Blog> findPublishedPreviewsByBookSlug(String slug) {
+        return blogJpaRepository.findPublishedPreviewsByBookSlug(slug).stream()
                 .map(BlogPersistenceMapper::toDomainModel)
                 .collect(Collectors.toList());
     }

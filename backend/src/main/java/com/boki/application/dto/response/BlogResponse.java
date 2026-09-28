@@ -17,10 +17,12 @@ public record BlogResponse(
         String category,
         List<String> tags,
         String status,
+        String postType,
         int viewsCount,
         int likesCount,
         int readingTimeMinutes,
         boolean isFeatured,
+        List<BookSummaryResponse> linkedBooks,
         Instant publishedAt,
         Instant createdAt,
         Instant updatedAt

@@ -585,3 +585,60 @@
   }
 }
 
+/* Post Type Radio Selector */
+.postTypeGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.postTypeOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.postTypeOption:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.postTypeOptionActive {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
+}
+
+.postTypeRadio {
+  margin-top: 3px;
+  accent-color: #2563eb;
+}
+
+.postTypeInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.postTypeLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.postTypeOptionActive .postTypeLabel {
+  color: #1d4ed8;
+}
+
+.postTypeDesc {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+

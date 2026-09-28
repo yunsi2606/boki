@@ -24,7 +24,15 @@ public interface BlogRepository {
 
     List<Blog> searchPublished(String category, String query, int page, int size);
 
+    List<Blog> searchPublished(String category, String query, String postType, int page, int size);
+
     List<Blog> findAll(String query, int page, int size);
+
+    List<Blog> findAll(String query, String postType, int page, int size);
+
+    List<Blog> findPublishedPreviewsByBookId(java.util.UUID bookId);
+
+    List<Blog> findPublishedPreviewsByBookSlug(String slug);
 
     void deleteById(BlogId id);
 

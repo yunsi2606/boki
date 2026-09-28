@@ -15,6 +15,10 @@ import com.boki.domain.port.out.BlogRepository;
 import com.boki.domain.port.out.UserRepository;
 import com.boki.infrastructure.storage.CloudflareR2StorageService;
 import com.boki.infrastructure.util.SlugUtils;
+import com.boki.application.dto.response.BookSummaryResponse;
+import com.boki.infrastructure.persistence.entity.BookImageJpaEntity;
+import com.boki.infrastructure.persistence.entity.BookJpaEntity;
+import com.boki.infrastructure.persistence.repository.BookJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,15 +39,18 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
     private final CloudflareR2StorageService storageService;
+    private final BookJpaRepository bookJpaRepository;
 
     public BlogApplicationService(
             BlogRepository blogRepository,
             UserRepository userRepository,
-            CloudflareR2StorageService storageService
+            CloudflareR2StorageService storageService,
+            BookJpaRepository bookJpaRepository
     ) {
         this.blogRepository = blogRepository;
         this.userRepository = userRepository;
         this.storageService = storageService;
+        this.bookJpaRepository = bookJpaRepository;
     }
 
     // ========== ManageBlogUseCase ==========
@@ -66,6 +73,13 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
                 request.coverImage(), request.category(),
                 request.tags()
         );
+
+        if (request.postType() != null && !request.postType().isBlank()) {
+            blog.setPostType(request.postType());
+        }
+        if (request.linkedBookIds() != null) {
+            blog.setLinkedBookIds(request.linkedBookIds());
+        }
 
         if (Boolean.TRUE.equals(request.publish())) {
             blog.publish();
@@ -96,7 +110,7 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
                 request.title(), newSlug,
                 request.excerpt(), request.content(),
                 request.coverImage(), request.category(),
-                request.tags()
+                request.tags(), request.postType(), request.linkedBookIds()
         );
 
         if (request.status() != null) {
@@ -146,7 +160,13 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
     @Override
     @Transactional(readOnly = true)
     public List<BlogResponse> searchPublishedBlogs(String category, String query, int page, int size) {
-        return blogRepository.searchPublished(category, query, page, size).stream()
+        return searchPublishedBlogs(category, query, null, page, size);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BlogResponse> searchPublishedBlogs(String category, String query, String postType, int page, int size) {
+        return blogRepository.searchPublished(category, query, postType, page, size).stream()
                 .map(this::toSummaryResponse)
                 .collect(Collectors.toList());
     }
@@ -177,9 +197,28 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
     @Override
     @Transactional(readOnly = true)
     public List<BlogResponse> getAdminBlogs(String query, int page, int size) {
-        return blogRepository.findAll(query, page, size).stream()
+        return getAdminBlogs(query, null, page, size);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BlogResponse> getAdminBlogs(String query, String postType, int page, int size) {
+        return blogRepository.findAll(query, postType, page, size).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BlogResponse> getPreviewsForBook(String idOrSlug) {
+        List<Blog> blogs;
+        try {
+            UUID bookId = UUID.fromString(idOrSlug);
+            blogs = blogRepository.findPublishedPreviewsByBookId(bookId);
+        } catch (IllegalArgumentException e) {
+            blogs = blogRepository.findPublishedPreviewsByBookSlug(idOrSlug);
+        }
+        return blogs.stream().map(this::toSummaryResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -290,7 +329,42 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
         }
     }
 
+    private List<BookSummaryResponse> getLinkedBookSummaries(List<UUID> bookIds) {
+        if (bookIds == null || bookIds.isEmpty()) {
+            return List.of();
+        }
+        try {
+            List<BookJpaEntity> books = bookJpaRepository.findAllWithImagesByIdIn(bookIds);
+            return books.stream().map(b -> {
+                String cover = null;
+                if (b.getImages() != null && !b.getImages().isEmpty()) {
+                    cover = b.getImages().stream()
+                            .filter(BookImageJpaEntity::isPrimary)
+                            .map(BookImageJpaEntity::getImageUrl)
+                            .findFirst()
+                            .orElse(b.getImages().get(0).getImageUrl());
+                }
+                return new BookSummaryResponse(
+                        b.getId(),
+                        b.getTitle(),
+                        b.getSlug(),
+                        b.getAuthor(),
+                        b.getPrice(),
+                        b.getOriginalPrice(),
+                        b.getRating(),
+                        b.getViewsCount(),
+                        cover,
+                        b.getCategoryId()
+                );
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.warn("Failed to load linked book summaries: {}", e.getMessage());
+            return List.of();
+        }
+    }
+
     private BlogResponse toSummaryResponse(Blog blog) {
+        List<BookSummaryResponse> linkedBooks = getLinkedBookSummaries(blog.getLinkedBookIds());
         return new BlogResponse(
                 blog.getId().value(),
                 blog.getAuthorId().value(),
@@ -304,10 +378,12 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
                 blog.getCategory(),
                 blog.getTags(),
                 blog.getStatus().name(),
+                blog.getPostType(),
                 blog.getViewsCount(),
                 blog.getLikesCount(),
                 blog.getReadingTimeMinutes(),
                 blog.isFeatured(),
+                linkedBooks,
                 blog.getPublishedAt(),
                 blog.getCreatedAt(),
                 blog.getUpdatedAt()
@@ -315,6 +391,7 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
     }
 
     private BlogResponse toResponse(Blog blog) {
+        List<BookSummaryResponse> linkedBooks = getLinkedBookSummaries(blog.getLinkedBookIds());
         return new BlogResponse(
                 blog.getId().value(),
                 blog.getAuthorId().value(),
@@ -328,10 +405,12 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
                 blog.getCategory(),
                 blog.getTags(),
                 blog.getStatus().name(),
+                blog.getPostType(),
                 blog.getViewsCount(),
                 blog.getLikesCount(),
                 blog.getReadingTimeMinutes(),
                 blog.isFeatured(),
+                linkedBooks,
                 blog.getPublishedAt(),
                 blog.getCreatedAt(),
                 blog.getUpdatedAt()

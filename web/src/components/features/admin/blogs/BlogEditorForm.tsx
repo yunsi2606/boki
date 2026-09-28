@@ -3,13 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, BookOpen, FileText } from 'lucide-react';
 import RichTextEditor from '@/components/features/editor/RichTextEditor';
 import ImageUploadInput from '@/components/ui/ImageUploadInput';
 import QuickAddBlogCategoryModal from './QuickAddBlogCategoryModal';
+import LinkedBookPickerModal from './LinkedBookPickerModal';
+import LinkedBooksList from './LinkedBooksList';
 import { AiBlogAssistantModal } from './ai';
 import { blogService } from '@/services/blogService';
-import type { BlogPost, CreateBlogPayload, UpdateBlogPayload, BlogCategory } from '@/types/blog';
+import type { BlogPost, CreateBlogPayload, UpdateBlogPayload, BlogCategory, BlogType, BookSummary } from '@/types/blog';
 import type { AiBlogAppliedData } from '@/types/aiBlog';
 import styles from './adminBlogs.module.css';
 
@@ -50,6 +52,9 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
   const [tags, setTags] = useState<string[]>(initialBlog?.tags || []);
   const [tagInput, setTagInput] = useState('');
   const [status, setStatus] = useState<string>(initialBlog?.status || 'DRAFT');
+  const [postType, setPostType] = useState<BlogType>(initialBlog?.postType || 'REGULAR');
+  const [linkedBooks, setLinkedBooks] = useState<BookSummary[]>(initialBlog?.linkedBooks || []);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -141,6 +146,8 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
           coverImage: coverImage || null,
           category,
           tags,
+          postType,
+          linkedBookIds: linkedBooks.map((b) => b.id),
           status: publishNow ? 'PUBLISHED' : status,
         };
         await blogService.updateBlog(initialBlog.id, payload);
@@ -152,6 +159,8 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
           coverImage: coverImage || null,
           category,
           tags,
+          postType,
+          linkedBookIds: linkedBooks.map((b) => b.id),
           publish: publishNow,
         };
         await blogService.createBlog(payload);
@@ -223,6 +232,63 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
                 onChange={(e) => setExcerpt(e.target.value)}
                 className={styles.textarea}
                 rows={3}
+              />
+            </div>
+          </div>
+
+          {/* Post Type & Linked Books Card */}
+          <div className={styles.card}>
+            <h3 className={styles.cardTitle}>Loại nội dung bài viết</h3>
+            <div className={styles.postTypeGroup}>
+              <div
+                className={`${styles.postTypeOption} ${postType === 'REGULAR' ? styles.postTypeOptionActive : ''}`}
+                onClick={() => setPostType('REGULAR')}
+              >
+                <input
+                  type="radio"
+                  id="type-regular"
+                  name="postType"
+                  className={styles.postTypeRadio}
+                  checked={postType === 'REGULAR'}
+                  onChange={() => setPostType('REGULAR')}
+                />
+                <div className={styles.postTypeInfo}>
+                  <div className={styles.postTypeLabel}>
+                    <FileText size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                    Blog thông thường
+                  </div>
+                  <div className={styles.postTypeDesc}>Tin tức, review, cẩm nang, thông báo...</div>
+                </div>
+              </div>
+
+              <div
+                className={`${styles.postTypeOption} ${postType === 'PREVIEW' ? styles.postTypeOptionActive : ''}`}
+                onClick={() => setPostType('PREVIEW')}
+              >
+                <input
+                  type="radio"
+                  id="type-preview"
+                  name="postType"
+                  className={styles.postTypeRadio}
+                  checked={postType === 'PREVIEW'}
+                  onChange={() => setPostType('PREVIEW')}
+                />
+                <div className={styles.postTypeInfo}>
+                  <div className={styles.postTypeLabel}>
+                    <BookOpen size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                    Bài đọc thử sách
+                  </div>
+                  <div className={styles.postTypeDesc}>Trích đoạn hoặc chương đọc trước kèm liên kết mua sách</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Linked Books Section */}
+            <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
+              <LinkedBooksList
+                books={linkedBooks}
+                onChange={setLinkedBooks}
+                onOpenPicker={() => setIsPickerOpen(true)}
               />
             </div>
           </div>
@@ -404,6 +470,13 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
         initialCategory={category}
         categories={categories}
         onApply={handleApplyAiContent}
+      />
+
+      <LinkedBookPickerModal
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        selectedBooks={linkedBooks}
+        onConfirm={setLinkedBooks}
       />
     </div>
   );

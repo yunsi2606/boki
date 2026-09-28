@@ -8,13 +8,28 @@ export const blogService = {
     return api.get<BlogCategory[]>('/blogs/categories');
   },
 
-  searchBlogs: async (category?: string, search?: string, page = 0, size = 12): Promise<BlogPost[]> => {
+  searchBlogs: async (category?: string, search?: string, page = 0, size = 12, type?: string): Promise<BlogPost[]> => {
     const params = new URLSearchParams();
     if (category) params.append('category', category);
     if (search) params.append('search', search);
+    if (type) params.append('type', type);
     params.append('page', page.toString());
     params.append('size', size.toString());
     return api.get<BlogPost[]>(`/blogs?${params.toString()}`);
+  },
+
+  getPreviews: async (options?: { category?: string; search?: string; page?: number; size?: number }): Promise<BlogPost[]> => {
+    const params = new URLSearchParams();
+    params.append('type', 'PREVIEW');
+    if (options?.category) params.append('category', options.category);
+    if (options?.search) params.append('search', options.search);
+    params.append('page', (options?.page ?? 0).toString());
+    params.append('size', (options?.size ?? 12).toString());
+    return api.get<BlogPost[]>(`/blogs?${params.toString()}`);
+  },
+
+  getBookPreviews: async (bookIdOrSlug: string): Promise<BlogPost[]> => {
+    return api.get<BlogPost[]>(`/books/${bookIdOrSlug}/previews`);
   },
 
   getFeaturedBlogs: async (limit = 3): Promise<BlogPost[]> => {
@@ -31,9 +46,10 @@ export const blogService = {
 
   // ===== Admin =====
 
-  getAdminBlogs: async (search?: string, page = 0, size = 50): Promise<BlogPost[]> => {
+  getAdminBlogs: async (search?: string, page = 0, size = 50, type?: string): Promise<BlogPost[]> => {
     const params = new URLSearchParams();
     if (search) params.append('search', search);
+    if (type && type !== 'ALL') params.append('type', type);
     params.append('page', page.toString());
     params.append('size', size.toString());
     return api.get<BlogPost[]>(`/admin/blogs?${params.toString()}`);

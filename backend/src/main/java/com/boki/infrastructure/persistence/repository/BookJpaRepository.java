@@ -17,6 +17,10 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
     List<BookJpaEntity> findBySellerId(UUID sellerId);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"images"})
+    @Query("SELECT b FROM BookJpaEntity b WHERE b.id IN :ids")
+    List<BookJpaEntity> findAllWithImagesByIdIn(@Param("ids") List<UUID> ids);
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"images"})
     @Override
     java.util.Optional<BookJpaEntity> findById(UUID id);
 

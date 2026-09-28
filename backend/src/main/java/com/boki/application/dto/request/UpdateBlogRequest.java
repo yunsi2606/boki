@@ -3,6 +3,7 @@ package com.boki.application.dto.request;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
+import java.util.UUID;
 
 public record UpdateBlogRequest(
         @Size(max = 255)
@@ -21,6 +22,12 @@ public record UpdateBlogRequest(
         List<String> tags,
 
         /** If provided, change status. */
-        String status
+        String status,
+
+        /** REGULAR or PREVIEW */
+        String postType,
+
+        /** Associated book IDs for Many-to-Many preview linking */
+        List<UUID> linkedBookIds
 ) {
 }

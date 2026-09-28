@@ -30,6 +30,8 @@ public class Blog {
     private String category;
     private List<String> tags;
     private BlogStatus status;
+    private String postType = "REGULAR";
+    private List<java.util.UUID> linkedBookIds = new ArrayList<>();
     private int viewsCount;
     private int likesCount;
     private int readingTimeMinutes;
@@ -51,6 +53,18 @@ public class Blog {
             String coverImage, String category,
             List<String> tags
     ) {
+        return create(authorId, authorName, title, slug, excerpt, content, coverImage, category, tags, "REGULAR", List.of());
+    }
+
+    public static Blog create(
+            UserId authorId, String authorName,
+            String title, String slug,
+            String excerpt, String content,
+            String coverImage, String category,
+            List<String> tags,
+            String postType,
+            List<java.util.UUID> linkedBookIds
+    ) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Blog title cannot be empty");
         }
@@ -70,6 +84,8 @@ public class Blog {
         blog.category = category != null ? category.trim() : "Chung";
         blog.tags = tags != null ? new ArrayList<>(tags) : new ArrayList<>();
         blog.status = BlogStatus.DRAFT;
+        blog.postType = postType != null && !postType.isBlank() ? postType : "REGULAR";
+        blog.linkedBookIds = linkedBookIds != null ? new ArrayList<>(linkedBookIds) : new ArrayList<>();
         blog.viewsCount = 0;
         blog.likesCount = 0;
         blog.readingTimeMinutes = calculateReadingTime(content);
@@ -92,6 +108,19 @@ public class Blog {
             boolean isFeatured, Instant publishedAt,
             Instant createdAt, Instant updatedAt
     ) {
+        return reconstitute(id, authorId, authorName, title, slug, excerpt, content, coverImage, category, tags, status, viewsCount, likesCount, readingTimeMinutes, isFeatured, publishedAt, createdAt, updatedAt, "REGULAR", List.of());
+    }
+
+    public static Blog reconstitute(
+            BlogId id, UserId authorId, String authorName,
+            String title, String slug, String excerpt,
+            String content, String coverImage, String category,
+            List<String> tags, BlogStatus status,
+            int viewsCount, int likesCount, int readingTimeMinutes,
+            boolean isFeatured, Instant publishedAt,
+            Instant createdAt, Instant updatedAt,
+            String postType, List<java.util.UUID> linkedBookIds
+    ) {
         Blog blog = new Blog();
         blog.id = id;
         blog.authorId = authorId;
@@ -104,6 +133,8 @@ public class Blog {
         blog.category = category;
         blog.tags = tags != null ? new ArrayList<>(tags) : new ArrayList<>();
         blog.status = status;
+        blog.postType = postType != null ? postType : "REGULAR";
+        blog.linkedBookIds = linkedBookIds != null ? new ArrayList<>(linkedBookIds) : new ArrayList<>();
         blog.viewsCount = viewsCount;
         blog.likesCount = likesCount;
         blog.readingTimeMinutes = readingTimeMinutes;
@@ -144,6 +175,14 @@ public class Blog {
             String content, String coverImage, String category,
             List<String> tags
     ) {
+        updateDetails(title, slug, excerpt, content, coverImage, category, tags, this.postType, this.linkedBookIds);
+    }
+
+    public void updateDetails(
+            String title, String slug, String excerpt,
+            String content, String coverImage, String category,
+            List<String> tags, String postType, List<java.util.UUID> linkedBookIds
+    ) {
         if (title != null && !title.isBlank()) this.title = title.trim();
         if (slug != null && !slug.isBlank()) this.slug = slug;
         this.excerpt = excerpt;
@@ -154,8 +193,15 @@ public class Blog {
         this.coverImage = coverImage;
         if (category != null && !category.isBlank()) this.category = category.trim();
         if (tags != null) this.tags = new ArrayList<>(tags);
+        if (postType != null && !postType.isBlank()) this.postType = postType;
+        if (linkedBookIds != null) this.linkedBookIds = new ArrayList<>(linkedBookIds);
         this.updatedAt = Instant.now();
     }
+
+    public String getPostType() { return postType; }
+    public List<java.util.UUID> getLinkedBookIds() { return Collections.unmodifiableList(linkedBookIds); }
+    public void setPostType(String postType) { this.postType = postType != null ? postType : "REGULAR"; }
+    public void setLinkedBookIds(List<java.util.UUID> linkedBookIds) { this.linkedBookIds = linkedBookIds != null ? new ArrayList<>(linkedBookIds) : new ArrayList<>(); }
 
     /**
      * Resolve effective cover image with 3-tier fallback:

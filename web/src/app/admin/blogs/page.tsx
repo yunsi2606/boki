@@ -11,6 +11,7 @@ export default function AdminBlogsPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState<'ALL' | 'REGULAR' | 'PREVIEW'>('ALL');
   const [errorMsg, setErrorMsg] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -18,7 +19,7 @@ export default function AdminBlogsPage() {
     try {
       setLoading(true);
       setErrorMsg('');
-      const data = await blogService.getAdminBlogs(search || undefined);
+      const data = await blogService.getAdminBlogs(search || undefined, 0, 50, activeTab);
       setBlogs(data || []);
     } catch (err: any) {
       console.error('Failed to load admin blogs:', err);
@@ -26,7 +27,7 @@ export default function AdminBlogsPage() {
     } finally {
       setLoading(false);
     }
-  }, [search]);
+  }, [search, activeTab]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -89,6 +90,34 @@ export default function AdminBlogsPage() {
             <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span> Viết bài mới
           </Link>
         </div>
+      </div>
+
+      {/* Type Filter Tabs */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {[
+          { key: 'ALL', label: 'Tất cả nội dung' },
+          { key: 'REGULAR', label: 'Blog thông thường' },
+          { key: 'PREVIEW', label: 'Bài đọc thử sách' },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key as any)}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              border: activeTab === tab.key ? '1px solid #2563eb' : '1px solid #e2e8f0',
+              background: activeTab === tab.key ? '#eff6ff' : '#ffffff',
+              color: activeTab === tab.key ? '#1d4ed8' : '#64748b',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Filter Bar */}
@@ -170,9 +199,26 @@ export default function AdminBlogsPage() {
                         className={styles.postThumbnail}
                       />
                       <div className={styles.postInfo}>
-                        <Link href={`/admin/blogs/${blog.id}`} className={styles.postTitle}>
-                          {blog.title}
-                        </Link>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                          {blog.postType === 'PREVIEW' && (
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              background: '#eff6ff',
+                              color: '#1d4ed8',
+                              border: '1px solid #bfdbfe',
+                              borderRadius: '4px',
+                              padding: '1px 6px',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                            }}>
+                              Đọc thử {blog.linkedBooks && blog.linkedBooks.length > 0 ? `(${blog.linkedBooks.length} sách)` : ''}
+                            </span>
+                          )}
+                          <Link href={`/admin/blogs/${blog.id}`} className={styles.postTitle}>
+                            {blog.title}
+                          </Link>
+                        </div>
                         <div className={styles.postMeta}>
                           <span>bởi {blog.authorName}</span>
                           <span>•</span>
@@ -228,7 +274,7 @@ export default function AdminBlogsPage() {
                     <div className={styles.actionBtns} style={{ justifyContent: 'flex-end' }}>
                       {blog.status === 'PUBLISHED' && (
                         <Link
-                          href={`/blog/${blog.slug}`}
+                          href={blog.postType === 'PREVIEW' ? `/preview/${blog.slug}` : `/blog/${blog.slug}`}
                           target="_blank"
                           className={styles.actionBtn}
                           title="Xem trên web"

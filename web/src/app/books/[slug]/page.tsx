@@ -17,6 +17,7 @@ import { checkoutNavigationService } from '@/services/checkoutNavigationService'
 import { BarChartIcon } from '@/components/ui/LineIcons';
 import { activityTracker } from '@/services/activityTracker';
 import PreOrderBadge, { PreOrderDeliveryEstimate } from '@/components/features/books/PreOrderBadge';
+import BookPreviewLink from '@/components/features/preview/BookPreviewLink';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -391,6 +392,9 @@ function BookDetailsContent() {
               {limitNotice}
             </div>
           )}
+
+          {/* Book Preview Reading Link */}
+          <BookPreviewLink bookIdOrSlug={book.slug || book.id} />
 
           <div className={styles.actionsRow}>
             <Button
