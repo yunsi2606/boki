@@ -112,8 +112,56 @@ export interface Book {
   reviewsCount?: number;
   imageUrls: string[];
   variants?: BookVariant[];
+  isCombo?: boolean;
+  comboItems?: ComboItem[];
+  originalTotalAmount?: number | null;
+  savingsAmount?: number | null;
+  savingsPercent?: number | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ComboItem {
+  id: string;
+  singleBookId: string;
+  variantId?: string | null;
+  variantName?: string | null;
+  title: string;
+  slug: string;
+  author: string;
+  price: number;
+  originalPrice?: number;
+  coverImage?: string;
+  quantity: number;
+  stockQuantity: number;
+}
+
+export interface ComboItemInput {
+  singleBookId: string;
+  variantId?: string | null;
+  quantity: number;
+  sortOrder: number;
+}
+
+export interface CreateComboPayload {
+  title: string;
+  description?: string;
+  categoryId?: number;
+  price: number;
+  stockQuantity?: number;
+  imageUrls?: string[];
+  items: ComboItemInput[];
+}
+
+export interface UpdateComboPayload {
+  title: string;
+  description?: string;
+  categoryId?: number;
+  price: number;
+  stockQuantity?: number;
+  imageUrls?: string[];
+  status?: string;
+  items: ComboItemInput[];
 }
 
 export interface CreateBookPayload {

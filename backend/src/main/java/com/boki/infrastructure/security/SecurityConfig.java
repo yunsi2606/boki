@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/admin/orders/alerts/stream").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders", "/api/orders/calculate-pricing").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/combos", "/api/combos/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/books/*/views").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/vouchers").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blogs", "/api/blogs/**").permitAll()

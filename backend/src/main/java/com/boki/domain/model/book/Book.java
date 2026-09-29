@@ -34,6 +34,7 @@ public class Book {
     private boolean isPreOrder = false;
     private Integer preOrderDays;
     private List<String> imageUrls = new ArrayList<>();
+    private boolean isCombo = false;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
@@ -293,4 +294,7 @@ public class Book {
         }
         this.updatedAt = Instant.now();
     }
+
+    public boolean isCombo() { return isCombo; }
+    public void setCombo(boolean isCombo) { this.isCombo = isCombo; }
 }

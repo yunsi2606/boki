@@ -21,15 +21,21 @@ public class BookDtoMapper {
 
     private final UserRepository userRepository;
     private final BookVariantJpaRepository variantRepository;
+    private final com.boki.infrastructure.persistence.repository.BookComboItemJpaRepository comboItemRepository;
+    private final ComboDtoMapper comboDtoMapper;
     private final ObjectMapper objectMapper;
 
     public BookDtoMapper(
             UserRepository userRepository,
             BookVariantJpaRepository variantRepository,
+            com.boki.infrastructure.persistence.repository.BookComboItemJpaRepository comboItemRepository,
+            ComboDtoMapper comboDtoMapper,
             ObjectMapper objectMapper
     ) {
         this.userRepository = userRepository;
         this.variantRepository = variantRepository;
+        this.comboItemRepository = comboItemRepository;
+        this.comboDtoMapper = comboDtoMapper;
         this.objectMapper = objectMapper;
     }
 
@@ -90,6 +96,20 @@ public class BookDtoMapper {
                             ? variants.stream().mapToInt(BookVariantResponse::stockQuantity).sum()
                             : book.getStockQuantity();
 
+                    List<com.boki.application.dto.response.ComboItemResponse> comboItems = Collections.emptyList();
+                    java.math.BigDecimal originalTotal = null;
+                    java.math.BigDecimal savingsAmount = null;
+                    Integer savingsPercent = null;
+
+                    if (book.isCombo()) {
+                        comboItems = comboDtoMapper.toComboItemResponses(
+                                comboItemRepository.findByComboBookId(book.getId().value())
+                        );
+                        originalTotal = comboDtoMapper.calculateOriginalTotal(comboItems);
+                        savingsAmount = comboDtoMapper.calculateSavingsAmount(originalTotal, book.getPrice().amount());
+                        savingsPercent = comboDtoMapper.calculateSavingsPercent(originalTotal, savingsAmount);
+                    }
+
                     return new BookResponse(
                             book.getId().value(),
                             book.getSellerId().value(),
@@ -117,6 +137,11 @@ public class BookDtoMapper {
                             book.getReviewsCount(),
                             book.getImageUrls(),
                             variants,
+                            book.isCombo(),
+                            comboItems,
+                            originalTotal,
+                            savingsAmount,
+                            savingsPercent,
                             book.getCreatedAt(),
                             book.getUpdatedAt()
                     );

@@ -14,6 +14,10 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
 
     Page<BookJpaEntity> findByStatus(BookJpaEntity.BookStatusJpa status, Pageable pageable);
 
+    Page<BookJpaEntity> findByStatusAndIsCombo(BookJpaEntity.BookStatusJpa status, boolean isCombo, Pageable pageable);
+
+    Page<BookJpaEntity> findByIsCombo(boolean isCombo, Pageable pageable);
+
     List<BookJpaEntity> findBySellerId(UUID sellerId);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"images"})

@@ -22,13 +22,16 @@ public class BookController {
     private final ManageBookUseCase manageBookUseCase;
     private final GetBookUseCase getBookUseCase;
     private final com.boki.application.port.in.GetBlogsUseCase getBlogsUseCase;
+    private final com.boki.application.port.in.GetComboUseCase getComboUseCase;
 
     public BookController(ManageBookUseCase manageBookUseCase,
                           GetBookUseCase getBookUseCase,
-                          com.boki.application.port.in.GetBlogsUseCase getBlogsUseCase) {
+                          com.boki.application.port.in.GetBlogsUseCase getBlogsUseCase,
+                          com.boki.application.port.in.GetComboUseCase getComboUseCase) {
         this.manageBookUseCase = manageBookUseCase;
         this.getBookUseCase = getBookUseCase;
         this.getBlogsUseCase = getBlogsUseCase;
+        this.getComboUseCase = getComboUseCase;
     }
 
     @GetMapping
@@ -67,6 +70,11 @@ public class BookController {
     @GetMapping("/{idOrSlug}/previews")
     public ResponseEntity<List<com.boki.application.dto.response.BlogResponse>> getBookPreviews(@PathVariable String idOrSlug) {
         return ResponseEntity.ok(getBlogsUseCase.getPreviewsForBook(idOrSlug));
+    }
+
+    @GetMapping("/{idOrSlug}/combos")
+    public ResponseEntity<List<BookResponse>> getBookCombos(@PathVariable String idOrSlug) {
+        return ResponseEntity.ok(getComboUseCase.getCombosForBook(idOrSlug));
     }
 
     @PostMapping("/{idOrSlug}/views")

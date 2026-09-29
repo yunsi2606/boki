@@ -40,6 +40,7 @@ public final class BookPersistenceMapper {
         entity.setMaxOrderQuantity(book.getMaxOrderQuantity());
         entity.setPreOrder(book.isPreOrder());
         entity.setPreOrderDays(book.getPreOrderDays());
+        entity.setCombo(book.isCombo());
         entity.setCreatedAt(book.getCreatedAt());
         entity.setUpdatedAt(book.getUpdatedAt());
         entity.setCreatedBy(book.getCreatedBy());
@@ -74,7 +75,7 @@ public final class BookPersistenceMapper {
             // Lazy images collection not initialized and no open Hibernate session
         }
 
-        return Book.reconstitute(
+        Book book = Book.reconstitute(
                 BookId.of(entity.getId()),
                 UserId.of(entity.getSellerId()),
                 entity.getCategoryId(),
@@ -99,5 +100,7 @@ public final class BookPersistenceMapper {
                 entity.getUpdatedAt(),
                 entity.getCreatedBy()
         );
+        book.setCombo(entity.isCombo());
+        return book;
     }
 }

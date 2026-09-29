@@ -11,7 +11,8 @@ import styles from './adminBooks.module.css';
 
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/books/PreOrderBadge';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Package } from 'lucide-react';
+import AdminComboCreateModal from '@/components/features/admin/combos/AdminComboCreateModal';
 
 export interface SpecificationItem {
   id: string;
@@ -40,6 +41,8 @@ export default function AdminBooksPage() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isComboModalOpen, setIsComboModalOpen] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<'all' | 'single' | 'combo'>('all');
   const [editingBook, setEditingBook] = useState<Book | null>(null);
 
   // Variant Modal State
@@ -356,11 +359,15 @@ export default function AdminBooksPage() {
     }
   };
 
-  const filteredBooks = books.filter(
-    (b) =>
+  const filteredBooks = books.filter((b) => {
+    const matchesSearch =
       b.title?.toLowerCase().includes(search.toLowerCase()) ||
-      b.author?.toLowerCase().includes(search.toLowerCase())
-  );
+      b.author?.toLowerCase().includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+    if (typeFilter === 'combo') return Boolean(b.isCombo);
+    if (typeFilter === 'single') return !b.isCombo;
+    return true;
+  });
 
   const formatPrice = (val: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
@@ -373,21 +380,99 @@ export default function AdminBooksPage() {
           <h1 className={styles.pageTitle}>Quản Lý Kho Sách & Xuất Bản Metadata</h1>
           <p className={styles.pageSubtitle}>Quản lý thông tin chi tiết xuất bản sách, giá bán, tồn kho và các phân loại hàng</p>
         </div>
-        <button onClick={handleOpenAddModal} className={styles.primaryBtn}>
-          + Thêm Sách Mới
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={() => setIsComboModalOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: '#4f46e5',
+              color: '#ffffff',
+              padding: '10px 16px',
+              borderRadius: '10px',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              boxShadow: '0 2px 4px rgba(79, 70, 229, 0.2)',
+            }}
+          >
+            <Package size={16} /> + Tạo Combo
+          </button>
+          <button onClick={handleOpenAddModal} className={styles.primaryBtn}>
+            + Thêm Sách Mới
+          </button>
+        </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className={styles.filterBar}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo tên sách, tác giả..."
-          className={styles.searchInput}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <span className={styles.totalBadge}>Tổng: {filteredBooks.length} sách</span>
+      {/* Filter Bar with Type Tabs */}
+      <div className={styles.filterBar} style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setTypeFilter('all')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '8px',
+              border: '1px solid',
+              borderColor: typeFilter === 'all' ? '#4f46e5' : '#cbd5e1',
+              background: typeFilter === 'all' ? '#eef2ff' : '#ffffff',
+              color: typeFilter === 'all' ? '#4f46e5' : '#475569',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+            }}
+          >
+            Tất cả ({books.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setTypeFilter('single')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '8px',
+              border: '1px solid',
+              borderColor: typeFilter === 'single' ? '#4f46e5' : '#cbd5e1',
+              background: typeFilter === 'single' ? '#eef2ff' : '#ffffff',
+              color: typeFilter === 'single' ? '#4f46e5' : '#475569',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+            }}
+          >
+            Sách lẻ ({books.filter((b) => !b.isCombo).length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setTypeFilter('combo')}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '8px',
+              border: '1px solid',
+              borderColor: typeFilter === 'combo' ? '#4f46e5' : '#cbd5e1',
+              background: typeFilter === 'combo' ? '#eef2ff' : '#ffffff',
+              color: typeFilter === 'combo' ? '#4f46e5' : '#475569',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+            }}
+          >
+            Combo ({books.filter((b) => b.isCombo).length})
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo tên sách, tác giả..."
+            className={styles.searchInput}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className={styles.totalBadge}>Tổng: {filteredBooks.length} sách</span>
+        </div>
       </div>
 
       {/* Books Table */}
@@ -399,7 +484,7 @@ export default function AdminBooksPage() {
             <BookOpen size={40} color="#94a3b8" />
           </div>
           <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>Chưa có sản phẩm sách nào trong kho</h3>
-          <p style={{ fontSize: '14px', margin: '0 0 16px 0' }}>Hãy bấm nút <strong>+ Thêm Sách Mới</strong> phía trên để tạo sản phẩm sách đầu tiên.</p>
+          <p style={{ fontSize: '14px', margin: '0 0 16px 0' }}>Hãy bấm nút <strong>+ Thêm Sách Mới</strong> hoặc <strong>+ Tạo Combo</strong> phía trên.</p>
         </div>
       ) : (
         <div className={styles.tableCard}>
@@ -432,6 +517,24 @@ export default function AdminBooksPage() {
                     <td className={styles.titleCell}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <strong>{book.title}</strong>
+                        {book.isCombo && (
+                          <span
+                            style={{
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              background: '#ede9fe',
+                              color: '#6d28d9',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                          >
+                            <Package size={12} />
+                            Combo ({book.comboItems?.length || 0} sp)
+                          </span>
+                        )}
                         {book.isPreOrder && (
                           <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} size="sm" />
                         )}
@@ -1047,6 +1150,17 @@ export default function AdminBooksPage() {
         existingCategories={categories}
         onCategoryCreated={handleCategoryCreated}
         onSelectExisting={handleSelectExistingCategory}
+      />
+
+      {/* Admin Combo Create Modal */}
+      <AdminComboCreateModal
+        isOpen={isComboModalOpen}
+        books={books}
+        categories={categories}
+        onClose={() => setIsComboModalOpen(false)}
+        onSuccess={(newCombo) => {
+          setBooks((prev) => [newCombo, ...prev]);
+        }}
       />
     </div>
   );

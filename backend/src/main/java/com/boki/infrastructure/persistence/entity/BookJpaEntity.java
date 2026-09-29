@@ -97,6 +97,13 @@ public class BookJpaEntity {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BookVariantJpaEntity> variants = new ArrayList<>();
 
+    @Column(name = "is_combo", nullable = false)
+    private boolean isCombo = false;
+
+    @org.hibernate.annotations.BatchSize(size = 50)
+    @OneToMany(mappedBy = "comboBook", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<BookComboItemJpaEntity> comboItems = new ArrayList<>();
+
     public enum BookConditionJpa {
         NEW, LIKE_NEW, GOOD, FAIR, POOR
     }
@@ -197,4 +204,10 @@ public class BookJpaEntity {
 
     public Integer getMaxOrderQuantity() { return maxOrderQuantity; }
     public void setMaxOrderQuantity(Integer maxOrderQuantity) { this.maxOrderQuantity = maxOrderQuantity; }
+
+    public boolean isCombo() { return isCombo; }
+    public void setCombo(boolean combo) { isCombo = combo; }
+
+    public List<BookComboItemJpaEntity> getComboItems() { return comboItems; }
+    public void setComboItems(List<BookComboItemJpaEntity> comboItems) { this.comboItems = comboItems; }
 }

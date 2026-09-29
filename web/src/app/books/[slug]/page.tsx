@@ -18,6 +18,9 @@ import { BarChartIcon } from '@/components/ui/LineIcons';
 import { activityTracker } from '@/services/activityTracker';
 import PreOrderBadge, { PreOrderDeliveryEstimate } from '@/components/features/books/PreOrderBadge';
 import BookPreviewLink from '@/components/features/preview/BookPreviewLink';
+import ComboProductsList from '@/components/features/books/ComboProductsList';
+import RelatedCombosSection from '@/components/features/books/RelatedCombosSection';
+import { TrendingDown, Package } from 'lucide-react';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -326,6 +329,12 @@ function BookDetailsContent() {
           </div>
 
           <div className={styles.metaRow}>
+            {book.isCombo && (
+              <span className={styles.badge} style={{ background: '#ede9fe', color: '#6d28d9', borderColor: '#ddd6fe', fontWeight: 700 }}>
+                <Package size={14} style={{ display: 'inline', marginRight: 4 }} />
+                Combo Tiết Kiệm
+              </span>
+            )}
             {book.isPreOrder && (
               <PreOrderBadge isPreOrder={book.isPreOrder} preOrderDays={book.preOrderDays} size="md" />
             )}
@@ -347,20 +356,35 @@ function BookDetailsContent() {
 
           <div className={styles.priceCard}>
             <div className={styles.priceHeaderRow}>
-              <span className={styles.priceTitle}>GIÁ BÁN HIỆN TẠI</span>
-              {currentOriginalPrice > currentPrice && (
+              <span className={styles.priceTitle}>
+                {book.isCombo ? 'GIÁ COMBO ƯU ĐÃI' : 'GIÁ BÁN HIỆN TẠI'}
+              </span>
+              {book.isCombo && book.savingsPercent && book.savingsPercent > 0 ? (
+                <span className={styles.discountBadge} style={{ background: '#10b981' }}>
+                  Tiết kiệm -{book.savingsPercent}%
+                </span>
+              ) : currentOriginalPrice > currentPrice ? (
                 <span className={styles.discountBadge}>
                   -{Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100)}%
                 </span>
-              )}
+              ) : null}
             </div>
 
             <div className={styles.priceValueRow}>
               <span className={styles.priceAmount}>{formatPrice(currentPrice)}</span>
-              {currentOriginalPrice > currentPrice && (
+              {book.isCombo && book.originalTotalAmount && book.originalTotalAmount > currentPrice ? (
+                <span className={styles.originalPriceAmount}>{formatPrice(book.originalTotalAmount)}</span>
+              ) : currentOriginalPrice > currentPrice ? (
                 <span className={styles.originalPriceAmount}>{formatPrice(currentOriginalPrice)}</span>
-              )}
+              ) : null}
             </div>
+
+            {book.isCombo && book.savingsAmount && book.savingsAmount > 0 && (
+              <div style={{ marginTop: 8, padding: '6px 12px', background: '#dcfce7', borderRadius: 8, color: '#15803d', fontSize: '0.875rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <TrendingDown size={16} />
+                Tiết kiệm {formatPrice(book.savingsAmount)} so với mua từng sản phẩm lẻ!
+              </div>
+            )}
 
             <div className={styles.stockBadgeContainer}>
               {book.isPreOrder ? (
@@ -443,6 +467,13 @@ function BookDetailsContent() {
           )}
         </div>
       </div>
+
+      {/* Book Combo Items Section or Related Combos Section */}
+      {book.isCombo ? (
+        <ComboProductsList comboItems={book.comboItems} />
+      ) : (
+        <RelatedCombosSection bookIdOrSlug={book.slug || book.id} />
+      )}
     </div>
   );
 }
