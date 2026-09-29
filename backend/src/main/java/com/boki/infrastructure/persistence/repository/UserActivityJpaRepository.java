@@ -18,6 +18,10 @@ public interface UserActivityJpaRepository extends JpaRepository<UserActivityJpa
 
     List<UserActivityJpaEntity> findBySessionIdOrderByCreatedAtAsc(String sessionId);
 
+    List<UserActivityJpaEntity> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
+
+    List<UserActivityJpaEntity> findBySessionIdOrderByCreatedAtDesc(String sessionId, Pageable pageable);
+
     @Query("SELECT COUNT(DISTINCT a.sessionId) FROM UserActivityJpaEntity a WHERE a.createdAt >= :since")
     long countActiveSessionsSince(@Param("since") Instant since);
 

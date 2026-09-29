@@ -10,6 +10,7 @@ import CategoryCircles from '@/components/features/home/CategoryCircles';
 import VoucherSection from '@/components/features/home/VoucherSection';
 import ProductShowcase from '@/components/features/home/ProductShowcase';
 import DynamicBookSection from '@/components/features/home/DynamicBookSection';
+import PersonalizedSection from '@/components/features/recommendations/PersonalizedSection';
 import styles from './page.module.css';
 
 export default function HomePage() {
@@ -54,6 +55,9 @@ export default function HomePage() {
 
       {/* Story-style Circular Categories */}
       <CategoryCircles />
+
+      {/* Intelligent Personalized Recommendations Engine */}
+      <PersonalizedSection onShowNotification={showNotification} />
 
       {/* Dynamic Sections (Configured and reordered by Admin) */}
       {sections

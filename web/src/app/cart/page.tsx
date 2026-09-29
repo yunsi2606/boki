@@ -13,6 +13,7 @@ import { activityTracker } from '@/services/activityTracker';
 import { ShoppingCartIcon } from '@/components/ui/LineIcons';
 import PreOrderBadge from '@/components/features/books/PreOrderBadge';
 import { getAllowedMaxQuantity, getEffectiveMaxOrderQuantity } from '@/utils/orderLimits';
+import CartAddonsSection from '@/components/features/recommendations/CartAddonsSection';
 import styles from './cart.module.css';
 
 export default function CartPage() {
@@ -211,6 +212,9 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      {/* Recommended Impulse / Cross-sell Addons */}
+      <CartAddonsSection />
     </div>
   );
 }

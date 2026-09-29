@@ -20,6 +20,8 @@ import PreOrderBadge, { PreOrderDeliveryEstimate } from '@/components/features/b
 import BookPreviewLink from '@/components/features/preview/BookPreviewLink';
 import ComboProductsList from '@/components/features/books/ComboProductsList';
 import RelatedCombosSection from '@/components/features/books/RelatedCombosSection';
+import FrequentlyBoughtTogether from '@/components/features/recommendations/FrequentlyBoughtTogether';
+import SimilarBooksSection from '@/components/features/recommendations/SimilarBooksSection';
 import { TrendingDown, Package } from 'lucide-react';
 
 const getCategoryName = (id: number | null) => {
@@ -461,7 +463,7 @@ function BookDetailsContent() {
           {/* Description Block */}
           {book.description && (
             <div className={styles.descriptionSection}>
-              <h3 className={styles.descriptionTitle}>📖 Thông tin chi tiết & Mô tả sản phẩm</h3>
+              <h3 className={styles.descriptionTitle}>Thông tin chi tiết & Mô tả sản phẩm</h3>
               <p className={styles.descriptionText}>{book.description}</p>
             </div>
           )}
@@ -474,6 +476,18 @@ function BookDetailsContent() {
       ) : (
         <RelatedCombosSection bookIdOrSlug={book.slug || book.id} />
       )}
+
+      {/* Frequently Bought Together Bundle */}
+      <FrequentlyBoughtTogether
+        bookIdOrSlug={book.slug || book.id}
+        onShowNotification={setLimitNotice}
+      />
+
+      {/* Similar Books Section */}
+      <SimilarBooksSection
+        bookIdOrSlug={book.slug || book.id}
+        onShowNotification={setLimitNotice}
+      />
     </div>
   );
 }
