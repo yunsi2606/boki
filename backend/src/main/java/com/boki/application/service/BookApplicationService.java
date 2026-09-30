@@ -124,7 +124,7 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
                     .min(java.math.BigDecimal::compareTo)
                     .orElse(null);
             if (minVariantPrice != null) {
-                book.updatePrice(new com.boki.domain.model.book.Money(minVariantPrice, com.boki.domain.model.book.Currency.VND));
+                book.updatePrice(Price.of(minVariantPrice, book.getPrice() != null ? book.getPrice().currency() : Price.DEFAULT_CURRENCY));
             }
         } else if (request.stockQuantity() != null) {
             book.updateStockQuantity(request.stockQuantity());

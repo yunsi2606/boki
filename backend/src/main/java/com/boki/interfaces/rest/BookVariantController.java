@@ -70,7 +70,6 @@ public class BookVariantController {
                             req.imageUrl(),
                             req.attributes(),
                             req.attributesJson(),
-                            req.isStandaloneDisplay() != null ? req.isStandaloneDisplay() : true,
                             java.time.Instant.now(),
                             java.time.Instant.now()
                     ))
@@ -110,7 +109,6 @@ public class BookVariantController {
                     } catch (Exception ignored) {}
                 }
                 entity.setAttributesJson(jsonAttr);
-                entity.setStandaloneDisplay(req.isStandaloneDisplay() != null ? req.isStandaloneDisplay() : true);
                 toSave.add(entity);
             }
         }
@@ -167,7 +165,6 @@ public class BookVariantController {
                 v.getImageUrl(),
                 attrMap,
                 v.getAttributesJson(),
-                v.isStandaloneDisplay(),
                 v.getCreatedAt(),
                 v.getUpdatedAt()
         );

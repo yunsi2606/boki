@@ -172,7 +172,6 @@ public class BookDtoMapper {
                 v.getImageUrl(),
                 attrMap,
                 v.getAttributesJson(),
-                v.isStandaloneDisplay(),
                 v.getCreatedAt(),
                 v.getUpdatedAt()
         );

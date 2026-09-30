@@ -91,9 +91,6 @@ public class BookVariantJpaEntity {
     public String getAttributesJson() { return attributesJson; }
     public void setAttributesJson(String attributesJson) { this.attributesJson = attributesJson; }
 
-    public boolean isStandaloneDisplay() { return standaloneDisplay; }
-    public void setStandaloneDisplay(boolean standaloneDisplay) { this.standaloneDisplay = standaloneDisplay; }
-
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 

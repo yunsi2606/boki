@@ -17,7 +17,6 @@ public record BookVariantRequest(
         Integer maxOrderQuantity,
         String imageUrl,
         Map<String, String> attributes,
-        String attributesJson,
-        Boolean isStandaloneDisplay
+        String attributesJson
 ) {
 }

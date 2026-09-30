@@ -16,7 +16,6 @@ public record BookVariantResponse(
         String imageUrl,
         Map<String, String> attributes,
         String attributesJson,
-        boolean isStandaloneDisplay,
         Instant createdAt,
         Instant updatedAt
 ) {

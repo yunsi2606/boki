@@ -75,7 +75,6 @@ export interface BookVariant {
   maxOrderQuantity?: number;  // Giới hạn mua tối đa mỗi đơn (tùy chọn)
   imageUrl?: string;          // Variant specific image
   attributes?: Record<string, string>; // e.g. { "Loại bìa": "Bìa Cứng" }
-  isStandaloneDisplay?: boolean; // Display variant as individual product card in showcase
 }
 
 export interface Book {

@@ -25,26 +25,6 @@
   margin-top: 4px;
 }
 
-.unrollToggleBtn {
-  background: #f0f9ff;
-  border: 1.5px solid #0284c7;
-  color: #0284c7;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.unrollToggleBtn:hover,
-.unrollActive {
-  background: #0284c7;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
-}
-
 .filterTabs {
   display: flex;
   align-items: center;
