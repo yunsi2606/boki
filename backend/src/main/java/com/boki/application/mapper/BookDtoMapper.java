@@ -115,6 +115,7 @@ public class BookDtoMapper {
                             book.getSellerId().value(),
                             sellerName,
                             book.getCategoryId(),
+                            book.getCategoryIds(),
                             book.getTitle(),
                             slug,
                             book.getAuthor(),

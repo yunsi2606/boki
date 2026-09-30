@@ -46,7 +46,8 @@ export default function CategoryBooksSection({
           const lowerName = categoryName.toLowerCase();
           list = (allData || []).filter(
             (b) =>
-              (categoryId !== undefined && b.categoryId === categoryId) ||
+              (categoryId !== undefined &&
+                (b.categoryId === categoryId || b.categoryIds?.includes(categoryId))) ||
               b.title.toLowerCase().includes(lowerName)
           );
         }

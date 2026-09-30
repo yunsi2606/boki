@@ -71,7 +71,8 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         );
 
         book.updateDetails(
-                request.title(), request.author(), request.isbn(), request.description(), request.categoryId(),
+                request.title(), request.author(), request.isbn(), request.description(),
+                request.effectivePrimaryCategoryId(), request.effectiveCategoryIds(),
                 request.publicationDetails()
         );
 
@@ -99,7 +100,8 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         }
 
         book.updateDetails(
-                request.title(), request.author(), request.isbn(), request.description(), request.categoryId(),
+                request.title(), request.author(), request.isbn(), request.description(),
+                request.effectivePrimaryCategoryId(), request.effectiveCategoryIds(),
                 request.publicationDetails()
         );
         

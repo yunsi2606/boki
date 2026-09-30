@@ -83,6 +83,7 @@ export interface Book {
   sellerId: string;
   sellerName: string;
   categoryId: number | null;
+  categoryIds?: number[];
   title: string;
   slug?: string;
   author: string;
@@ -147,6 +148,7 @@ export interface CreateComboPayload {
   title: string;
   description?: string;
   categoryId?: number;
+  categoryIds?: number[];
   price: number;
   stockQuantity?: number;
   imageUrls?: string[];
@@ -157,6 +159,7 @@ export interface UpdateComboPayload {
   title: string;
   description?: string;
   categoryId?: number;
+  categoryIds?: number[];
   price: number;
   stockQuantity?: number;
   imageUrls?: string[];
@@ -186,6 +189,7 @@ export interface CreateBookPayload {
   isPreOrder?: boolean;
   preOrderDays?: number | null;
   categoryId?: number;
+  categoryIds?: number[];
   imageUrls?: string[];
 }
 
@@ -211,6 +215,7 @@ export interface UpdateBookPayload {
   isPreOrder?: boolean;
   preOrderDays?: number | null;
   categoryId?: number;
+  categoryIds?: number[];
   imageUrls?: string[];
 }
 

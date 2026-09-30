@@ -40,19 +40,40 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
             Pageable pageable
     );
 
-    @Query("SELECT b FROM BookJpaEntity b WHERE b.status = :status AND b.categoryId = :categoryId")
+    @Query("SELECT DISTINCT b FROM BookJpaEntity b LEFT JOIN b.categoryIds catId " +
+           "WHERE b.status = :status AND (b.categoryId = :categoryId OR catId = :categoryId)")
     Page<BookJpaEntity> findByStatusAndCategoryId(
             @Param("status") BookJpaEntity.BookStatusJpa status,
             @Param("categoryId") Integer categoryId,
             Pageable pageable
     );
 
-    @Query("SELECT b FROM BookJpaEntity b WHERE b.status = :status AND b.categoryId = :categoryId AND " +
+    @Query("SELECT DISTINCT b FROM BookJpaEntity b LEFT JOIN b.categoryIds catId " +
+           "WHERE b.status = :status AND (b.categoryId = :categoryId OR catId = :categoryId) AND " +
            "(LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<BookJpaEntity> searchActiveBooksByCategory(
             @Param("status") BookJpaEntity.BookStatusJpa status,
             @Param("categoryId") Integer categoryId,
+            @Param("query") String query,
+            Pageable pageable
+    );
+
+    @Query("SELECT DISTINCT b FROM BookJpaEntity b LEFT JOIN b.categoryIds catId " +
+           "WHERE b.status = :status AND (b.categoryId IN :categoryIds OR catId IN :categoryIds)")
+    Page<BookJpaEntity> findByStatusAndCategoryIdsIn(
+            @Param("status") BookJpaEntity.BookStatusJpa status,
+            @Param("categoryIds") List<Integer> categoryIds,
+            Pageable pageable
+    );
+
+    @Query("SELECT DISTINCT b FROM BookJpaEntity b LEFT JOIN b.categoryIds catId " +
+           "WHERE b.status = :status AND (b.categoryId IN :categoryIds OR catId IN :categoryIds) AND " +
+           "(LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<BookJpaEntity> searchActiveBooksByCategoryIdsIn(
+            @Param("status") BookJpaEntity.BookStatusJpa status,
+            @Param("categoryIds") List<Integer> categoryIds,
             @Param("query") String query,
             Pageable pageable
     );

@@ -78,7 +78,15 @@ public class RecommendationApplicationService implements GetRecommendationsUseCa
 
             double score = 0.0;
             String reason = "Dựa trên sách bạn quan tâm";
-            if (b.getCategoryId() != null && affinity.categoryScores().containsKey(b.getCategoryId())) {
+            Set<Integer> bookCats = b.getCategoryIds();
+            if (bookCats != null && !bookCats.isEmpty()) {
+                for (Integer catId : bookCats) {
+                    if (affinity.categoryScores().containsKey(catId)) {
+                        score += affinity.categoryScores().get(catId) * 1.5;
+                        reason = "Thể loại bạn yêu thích";
+                    }
+                }
+            } else if (b.getCategoryId() != null && affinity.categoryScores().containsKey(b.getCategoryId())) {
                 score += affinity.categoryScores().get(b.getCategoryId()) * 1.5;
                 reason = "Thể loại bạn yêu thích";
             }
@@ -109,9 +117,20 @@ public class RecommendationApplicationService implements GetRecommendationsUseCa
         }
 
         // On-the-fly fallback
-        List<BookJpaEntity> fallback = source.getCategoryId() != null
-                ? bookRepository.findByStatusAndCategoryId(BookJpaEntity.BookStatusJpa.ACTIVE, source.getCategoryId(), PageRequest.of(0, limit + 1)).getContent()
-                : Collections.emptyList();
+        List<BookJpaEntity> fallback = Collections.emptyList();
+        if (source.getCategoryIds() != null && !source.getCategoryIds().isEmpty()) {
+            fallback = bookRepository.findByStatusAndCategoryIdsIn(
+                    BookJpaEntity.BookStatusJpa.ACTIVE,
+                    new ArrayList<>(source.getCategoryIds()),
+                    PageRequest.of(0, limit + 1)
+            ).getContent();
+        } else if (source.getCategoryId() != null) {
+            fallback = bookRepository.findByStatusAndCategoryId(
+                    BookJpaEntity.BookStatusJpa.ACTIVE,
+                    source.getCategoryId(),
+                    PageRequest.of(0, limit + 1)
+            ).getContent();
+        }
 
         return fallback.stream()
                 .filter(b -> !b.getId().equals(source.getId()))
@@ -131,8 +150,21 @@ public class RecommendationApplicationService implements GetRecommendationsUseCa
             items.add(co.getBookB());
         }
 
-        if (items.isEmpty() && mainBook.getCategoryId() != null) {
-            List<BookJpaEntity> cats = bookRepository.findByStatusAndCategoryId(BookJpaEntity.BookStatusJpa.ACTIVE, mainBook.getCategoryId(), PageRequest.of(0, 3)).getContent();
+        if (items.isEmpty()) {
+            List<BookJpaEntity> cats = Collections.emptyList();
+            if (mainBook.getCategoryIds() != null && !mainBook.getCategoryIds().isEmpty()) {
+                cats = bookRepository.findByStatusAndCategoryIdsIn(
+                        BookJpaEntity.BookStatusJpa.ACTIVE,
+                        new ArrayList<>(mainBook.getCategoryIds()),
+                        PageRequest.of(0, 4)
+                ).getContent();
+            } else if (mainBook.getCategoryId() != null) {
+                cats = bookRepository.findByStatusAndCategoryId(
+                        BookJpaEntity.BookStatusJpa.ACTIVE,
+                        mainBook.getCategoryId(),
+                        PageRequest.of(0, 3)
+                ).getContent();
+            }
             for (BookJpaEntity b : cats) {
                 if (!b.getId().equals(mainBook.getId()) && items.size() < 2) items.add(b);
             }

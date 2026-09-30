@@ -13,6 +13,7 @@ public record UpdateComboRequest(
         String description,
 
         Integer categoryId,
+        List<Integer> categoryIds,
 
         @NotNull(message = "Giá combo không được để trống")
         BigDecimal price,
@@ -26,4 +27,19 @@ public record UpdateComboRequest(
         @NotEmpty(message = "Combo phải có ít nhất một sản phẩm")
         List<ComboItemInput> items
 ) {
+        public List<Integer> effectiveCategoryIds() {
+                if (categoryIds != null && !categoryIds.isEmpty()) {
+                        return categoryIds;
+                }
+                if (categoryId != null) {
+                        return List.of(categoryId);
+                }
+                return null;
+        }
+
+        public Integer effectivePrimaryCategoryId() {
+                if (categoryId != null) return categoryId;
+                if (categoryIds != null && !categoryIds.isEmpty()) return categoryIds.get(0);
+                return null;
+        }
 }

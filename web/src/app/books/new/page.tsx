@@ -107,6 +107,7 @@ export default function SellBookPage() {
         author: author.trim(),
         isbn: isbn.trim() || undefined,
         categoryId,
+        categoryIds: categoryId ? [categoryId] : undefined,
         condition,
         price: priceNum,
         stockQuantity: stockNum,

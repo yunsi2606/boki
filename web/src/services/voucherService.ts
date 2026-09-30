@@ -145,7 +145,9 @@ export const voucherService = {
     // 5. Check Specific Category Restriction if present
     if (voucher.applicableCategoryId) {
       const hasCategoryItem = items.some(
-        (item) => item.book.categoryId === voucher.applicableCategoryId
+        (item) =>
+          item.book.categoryId === voucher.applicableCategoryId ||
+          (item.book.categoryIds && item.book.categoryIds.includes(voucher.applicableCategoryId!))
       );
       if (!hasCategoryItem) {
         return {

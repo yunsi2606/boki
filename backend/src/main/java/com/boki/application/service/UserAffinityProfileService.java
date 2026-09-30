@@ -60,7 +60,12 @@ public class UserAffinityProfileService {
 
             BookJpaEntity book = bookRepository.findById(bookId).orElse(null);
             if (book != null) {
-                if (book.getCategoryId() != null) {
+                java.util.Set<Integer> catIds = book.getCategoryIds();
+                if (catIds != null && !catIds.isEmpty()) {
+                    for (Integer catId : catIds) {
+                        categoryScores.merge(catId, weight, Double::sum);
+                    }
+                } else if (book.getCategoryId() != null) {
                     categoryScores.merge(book.getCategoryId(), weight, Double::sum);
                 }
                 if (book.getAuthor() != null && !book.getAuthor().isBlank()) {

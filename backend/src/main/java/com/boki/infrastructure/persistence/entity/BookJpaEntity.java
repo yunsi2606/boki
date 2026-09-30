@@ -23,6 +23,11 @@ public class BookJpaEntity {
     @Column(name = "category_id")
     private Integer categoryId;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "book_categories", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "category_id")
+    private java.util.Set<Integer> categoryIds = new java.util.LinkedHashSet<>();
+
     @Column(nullable = false)
     private String title;
 
@@ -131,8 +136,38 @@ public class BookJpaEntity {
     public UUID getSellerId() { return sellerId; }
     public void setSellerId(UUID sellerId) { this.sellerId = sellerId; }
 
-    public Integer getCategoryId() { return categoryId; }
-    public void setCategoryId(Integer categoryId) { this.categoryId = categoryId; }
+    public Integer getCategoryId() {
+        if (categoryId != null) return categoryId;
+        if (categoryIds != null && !categoryIds.isEmpty()) return categoryIds.iterator().next();
+        return null;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+        if (categoryId != null) {
+            if (this.categoryIds == null) {
+                this.categoryIds = new java.util.LinkedHashSet<>();
+            }
+            this.categoryIds.add(categoryId);
+        }
+    }
+
+    public java.util.Set<Integer> getCategoryIds() {
+        if (categoryIds == null) {
+            categoryIds = new java.util.LinkedHashSet<>();
+        }
+        if (categoryIds.isEmpty() && categoryId != null) {
+            categoryIds.add(categoryId);
+        }
+        return categoryIds;
+    }
+
+    public void setCategoryIds(java.util.Set<Integer> categoryIds) {
+        this.categoryIds = categoryIds != null ? new java.util.LinkedHashSet<>(categoryIds) : new java.util.LinkedHashSet<>();
+        if (!this.categoryIds.isEmpty()) {
+            this.categoryId = this.categoryIds.iterator().next();
+        }
+    }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

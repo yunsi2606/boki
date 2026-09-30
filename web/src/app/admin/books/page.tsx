@@ -13,6 +13,7 @@ import { TableSkeleton } from '@/components/ui/Skeleton';
 import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/books/PreOrderBadge';
 import { BookOpen, Package } from 'lucide-react';
 import AdminComboCreateModal from '@/components/features/admin/combos/AdminComboCreateModal';
+import { MultiCategorySelector } from '@/components/features/admin/books/MultiCategorySelector';
 
 export interface SpecificationItem {
   id: string;
@@ -61,6 +62,7 @@ export default function AdminBooksPage() {
     title: '',
     author: '',
     categoryId: 1,
+    categoryIds: [1] as number[],
     price: 100000,
     stockQuantity: 20,
     coverUrl: '',
@@ -128,6 +130,7 @@ export default function AdminBooksPage() {
       title: '',
       author: '',
       categoryId: categories[0]?.id || 1,
+      categoryIds: categories[0]?.id ? [categories[0].id] : [1],
       price: 100000,
       stockQuantity: 20,
       coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300',
@@ -202,6 +205,7 @@ export default function AdminBooksPage() {
       title: book.title || '',
       author: book.author || '',
       categoryId: book.categoryId || 1,
+      categoryIds: book.categoryIds && book.categoryIds.length > 0 ? book.categoryIds : (book.categoryId ? [book.categoryId] : [1]),
       price: book.price || 0,
       stockQuantity: computedStock,
       coverUrl: book.imageUrls?.[0] || '',
@@ -228,11 +232,19 @@ export default function AdminBooksPage() {
       if (prev.some((c) => c.id === newCategory.id)) return prev;
       return [...prev, newCategory];
     });
-    setFormData((prev) => ({ ...prev, categoryId: newCategory.id }));
+    setFormData((prev) => ({
+      ...prev,
+      categoryId: newCategory.id,
+      categoryIds: prev.categoryIds ? Array.from(new Set([...prev.categoryIds, newCategory.id])) : [newCategory.id],
+    }));
   };
 
   const handleSelectExistingCategory = (existingCategory: Category) => {
-    setFormData((prev) => ({ ...prev, categoryId: existingCategory.id }));
+    setFormData((prev) => ({
+      ...prev,
+      categoryId: existingCategory.id,
+      categoryIds: prev.categoryIds ? Array.from(new Set([...prev.categoryIds, existingCategory.id])) : [existingCategory.id],
+    }));
   };
 
   const handleSaveVariants = async (updatedVariants: BookVariant[]) => {
@@ -293,7 +305,8 @@ export default function AdminBooksPage() {
     const payload = {
       title: formData.title,
       author: formData.author,
-      categoryId: Number(formData.categoryId),
+      categoryId: formData.categoryIds?.[0] || Number(formData.categoryId),
+      categoryIds: formData.categoryIds && formData.categoryIds.length > 0 ? formData.categoryIds : [Number(formData.categoryId)],
       price: Number(formData.price),
       condition: formData.condition,
       stockQuantity: resolvedStock,
@@ -678,58 +691,21 @@ export default function AdminBooksPage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                          <label style={{ margin: 0 }}>Danh Mục Sách <span style={{ color: '#ef4444' }}>*</span></label>
-                          <button
-                            type="button"
-                            onClick={() => setIsAddCategoryModalOpen(true)}
-                            style={{
-                              background: '#f0f9ff',
-                              border: '1px solid #bae6fd',
-                              borderRadius: '6px',
-                              padding: '3px 8px',
-                              fontSize: '11.5px',
-                              fontWeight: 600,
-                              color: '#0284c7',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              transition: 'all 0.15s ease',
-                            }}
-                          >
-                            + Thêm mới
-                          </button>
-                        </div>
-                        <select
-                          value={formData.categoryId}
-                          onChange={(e) => {
-                            if (e.target.value === '__add_new__') {
-                              setIsAddCategoryModalOpen(true);
-                              return;
-                            }
-                            setFormData({ ...formData, categoryId: parseInt(e.target.value) });
+                        <label style={{ display: 'block', marginBottom: '6px' }}>
+                          Danh Mục (Có thể gán nhiều danh mục) <span style={{ color: '#ef4444' }}>*</span>
+                        </label>
+                        <MultiCategorySelector
+                          selectedIds={formData.categoryIds || []}
+                          onChange={(ids) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              categoryIds: ids,
+                              categoryId: ids[0] || prev.categoryId,
+                            }));
                           }}
-                          className={styles.formInput}
-                        >
-                          {categories.length > 0 ? (
-                            categories.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                {c.name}
-                              </option>
-                            ))
-                          ) : (
-                            <>
-                              <option value={1}>Tiểu Thuyết & Văn Học</option>
-                              <option value={2}>Light Novel & Manga</option>
-                              <option value={3}>Kinh Doanh & Quản Lý</option>
-                              <option value={4}>Kỹ Năng Sống</option>
-                            </>
-                          )}
-                          <option value="__add_new__" style={{ fontWeight: 600, color: '#2563eb' }}>
-                            + Thêm danh mục mới...
-                          </option>
-                        </select>
+                          categories={categories}
+                          onOpenCreateModal={() => setIsAddCategoryModalOpen(true)}
+                        />
                       </div>
                     </div>
 

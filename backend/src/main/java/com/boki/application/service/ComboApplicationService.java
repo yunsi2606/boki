@@ -62,7 +62,11 @@ public class ComboApplicationService implements ManageComboUseCase, GetComboUseC
         combo.setTitle(request.title().trim());
         combo.setSlug(SlugUtils.slugify(request.title()));
         combo.setDescription(request.description());
-        combo.setCategoryId(request.categoryId());
+        if (request.categoryIds() != null && !request.categoryIds().isEmpty()) {
+            combo.setCategoryIds(new java.util.LinkedHashSet<>(request.categoryIds()));
+        } else if (request.categoryId() != null) {
+            combo.setCategoryId(request.categoryId());
+        }
         combo.setPrice(request.price());
         combo.setCurrency("VND");
         combo.setCondition(BookJpaEntity.BookConditionJpa.NEW);
@@ -93,7 +97,11 @@ public class ComboApplicationService implements ManageComboUseCase, GetComboUseC
         combo.setTitle(request.title().trim());
         combo.setSlug(SlugUtils.slugify(request.title()));
         combo.setDescription(request.description());
-        combo.setCategoryId(request.categoryId());
+        if (request.categoryIds() != null && !request.categoryIds().isEmpty()) {
+            combo.setCategoryIds(new java.util.LinkedHashSet<>(request.categoryIds()));
+        } else if (request.categoryId() != null) {
+            combo.setCategoryId(request.categoryId());
+        }
         combo.setPrice(request.price());
         combo.setUpdatedAt(Instant.now());
 

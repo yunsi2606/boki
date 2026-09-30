@@ -72,10 +72,23 @@ public class ContentSimilarityComputationService {
 
     private double computeSimilarityScore(BookJpaEntity a, BookJpaEntity b) {
         double score = 0.0;
-        // Same category (highest weight: 0.40)
-        if (a.getCategoryId() != null && a.getCategoryId().equals(b.getCategoryId())) {
+        // Shared categories (highest weight: 0.40)
+        Set<Integer> catsA = a.getCategoryIds();
+        Set<Integer> catsB = b.getCategoryIds();
+        boolean sharesCategory = false;
+        if (catsA != null && catsB != null && !catsA.isEmpty() && !catsB.isEmpty()) {
+            Set<Integer> intersection = new HashSet<>(catsA);
+            intersection.retainAll(catsB);
+            if (!intersection.isEmpty()) {
+                sharesCategory = true;
+                double overlapRatio = (double) intersection.size() / Math.max(1, Math.min(catsA.size(), catsB.size()));
+                score += 0.40 * overlapRatio;
+            }
+        } else if (a.getCategoryId() != null && a.getCategoryId().equals(b.getCategoryId())) {
+            sharesCategory = true;
             score += 0.40;
         }
+
         // Same author (weight: 0.35)
         if (a.getAuthor() != null && b.getAuthor() != null &&
             a.getAuthor().trim().equalsIgnoreCase(b.getAuthor().trim())) {
@@ -106,7 +119,17 @@ public class ContentSimilarityComputationService {
             a.getAuthor().trim().equalsIgnoreCase(b.getAuthor().trim())) {
             return new Reason("SAME_AUTHOR", "Cùng tác giả " + a.getAuthor().trim());
         }
-        if (a.getCategoryId() != null && a.getCategoryId().equals(b.getCategoryId())) {
+        Set<Integer> catsA = a.getCategoryIds();
+        Set<Integer> catsB = b.getCategoryIds();
+        boolean sharesCategory = false;
+        if (catsA != null && catsB != null && !catsA.isEmpty() && !catsB.isEmpty()) {
+            Set<Integer> intersection = new HashSet<>(catsA);
+            intersection.retainAll(catsB);
+            sharesCategory = !intersection.isEmpty();
+        } else if (a.getCategoryId() != null && a.getCategoryId().equals(b.getCategoryId())) {
+            sharesCategory = true;
+        }
+        if (sharesCategory) {
             return new Reason("SAME_CATEGORY", "Cùng thể loại");
         }
         return new Reason("SIMILAR_CONTENT", "Độc giả cũng quan tâm");

@@ -17,6 +17,7 @@ public class Book {
     private BookId id;
     private UserId sellerId;
     private Integer categoryId;
+    private List<Integer> categoryIds = new ArrayList<>();
     private String title;
     private String author;
     private String isbn;
@@ -159,6 +160,32 @@ public class Book {
         book.createdAt = createdAt;
         book.updatedAt = updatedAt;
         book.createdBy = createdBy;
+        if (categoryId != null) {
+            book.categoryIds = new ArrayList<>(List.of(categoryId));
+        }
+        return book;
+    }
+
+    public static Book reconstitute(
+            BookId id, UserId sellerId, Integer categoryId, List<Integer> categoryIds,
+            String title, String author, String isbn,
+            Map<String, String> publicationDetails,
+            String description, Price price, Price originalPrice,
+            int viewsCount, java.math.BigDecimal rating, int reviewsCount,
+            BookCondition condition, BookStatus status,
+            int stockQuantity, Integer maxOrderQuantity, boolean isPreOrder, Integer preOrderDays,
+            List<String> imageUrls, Instant createdAt, Instant updatedAt, String createdBy
+    ) {
+        Book book = reconstitute(
+                id, sellerId, categoryId, title, author, isbn, publicationDetails,
+                description, price, originalPrice, viewsCount, rating, reviewsCount,
+                condition, status, stockQuantity, maxOrderQuantity, isPreOrder, preOrderDays,
+                imageUrls, createdAt, updatedAt, createdBy
+        );
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            book.categoryIds = new ArrayList<>(categoryIds);
+            if (book.categoryId == null) book.categoryId = categoryIds.get(0);
+        }
         return book;
     }
 
@@ -209,10 +236,25 @@ public class Book {
         this.isbn = isbn;
         this.description = description;
         this.categoryId = categoryId;
+        if (categoryId != null) {
+            this.categoryIds = new ArrayList<>(List.of(categoryId));
+        }
         if (publicationDetails != null) {
             this.publicationDetails = new LinkedHashMap<>(publicationDetails);
         }
         this.updatedAt = Instant.now();
+    }
+
+    public void updateDetails(
+            String title, String author, String isbn, String description, Integer categoryId,
+            List<Integer> categoryIds,
+            Map<String, String> publicationDetails
+    ) {
+        updateDetails(title, author, isbn, description, categoryId, publicationDetails);
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            this.categoryIds = new ArrayList<>(categoryIds);
+            this.categoryId = categoryIds.get(0);
+        }
     }
 
     public void updatePrice(Price newPrice) {
@@ -251,6 +293,15 @@ public class Book {
     public BookId getId() { return id; }
     public UserId getSellerId() { return sellerId; }
     public Integer getCategoryId() { return categoryId; }
+    public List<Integer> getCategoryIds() {
+        if (categoryIds == null) categoryIds = new ArrayList<>();
+        if (categoryIds.isEmpty() && categoryId != null) categoryIds.add(categoryId);
+        return Collections.unmodifiableList(categoryIds);
+    }
+    public void setCategoryIds(List<Integer> categoryIds) {
+        this.categoryIds = categoryIds != null ? new ArrayList<>(categoryIds) : new ArrayList<>();
+        if (!this.categoryIds.isEmpty()) this.categoryId = this.categoryIds.get(0);
+    }
     public String getTitle() { return title; }
     public String getAuthor() { return author; }
     public String getIsbn() { return isbn; }

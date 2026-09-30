@@ -29,10 +29,26 @@ public record CreateBookRequest(
         Integer maxOrderQuantity,
 
         Integer categoryId,
+        List<Integer> categoryIds,
 
         List<String> imageUrls,
 
         Boolean isPreOrder,
         Integer preOrderDays
 ) {
+        public List<Integer> effectiveCategoryIds() {
+                if (categoryIds != null && !categoryIds.isEmpty()) {
+                        return categoryIds;
+                }
+                if (categoryId != null) {
+                        return List.of(categoryId);
+                }
+                return List.of();
+        }
+
+        public Integer effectivePrimaryCategoryId() {
+                if (categoryId != null) return categoryId;
+                if (categoryIds != null && !categoryIds.isEmpty()) return categoryIds.get(0);
+                return null;
+        }
 }

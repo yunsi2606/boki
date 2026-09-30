@@ -22,7 +22,7 @@ import ComboProductsList from '@/components/features/books/ComboProductsList';
 import RelatedCombosSection from '@/components/features/books/RelatedCombosSection';
 import FrequentlyBoughtTogether from '@/components/features/recommendations/FrequentlyBoughtTogether';
 import SimilarBooksSection from '@/components/features/recommendations/SimilarBooksSection';
-import { TrendingDown, Package } from 'lucide-react';
+import { TrendingDown, Package, Eye } from 'lucide-react';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -126,7 +126,7 @@ function BookDetailsContent() {
             data.id,
             data.title,
             data.price,
-            getCategoryName(data.categoryId)
+            getCategoryName(data.categoryIds?.[0] || data.categoryId)
           );
         }
       } catch (err) {
@@ -260,7 +260,7 @@ function BookDetailsContent() {
           Cửa hàng
         </Link>
         <span className={styles.breadcrumbSeparator}>/</span>
-        <span className={styles.breadcrumbCurrent}>{getCategoryName(book.categoryId)}</span>
+        <span className={styles.breadcrumbCurrent}>{getCategoryName(book.categoryIds?.[0] || book.categoryId)}</span>
         <span className={styles.breadcrumbSeparator}>/</span>
         <span className={styles.breadcrumbCurrentTitle}>{book.title}</span>
       </div>
@@ -311,7 +311,16 @@ function BookDetailsContent() {
 
         {/* Right: Info Section */}
         <div className={styles.infoSection}>
-          <span className={styles.categoryTag}>{getCategoryName(book.categoryId)}</span>
+          <div className={styles.categoryTagsWrapper}>
+            {(book.categoryIds && book.categoryIds.length > 0
+              ? book.categoryIds
+              : (book.categoryId ? [book.categoryId] : [])
+            ).map((catId) => (
+              <span key={catId} className={styles.categoryTag}>
+                {getCategoryName(catId)}
+              </span>
+            ))}
+          </div>
           <h1 className={styles.bookTitle}>
             {book.title} {selectedVariant ? `(${selectedVariant.name})` : ''}
           </h1>
@@ -325,7 +334,7 @@ function BookDetailsContent() {
             </div>
             <span className={styles.metaDivider}>•</span>
             <div className={styles.viewsGroup}>
-              <span className={styles.eyeIcon}>👁️</span>
+              <Eye size={15} className={styles.eyeIcon} />
               <span className={styles.viewsText}>{formattedViews} lượt xem</span>
             </div>
           </div>

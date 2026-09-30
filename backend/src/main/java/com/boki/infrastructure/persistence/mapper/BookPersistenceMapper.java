@@ -19,9 +19,14 @@ public final class BookPersistenceMapper {
         }
 
         BookJpaEntity entity = new BookJpaEntity();
-        entity.setId(book.getId().value());
+        if (book.getId() != null) {
+            entity.setId(book.getId().value());
+        }
         entity.setSellerId(book.getSellerId().value());
         entity.setCategoryId(book.getCategoryId());
+        if (book.getCategoryIds() != null && !book.getCategoryIds().isEmpty()) {
+            entity.setCategoryIds(new java.util.LinkedHashSet<>(book.getCategoryIds()));
+        }
         entity.setTitle(book.getTitle());
         entity.setSlug(com.boki.infrastructure.util.SlugUtils.slugify(book.getTitle()));
         entity.setAuthor(book.getAuthor());
@@ -75,10 +80,22 @@ public final class BookPersistenceMapper {
             // Lazy images collection not initialized and no open Hibernate session
         }
 
+        List<Integer> categoryIds = new ArrayList<>();
+        try {
+            if (entity.getCategoryIds() != null && !entity.getCategoryIds().isEmpty()) {
+                categoryIds.addAll(entity.getCategoryIds());
+            }
+        } catch (Exception ignored) {
+        }
+        if (categoryIds.isEmpty() && entity.getCategoryId() != null) {
+            categoryIds.add(entity.getCategoryId());
+        }
+
         Book book = Book.reconstitute(
                 BookId.of(entity.getId()),
                 UserId.of(entity.getSellerId()),
                 entity.getCategoryId(),
+                categoryIds,
                 entity.getTitle(),
                 entity.getAuthor(),
                 entity.getIsbn(),

@@ -28,6 +28,7 @@ export default function AdminComboCreateModal({
   const [items, setItems] = useState<SelectedComboItem[]>([]);
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState<number | undefined>(categories[0]?.id);
+  const [categoryIds, setCategoryIds] = useState<number[]>(categories[0]?.id ? [categories[0].id] : []);
   const [description, setDescription] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
   const [comboPrice, setComboPrice] = useState<number>(0);
@@ -35,19 +36,13 @@ export default function AdminComboCreateModal({
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const originalTotal = useMemo(() => {
-    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  }, [items]);
+  const originalTotal = useMemo(() => items.reduce((sum, it) => sum + it.price * it.quantity, 0), [items]);
 
   const { savingsAmount, savingsPercent } = useMemo(() => {
     const savings = originalTotal - comboPrice;
-    if (savings > 0 && originalTotal > 0) {
-      return {
-        savingsAmount: savings,
-        savingsPercent: Math.round((savings / originalTotal) * 100),
-      };
-    }
-    return { savingsAmount: 0, savingsPercent: 0 };
+    return savings > 0 && originalTotal > 0
+      ? { savingsAmount: savings, savingsPercent: Math.round((savings / originalTotal) * 100) }
+      : { savingsAmount: 0, savingsPercent: 0 };
   }, [originalTotal, comboPrice]);
 
   if (!isOpen) return null;
@@ -85,7 +80,8 @@ export default function AdminComboCreateModal({
       const payload: CreateComboPayload = {
         title: title.trim(),
         description: description.trim() || undefined,
-        categoryId: categoryId,
+        categoryId: categoryIds[0] || categoryId,
+        categoryIds: categoryIds.length > 0 ? categoryIds : (categoryId ? [categoryId] : undefined),
         price: comboPrice,
         stockQuantity: stockQuantity,
         imageUrls: coverUrl ? [coverUrl] : undefined,
@@ -145,7 +141,11 @@ export default function AdminComboCreateModal({
                 <select
                   className={styles.select}
                   value={categoryId || ''}
-                  onChange={(e) => setCategoryId(Number(e.target.value) || undefined)}
+                  onChange={(e) => {
+                    const id = Number(e.target.value) || undefined;
+                    setCategoryId(id);
+                    setCategoryIds(id ? [id] : []);
+                  }}
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
