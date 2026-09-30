@@ -59,21 +59,21 @@ export default function PersonalizedSection({ onShowNotification }: Props) {
   return (
     <section className={styles.section}>
       <div className="container">
-        <div className={styles.header}>
-          <div className={styles.titleGroup}>
-            <div className={styles.iconWrapper}>
-              <Sparkles size={20} />
-            </div>
-            <div>
-              <h2 className={styles.title}>Gợi Ý Dành Riêng Cho Bạn</h2>
-              <p className={styles.subtitle}>
-                Tuyển tập sách phù hợp nhất dựa trên gu đọc sách và hoạt động gần đây của bạn
-              </p>
-            </div>
+        <div className={styles.sectionHeader}>
+          <div>
+            <h2 className={styles.sectionTitle}>
+              <span className={styles.titleIcon}>
+                <Sparkles size={22} />
+              </span>
+              <span>Gợi Ý Dành Riêng Cho Bạn</span>
+            </h2>
+            <p className={styles.sectionSubtitle}>
+              Tuyển tập sách phù hợp nhất dựa trên gu đọc sách và hoạt động gần đây của bạn
+            </p>
           </div>
         </div>
 
-        <div className={styles.grid}>
+        <div className={styles.bookGrid}>
           {items.map((item, idx) => (
             <RecommendationCard
               key={item.book.id}
