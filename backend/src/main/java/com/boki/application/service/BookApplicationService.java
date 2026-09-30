@@ -118,6 +118,14 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
                     .mapToInt(com.boki.infrastructure.persistence.entity.BookVariantJpaEntity::getStockQuantity)
                     .sum();
             book.updateStockQuantity(totalVariantStock);
+            java.math.BigDecimal minVariantPrice = variants.stream()
+                    .map(com.boki.infrastructure.persistence.entity.BookVariantJpaEntity::getPrice)
+                    .filter(java.util.Objects::nonNull)
+                    .min(java.math.BigDecimal::compareTo)
+                    .orElse(null);
+            if (minVariantPrice != null) {
+                book.updatePrice(new com.boki.domain.model.book.Money(minVariantPrice, com.boki.domain.model.book.Currency.VND));
+            }
         } else if (request.stockQuantity() != null) {
             book.updateStockQuantity(request.stockQuantity());
         }

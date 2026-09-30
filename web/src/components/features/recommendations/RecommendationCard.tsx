@@ -3,12 +3,13 @@
 import React from 'react';
 import Link from 'next/link';
 import type { RecommendationBook } from '@/types/recommendation';
-import { Sparkles, TrendingUp, Layers, BookOpen, Flame } from 'lucide-react';
+import { Sparkles, TrendingUp, Layers, BookOpen, Flame, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { recommendationService } from '@/services/recommendationService';
 import { activityTracker } from '@/services/activityTracker';
 import { getBookUrl } from '@/lib/slug';
 import PreOrderBadge from '@/components/features/books/PreOrderBadge';
+import { getBookPriceDisplay, formatCurrency } from '@/utils/bookPrice';
 import styles from './recommendationCard.module.css';
 
 interface Props {
@@ -28,55 +29,11 @@ export default function RecommendationCard({
   const book = item.book;
   const linkHref = getBookUrl(book);
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
-  };
-
-  // Price & Discount Calculation matching Boki BookCard
-  let priceText = '';
-  let originalPriceText = '';
-  let discountPercent = 0;
-  let isDiscount = false;
-
-  if (book.variants && book.variants.length > 0) {
-    const variantPrices = book.variants.map((v) => v.price).filter((p) => p > 0);
-    const minPrice = variantPrices.length > 0 ? Math.min(...variantPrices) : book.price || 0;
-    const maxPrice = variantPrices.length > 0 ? Math.max(...variantPrices) : book.price || 0;
-
-    if (minPrice < maxPrice) {
-      priceText = `${formatCurrency(minPrice)} - ${formatCurrency(maxPrice)}`;
-      const discounts = book.variants.map((v) =>
-        v.originalPrice && v.originalPrice > v.price
-          ? Math.round(((v.originalPrice - v.price) / v.originalPrice) * 100)
-          : 0
-      );
-      const maxDisc = Math.max(...discounts, 0);
-      if (maxDisc > 0) discountPercent = maxDisc;
-    } else {
-      priceText = formatCurrency(minPrice || book.price || 0);
-      const discountedVariant = book.variants.find(
-        (v) => v.originalPrice && v.originalPrice > v.price
-      );
-      if (discountedVariant && discountedVariant.originalPrice) {
-        isDiscount = true;
-        originalPriceText = formatCurrency(discountedVariant.originalPrice);
-        discountPercent = Math.round(
-          ((discountedVariant.originalPrice - discountedVariant.price) /
-            discountedVariant.originalPrice) *
-            100
-        );
-      }
-    }
-  } else {
-    const price = book.price || 0;
-    const origPrice = book.originalPrice && book.originalPrice > price ? book.originalPrice : 0;
-    priceText = formatCurrency(price);
-    if (origPrice > 0) {
-      isDiscount = true;
-      originalPriceText = formatCurrency(origPrice);
-      discountPercent = Math.round(((origPrice - price) / origPrice) * 100);
-    }
-  }
+  const priceInfo = getBookPriceDisplay(book);
+  const priceText = priceInfo.displayPrice;
+  const originalPriceText = priceInfo.originalPrice ? formatCurrency(priceInfo.originalPrice) : '';
+  const isDiscount = priceInfo.hasDiscount;
+  const discountPercent = priceInfo.discountPercent;
 
   const ratingVal =
     book.rating !== undefined && book.rating !== null ? Number(book.rating).toFixed(1) : '5.0';
@@ -187,11 +144,7 @@ export default function RecommendationCard({
             onClick={handleAddToCart}
             title="Thêm vào giỏ hàng"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
+            <ShoppingCart size={16} />
           </button>
         </div>
       </div>

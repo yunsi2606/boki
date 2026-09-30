@@ -21,7 +21,7 @@ export default function VariantSelector({
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
   };
 
-  const currentVariant = variants.find((v) => v.id === selectedVariantId) || variants[0];
+  const currentVariant = variants.find((v) => v.id === selectedVariantId) || null;
 
   return (
     <div className={styles.container}>
@@ -29,7 +29,9 @@ export default function VariantSelector({
         <span className={styles.title}>
           Chọn Phân Loại Hàng:
         </span>
-        <span className={styles.selectedName}>{currentVariant?.name}</span>
+        <span className={styles.selectedName}>
+          {currentVariant ? currentVariant.name : '(Vui lòng chọn 1 phân loại)'}
+        </span>
       </div>
 
       <div className={styles.pillGrid}>

@@ -14,6 +14,7 @@ import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/b
 import { BookOpen, Package } from 'lucide-react';
 import AdminComboCreateModal from '@/components/features/admin/combos/AdminComboCreateModal';
 import { MultiCategorySelector } from '@/components/features/admin/books/MultiCategorySelector';
+import { getBookPriceDisplay } from '@/utils/bookPrice';
 
 export interface SpecificationItem {
   id: string;
@@ -250,32 +251,40 @@ export default function AdminBooksPage() {
   const handleSaveVariants = async (updatedVariants: BookVariant[]) => {
     if (!selectedBookForVariants) return;
     const totalVariantStock = updatedVariants.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0);
+    const validPrices = updatedVariants.map((v) => Number(v.price)).filter((p) => !isNaN(p) && p > 0);
+    const minVariantPrice = validPrices.length > 0 ? Math.min(...validPrices) : (selectedBookForVariants.price || 0);
+
     try {
       const saved = await bookService.saveVariants(selectedBookForVariants.id, updatedVariants);
       const finalStock = saved && saved.length > 0
         ? saved.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
         : totalVariantStock;
+      const finalSavedPrices = saved && saved.length > 0
+        ? saved.map((v) => Number(v.price)).filter((p) => !isNaN(p) && p > 0)
+        : validPrices;
+      const finalPrice = finalSavedPrices.length > 0 ? Math.min(...finalSavedPrices) : minVariantPrice;
+
       setBooks((prev) =>
         prev.map((b) =>
           b.id === selectedBookForVariants.id
-            ? { ...b, variants: saved, stockQuantity: finalStock }
+            ? { ...b, variants: saved, stockQuantity: finalStock, price: finalPrice }
             : b
         )
       );
       setSelectedBookForVariants((prev) =>
-        prev ? { ...prev, variants: saved, stockQuantity: finalStock } : null
+        prev ? { ...prev, variants: saved, stockQuantity: finalStock, price: finalPrice } : null
       );
-      alert('Đã lưu danh sách phân loại hàng và đồng bộ tồn kho thành công!');
+      alert('Đã lưu danh sách phân loại hàng, đồng bộ giá và tồn kho thành công!');
     } catch {
       setBooks((prev) =>
         prev.map((b) =>
           b.id === selectedBookForVariants.id
-            ? { ...b, variants: updatedVariants, stockQuantity: totalVariantStock }
+            ? { ...b, variants: updatedVariants, stockQuantity: totalVariantStock, price: minVariantPrice }
             : b
         )
       );
       setSelectedBookForVariants((prev) =>
-        prev ? { ...prev, variants: updatedVariants, stockQuantity: totalVariantStock } : null
+        prev ? { ...prev, variants: updatedVariants, stockQuantity: totalVariantStock, price: minVariantPrice } : null
       );
       alert('Đã lưu danh sách phân loại hàng thành công!');
     }
@@ -569,7 +578,21 @@ export default function AdminBooksPage() {
                         {variantCount > 0 ? `${variantCount} phân loại` : '+ Thêm phân loại'}
                       </button>
                     </td>
-                    <td className={styles.priceCell}>{formatPrice(book.price)}</td>
+                    <td className={styles.priceCell}>
+                      {(() => {
+                        const priceInfo = getBookPriceDisplay(book);
+                        return (
+                          <div>
+                            <span style={{ fontWeight: 600 }}>{priceInfo.displayPrice}</span>
+                            {priceInfo.isRange && (
+                              <div style={{ fontSize: '0.72rem', color: '#6366f1', marginTop: '2px', fontWeight: 500 }}>
+                                Khoảng giá phân loại
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </td>
                     <td>
                       {(() => {
                         const totalStock = (book.variants && book.variants.length > 0)
@@ -712,13 +735,41 @@ export default function AdminBooksPage() {
                     <div className={styles.formRow}>
                       <div className={styles.formGroup}>
                         <label>Giá Bán Niêm Yết (VNĐ) <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input
-                          type="number"
-                          required
-                          value={formData.price}
-                          onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
-                          className={styles.formInput}
-                        />
+                        {editingBook && editingBook.variants && editingBook.variants.length > 0 ? (
+                          <div>
+                            <input
+                              type="text"
+                              disabled
+                              value={(() => {
+                                const p = getBookPriceDisplay(editingBook);
+                                return p.displayPrice;
+                              })()}
+                              className={styles.formInput}
+                              style={{ background: '#f8fafc', cursor: 'not-allowed', color: '#1e293b', fontWeight: 700 }}
+                            />
+                            <div style={{
+                              marginTop: '6px',
+                              fontSize: '0.75rem',
+                              color: '#4f46e5',
+                              background: '#eef2ff',
+                              padding: '6px 12px',
+                              borderRadius: '8px',
+                              border: '1px solid #c7d2fe',
+                            }}>
+                              {editingBook.variants.length > 1
+                                ? `Đồng bộ tự động từ ${editingBook.variants.length} phân loại (Giá cơ sở: ${formatPrice(formData.price)})`
+                                : `Đồng bộ theo phân loại duy nhất: ${editingBook.variants[0].name}`}
+                            </div>
+                          </div>
+                        ) : (
+                          <input
+                            type="number"
+                            required
+                            value={formData.price}
+                            onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                            className={styles.formInput}
+                          />
+                        )}
                       </div>
 
                       <div className={styles.formGroup}>

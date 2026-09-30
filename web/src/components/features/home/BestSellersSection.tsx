@@ -6,6 +6,7 @@ import { bookService } from '@/services/bookService';
 import type { Book } from '@/types';
 import { getBookUrl } from '@/lib/slug';
 import styles from './BestSellersSection.module.css';
+import { getBookPriceDisplay } from '@/utils/bookPrice';
 
 interface BestSellersSectionProps {
   title?: string;
@@ -128,7 +129,7 @@ export default function BestSellersSection({
                   ? book.imageUrls[0]
                   : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300';
               const rank = idx + 1;
-              const hasDiscount = book.originalPrice && book.originalPrice > book.price;
+              const priceInfo = getBookPriceDisplay(book);
 
               return (
                 <Link
@@ -164,10 +165,10 @@ export default function BestSellersSection({
 
                     <div className={styles.metaRow}>
                       <div className={styles.priceWrapper}>
-                        <span className={styles.currentPrice}>{formatPrice(book.price)}</span>
-                        {hasDiscount && (
+                        <span className={styles.currentPrice}>{priceInfo.displayPrice}</span>
+                        {priceInfo.hasDiscount && priceInfo.originalPrice && (
                           <span className={styles.originalPrice}>
-                            {formatPrice(book.originalPrice!)}
+                            {formatPrice(priceInfo.originalPrice)}
                           </span>
                         )}
                       </div>

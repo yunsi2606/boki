@@ -117,10 +117,20 @@ public class BookVariantController {
 
         List<BookVariantJpaEntity> saved = variantRepository.saveAll(toSave);
 
-        // Synchronize parent book stock quantity and status with the sum of variants
+        // Synchronize parent book stock quantity, price, and status with variants
         if (!toSave.isEmpty()) {
             int totalVariantStock = toSave.stream().mapToInt(BookVariantJpaEntity::getStockQuantity).sum();
             book.setStockQuantity(totalVariantStock);
+
+            java.math.BigDecimal minVariantPrice = toSave.stream()
+                    .map(BookVariantJpaEntity::getPrice)
+                    .filter(java.util.Objects::nonNull)
+                    .min(java.math.BigDecimal::compareTo)
+                    .orElse(null);
+            if (minVariantPrice != null) {
+                book.setPrice(minVariantPrice);
+            }
+
             if (totalVariantStock == 0 && !book.isPreOrder()) {
                 book.setStatus(BookJpaEntity.BookStatusJpa.SOLD);
             } else if (totalVariantStock > 0 && book.getStatus() == BookJpaEntity.BookStatusJpa.SOLD) {

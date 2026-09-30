@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Book, BookVariant } from '@/types';
+import { X } from 'lucide-react';
 import styles from './QuickVariantSelectModal.module.css';
 
 interface QuickVariantSelectModalProps {
@@ -40,7 +41,7 @@ export default function QuickVariantSelectModal({
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h3>Chọn Phân Loại Hàng</h3>
-          <button onClick={onClose} className={styles.closeBtn}>✕</button>
+          <button onClick={onClose} className={styles.closeBtn} aria-label="Đóng"><X size={18} /></button>
         </div>
 
         <div className={styles.productPreview}>

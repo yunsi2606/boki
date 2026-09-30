@@ -8,6 +8,7 @@ import { recommendationService } from '@/services/recommendationService';
 import { activityTracker } from '@/services/activityTracker';
 import { useCart } from '@/hooks/useCart';
 import styles from './frequentlyBoughtTogether.module.css';
+import { getBookPriceDisplay } from '@/utils/bookPrice';
 
 interface Props {
   bookIdOrSlug: string;
@@ -51,7 +52,7 @@ export default function FrequentlyBoughtTogether({ bookIdOrSlug, onShowNotificat
     let total = 0;
     allBooks.forEach((b) => {
       if (selectedIds.has(b.id)) {
-        total += b.price || 0;
+        total += getBookPriceDisplay(b).currentPrice;
       }
     });
 
@@ -144,7 +145,10 @@ export default function FrequentlyBoughtTogether({ bookIdOrSlug, onShowNotificat
                       {book.title}
                     </div>
                     <div className={styles.bookPrice}>
-                      {book.price?.toLocaleString('vi-VN')}đ
+                      {(() => {
+                        const priceInfo = getBookPriceDisplay(book);
+                        return priceInfo.isRange ? priceInfo.compactDisplayPrice : `${priceInfo.currentPrice.toLocaleString('vi-VN')}đ`;
+                      })()}
                     </div>
                   </div>
                 </div>

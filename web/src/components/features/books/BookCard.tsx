@@ -6,6 +6,7 @@ import type { Book, BookVariant } from '@/types';
 import styles from './BookCard.module.css';
 import { getBookUrl } from '@/lib/slug';
 import PreOrderBadge from './PreOrderBadge';
+import { getBookPriceDisplay, formatCurrency } from '@/utils/bookPrice';
 
 interface BookCardProps {
   book: Book;
@@ -22,11 +23,6 @@ export default function BookCard({
   onToggleFavorite,
   onAddToCart,
 }: BookCardProps) {
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
-  };
-
-  // Determine display title & cover
   const displayTitle = standaloneVariant
     ? `${book.title} - ${standaloneVariant.name}`
     : book.title;
@@ -38,72 +34,11 @@ export default function BookCard({
 
   const linkHref = getBookUrl(book, standaloneVariant?.id);
 
-  // Price & Discount Calculation
-  let priceText = '';
-  let originalPriceText = '';
-  let discountPercent = 0;
-  let isDiscount = false;
-
-  if (standaloneVariant) {
-    // Individual Standalone Variant Card
-    const price = standaloneVariant.price;
-    const origPrice =
-      standaloneVariant.originalPrice && standaloneVariant.originalPrice > price
-        ? standaloneVariant.originalPrice
-        : 0;
-    priceText = formatCurrency(price);
-    if (origPrice > 0) {
-      isDiscount = true;
-      originalPriceText = formatCurrency(origPrice);
-      discountPercent = Math.round(((origPrice - price) / origPrice) * 100);
-    }
-  } else if (book.variants && book.variants.length > 0) {
-    // Parent Book with Variants
-    const variantPrices = book.variants.map((v) => v.price);
-    const minPrice = Math.min(...variantPrices);
-    const maxPrice = Math.max(...variantPrices);
-
-    if (minPrice < maxPrice) {
-      // Range: e.g. "50.000 ₫ - 60.000 ₫"
-      priceText = `${formatCurrency(minPrice)} - ${formatCurrency(maxPrice)}`;
-
-      // Highest discount % across variants
-      const discounts = book.variants.map((v) =>
-        v.originalPrice && v.originalPrice > v.price
-          ? Math.round(((v.originalPrice - v.price) / v.originalPrice) * 100)
-          : 0
-      );
-      const maxDisc = Math.max(...discounts);
-      if (maxDisc > 0) {
-        discountPercent = maxDisc;
-      }
-    } else {
-      // Single price (1 variant or all variants same price)
-      priceText = formatCurrency(minPrice);
-      const discountedVariant = book.variants.find(
-        (v) => v.originalPrice && v.originalPrice > v.price
-      );
-      if (discountedVariant && discountedVariant.originalPrice) {
-        isDiscount = true;
-        originalPriceText = formatCurrency(discountedVariant.originalPrice);
-        discountPercent = Math.round(
-          ((discountedVariant.originalPrice - discountedVariant.price) /
-            discountedVariant.originalPrice) *
-          100
-        );
-      }
-    }
-  } else {
-    // Parent Book without Variants
-    const price = book.price;
-    const origPrice = book.originalPrice && book.originalPrice > price ? book.originalPrice : 0;
-    priceText = formatCurrency(price);
-    if (origPrice > 0) {
-      isDiscount = true;
-      originalPriceText = formatCurrency(origPrice);
-      discountPercent = Math.round(((origPrice - price) / origPrice) * 100);
-    }
-  }
+  const priceInfo = getBookPriceDisplay(book, standaloneVariant);
+  const priceText = priceInfo.displayPrice;
+  const originalPriceText = priceInfo.originalPrice ? formatCurrency(priceInfo.originalPrice) : '';
+  const isDiscount = priceInfo.hasDiscount;
+  const discountPercent = priceInfo.discountPercent;
 
   // Real Rating and Views from backend (with fallbacks if undefined)
   const ratingVal = book.rating !== undefined && book.rating !== null ? Number(book.rating).toFixed(1) : '5.0';

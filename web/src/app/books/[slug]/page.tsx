@@ -23,6 +23,7 @@ import RelatedCombosSection from '@/components/features/books/RelatedCombosSecti
 import FrequentlyBoughtTogether from '@/components/features/recommendations/FrequentlyBoughtTogether';
 import SimilarBooksSection from '@/components/features/recommendations/SimilarBooksSection';
 import { TrendingDown, Package, Eye } from 'lucide-react';
+import { getBookPriceDisplay } from '@/utils/bookPrice';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -112,10 +113,14 @@ function BookDetailsContent() {
 
         setBook(data);
 
-        // Pre-select variant from query param or first variant if available
+        // Pre-select variant from query param if available, or if only 1 variant exists
         if (data.variants && data.variants.length > 0) {
           const match = data.variants.find((v) => v.id === initialVariantId);
-          setSelectedVariant(match || data.variants[0]);
+          if (match) {
+            setSelectedVariant(match);
+          } else if (data.variants.length === 1) {
+            setSelectedVariant(data.variants[0]);
+          }
         }
 
         // Increment view count ONCE per page view session
@@ -141,6 +146,11 @@ function BookDetailsContent() {
 
   const handleBuyNow = () => {
     if (!book) return;
+    if (book.variants && book.variants.length > 0 && !selectedVariant) {
+      setLimitNotice('Vui lòng chọn một phân loại hàng trước khi Mua ngay.');
+      setTimeout(() => setLimitNotice(null), 3500);
+      return;
+    }
     const effectiveLimit = getEffectiveMaxOrderQuantity(book, selectedVariant);
     const currentInCart = cartItems.find(
       (item) => item.book.id === book.id && item.selectedVariant?.id === selectedVariant?.id
@@ -179,6 +189,11 @@ function BookDetailsContent() {
 
   const handleAddToCart = () => {
     if (!book) return;
+    if (book.variants && book.variants.length > 0 && !selectedVariant) {
+      setLimitNotice('Vui lòng chọn một phân loại hàng trước khi Thêm vào giỏ.');
+      setTimeout(() => setLimitNotice(null), 3500);
+      return;
+    }
     const effectiveLimit = getEffectiveMaxOrderQuantity(book, selectedVariant);
     const currentInCart = cartItems.find(
       (item) => item.book.id === book.id && item.selectedVariant?.id === selectedVariant?.id
@@ -236,11 +251,14 @@ function BookDetailsContent() {
       : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300');
 
 
-  const currentOriginalPrice = selectedVariant && selectedVariant.originalPrice
-    ? selectedVariant.originalPrice
-    : (book.originalPrice || book.price);
-  const currentPrice = selectedVariant ? selectedVariant.price : book.price;
-  const currentStock = selectedVariant ? selectedVariant.stockQuantity : book.stockQuantity;
+  const priceInfo = getBookPriceDisplay(book, selectedVariant);
+  const currentOriginalPrice = priceInfo.originalPrice;
+  const currentPrice = priceInfo.currentPrice;
+  const currentStock = selectedVariant
+    ? selectedVariant.stockQuantity
+    : (book.variants && book.variants.length > 0
+        ? book.variants.reduce((sum, v) => sum + (Number(v.stockQuantity) || 0), 0)
+        : (book.stockQuantity || 0));
   const effectiveLimit = getEffectiveMaxOrderQuantity(book, selectedVariant);
 
   const rating = book.rating !== undefined && book.rating !== null ? Number(book.rating).toFixed(1) : '5.0';
@@ -368,25 +386,27 @@ function BookDetailsContent() {
           <div className={styles.priceCard}>
             <div className={styles.priceHeaderRow}>
               <span className={styles.priceTitle}>
-                {book.isCombo ? 'GIÁ COMBO ƯU ĐÃI' : 'GIÁ BÁN HIỆN TẠI'}
+                {book.isCombo
+                  ? 'GIÁ COMBO ƯU ĐÃI'
+                  : (priceInfo.isRange ? 'KHOẢNG GIÁ THEO PHÂN LOẠI' : 'GIÁ BÁN HIỆN TẠI')}
               </span>
               {book.isCombo && book.savingsPercent && book.savingsPercent > 0 ? (
                 <span className={styles.discountBadge} style={{ background: '#10b981' }}>
                   Tiết kiệm -{book.savingsPercent}%
                 </span>
-              ) : currentOriginalPrice > currentPrice ? (
+              ) : priceInfo.hasDiscount ? (
                 <span className={styles.discountBadge}>
-                  -{Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100)}%
+                  -{priceInfo.discountPercent}%
                 </span>
               ) : null}
             </div>
 
             <div className={styles.priceValueRow}>
-              <span className={styles.priceAmount}>{formatPrice(currentPrice)}</span>
+              <span className={styles.priceAmount}>{priceInfo.displayPrice}</span>
               {book.isCombo && book.originalTotalAmount && book.originalTotalAmount > currentPrice ? (
                 <span className={styles.originalPriceAmount}>{formatPrice(book.originalTotalAmount)}</span>
-              ) : currentOriginalPrice > currentPrice ? (
-                <span className={styles.originalPriceAmount}>{formatPrice(currentOriginalPrice)}</span>
+              ) : !priceInfo.isRange && priceInfo.originalPrice && priceInfo.originalPrice > currentPrice ? (
+                <span className={styles.originalPriceAmount}>{formatPrice(priceInfo.originalPrice)}</span>
               ) : null}
             </div>
 

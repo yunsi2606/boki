@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import type { Book, BookVariant } from '@/types';
 import { Search, Plus, Check, X, BookOpen, Layers } from 'lucide-react';
 import styles from './comboItemPickerModal.module.css';
+import { getBookPriceDisplay } from '@/utils/bookPrice';
 
 export interface SelectedComboItem {
   singleBookId: string;
@@ -139,7 +140,10 @@ export default function ComboItemPickerModal({
                         <span>{book.author}</span>
                         <span>•</span>
                         <span className={styles.price}>
-                          {book.price?.toLocaleString('vi-VN')}đ
+                          {(() => {
+                            const p = getBookPriceDisplay(book);
+                            return p.isRange ? p.compactDisplayPrice : `${p.currentPrice.toLocaleString('vi-VN')}đ`;
+                          })()}
                         </span>
                         <span>•</span>
                         <span>Kho: {book.stockQuantity}</span>
