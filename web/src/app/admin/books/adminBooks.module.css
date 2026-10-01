@@ -197,17 +197,15 @@
 /* Modal Constraints & Layout Mechanics */
 .modalBackdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(6px);
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
+  overflow-y: auto;
 }
 
 .modalContent {
@@ -215,20 +213,21 @@
   border-radius: 20px;
   width: 100%;
   max-width: 760px;
-  max-height: 88vh; /* Fixed max height relative to viewport */
+  max-height: min(90vh, 850px);
   display: flex;
   flex-direction: column;
-  padding: 24px 28px;
+  padding: 20px 24px 18px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
+  position: relative;
 }
 
 .modalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #E2E8F0;
   flex-shrink: 0; /* Pinned at top */
 }
@@ -259,7 +258,7 @@
   display: flex;
   gap: 8px;
   border-bottom: 1.5px solid #E2E8F0;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   flex-shrink: 0; /* Pinned below header */
 }
 
@@ -277,15 +276,14 @@
 .modalForm {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0; /* Crucial for inner overflow scrolling */
   overflow: hidden;
 }
 
 .tabBody {
-  flex: 1;
-  min-height: 380px; /* Fixed consistent height container */
-  max-height: 52vh;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto; /* Internal scrollbar for long inputs */
   padding-right: 8px;
   display: flex;
@@ -346,10 +344,11 @@
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 16px;
-  padding-top: 14px;
+  margin-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid #E2E8F0;
   flex-shrink: 0; /* Pinned at bottom */
+  background: #FFFFFF;
 }
 
 .cancelBtn {

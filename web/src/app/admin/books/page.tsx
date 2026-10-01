@@ -11,7 +11,7 @@ import styles from './adminBooks.module.css';
 
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/books/PreOrderBadge';
-import { BookOpen, Package, Tag, AlertCircle } from 'lucide-react';
+import { BookOpen, Package, Tag, AlertCircle, X, ArrowRight, ArrowLeft } from 'lucide-react';
 import AdminComboCreateModal from '@/components/features/admin/combos/AdminComboCreateModal';
 import { MultiCategorySelector } from '@/components/features/admin/books/MultiCategorySelector';
 import { getBookPriceDisplay } from '@/utils/bookPrice';
@@ -674,8 +674,8 @@ export default function AdminBooksPage() {
                   Thông tin được phân loại thành mục <strong>Bắt Buộc</strong> và <strong>Có Thể Bỏ Trống (NULL)</strong>.
                 </p>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className={styles.closeBtn}>
-                ✕
+              <button onClick={() => setIsModalOpen(false)} className={styles.closeBtn} aria-label="Đóng">
+                <X size={20} />
               </button>
             </div>
 
@@ -1239,11 +1239,11 @@ export default function AdminBooksPage() {
               <div className={styles.modalActions}>
                 {activeTab === 'required' ? (
                   <button type="button" onClick={() => setActiveTab('optional')} className={styles.cancelBtn}>
-                    Chuyển Sang Nhập Metadata (Chi Tiết) &rarr;
+                    Chuyển Sang Nhập Metadata (Chi Tiết) <ArrowRight size={15} style={{ marginLeft: 6, verticalAlign: -2 }} />
                   </button>
                 ) : (
                   <button type="button" onClick={() => setActiveTab('required')} className={styles.cancelBtn}>
-                    &larr; Quay Lại Thông Tin Bắt Buộc
+                    <ArrowLeft size={15} style={{ marginRight: 6, verticalAlign: -2 }} /> Quay Lại Thông Tin Bắt Buộc
                   </button>
                 )}
                 <button type="submit" className={styles.saveBtn}>
