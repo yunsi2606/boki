@@ -20,6 +20,9 @@ public record CreateBookRequest(
         @DecimalMin(value = "0.0", inclusive = true, message = "Price must be non-negative")
         BigDecimal price,
 
+        @DecimalMin(value = "0.0", inclusive = true, message = "Original price must be non-negative")
+        BigDecimal originalPrice,
+
         @NotBlank(message = "Condition is required (NEW, LIKE_NEW, GOOD, FAIR, POOR)")
         String condition,
 

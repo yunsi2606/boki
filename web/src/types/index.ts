@@ -182,6 +182,7 @@ export interface CreateBookPayload {
   translator?: string;
   description?: string;
   price: number;
+  originalPrice?: number;
   condition: string;
   stockQuantity: number;
   maxOrderQuantity?: number;
@@ -208,6 +209,7 @@ export interface UpdateBookPayload {
   translator?: string;
   description?: string;
   price?: number;
+  originalPrice?: number;
   condition?: string;
   stockQuantity?: number;
   maxOrderQuantity?: number;

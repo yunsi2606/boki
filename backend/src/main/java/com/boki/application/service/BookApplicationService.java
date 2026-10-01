@@ -76,6 +76,10 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
                 request.publicationDetails()
         );
 
+        if (request.originalPrice() != null && request.originalPrice().compareTo(java.math.BigDecimal.ZERO) > 0) {
+            book.updateOriginalPrice(Price.of(request.originalPrice(), price.currency()));
+        }
+
         book.updatePreOrder(request.isPreOrder(), request.preOrderDays());
         book.updateMaxOrderQuantity(request.maxOrderQuantity());
         
@@ -107,6 +111,13 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         
         if (request.price() != null) {
             book.updatePrice(Price.of(request.price()));
+        }
+        if (request.originalPrice() != null) {
+            if (request.originalPrice().compareTo(java.math.BigDecimal.ZERO) > 0) {
+                book.updateOriginalPrice(Price.of(request.originalPrice(), book.getPrice() != null ? book.getPrice().currency() : Price.DEFAULT_CURRENCY));
+            } else {
+                book.updateOriginalPrice(null);
+            }
         }
         if (request.condition() != null) {
             book.updateCondition(BookCondition.valueOf(request.condition().toUpperCase()));

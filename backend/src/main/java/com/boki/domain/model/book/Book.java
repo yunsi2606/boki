@@ -262,6 +262,11 @@ public class Book {
         this.updatedAt = Instant.now();
     }
 
+    public void updateOriginalPrice(Price originalPrice) {
+        this.originalPrice = originalPrice;
+        this.updatedAt = Instant.now();
+    }
+
     public void updateImages(List<String> imageUrls) {
         this.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
         this.updatedAt = Instant.now();

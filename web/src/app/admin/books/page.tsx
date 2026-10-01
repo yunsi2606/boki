@@ -11,7 +11,7 @@ import styles from './adminBooks.module.css';
 
 import { TableSkeleton } from '@/components/ui/Skeleton';
 import PreOrderBadge, { getEstimatedDeliveryDate } from '@/components/features/books/PreOrderBadge';
-import { BookOpen, Package } from 'lucide-react';
+import { BookOpen, Package, Tag, AlertCircle } from 'lucide-react';
 import AdminComboCreateModal from '@/components/features/admin/combos/AdminComboCreateModal';
 import { MultiCategorySelector } from '@/components/features/admin/books/MultiCategorySelector';
 import { getBookPriceDisplay } from '@/utils/bookPrice';
@@ -65,6 +65,7 @@ export default function AdminBooksPage() {
     categoryId: 1,
     categoryIds: [1] as number[],
     price: 100000,
+    originalPrice: 0,
     stockQuantity: 20,
     coverUrl: '',
     condition: 'NEW' as Book['condition'],
@@ -133,6 +134,7 @@ export default function AdminBooksPage() {
       categoryId: categories[0]?.id || 1,
       categoryIds: categories[0]?.id ? [categories[0].id] : [1],
       price: 100000,
+      originalPrice: 0,
       stockQuantity: 20,
       coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300',
       condition: 'NEW',
@@ -208,6 +210,7 @@ export default function AdminBooksPage() {
       categoryId: book.categoryId || 1,
       categoryIds: book.categoryIds && book.categoryIds.length > 0 ? book.categoryIds : (book.categoryId ? [book.categoryId] : [1]),
       price: book.price || 0,
+      originalPrice: book.originalPrice || 0,
       stockQuantity: computedStock,
       coverUrl: book.imageUrls?.[0] || '',
       condition: book.condition || 'NEW',
@@ -317,6 +320,7 @@ export default function AdminBooksPage() {
       categoryId: formData.categoryIds?.[0] || Number(formData.categoryId),
       categoryIds: formData.categoryIds && formData.categoryIds.length > 0 ? formData.categoryIds : [Number(formData.categoryId)],
       price: Number(formData.price),
+      originalPrice: formData.originalPrice && Number(formData.originalPrice) > 0 ? Number(formData.originalPrice) : undefined,
       condition: formData.condition,
       stockQuantity: resolvedStock,
       maxOrderQuantity: formData.maxOrderQuantity ? Number(formData.maxOrderQuantity) : undefined,
@@ -589,6 +593,24 @@ export default function AdminBooksPage() {
                                 Khoảng giá phân loại
                               </div>
                             )}
+                            {!priceInfo.isRange && priceInfo.hasDiscount && priceInfo.originalPrice && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                                <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.75rem' }}>
+                                  {formatPrice(priceInfo.originalPrice)}
+                                </span>
+                                <span style={{
+                                  fontSize: '0.7rem',
+                                  fontWeight: 700,
+                                  color: '#dc2626',
+                                  background: '#fef2f2',
+                                  border: '1px solid #fecaca',
+                                  padding: '1px 5px',
+                                  borderRadius: '4px',
+                                }}>
+                                  -{priceInfo.discountPercent}%
+                                </span>
+                              </div>
+                            )}
                           </div>
                         );
                       })()}
@@ -732,11 +754,11 @@ export default function AdminBooksPage() {
                       </div>
                     </div>
 
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label>Giá Bán Niêm Yết (VNĐ) <span style={{ color: '#ef4444' }}>*</span></label>
-                        {editingBook && editingBook.variants && editingBook.variants.length > 0 ? (
-                          <div>
+                    {editingBook && editingBook.variants && editingBook.variants.length > 0 ? (
+                      <>
+                        <div className={styles.formRow}>
+                          <div className={styles.formGroup}>
+                            <label>Giá Bán (VNĐ) <span style={{ color: '#ef4444' }}>*</span></label>
                             <input
                               type="text"
                               disabled
@@ -761,21 +783,9 @@ export default function AdminBooksPage() {
                                 : `Đồng bộ theo phân loại duy nhất: ${editingBook.variants[0].name}`}
                             </div>
                           </div>
-                        ) : (
-                          <input
-                            type="number"
-                            required
-                            value={formData.price}
-                            onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
-                            className={styles.formInput}
-                          />
-                        )}
-                      </div>
 
-                      <div className={styles.formGroup}>
-                        <label>Số Lượng Tồn Kho <span style={{ color: '#ef4444' }}>*</span></label>
-                        {editingBook && editingBook.variants && editingBook.variants.length > 0 ? (
-                          <div>
+                          <div className={styles.formGroup}>
+                            <label>Số Lượng Tồn Kho <span style={{ color: '#ef4444' }}>*</span></label>
                             <input
                               type="number"
                               disabled
@@ -818,34 +828,121 @@ export default function AdminBooksPage() {
                               </button>
                             </div>
                           </div>
-                        ) : (
-                          <input
-                            type="number"
-                            required
-                            value={formData.stockQuantity}
-                            onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) || 0 })}
-                            className={styles.formInput}
-                          />
-                        )}
-                      </div>
-                    </div>
+                        </div>
 
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup} style={{ width: '100%' }}>
-                        <label>Giới Hạn Mua Tối Đa Mỗi Đơn (Cuốn)</label>
-                        <input
-                          type="number"
-                          min="1"
-                          placeholder="Không giới hạn (để trống)"
-                          value={formData.maxOrderQuantity ?? ''}
-                          onChange={(e) => setFormData({ ...formData, maxOrderQuantity: e.target.value ? Math.max(1, parseInt(e.target.value) || 0) : undefined })}
-                          className={styles.formInput}
-                        />
-                        <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
-                          Áp dụng cho toàn bộ sản phẩm. Nếu phân loại có cấu hình giới hạn riêng, giới hạn của phân loại sẽ được ưu tiên.
-                        </span>
-                      </div>
-                    </div>
+                        <div className={styles.formRow}>
+                          <div className={styles.formGroup} style={{ width: '100%' }}>
+                            <label>Giới Hạn Mua Tối Đa Mỗi Đơn (Cuốn)</label>
+                            <input
+                              type="number"
+                              min="1"
+                              placeholder="Không giới hạn (để trống)"
+                              value={formData.maxOrderQuantity ?? ''}
+                              onChange={(e) => setFormData({ ...formData, maxOrderQuantity: e.target.value ? Math.max(1, parseInt(e.target.value) || 0) : undefined })}
+                              className={styles.formInput}
+                            />
+                            <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                              Áp dụng cho toàn bộ sản phẩm. Nếu phân loại có cấu hình giới hạn riêng, giới hạn của phân loại sẽ được ưu tiên.
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className={styles.formRow}>
+                          <div className={styles.formGroup}>
+                            <label>Giá Bán Thực Tế (VNĐ) <span style={{ color: '#ef4444' }}>*</span></label>
+                            <input
+                              type="number"
+                              required
+                              min="0"
+                              placeholder="VD: 95000"
+                              value={formData.price}
+                              onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                              className={styles.formInput}
+                            />
+                            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              Giá khách hàng thanh toán khi đặt mua
+                            </span>
+                          </div>
+
+                          <div className={styles.formGroup}>
+                            <label>Giá Gốc / Bìa (VNĐ) <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 400 }}>(Tùy chọn)</span></label>
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="Để trống nếu không giảm giá"
+                              value={formData.originalPrice || ''}
+                              onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value ? parseInt(e.target.value) || 0 : 0 })}
+                              className={styles.formInput}
+                            />
+                            {formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice > formData.price ? (
+                              <div style={{
+                                marginTop: '4px',
+                                fontSize: '0.75rem',
+                                color: '#dc2626',
+                                background: '#fef2f2',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid #fecaca',
+                                fontWeight: 600,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                              }}>
+                                <Tag size={13} />
+                                Giảm {Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)}% (Tiết kiệm {formatPrice(formData.originalPrice - formData.price)})
+                              </div>
+                            ) : formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice <= formData.price ? (
+                              <div style={{
+                                marginTop: '4px',
+                                fontSize: '0.75rem',
+                                color: '#d97706',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                              }}>
+                                <AlertCircle size={13} />
+                                Giá gốc nên lớn hơn giá bán để hiển thị giảm giá
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                Dùng để gạch ngang giá và tính % giảm giá
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className={styles.formRow}>
+                          <div className={styles.formGroup}>
+                            <label>Số Lượng Tồn Kho <span style={{ color: '#ef4444' }}>*</span></label>
+                            <input
+                              type="number"
+                              required
+                              min="0"
+                              value={formData.stockQuantity}
+                              onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) || 0 })}
+                              className={styles.formInput}
+                            />
+                          </div>
+
+                          <div className={styles.formGroup}>
+                            <label>Giới Hạn Mua Tối Đa Mỗi Đơn (Cuốn)</label>
+                            <input
+                              type="number"
+                              min="1"
+                              placeholder="Không giới hạn (để trống)"
+                              value={formData.maxOrderQuantity ?? ''}
+                              onChange={(e) => setFormData({ ...formData, maxOrderQuantity: e.target.value ? Math.max(1, parseInt(e.target.value) || 0) : undefined })}
+                              className={styles.formInput}
+                            />
+                            <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                              Giới hạn số lượng mua tối đa cho mỗi đơn đặt hàng
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    )}
 
                     <div className={styles.formGroup}>
                       <ImageUploadInput

@@ -15,6 +15,9 @@ public record UpdateBookRequest(
         @DecimalMin(value = "0.0", inclusive = true, message = "Price must be non-negative")
         BigDecimal price,
 
+        @DecimalMin(value = "0.0", inclusive = true, message = "Original price must be non-negative")
+        BigDecimal originalPrice,
+
         String condition,
 
         @Min(value = 0, message = "Stock quantity must be non-negative")
