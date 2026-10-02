@@ -79,11 +79,6 @@ function BooksPageContent() {
     showNotification(`Đã thêm "${titleText}" vào giỏ hàng`);
   };
 
-  const handleConfirmVariantAddToCart = (book: Book, variant: BookVariant) => {
-    addToCart(book, 1, variant);
-    showNotification(`Đã thêm "${book.title} (${variant.name})" vào giỏ hàng`);
-  };
-
   useEffect(() => {
     async function fetchBooks() {
       setLoading(true);
@@ -126,30 +121,13 @@ function BooksPageContent() {
       format: formatParam,
     });
   }, [
-    rawBooks,
-    selectedSupplier,
-    supplierParam,
-    productType,
-    priceRange,
-    authorParam,
-    seriesParam,
-    publisherParam,
-    audienceParam,
-    translatorParam,
-    formatParam,
+    rawBooks, selectedSupplier, supplierParam, productType, priceRange,
+    authorParam, seriesParam, publisherParam, audienceParam, translatorParam, formatParam,
   ]);
 
   const hasActiveFilters = Boolean(
-    selectedCategory !== null ||
-    selectedSupplier !== null ||
-    productType !== 'ALL' ||
-    priceRange !== null ||
-    authorParam ||
-    seriesParam ||
-    publisherParam ||
-    audienceParam ||
-    translatorParam ||
-    formatParam
+    selectedCategory !== null || selectedSupplier !== null || productType !== 'ALL' || priceRange !== null ||
+    authorParam || seriesParam || publisherParam || audienceParam || translatorParam || formatParam
   );
 
   const handleResetFilters = () => {
@@ -169,32 +147,13 @@ function BooksPageContent() {
   return (
     <div className={styles.container}>
       {notification && (
-        <div style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-          color: '#ffffff',
-          padding: '12px 20px',
-          borderRadius: '12px',
-          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
-          zIndex: 9999,
-          fontWeight: 600,
-          fontSize: '14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          border: '1px solid rgba(255,255,255,0.1)'
-        }}>
+        <div className={styles.toastNotification}>
           <ShoppingBag size={18} color="#4ade80" />
           <span>{notification}</span>
         </div>
       )}
 
-      <CollectionFilterHeader
-        totalCount={filteredBooks.length}
-        categoryName={currentCategoryName}
-      />
+      <CollectionFilterHeader totalCount={filteredBooks.length} categoryName={currentCategoryName} />
 
       <div className={styles.catalogLayout}>
         <BooksSidebarFilter
@@ -244,7 +203,10 @@ function BooksPageContent() {
         isOpen={!!quickSelectBook}
         onClose={() => setQuickSelectBook(null)}
         book={quickSelectBook}
-        onConfirmAddToCart={handleConfirmVariantAddToCart}
+        onConfirmAddToCart={(book, variant) => {
+          addToCart(book, 1, variant);
+          showNotification(`Đã thêm "${book.title} (${variant.name})" vào giỏ hàng`);
+        }}
       />
     </div>
   );
