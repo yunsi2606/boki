@@ -45,44 +45,96 @@
   align-items: start;
 }
 
+.desktopSidebarWrapper {
+  display: block;
+}
+
+.mobileFilterBar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobileFilterBar::-webkit-scrollbar {
+  display: none;
+}
+
+.mobileFilterTriggerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.mobileFilterTriggerBtnActive {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.filterCountBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: #ee4d2d;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.mobileQuickChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.mobileQuickChipActive {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
 @media (max-width: 992px) {
   .catalogLayout {
     grid-template-columns: 1fr;
     gap: 20px;
   }
 
-  .filterSidebar {
-    position: static !important;
-    max-height: none !important;
-    overflow-y: visible !important;
-    margin-bottom: 6px;
+  .desktopSidebarWrapper {
+    display: none !important;
   }
 
-  .mobileAccordionToggle {
-    display: inline-flex !important;
-  }
-
-  .filterHeaderRow {
-    cursor: pointer;
-    margin-bottom: 0 !important;
-    border-bottom: none !important;
-    padding-bottom: 0 !important;
-  }
-
-  .filterContentWrapper {
-    display: none;
-    padding-top: 14px;
-    margin-top: 12px;
-    border-top: 1px solid #f1f5f9;
-  }
-
-  .filterContentMobileExpanded {
-    display: block !important;
-    animation: fadeIn 0.2s ease-out;
-  }
-
-  .scrollableListCompact {
-    max-height: 180px !important;
+  .mobileFilterBar {
+    display: flex !important;
   }
 }
 
@@ -117,6 +169,17 @@
 .filterSidebar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
+}
+
+.drawerSidebar {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  position: static !important;
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 
 .filterHeaderRow {

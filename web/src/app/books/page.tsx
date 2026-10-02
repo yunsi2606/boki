@@ -14,6 +14,8 @@ import BooksSidebarFilter, {
   PRICE_RANGES,
   type ProductTypeFilter,
 } from '@/components/features/books/BooksSidebarFilter';
+import MobileFilterDrawer from '@/components/features/books/MobileFilterDrawer';
+import MobileFilterBar from '@/components/features/books/MobileFilterBar';
 import { filterBooksByCriteria } from '@/utils/entityMatch';
 import { BookGridSkeleton } from '@/components/ui/Skeleton';
 import styles from './books.module.css';
@@ -38,6 +40,7 @@ function BooksPageContent() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [quickSelectBook, setQuickSelectBook] = useState<Book | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     categoryParam ? parseInt(categoryParam, 10) : null
@@ -125,10 +128,10 @@ function BooksPageContent() {
     authorParam, seriesParam, publisherParam, audienceParam, translatorParam, formatParam,
   ]);
 
-  const hasActiveFilters = Boolean(
-    selectedCategory !== null || selectedSupplier !== null || productType !== 'ALL' || priceRange !== null ||
-    authorParam || seriesParam || publisherParam || audienceParam || translatorParam || formatParam
-  );
+  const activeFilterCount = [
+    selectedCategory !== null, selectedSupplier !== null, productType !== 'ALL', priceRange !== null,
+    !!authorParam, !!seriesParam, !!publisherParam, !!audienceParam, !!translatorParam, !!formatParam,
+  ].filter(Boolean).length;
 
   const handleResetFilters = () => {
     setSelectedCategory(null);
@@ -144,6 +147,24 @@ function BooksPageContent() {
     return categories.find((c) => c.id === catId)?.name || null;
   }, [selectedCategory, categoryParam, categories]);
 
+  const renderSidebar = (isDrawer = false) => (
+    <BooksSidebarFilter
+      categories={categories}
+      selectedCategory={selectedCategory}
+      onSelectCategory={setSelectedCategory}
+      suppliers={suppliers}
+      selectedSupplier={selectedSupplier}
+      onSelectSupplier={setSelectedSupplier}
+      productType={productType}
+      onSelectProductType={setProductType}
+      priceRange={priceRange}
+      onSelectPriceRange={setPriceRange}
+      onResetFilters={handleResetFilters}
+      hasActiveFilters={activeFilterCount > 0}
+      isMobileDrawer={isDrawer}
+    />
+  );
+
   return (
     <div className={styles.container}>
       {notification && (
@@ -155,21 +176,15 @@ function BooksPageContent() {
 
       <CollectionFilterHeader totalCount={filteredBooks.length} categoryName={currentCategoryName} />
 
+      <MobileFilterBar
+        onOpenDrawer={() => setIsMobileDrawerOpen(true)}
+        activeFilterCount={activeFilterCount}
+        productType={productType}
+        onToggleProductType={(type) => setProductType((prev) => (prev === type ? 'ALL' : type))}
+      />
+
       <div className={styles.catalogLayout}>
-        <BooksSidebarFilter
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          suppliers={suppliers}
-          selectedSupplier={selectedSupplier}
-          onSelectSupplier={setSelectedSupplier}
-          productType={productType}
-          onSelectProductType={setProductType}
-          priceRange={priceRange}
-          onSelectPriceRange={setPriceRange}
-          onResetFilters={handleResetFilters}
-          hasActiveFilters={hasActiveFilters}
-        />
+        <div className={styles.desktopSidebarWrapper}>{renderSidebar(false)}</div>
 
         <main className={styles.resultsSection}>
           {loading ? (
@@ -198,6 +213,14 @@ function BooksPageContent() {
           )}
         </main>
       </div>
+
+      <MobileFilterDrawer
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        totalCount={filteredBooks.length}
+      >
+        {renderSidebar(true)}
+      </MobileFilterDrawer>
 
       <QuickVariantSelectModal
         isOpen={!!quickSelectBook}
