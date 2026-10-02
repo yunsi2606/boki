@@ -1,79 +1,178 @@
-/* CategoryCircles Component Styles */
-
 .categoriesSection {
-  padding: 24px 0;
+  padding: 24px 0 16px;
 }
 
 .sectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
 }
 
 .sectionTitle {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
-  color: #111827;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
-.categoriesWrapper {
+.subtitle {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.sliderControls {
   display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  overflow-x: auto;
-  padding-bottom: 12px;
-  scrollbar-width: none;
+  align-items: center;
+  gap: 8px;
 }
 
-.categoriesWrapper::-webkit-scrollbar {
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.navButton:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+  color: #0f172a;
+  transform: scale(1.05);
+}
+
+.navButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sliderGrid {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: 134px;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 4px 2px 14px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sliderGrid::-webkit-scrollbar {
   display: none;
 }
 
-.categoryItem {
+.categoryCard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  min-width: 90px;
+  justify-content: center;
+  padding: 14px 10px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
   text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  min-height: 104px;
 }
 
-.categoryRing {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  padding: 3px;
+.categoryCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.08);
+  border-color: rgba(238, 77, 45, 0.3);
+}
+
+.iconContainer {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--transition-base);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 8px;
+  transition: transform 0.2s ease;
 }
 
-.categoryItem:hover .categoryRing {
-  transform: scale(1.08) translateY(-2px);
-}
-
-.categoryCircle {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: #FFFFFF;
-  border: 2px solid #FFFFFF;
-  overflow: hidden;
-}
-
-.categoryImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.categoryCard:hover .iconContainer {
+  transform: scale(1.1);
 }
 
 .categoryName {
   font-size: 13px;
   font-weight: 700;
-  color: #343A40;
+  color: #1e293b;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.15s ease;
+}
+
+.categoryCard:hover .categoryName {
+  color: #ee4d2d;
+}
+
+.skeletonCard {
+  min-height: 104px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 768px) {
+  .subtitle {
+    display: none;
+  }
+
+  .sliderControls {
+    display: none;
+  }
+
+  .sliderGrid {
+    grid-auto-columns: 112px;
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  .categoryCard {
+    padding: 10px 6px;
+    min-height: 94px;
+  }
+
+  .iconContainer {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+
+  .categoryName {
+    font-size: 12px;
+  }
 }

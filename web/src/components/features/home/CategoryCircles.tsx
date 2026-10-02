@@ -1,48 +1,162 @@
 'use client';
 
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import {
+  ChevronLeft,
+  ChevronRight,
+  BookOpen,
+  TrendingUp,
+  Atom,
+  Cpu,
+  Landmark,
+  Sparkles,
+  Brain,
+  GraduationCap,
+  Palette,
+  HeartPulse,
+  Layers,
+  BookMarked,
+  Heart,
+  Backpack,
+  Wand2,
+  Compass,
+  type LucideIcon,
+} from 'lucide-react';
+import { categoryService } from '@/services/categoryService';
+import type { Category } from '@/types';
 import styles from './CategoryCircles.module.css';
 
-export interface CategoryItem {
-  id: string;
-  name: string;
-  image: string;
-  gradient: string;
+interface CategoryTheme {
+  icon: LucideIcon;
+  color: string;
+  bg: string;
 }
 
-const defaultCategories: CategoryItem[] = [
-  { id: 'c1', name: 'Sách Văn học', image: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=150&h=150', gradient: 'linear-gradient(135deg, #FF6B52 0%, #EE4D2D 100%)' },
-  { id: 'c2', name: 'Sách Thiếu nhi', image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80&w=150&h=150', gradient: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)' },
-  { id: 'c3', name: 'Sách Kinh tế', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=150&h=150', gradient: 'linear-gradient(135deg, #FF6B81 0%, #E84E66 100%)' },
-  { id: 'c4', name: 'Sách Giáo khoa', image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=150&h=150', gradient: 'linear-gradient(135deg, #20C997 0%, #0CA678 100%)' },
-  { id: 'c5', name: 'Kỹ Năng Sống', image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=150&h=150', gradient: 'linear-gradient(135deg, #1E90FF 0%, #0066CC 100%)' },
-  { id: 'c6', name: 'Phát triển bản thân', image: 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&q=80&w=150&h=150', gradient: 'linear-gradient(135deg, #7950F2 0%, #5F3DC4 100%)' },
-  { id: 'c7', name: 'Sổ tay & Quà tặng', image: 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?auto=format&fit=crop&q=80&w=150&h=150', gradient: 'linear-gradient(135deg, #FCC419 0%, #F59F00 100%)' }
-];
+const CATEGORY_THEMES: Record<string, CategoryTheme> = {
+  'truyen-tranh': { icon: Layers, color: '#ee4d2d', bg: '#fff1f0' },
+  'tieu-thuyet': { icon: BookMarked, color: '#7c3aed', bg: '#f5f3ff' },
+  'dam-my': { icon: Heart, color: '#ec4899', bg: '#fdf2f8' },
+  'hoc-duong': { icon: Backpack, color: '#059669', bg: '#ecfdf5' },
+  'chuyen-sinh': { icon: Wand2, color: '#0284c7', bg: '#f0f9ff' },
+  'van-hoc': { icon: BookOpen, color: '#d97706', bg: '#fffbeb' },
+  'kinh-te': { icon: TrendingUp, color: '#2563eb', bg: '#eff6ff' },
+  'khoa-hoc': { icon: Atom, color: '#0891b2', bg: '#ecfeff' },
+  'cong-nghe': { icon: Cpu, color: '#4f46e5', bg: '#eef2ff' },
+  'lich-su': { icon: Landmark, color: '#b45309', bg: '#fef3c7' },
+  'thieu-nhi': { icon: Sparkles, color: '#f59e0b', bg: '#fffbeb' },
+  'tam-ly-hoc': { icon: Brain, color: '#9333ea', bg: '#faf5ff' },
+  'giao-duc': { icon: GraduationCap, color: '#16a34a', bg: '#f0fdf4' },
+  'nghe-thuat': { icon: Palette, color: '#e11d48', bg: '#fff1f2' },
+  'suc-khoe': { icon: HeartPulse, color: '#10b981', bg: '#ecfdf5' },
+};
 
-export default function CategoryCircles({ items = defaultCategories }: { items?: CategoryItem[] }) {
+function getTheme(slug?: string): CategoryTheme {
+  if (slug && CATEGORY_THEMES[slug]) return CATEGORY_THEMES[slug];
+  return { icon: Compass, color: '#64748b', bg: '#f8fafc' };
+}
+
+export default function CategoryCircles() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    categoryService
+      .getCategories()
+      .then((data) => {
+        setCategories(data || []);
+      })
+      .catch((err) => console.error('Error fetching homepage categories:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const updateScrollState = () => {
+    if (!sliderRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
+    setCanScrollLeft(scrollLeft > 10);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = sliderRef.current;
+    if (!el) return;
+    updateScrollState();
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    return () => el.removeEventListener('scroll', updateScrollState);
+  }, [categories]);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (!sliderRef.current) return;
+    const offset = direction === 'left' ? -360 : 360;
+    sliderRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+  };
+
   return (
     <section className={styles.categoriesSection}>
       <div className="container">
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Danh Mục Sản Phẩm</h2>
+          <div className={styles.titleGroup}>
+            <h2 className={styles.sectionTitle}>Danh Mục Sản Phẩm</h2>
+            <span className={styles.subtitle}>
+              {categories.length > 0
+                ? `${categories.length} thể loại sách phong phú`
+                : 'Khám phá theo thể loại'}
+            </span>
+          </div>
+
+          <div className={styles.sliderControls}>
+            <button
+              type="button"
+              className={styles.navButton}
+              onClick={() => handleScroll('left')}
+              disabled={!canScrollLeft}
+              aria-label="Cuộn danh mục sang trái"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              className={styles.navButton}
+              onClick={() => handleScroll('right')}
+              disabled={!canScrollRight}
+              aria-label="Cuộn danh mục sang phải"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
-        <div className={styles.categoriesWrapper}>
-          {items.map((cat) => (
-            <Link href={`/books?category=${cat.id}`} key={cat.id} className={styles.categoryItem}>
-              <div className={styles.categoryRing} style={{ background: cat.gradient }}>
-                <div className={styles.categoryCircle}>
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className={styles.categoryImage}
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-              <span className={styles.categoryName}>{cat.name}</span>
-            </Link>
-          ))}
+
+        <div className={styles.sliderGrid} ref={sliderRef}>
+          {loading ? (
+            Array.from({ length: 12 }).map((_, idx) => (
+              <div key={idx} className={styles.skeletonCard} />
+            ))
+          ) : (
+            categories.map((cat) => {
+              const theme = getTheme(cat.slug);
+              const IconComponent = theme.icon;
+
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/books?category=${cat.id}`}
+                  className={styles.categoryCard}
+                  title={cat.description || cat.name}
+                >
+                  <div
+                    className={styles.iconContainer}
+                    style={{ backgroundColor: theme.bg, color: theme.color }}
+                  >
+                    <IconComponent size={22} strokeWidth={2} />
+                  </div>
+                  <span className={styles.categoryName}>{cat.name}</span>
+                </Link>
+              );
+            })
+          )}
         </div>
       </div>
     </section>
