@@ -52,11 +52,71 @@
   margin-bottom: 0;
 }
 
+.filterHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sidebarMainTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.resetSidebarBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.resetSidebarBtn:hover {
+  color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.scrollableFilterList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.scrollableFilterList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollableFilterList::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.itemCountBadge {
+  margin-left: auto;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
 .filterTitle {
   font-size: 13px;
   font-weight: 800;
   color: #111827;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }

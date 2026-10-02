@@ -1,20 +1,25 @@
 'use client';
 
 import { Suspense, useEffect, useState, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 import { bookService } from '@/services/bookService';
+import { categoryService } from '@/services/categoryService';
 import { useCart } from '@/hooks/useCart';
-import type { Book, BookVariant } from '@/types';
+import type { Book, BookVariant, Category } from '@/types';
 import BookCard from '@/components/features/books/BookCard';
 import QuickVariantSelectModal from '@/components/features/books/QuickVariantSelectModal';
 import CollectionFilterHeader from '@/components/features/books/CollectionFilterHeader';
-import BooksSidebarFilter, { categoriesList } from '@/components/features/books/BooksSidebarFilter';
-import { matchMultiValue } from '@/utils/entityMatch';
+import BooksSidebarFilter, {
+  PRICE_RANGES,
+  type ProductTypeFilter,
+} from '@/components/features/books/BooksSidebarFilter';
+import { filterBooksByCriteria } from '@/utils/entityMatch';
 import { BookGridSkeleton } from '@/components/ui/Skeleton';
 import styles from './books.module.css';
 
 function BooksPageContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const search = searchParams.get('search') || '';
   const authorParam = searchParams.get('author') || '';
@@ -27,7 +32,8 @@ function BooksPageContent() {
   const categoryParam = searchParams.get('category');
 
   const { addToCart } = useCart();
-  const [books, setBooks] = useState<Book[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [rawBooks, setRawBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [quickSelectBook, setQuickSelectBook] = useState<Book | null>(null);
@@ -36,7 +42,21 @@ function BooksPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     categoryParam ? parseInt(categoryParam, 10) : null
   );
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [selectedSupplier, setSelectedSupplier] = useState<string | null>(supplierParam || null);
+  const [productType, setProductType] = useState<ProductTypeFilter>('ALL');
+  const [priceRange, setPriceRange] = useState<string | null>(null);
+
+  useEffect(() => {
+    categoryService.getCategories().then((data) => setCategories(data || [])).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (categoryParam) setSelectedCategory(parseInt(categoryParam, 10));
+  }, [categoryParam]);
+
+  useEffect(() => {
+    if (supplierParam) setSelectedSupplier(supplierParam);
+  }, [supplierParam]);
 
   const showNotification = (msg: string) => {
     setNotification(msg);
@@ -68,40 +88,83 @@ function BooksPageContent() {
     async function fetchBooks() {
       setLoading(true);
       try {
-        const catId = selectedCategory || (categoryParam ? parseInt(categoryParam, 10) : undefined);
-        const data = await bookService.searchBooks(catId || undefined, search || undefined);
-        let filtered = data || [];
-
-        if (authorParam) filtered = filtered.filter((b) => matchMultiValue(b.author, authorParam));
-        if (seriesParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Bộ sách'], seriesParam));
-        if (publisherParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Nhà xuất bản'] || b.publisher, publisherParam));
-        if (supplierParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Công ty phát hành'] || b.supplier, supplierParam));
-        if (audienceParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Đối tượng'], audienceParam));
-        if (translatorParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Dịch giả'] || b.translator, translatorParam));
-        if (formatParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Hình thức bìa'] || b.format, formatParam));
-        if (selectedConditions.length > 0) filtered = filtered.filter((b) => selectedConditions.includes(b.condition));
-
-        setBooks(filtered);
+        const catId = selectedCategory || undefined;
+        const data = await bookService.searchBooks(catId, search || undefined);
+        setRawBooks(data || []);
       } catch (err) {
         console.error('Backend API fetch error:', err);
-        setBooks([]);
+        setRawBooks([]);
       } finally {
         setLoading(false);
       }
     }
     fetchBooks();
-  }, [search, selectedCategory, categoryParam, authorParam, seriesParam, publisherParam, supplierParam, audienceParam, translatorParam, formatParam, selectedConditions]);
+  }, [search, selectedCategory]);
 
-  const handleToggleCondition = (condition: string) => {
-    setSelectedConditions((prev) =>
-      prev.includes(condition) ? prev.filter((c) => c !== condition) : [...prev, condition]
-    );
+  const suppliers = useMemo(() => {
+    const set = new Set<string>();
+    rawBooks.forEach((b) => {
+      if (b.supplier?.trim()) set.add(b.supplier.trim());
+      if (b.publicationDetails?.['Công ty phát hành']?.trim()) {
+        set.add(b.publicationDetails['Công ty phát hành'].trim());
+      }
+    });
+    return Array.from(set).sort();
+  }, [rawBooks]);
+
+  const filteredBooks = useMemo(() => {
+    const range = priceRange ? PRICE_RANGES.find((r) => r.id === priceRange) : null;
+    return filterBooksByCriteria(rawBooks, {
+      supplier: selectedSupplier || supplierParam,
+      productType,
+      priceRange: range ? { min: range.min, max: range.max } : null,
+      author: authorParam,
+      series: seriesParam,
+      publisher: publisherParam,
+      audience: audienceParam,
+      translator: translatorParam,
+      format: formatParam,
+    });
+  }, [
+    rawBooks,
+    selectedSupplier,
+    supplierParam,
+    productType,
+    priceRange,
+    authorParam,
+    seriesParam,
+    publisherParam,
+    audienceParam,
+    translatorParam,
+    formatParam,
+  ]);
+
+  const hasActiveFilters = Boolean(
+    selectedCategory !== null ||
+    selectedSupplier !== null ||
+    productType !== 'ALL' ||
+    priceRange !== null ||
+    authorParam ||
+    seriesParam ||
+    publisherParam ||
+    audienceParam ||
+    translatorParam ||
+    formatParam
+  );
+
+  const handleResetFilters = () => {
+    setSelectedCategory(null);
+    setSelectedSupplier(null);
+    setProductType('ALL');
+    setPriceRange(null);
+    router.push('/books');
   };
 
   const currentCategoryName = useMemo(() => {
-    if (!selectedCategory) return null;
-    return categoriesList.find((c) => c.id === selectedCategory)?.name || null;
-  }, [selectedCategory]);
+    const catId = selectedCategory || (categoryParam ? parseInt(categoryParam, 10) : null);
+    if (!catId) return null;
+    return categories.find((c) => c.id === catId)?.name || null;
+  }, [selectedCategory, categoryParam, categories]);
 
   return (
     <div className={styles.container}>
@@ -129,22 +192,30 @@ function BooksPageContent() {
       )}
 
       <CollectionFilterHeader
-        totalCount={books.length}
+        totalCount={filteredBooks.length}
         categoryName={currentCategoryName}
       />
 
       <div className={styles.catalogLayout}>
         <BooksSidebarFilter
+          categories={categories}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
-          selectedConditions={selectedConditions}
-          onToggleCondition={handleToggleCondition}
+          suppliers={suppliers}
+          selectedSupplier={selectedSupplier}
+          onSelectSupplier={setSelectedSupplier}
+          productType={productType}
+          onSelectProductType={setProductType}
+          priceRange={priceRange}
+          onSelectPriceRange={setPriceRange}
+          onResetFilters={handleResetFilters}
+          hasActiveFilters={hasActiveFilters}
         />
 
         <main className={styles.resultsSection}>
           {loading ? (
             <BookGridSkeleton count={8} />
-          ) : books.length === 0 ? (
+          ) : filteredBooks.length === 0 ? (
             <div className={styles.emptyContainer}>
               <svg className={styles.emptyIcon} width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -155,7 +226,7 @@ function BooksPageContent() {
             </div>
           ) : (
             <div className={styles.bookGrid}>
-              {books.map((book) => (
+              {filteredBooks.map((book) => (
                 <BookCard
                   key={book.id}
                   book={book}

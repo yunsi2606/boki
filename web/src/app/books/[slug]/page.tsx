@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { bookService } from '@/services/bookService';
-import type { Book, BookVariant } from '@/types';
+import { categoryService } from '@/services/categoryService';
+import type { Book, BookVariant, Category } from '@/types';
 import Button from '@/components/ui/Button';
 import VariantSelector from '@/components/features/books/VariantSelector';
 import styles from './page.module.css';
@@ -27,18 +28,7 @@ import { getBookPriceDisplay } from '@/utils/bookPrice';
 import ClickableMetadata from '@/components/features/books/ClickableMetadata';
 import { getSpecFilterParam } from '@/utils/entityMatch';
 
-const getCategoryName = (id: number | null) => {
-  const categoriesList = [
-    { id: 1, name: 'Sách Văn học' },
-    { id: 2, name: 'Sách Thiếu nhi' },
-    { id: 3, name: 'Sách Kinh tế' },
-    { id: 4, name: 'Sách Giáo khoa' },
-    { id: 5, name: 'Kỹ Năng' },
-    { id: 6, name: 'Phát triển bản thân' },
-    { id: 7, name: 'Sổ tay các loại' },
-  ];
-  return categoriesList.find((c) => c.id === id)?.name || 'Khác';
-};
+
 
 const getConditionLabel = (condition: string) => {
   switch (condition) {
@@ -76,6 +66,7 @@ function BookDetailsContent() {
   const id = extractBookId(rawParam);
   const initialVariantId = searchParams.get('variant');
 
+  const [categories, setCategories] = useState<Category[]>([]);
   const [book, setBook] = useState<Book | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<BookVariant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -84,6 +75,15 @@ function BookDetailsContent() {
   const [added, setAdded] = useState(false);
   const [limitNotice, setLimitNotice] = useState<string | null>(null);
   const hasIncrementedRef = useRef(false);
+
+  useEffect(() => {
+    categoryService.getCategories().then((data) => setCategories(data || [])).catch(() => {});
+  }, []);
+
+  const getCategoryName = (catId: number | null) => {
+    if (!catId) return 'Khác';
+    return categories.find((c) => c.id === catId)?.name || 'Khác';
+  };
 
   const displaySpecs = useMemo(() => {
     if (!book) return [];
