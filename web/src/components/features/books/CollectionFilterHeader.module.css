@@ -1,0 +1,83 @@
+.headerContainer {
+  margin-bottom: 28px;
+}
+
+.pageTitle {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.highlightText {
+  color: #ee4d2d;
+}
+
+.summaryText {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.activeChipsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+.filterChip:hover {
+  background-color: #e2e8f0;
+}
+
+.chipCloseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.chipCloseBtn:hover {
+  background-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.clearAllBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  background-color: transparent;
+  border: 1px dashed #cbd5e1;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearAllBtn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}

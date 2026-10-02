@@ -10,6 +10,7 @@ import { activityTracker } from '@/services/activityTracker';
 import { getBookUrl } from '@/lib/slug';
 import PreOrderBadge from '@/components/features/books/PreOrderBadge';
 import { getBookPriceDisplay, formatCurrency } from '@/utils/bookPrice';
+import ClickableMetadata from '@/components/features/books/ClickableMetadata';
 import styles from './recommendationCard.module.css';
 
 interface Props {
@@ -112,7 +113,12 @@ export default function RecommendationCard({
 
       <div className={styles.infoWrapper}>
         <span className={styles.publisherName}>
-          {book.publisher || book.sellerName || 'Boki Store'}
+          <ClickableMetadata
+            value={book.supplier || book.sellerName || 'Boki Store'}
+            paramName={book.supplier ? 'supplier' : 'search'}
+            linkClassName={styles.publisherLink}
+            stopPropagation
+          />
         </span>
 
         <Link href={linkHref} onClick={handleClick} style={{ textDecoration: 'none' }}>
@@ -121,7 +127,14 @@ export default function RecommendationCard({
           </h3>
         </Link>
 
-        <p className={styles.bookAuthor}>{book.author}</p>
+        <p className={styles.bookAuthor}>
+          <ClickableMetadata
+            value={book.author}
+            paramName="author"
+            linkClassName={styles.cardAuthorLink}
+            stopPropagation
+          />
+        </p>
 
         <div className={styles.ratingWrapper}>
           <span className={styles.starIcon}>★</span>

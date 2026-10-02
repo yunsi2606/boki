@@ -24,6 +24,8 @@ import FrequentlyBoughtTogether from '@/components/features/recommendations/Freq
 import SimilarBooksSection from '@/components/features/recommendations/SimilarBooksSection';
 import { TrendingDown, Package, Eye } from 'lucide-react';
 import { getBookPriceDisplay } from '@/utils/bookPrice';
+import ClickableMetadata from '@/components/features/books/ClickableMetadata';
+import { getSpecFilterParam } from '@/utils/entityMatch';
 
 const getCategoryName = (id: number | null) => {
   const categoriesList = [
@@ -342,7 +344,14 @@ function BookDetailsContent() {
           <h1 className={styles.bookTitle}>
             {book.title} {selectedVariant ? `(${selectedVariant.name})` : ''}
           </h1>
-          <p className={styles.bookAuthor}>Tác giả: {book.author}</p>
+          <p className={styles.bookAuthor}>
+            Tác giả:{' '}
+            <ClickableMetadata
+              value={book.author}
+              paramName="author"
+              linkClassName={styles.metaLink}
+            />
+          </p>
 
           <div className={styles.ratingRow}>
             <div className={styles.starsGroup}>
@@ -479,12 +488,25 @@ function BookDetailsContent() {
                 <span>Thông Số Xuất Bản Chi Tiết</span>
               </h3>
               <div className={styles.specsGrid}>
-                {displaySpecs.map(([label, value]) => (
-                  <div key={label} className={styles.specRow}>
-                    <span className={styles.specLabel}>{label}:</span>
-                    <strong className={styles.specValue}>{value}</strong>
-                  </div>
-                ))}
+                {displaySpecs.map(([label, value]) => {
+                  const paramName = getSpecFilterParam(label);
+                  return (
+                    <div key={label} className={styles.specRow}>
+                      <span className={styles.specLabel}>{label}:</span>
+                      <strong className={styles.specValue}>
+                        {paramName ? (
+                          <ClickableMetadata
+                            value={value}
+                            paramName={paramName}
+                            linkClassName={styles.specLink}
+                          />
+                        ) : (
+                          value
+                        )}
+                      </strong>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

@@ -1,37 +1,30 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { ShoppingBag } from 'lucide-react';
 import { bookService } from '@/services/bookService';
 import { useCart } from '@/hooks/useCart';
 import type { Book, BookVariant } from '@/types';
 import BookCard from '@/components/features/books/BookCard';
 import QuickVariantSelectModal from '@/components/features/books/QuickVariantSelectModal';
-import styles from './books.module.css';
+import CollectionFilterHeader from '@/components/features/books/CollectionFilterHeader';
+import BooksSidebarFilter, { categoriesList } from '@/components/features/books/BooksSidebarFilter';
+import { matchMultiValue } from '@/utils/entityMatch';
 import { BookGridSkeleton } from '@/components/ui/Skeleton';
-
-// Standard static category listing matching homepage circle list
-const categoriesList = [
-  { id: 1, name: 'Sách Văn học' },
-  { id: 2, name: 'Sách Thiếu nhi' },
-  { id: 3, name: 'Sách Kinh tế' },
-  { id: 4, name: 'Sách Giáo khoa' },
-  { id: 5, name: 'Kỹ Năng' },
-  { id: 6, name: 'Phát triển bản thân' },
-  { id: 7, name: 'Sổ tay các loại' }
-];
-
-const conditionsList = [
-  { value: 'NEW', label: 'Mới (NEW)' },
-  { value: 'LIKE_NEW', label: 'Như mới (LIKE NEW)' },
-  { value: 'GOOD', label: 'Tốt (GOOD)' },
-  { value: 'FAIR', label: 'Chấp nhận được (FAIR)' },
-  { value: 'POOR', label: 'Cũ/Yếu (POOR)' }
-];
+import styles from './books.module.css';
 
 function BooksPageContent() {
   const searchParams = useSearchParams();
   const search = searchParams.get('search') || '';
+  const authorParam = searchParams.get('author') || '';
+  const seriesParam = searchParams.get('series') || '';
+  const publisherParam = searchParams.get('publisher') || '';
+  const supplierParam = searchParams.get('supplier') || '';
+  const audienceParam = searchParams.get('audience') || '';
+  const translatorParam = searchParams.get('translator') || '';
+  const formatParam = searchParams.get('format') || '';
+  const categoryParam = searchParams.get('category');
 
   const { addToCart } = useCart();
   const [books, setBooks] = useState<Book[]>([]);
@@ -39,9 +32,10 @@ function BooksPageContent() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [quickSelectBook, setQuickSelectBook] = useState<Book | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
-  
-  // Filtering states
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(
+    categoryParam ? parseInt(categoryParam, 10) : null
+  );
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
 
   const showNotification = (msg: string) => {
@@ -60,30 +54,34 @@ function BooksPageContent() {
       setQuickSelectBook(book);
       return;
     }
-
     addToCart(book, 1, variant);
     const titleText = variant ? `${book.title} (${variant.name})` : book.title;
-    showNotification(`🛒 Đã thêm "${titleText}" vào giỏ hàng!`);
+    showNotification(`Đã thêm "${titleText}" vào giỏ hàng`);
   };
 
   const handleConfirmVariantAddToCart = (book: Book, variant: BookVariant) => {
     addToCart(book, 1, variant);
-    showNotification(`🛒 Đã thêm "${book.title} (${variant.name})" vào giỏ hàng!`);
+    showNotification(`Đã thêm "${book.title} (${variant.name})" vào giỏ hàng`);
   };
 
   useEffect(() => {
     async function fetchBooks() {
       setLoading(true);
       try {
-        const data = await bookService.searchBooks(selectedCategory || undefined, search || undefined);
-        let filteredData = data || [];
+        const catId = selectedCategory || (categoryParam ? parseInt(categoryParam, 10) : undefined);
+        const data = await bookService.searchBooks(catId || undefined, search || undefined);
+        let filtered = data || [];
 
-        // Filter by conditions on client side if selected
-        if (selectedConditions.length > 0) {
-          filteredData = filteredData.filter(book => selectedConditions.includes(book.condition));
-        }
+        if (authorParam) filtered = filtered.filter((b) => matchMultiValue(b.author, authorParam));
+        if (seriesParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Bộ sách'], seriesParam));
+        if (publisherParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Nhà xuất bản'] || b.publisher, publisherParam));
+        if (supplierParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Công ty phát hành'] || b.supplier, supplierParam));
+        if (audienceParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Đối tượng'], audienceParam));
+        if (translatorParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Dịch giả'] || b.translator, translatorParam));
+        if (formatParam) filtered = filtered.filter((b) => matchMultiValue(b.publicationDetails?.['Hình thức bìa'] || b.format, formatParam));
+        if (selectedConditions.length > 0) filtered = filtered.filter((b) => selectedConditions.includes(b.condition));
 
-        setBooks(filteredData);
+        setBooks(filtered);
       } catch (err) {
         console.error('Backend API fetch error:', err);
         setBooks([]);
@@ -92,19 +90,18 @@ function BooksPageContent() {
       }
     }
     fetchBooks();
-  }, [search, selectedCategory, selectedConditions]);
+  }, [search, selectedCategory, categoryParam, authorParam, seriesParam, publisherParam, supplierParam, audienceParam, translatorParam, formatParam, selectedConditions]);
 
-  const handleConditionChange = (condition: string) => {
-    if (selectedConditions.includes(condition)) {
-      setSelectedConditions(selectedConditions.filter(c => c !== condition));
-    } else {
-      setSelectedConditions([...selectedConditions, condition]);
-    }
+  const handleToggleCondition = (condition: string) => {
+    setSelectedConditions((prev) =>
+      prev.includes(condition) ? prev.filter((c) => c !== condition) : [...prev, condition]
+    );
   };
 
-  const handleCategorySelect = (categoryId: number | null) => {
-    setSelectedCategory(categoryId);
-  };
+  const currentCategoryName = useMemo(() => {
+    if (!selectedCategory) return null;
+    return categoriesList.find((c) => c.id === selectedCategory)?.name || null;
+  }, [selectedCategory]);
 
   return (
     <div className={styles.container}>
@@ -123,79 +120,27 @@ function BooksPageContent() {
           fontSize: '14px',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '10px',
           border: '1px solid rgba(255,255,255,0.1)'
         }}>
-          {notification}
+          <ShoppingBag size={18} color="#4ade80" />
+          <span>{notification}</span>
         </div>
       )}
 
-      <div className={styles.titleSection}>
-        <h1 className={styles.pageTitle}>Cửa hàng sách Boki</h1>
-        <p className={styles.searchSummary}>
-          {search ? `Kết quả tìm kiếm cho "${search}"` : 'Khám phá hàng ngàn tựa sách từ các người bán uy tín'}
-        </p>
-      </div>
+      <CollectionFilterHeader
+        totalCount={books.length}
+        categoryName={currentCategoryName}
+      />
 
       <div className={styles.catalogLayout}>
-        {/* Sidebar Filter Panel */}
-        <aside className={styles.filterSidebar}>
-          {/* Categories */}
-          <div className={styles.filterGroup}>
-            <h3 className={styles.filterTitle}>Thể loại sách</h3>
-            <div className={styles.filterList}>
-              <label 
-                className={`${styles.filterLabel} ${selectedCategory === null ? styles.activeFilterLabel : ''}`}
-                onClick={() => handleCategorySelect(null)}
-              >
-                <input 
-                  type="radio" 
-                  name="category" 
-                  checked={selectedCategory === null} 
-                  onChange={() => {}} 
-                  className={styles.radioInput} 
-                />
-                Tất cả thể loại
-              </label>
-              {categoriesList.map(cat => (
-                <label 
-                  key={cat.id} 
-                  className={`${styles.filterLabel} ${selectedCategory === cat.id ? styles.activeFilterLabel : ''}`}
-                  onClick={() => handleCategorySelect(cat.id)}
-                >
-                  <input 
-                    type="radio" 
-                    name="category" 
-                    checked={selectedCategory === cat.id} 
-                    onChange={() => {}} 
-                    className={styles.radioInput} 
-                  />
-                  {cat.name}
-                </label>
-              ))}
-            </div>
-          </div>
+        <BooksSidebarFilter
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+          selectedConditions={selectedConditions}
+          onToggleCondition={handleToggleCondition}
+        />
 
-          {/* Condition */}
-          <div className={styles.filterGroup}>
-            <h3 className={styles.filterTitle}>Tình trạng sách</h3>
-            <div className={styles.filterList}>
-              {conditionsList.map(cond => (
-                <label key={cond.value} className={styles.filterLabel}>
-                  <input
-                    type="checkbox"
-                    checked={selectedConditions.includes(cond.value)}
-                    onChange={() => handleConditionChange(cond.value)}
-                    className={styles.checkboxInput}
-                  />
-                  {cond.label}
-                </label>
-              ))}
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Grid View */}
         <main className={styles.resultsSection}>
           {loading ? (
             <BookGridSkeleton count={8} />
@@ -210,17 +155,15 @@ function BooksPageContent() {
             </div>
           ) : (
             <div className={styles.bookGrid}>
-              {books.map((book) => {
-                return (
-                  <BookCard
-                    key={book.id}
-                    book={book}
-                    isFavorite={favorites.includes(book.id)}
-                    onToggleFavorite={toggleFavorite}
-                    onAddToCart={handleAddToCart}
-                  />
-                );
-              })}
+              {books.map((book) => (
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  isFavorite={favorites.includes(book.id)}
+                  onToggleFavorite={toggleFavorite}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
             </div>
           )}
         </main>

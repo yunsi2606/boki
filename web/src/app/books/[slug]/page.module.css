@@ -187,6 +187,18 @@
   font-weight: 500;
 }
 
+.metaLink {
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.metaLink:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
 /* --- Rating & Views Row --- */
 .ratingRow {
   display: flex;
@@ -447,6 +459,18 @@
 .specValue {
   color: #0f172a;
   font-weight: 700;
+}
+
+.specLink {
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.15s ease;
+}
+
+.specLink:hover {
+  color: #0369a1;
+  text-decoration: underline;
 }
 
 /* --- Description --- */

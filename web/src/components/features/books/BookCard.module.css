@@ -123,6 +123,17 @@
   margin-bottom: 4px;
 }
 
+.publisherLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.publisherLink:hover {
+  color: #ee4d2d;
+  text-decoration: underline;
+}
+
 .bookTitle {
   font-size: 14px;
   font-weight: 700;
@@ -143,6 +154,17 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cardAuthorLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.cardAuthorLink:hover {
+  color: #ee4d2d;
+  text-decoration: underline;
 }
 
 .ratingWrapper {

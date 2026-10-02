@@ -9,6 +9,8 @@ import { getBookUrl } from '@/lib/slug';
 import PreOrderBadge from './PreOrderBadge';
 import { getBookPriceDisplay, formatCurrency } from '@/utils/bookPrice';
 
+import ClickableMetadata from './ClickableMetadata';
+
 interface BookCardProps {
   book: Book;
   isFavorite?: boolean;
@@ -76,13 +78,27 @@ export default function BookCard({
       </div>
 
       <div className={styles.infoWrapper}>
-        <span className={styles.publisherName}>{book.publisher || book.sellerName || 'Boki Store'}</span>
+        <span className={styles.publisherName}>
+          <ClickableMetadata
+            value={book.supplier || book.sellerName || 'Boki Store'}
+            paramName={book.supplier ? 'supplier' : 'search'}
+            linkClassName={styles.publisherLink}
+            stopPropagation
+          />
+        </span>
         <Link href={linkHref} style={{ textDecoration: 'none' }}>
           <h3 className={styles.bookTitle} title={displayTitle}>
             {displayTitle}
           </h3>
         </Link>
-        <p className={styles.bookAuthor}>{book.author}</p>
+        <p className={styles.bookAuthor}>
+          <ClickableMetadata
+            value={book.author}
+            paramName="author"
+            linkClassName={styles.cardAuthorLink}
+            stopPropagation
+          />
+        </p>
 
         <div className={styles.ratingWrapper}>
           <span className={styles.starIcon}>★</span>
