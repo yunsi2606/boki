@@ -21,4 +21,6 @@ public interface CategoryRepository {
     boolean existsBySlug(String slug);
 
     Optional<Category> findByNameIgnoreCase(String name);
+
+    void deleteById(int id);
 }

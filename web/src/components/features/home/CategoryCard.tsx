@@ -13,7 +13,20 @@ interface CategoryCardProps {
 
 export default function CategoryCard({ category }: CategoryCardProps) {
   const theme = getCategoryTheme(category.slug, category.id);
-  const [frontCover, backCover] = theme.covers;
+  const [themeFront, themeBack] = theme.covers;
+
+  // Prioritize real clean book covers from database
+  const realCovers = category.displayCovers && category.displayCovers.length > 0
+    ? category.displayCovers
+    : [];
+
+  const frontCover = realCovers[0] || themeFront;
+  const backCover = realCovers[1] || realCovers[0] || themeBack;
+
+  // Real book count display from database
+  const countText = typeof category.bookCount === 'number'
+    ? `${category.bookCount.toLocaleString('vi-VN')} sản phẩm`
+    : theme.countText;
 
   return (
     <Link
@@ -52,7 +65,7 @@ export default function CategoryCard({ category }: CategoryCardProps) {
       <div className={styles.cardFooter}>
         <div className={styles.infoCol}>
           <h3 className={styles.categoryName}>{category.name}</h3>
-          <span className={styles.categoryCount}>{theme.countText}</span>
+          <span className={styles.categoryCount}>{countText}</span>
         </div>
 
         <div

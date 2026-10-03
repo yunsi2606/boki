@@ -4,6 +4,7 @@ import com.boki.application.dto.request.CreateCategoryRequest;
 import com.boki.application.dto.response.CategoryCheckResultResponse;
 import com.boki.application.dto.response.CategoryResponse;
 import com.boki.application.port.in.CreateCategoryUseCase;
+import com.boki.application.port.in.DeleteCategoryUseCase;
 import com.boki.application.port.in.GetCategoriesUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,11 +22,14 @@ public class CategoryController {
 
     private final GetCategoriesUseCase getCategoriesUseCase;
     private final CreateCategoryUseCase createCategoryUseCase;
+    private final DeleteCategoryUseCase deleteCategoryUseCase;
 
     public CategoryController(GetCategoriesUseCase getCategoriesUseCase,
-                              CreateCategoryUseCase createCategoryUseCase) {
+                              CreateCategoryUseCase createCategoryUseCase,
+                              DeleteCategoryUseCase deleteCategoryUseCase) {
         this.getCategoriesUseCase = getCategoriesUseCase;
         this.createCategoryUseCase = createCategoryUseCase;
+        this.deleteCategoryUseCase = deleteCategoryUseCase;
     }
 
     @GetMapping
@@ -47,5 +51,11 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CreateCategoryRequest request) {
         CategoryResponse response = createCategoryUseCase.createCategory(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
+        deleteCategoryUseCase.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }

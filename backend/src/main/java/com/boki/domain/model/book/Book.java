@@ -39,6 +39,7 @@ public class Book {
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
+    private String categoryCoverUrl;
 
     private Book() {
     }
@@ -353,4 +354,7 @@ public class Book {
 
     public boolean isCombo() { return isCombo; }
     public void setCombo(boolean isCombo) { this.isCombo = isCombo; }
+
+    public String getCategoryCoverUrl() { return categoryCoverUrl; }
+    public void setCategoryCoverUrl(String categoryCoverUrl) { this.categoryCoverUrl = categoryCoverUrl; }
 }

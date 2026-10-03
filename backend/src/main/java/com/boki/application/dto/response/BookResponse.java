@@ -40,7 +40,8 @@ public record BookResponse(
         BigDecimal savingsAmount,
         Integer savingsPercent,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        String categoryCoverUrl
 ) {
     public BookResponse(
             UUID id,
@@ -85,7 +86,7 @@ public record BookResponse(
                 stockQuantity, maxOrderQuantity, isPreOrder, preOrderDays,
                 viewsCount, rating, reviewsCount, imageUrls, variants, isCombo,
                 comboItems, originalTotalAmount, savingsAmount, savingsPercent,
-                createdAt, updatedAt
+                createdAt, updatedAt, null
         );
     }
 
@@ -126,7 +127,7 @@ public record BookResponse(
                 description, price, originalPrice, currency, condition, status,
                 stockQuantity, maxOrderQuantity, isPreOrder, preOrderDays,
                 viewsCount, rating, reviewsCount, imageUrls, variants, false,
-                List.of(), null, null, null, createdAt, updatedAt
+                List.of(), null, null, null, createdAt, updatedAt, null
         );
     }
 }

@@ -30,6 +30,18 @@ export const categoryService = {
   checkCategory: (name: string): Promise<CategoryCheckResult> =>
     api.get<CategoryCheckResult>(`/categories/check?name=${encodeURIComponent(name)}`),
 
-  createCategory: (payload: CreateCategoryPayload): Promise<Category> =>
-    api.post<Category>('/categories', payload),
+  createCategory: async (payload: CreateCategoryPayload): Promise<Category> => {
+    const res = await api.post<Category>('/categories', payload);
+    cachedCategories = null;
+    return res;
+  },
+
+  deleteCategory: async (id: number): Promise<void> => {
+    await api.delete<void>(`/categories/${id}`);
+    cachedCategories = null;
+  },
+
+  clearCache: () => {
+    cachedCategories = null;
+  },
 };

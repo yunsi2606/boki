@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Plus, X, Tag } from 'lucide-react';
+import Link from 'next/link';
+import { Plus, X, Tag, ExternalLink } from 'lucide-react';
 import styles from './MultiCategorySelector.module.css';
 
 interface CategoryItem {
@@ -97,6 +98,16 @@ export const MultiCategorySelector: React.FC<MultiCategorySelectorProps> = ({
           <Plus size={14} />
           <span>Tạo danh mục</span>
         </button>
+
+        <Link
+          href="/admin/categories"
+          target="_blank"
+          title="Mở trang Quản lý danh mục (Thêm, Xóa, Xem danh mục)"
+          className={styles.manageCategoryBtn}
+        >
+          <ExternalLink size={13} />
+          <span>Quản lý & Xóa</span>
+        </Link>
       </div>
     </div>
   );

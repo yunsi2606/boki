@@ -68,6 +68,7 @@ export default function AdminBooksPage() {
     originalPrice: 0,
     stockQuantity: 20,
     coverUrl: '',
+    categoryCoverUrl: '',
     condition: 'NEW' as Book['condition'],
     status: 'ACTIVE' as Book['status'],
     maxOrderQuantity: undefined as number | undefined,
@@ -137,6 +138,7 @@ export default function AdminBooksPage() {
       originalPrice: 0,
       stockQuantity: 20,
       coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300',
+      categoryCoverUrl: '',
       condition: 'NEW',
       status: 'ACTIVE',
       maxOrderQuantity: undefined,
@@ -213,6 +215,7 @@ export default function AdminBooksPage() {
       originalPrice: book.originalPrice || 0,
       stockQuantity: computedStock,
       coverUrl: book.imageUrls?.[0] || '',
+      categoryCoverUrl: book.categoryCoverUrl || '',
       condition: book.condition || 'NEW',
       status: book.status || 'ACTIVE',
       maxOrderQuantity: book.maxOrderQuantity,
@@ -325,6 +328,7 @@ export default function AdminBooksPage() {
       stockQuantity: resolvedStock,
       maxOrderQuantity: formData.maxOrderQuantity ? Number(formData.maxOrderQuantity) : undefined,
       imageUrls: [formData.coverUrl || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=300'],
+      categoryCoverUrl: formData.categoryCoverUrl?.trim() || undefined,
       isPreOrder: formData.isPreOrder,
       preOrderDays: formData.isPreOrder
         ? (formData.preOrderMode === 'SPECIFIC' && formData.preOrderDays ? Number(formData.preOrderDays) : null)
@@ -951,6 +955,21 @@ export default function AdminBooksPage() {
                         onChange={(url) => setFormData({ ...formData, coverUrl: url })}
                         placeholder="Tải ảnh bìa sách từ máy tính hoặc nhập link..."
                       />
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                        Hiển thị trên Card sản phẩm, trang chủ, kết quả tìm kiếm (có thể kèm phụ kiện, quà tặng, bookmark...).
+                      </span>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <ImageUploadInput
+                        label="Ảnh Bìa Sách Chuẩn Cho Danh Mục (Category Display Cover - Tùy chọn)"
+                        value={formData.categoryCoverUrl}
+                        onChange={(url) => setFormData({ ...formData, categoryCoverUrl: url })}
+                        placeholder="Tải ảnh chỉ riêng bìa sách sạch hoặc mockup 3D..."
+                      />
+                      <span style={{ fontSize: '0.75rem', color: '#0284c7', marginTop: '4px', display: 'block' }}>
+                        Dành riêng cho phần Danh Mục 3D (chỉ cuốn sách, sạch sẽ, không phụ kiện). Nếu để trống sẽ tự động lấy ảnh bìa chính ở trên.
+                      </span>
                     </div>
 
                     {/* Pre-Order Configuration Box */}

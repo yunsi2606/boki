@@ -82,6 +82,7 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
 
         book.updatePreOrder(request.isPreOrder(), request.preOrderDays());
         book.updateMaxOrderQuantity(request.maxOrderQuantity());
+        book.setCategoryCoverUrl(request.categoryCoverUrl());
         
         // Auto publish listed books for immediate browsing
         book.publish();
@@ -142,6 +143,9 @@ public class BookApplicationService implements ManageBookUseCase, GetBookUseCase
         }
         if (request.imageUrls() != null) {
             book.updateImages(request.imageUrls());
+        }
+        if (request.categoryCoverUrl() != null) {
+            book.setCategoryCoverUrl(request.categoryCoverUrl().isBlank() ? null : request.categoryCoverUrl().trim());
         }
         if (request.isPreOrder() != null) {
             book.updatePreOrder(request.isPreOrder(), request.preOrderDays());

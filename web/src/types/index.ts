@@ -111,6 +111,7 @@ export interface Book {
   rating?: number;
   reviewsCount?: number;
   imageUrls: string[];
+  categoryCoverUrl?: string | null;
   variants?: BookVariant[];
   isCombo?: boolean;
   comboItems?: ComboItem[];
@@ -191,6 +192,7 @@ export interface CreateBookPayload {
   categoryId?: number;
   categoryIds?: number[];
   imageUrls?: string[];
+  categoryCoverUrl?: string;
 }
 
 export interface UpdateBookPayload {
@@ -218,6 +220,7 @@ export interface UpdateBookPayload {
   categoryId?: number;
   categoryIds?: number[];
   imageUrls?: string[];
+  categoryCoverUrl?: string;
 }
 
 export interface OrderItem {
@@ -425,6 +428,8 @@ export interface Category {
   slug: string;
   description: string | null;
   parentId: number | null;
+  bookCount?: number;
+  displayCovers?: string[];
 }
 
 export interface CreateCategoryPayload {

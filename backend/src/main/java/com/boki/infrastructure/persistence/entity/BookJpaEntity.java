@@ -45,6 +45,9 @@ public class BookJpaEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "category_cover_url", length = 500)
+    private String categoryCoverUrl;
+
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
@@ -227,22 +230,18 @@ public class BookJpaEntity {
 
     public List<BookImageJpaEntity> getImages() { return images; }
     public void setImages(List<BookImageJpaEntity> images) { this.images = images; }
-
     public List<BookVariantJpaEntity> getVariants() { return variants; }
     public void setVariants(List<BookVariantJpaEntity> variants) { this.variants = variants; }
-
     public boolean isPreOrder() { return isPreOrder; }
     public void setPreOrder(boolean preOrder) { isPreOrder = preOrder; }
-
     public Integer getPreOrderDays() { return preOrderDays; }
     public void setPreOrderDays(Integer preOrderDays) { this.preOrderDays = preOrderDays; }
-
     public Integer getMaxOrderQuantity() { return maxOrderQuantity; }
     public void setMaxOrderQuantity(Integer maxOrderQuantity) { this.maxOrderQuantity = maxOrderQuantity; }
-
     public boolean isCombo() { return isCombo; }
     public void setCombo(boolean combo) { isCombo = combo; }
-
+    public String getCategoryCoverUrl() { return categoryCoverUrl; }
+    public void setCategoryCoverUrl(String categoryCoverUrl) { this.categoryCoverUrl = categoryCoverUrl; }
     public List<BookComboItemJpaEntity> getComboItems() { return comboItems; }
     public void setComboItems(List<BookComboItemJpaEntity> comboItems) { this.comboItems = comboItems; }
 }

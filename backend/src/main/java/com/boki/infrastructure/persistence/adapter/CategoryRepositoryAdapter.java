@@ -65,6 +65,11 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
         return jpaRepository.findByNameIgnoreCase(name).map(this::toDomain);
     }
 
+    @Override
+    public void deleteById(int id) {
+        jpaRepository.deleteById(id);
+    }
+
     private Category toDomain(CategoryJpaEntity entity) {
         return Category.reconstitute(
                 entity.getId(),

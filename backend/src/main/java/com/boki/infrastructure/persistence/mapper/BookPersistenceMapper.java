@@ -49,6 +49,7 @@ public final class BookPersistenceMapper {
         entity.setCreatedAt(book.getCreatedAt());
         entity.setUpdatedAt(book.getUpdatedAt());
         entity.setCreatedBy(book.getCreatedBy());
+        entity.setCategoryCoverUrl(book.getCategoryCoverUrl());
 
         if (book.getImageUrls() != null) {
             for (int i = 0; i < book.getImageUrls().size(); i++) {
@@ -118,6 +119,7 @@ public final class BookPersistenceMapper {
                 entity.getCreatedBy()
         );
         book.setCombo(entity.isCombo());
+        book.setCategoryCoverUrl(entity.getCategoryCoverUrl());
         return book;
     }
 }

@@ -144,7 +144,8 @@ public class BookDtoMapper {
                             savingsAmount,
                             savingsPercent,
                             book.getCreatedAt(),
-                            book.getUpdatedAt()
+                            book.getUpdatedAt(),
+                            book.getCategoryCoverUrl()
                     );
                 })
                 .collect(Collectors.toList());
