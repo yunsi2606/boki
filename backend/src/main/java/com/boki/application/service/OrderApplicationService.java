@@ -55,6 +55,7 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
     private final AutopilotOrderService autopilotOrderService;
     private final ServerPricingService serverPricingService;
     private final MemberTierService memberTierService;
+    private final com.boki.infrastructure.persistence.repository.FlashSaleItemJpaRepository flashSaleItemRepository;
 
     public OrderApplicationService(
             OrderRepository orderRepository,
@@ -66,7 +67,8 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
             FraudDetectionService fraudDetectionService,
             AutopilotOrderService autopilotOrderService,
             ServerPricingService serverPricingService,
-            MemberTierService memberTierService
+            MemberTierService memberTierService,
+            com.boki.infrastructure.persistence.repository.FlashSaleItemJpaRepository flashSaleItemRepository
     ) {
         this.orderRepository = orderRepository;
         this.bookRepository = bookRepository;
@@ -78,6 +80,7 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
         this.autopilotOrderService = autopilotOrderService;
         this.serverPricingService = serverPricingService;
         this.memberTierService = memberTierService;
+        this.flashSaleItemRepository = flashSaleItemRepository;
     }
 
     @Override
@@ -153,10 +156,19 @@ public class OrderApplicationService implements CreateOrderUseCase, GetOrderUseC
             book.decrementStock(itemReq.quantity());
             bookRepository.save(book);
 
+            BigDecimal unitPrice = book.getPrice().amount();
+            List<com.boki.infrastructure.persistence.entity.FlashSaleItemJpaEntity> activeFsItems =
+                    flashSaleItemRepository.findActiveAvailableItemsForBook(itemReq.bookId(), java.time.OffsetDateTime.now());
+            if (!activeFsItems.isEmpty()) {
+                com.boki.infrastructure.persistence.entity.FlashSaleItemJpaEntity fsItem = activeFsItems.get(0);
+                unitPrice = fsItem.getFlashSalePrice();
+                flashSaleItemRepository.incrementSoldQuantity(fsItem.getId(), itemReq.quantity());
+            }
+
             OrderItem domainItem = new OrderItem(
                     book.getId(),
                     itemReq.quantity(),
-                    book.getPrice().amount()
+                    unitPrice
             );
             domainItems.add(domainItem);
         }

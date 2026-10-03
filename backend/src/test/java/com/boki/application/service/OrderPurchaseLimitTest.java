@@ -17,6 +17,7 @@ import com.boki.domain.port.out.OrderRepository;
 import com.boki.domain.port.out.UserRepository;
 import com.boki.infrastructure.persistence.entity.BookVariantJpaEntity;
 import com.boki.infrastructure.persistence.repository.BookVariantJpaRepository;
+import com.boki.infrastructure.persistence.repository.FlashSaleItemJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ class OrderPurchaseLimitTest {
     private AutopilotOrderService autopilotOrderService;
     private ServerPricingService serverPricingService;
     private MemberTierService memberTierService;
+    private FlashSaleItemJpaRepository flashSaleItemRepository;
 
     private OrderApplicationService orderService;
 
@@ -64,6 +66,7 @@ class OrderPurchaseLimitTest {
         autopilotOrderService = Mockito.mock(AutopilotOrderService.class);
         serverPricingService = Mockito.mock(ServerPricingService.class);
         memberTierService = Mockito.mock(MemberTierService.class);
+        flashSaleItemRepository = Mockito.mock(FlashSaleItemJpaRepository.class);
 
         orderService = new OrderApplicationService(
                 orderRepository,
@@ -75,7 +78,8 @@ class OrderPurchaseLimitTest {
                 fraudDetectionService,
                 autopilotOrderService,
                 serverPricingService,
-                memberTierService
+                memberTierService,
+                flashSaleItemRepository
         );
 
         bookId = UUID.randomUUID();

@@ -52,9 +52,16 @@ export default function DecorationCanvas({
         return 'Khuyến Mãi';
       case 'FEATURED_TABS':
         return 'Tabs Nổi Bật';
+      case 'FLASH_SALE':
+        return 'Flash Sale Giờ Vàng';
+      case 'PERSONALIZED':
+        return 'Gợi Ý Cá Nhân Hóa';
       case 'VOUCHERS':
         return 'Mã Giảm Giá';
       default:
+        if (sec.type === 'CATEGORY_CIRCLES') return 'Danh Mục Tròn';
+        if (sec.type === 'FLASH_SALE') return 'Flash Sale';
+        if (sec.type === 'RECOMMENDATIONS') return 'Gợi Ý AI';
         return sec.type;
     }
   };

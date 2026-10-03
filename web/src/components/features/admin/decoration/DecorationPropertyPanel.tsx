@@ -1,11 +1,6 @@
 'use client';
 
-import type {
-  HomepageSectionConfig,
-  DataLoadSource,
-  SectionDisplayStyle,
-  SectionSortBy,
-} from '@/config/homepageConfig';
+import type { HomepageSectionConfig, DataLoadSource, SectionDisplayStyle, SectionSortBy } from '@/config/homepageConfig';
 import type { Category } from '@/types';
 import styles from './DecorationPropertyPanel.module.css';
 
@@ -123,12 +118,18 @@ export default function DecorationPropertyPanel({
                       ? 'HOT_RECOMMENDED'
                       : newSource === 'VOUCHERS'
                       ? 'VOUCHERS'
+                      : newSource === 'FLASH_SALE'
+                      ? 'FLASH_SALE'
+                      : newSource === 'PERSONALIZED'
+                      ? 'RECOMMENDATIONS'
                       : 'CATEGORY_LIST',
                 });
               }}
               className={styles.selectInput}
             >
               <option value="CATEGORY">Lọc theo ngành hàng / Thể loại sách</option>
+              <option value="FLASH_SALE">Flash Sale giờ vàng (Chiến dịch đang chạy)</option>
+              <option value="PERSONALIZED">Gợi ý thông minh AI (Theo sở thích)</option>
               <option value="BEST_SELLING">Sách bán chạy nhất (Top Views & Bán)</option>
               <option value="VIP_MEMBERS">Sách hội viên VIP (Ưu đãi 49K & Đọc thử)</option>
               <option value="LATEST">Sách mới nhất vừa nhập kho</option>

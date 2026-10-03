@@ -11,6 +11,7 @@ import VoucherSection from '@/components/features/home/VoucherSection';
 import ProductShowcase from '@/components/features/home/ProductShowcase';
 import DynamicBookSection from '@/components/features/home/DynamicBookSection';
 import PersonalizedSection from '@/components/features/recommendations/PersonalizedSection';
+import FlashSaleSection from '@/components/features/home/flashSale/FlashSaleSection';
 import styles from './page.module.css';
 
 export default function HomePage() {
@@ -23,9 +24,49 @@ export default function HomePage() {
       try {
         const data = await adminService.getStoreConfig();
         if (data) {
-          // If loaded data doesn't have sections yet, backfill from default
           if (!data.sections || data.sections.length === 0) {
             data.sections = defaultHomepageConfig.sections;
+          } else {
+            const hasCat = data.sections.some((s) => s.type === 'CATEGORY_CIRCLES');
+            const hasFs = data.sections.some((s) => s.type === 'FLASH_SALE');
+            const hasRec = data.sections.some((s) => s.type === 'RECOMMENDATIONS');
+            const updated = [...data.sections];
+            if (!hasCat) {
+              updated.unshift({
+                id: 'sec_category_circles',
+                type: 'CATEGORY_CIRCLES',
+                title: 'Khám Phá Thể Loại Sách',
+                enabled: true,
+                dataSource: 'CATEGORY',
+                displayStyle: 'GRID',
+                itemLimit: 10,
+              });
+            }
+            if (!hasFs) {
+              updated.splice(1, 0, {
+                id: 'sec_flash_sale',
+                type: 'FLASH_SALE',
+                title: 'Flash Sale Giờ Vàng',
+                enabled: true,
+                dataSource: 'FLASH_SALE',
+                displayStyle: 'SLIDER',
+                itemLimit: 10,
+                showViewAll: true,
+                viewAllUrl: '/books',
+              });
+            }
+            if (!hasRec) {
+              updated.splice(2, 0, {
+                id: 'sec_personalized',
+                type: 'RECOMMENDATIONS',
+                title: 'Gợi Ý Dành Riêng Cho Bạn',
+                enabled: true,
+                dataSource: 'PERSONALIZED',
+                displayStyle: 'GRID',
+                itemLimit: 8,
+              });
+            }
+            data.sections = updated;
           }
           setConfig(data);
         }
@@ -53,17 +94,31 @@ export default function HomePage() {
       {/* Hero Section Banner with Background Image */}
       <HeroBanner config={config.hero} />
 
-      {/* Story-style Circular Categories */}
-      <CategoryCircles />
-
-      {/* Intelligent Personalized Recommendations Engine */}
-      <PersonalizedSection onShowNotification={showNotification} />
-
       {/* Dynamic Sections (Configured and reordered by Admin) */}
       {sections
         .filter((sec) => sec.enabled)
         .map((sec) => {
           switch (sec.type) {
+            case 'CATEGORY_CIRCLES':
+              return <CategoryCircles key={sec.id} />;
+
+            case 'FLASH_SALE':
+              return (
+                <FlashSaleSection
+                  key={sec.id}
+                  section={sec}
+                  onShowNotification={showNotification}
+                />
+              );
+
+            case 'RECOMMENDATIONS':
+              return (
+                <PersonalizedSection
+                  key={sec.id}
+                  onShowNotification={showNotification}
+                />
+              );
+
             case 'HOT_RECOMMENDED':
               return (
                 <ProductShowcase

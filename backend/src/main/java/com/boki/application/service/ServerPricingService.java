@@ -6,7 +6,9 @@ import com.boki.domain.model.book.Book;
 import com.boki.domain.model.book.BookId;
 import com.boki.domain.model.user.MemberTier;
 import com.boki.domain.port.out.BookRepository;
+import com.boki.infrastructure.persistence.entity.FlashSaleItemJpaEntity;
 import com.boki.infrastructure.persistence.entity.VoucherJpaEntity;
+import com.boki.infrastructure.persistence.repository.FlashSaleItemJpaRepository;
 import com.boki.infrastructure.persistence.repository.VoucherJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -29,15 +32,18 @@ public class ServerPricingService {
     private final BookRepository bookRepository;
     private final VoucherJpaRepository voucherJpaRepository;
     private final MemberTierService memberTierService;
+    private final FlashSaleItemJpaRepository flashSaleItemRepository;
 
     public ServerPricingService(
             BookRepository bookRepository,
             VoucherJpaRepository voucherJpaRepository,
-            MemberTierService memberTierService
+            MemberTierService memberTierService,
+            FlashSaleItemJpaRepository flashSaleItemRepository
     ) {
         this.bookRepository = bookRepository;
         this.voucherJpaRepository = voucherJpaRepository;
         this.memberTierService = memberTierService;
+        this.flashSaleItemRepository = flashSaleItemRepository;
     }
 
     public record ServerPricingResult(
@@ -70,11 +76,18 @@ public class ServerPricingService {
 
         // 1. Calculate subtotal strictly from current Database prices (Server Authoritative)
         BigDecimal subtotal = BigDecimal.ZERO;
+        OffsetDateTime now = OffsetDateTime.now();
         for (OrderItemRequest item : items) {
             Book book = bookRepository.findById(BookId.of(item.bookId()))
                     .orElseThrow(() -> new BusinessRuleException("Sách với mã '" + item.bookId() + "' không tồn tại trong hệ thống."));
             
-            BigDecimal itemTotal = book.getPrice().amount().multiply(BigDecimal.valueOf(item.quantity()));
+            BigDecimal unitPrice = book.getPrice().amount();
+            List<FlashSaleItemJpaEntity> activeFsItems = flashSaleItemRepository.findActiveAvailableItemsForBook(item.bookId(), now);
+            if (!activeFsItems.isEmpty()) {
+                unitPrice = activeFsItems.get(0).getFlashSalePrice();
+            }
+
+            BigDecimal itemTotal = unitPrice.multiply(BigDecimal.valueOf(item.quantity()));
             subtotal = subtotal.add(itemTotal);
         }
 
