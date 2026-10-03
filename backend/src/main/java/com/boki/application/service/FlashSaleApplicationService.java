@@ -15,6 +15,7 @@ import com.boki.infrastructure.persistence.repository.FlashSaleJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -150,11 +151,23 @@ public class FlashSaleApplicationService {
         Book book = bookRepository.findById(BookId.of(itemReq.bookId()))
                 .orElseThrow(() -> new IllegalArgumentException("Sách không tồn tại: " + itemReq.bookId()));
 
+        BigDecimal origPrice = itemReq.originalPrice() != null ? itemReq.originalPrice() : book.getPrice().amount();
+        BigDecimal flashPrice = itemReq.flashSalePrice();
+
+        int discountPercent = 0;
+        if (origPrice.compareTo(BigDecimal.ZERO) > 0 && flashPrice.compareTo(origPrice) < 0) {
+            discountPercent = origPrice.subtract(flashPrice)
+                    .multiply(BigDecimal.valueOf(100))
+                    .divide(origPrice, 0, java.math.RoundingMode.HALF_UP)
+                    .intValue();
+        }
+
         FlashSaleItemJpaEntity item = new FlashSaleItemJpaEntity();
         item.setFlashSale(sale);
         item.setBookId(book.getId().value());
-        item.setOriginalPrice(itemReq.originalPrice() != null ? itemReq.originalPrice() : book.getPrice().amount());
-        item.setFlashSalePrice(itemReq.flashSalePrice());
+        item.setOriginalPrice(origPrice);
+        item.setFlashSalePrice(flashPrice);
+        item.setDiscountPercent(discountPercent);
         item.setQuantityLimit(itemReq.quantityLimit());
         item.setSoldQuantity(0);
         item.setUserLimit(itemReq.userLimit() > 0 ? itemReq.userLimit() : 1);
