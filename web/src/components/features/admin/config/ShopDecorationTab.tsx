@@ -124,7 +124,10 @@ export default function ShopDecorationTab({ onSuccessNotice }: ShopDecorationTab
   const handleSave = async () => {
     setSaving(true);
     try {
-      await adminService.updateStoreConfig(config);
+      const latest = await adminService.getStoreConfig();
+      const merged = { ...latest, sections: config.sections };
+      await adminService.updateStoreConfig(merged);
+      setConfig(merged);
       onSuccessNotice('Lưu thiết kế trang chủ thành công! Giao diện khách hàng đã được đồng bộ.');
     } catch (err) {
       console.error('Failed to save store decoration', err);

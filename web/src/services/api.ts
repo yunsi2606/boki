@@ -245,6 +245,7 @@ export const api = {
     if (endpoint.includes('/books')) invalidateCache('/books');
     if (endpoint.includes('/blogs')) invalidateCache('/blogs');
     if (endpoint.includes('/vouchers')) invalidateCache('/vouchers');
+    if (endpoint.includes('/config')) invalidateCache('/config');
     return apiFetch<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(body),

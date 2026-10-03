@@ -45,7 +45,10 @@ export default function AdminConfigPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await adminService.updateStoreConfig(config);
+    const latest = await adminService.getStoreConfig();
+    const merged = { ...latest, hero: config.hero };
+    await adminService.updateStoreConfig(merged);
+    setConfig(merged);
     showNotice('✨ Cấu hình giao diện đã được lưu thành công! Giao diện trang chủ sẽ tự động cập nhật.');
   };
 

@@ -26,47 +26,6 @@ export default function HomePage() {
         if (data) {
           if (!data.sections || data.sections.length === 0) {
             data.sections = defaultHomepageConfig.sections;
-          } else {
-            const hasCat = data.sections.some((s) => s.type === 'CATEGORY_CIRCLES');
-            const hasFs = data.sections.some((s) => s.type === 'FLASH_SALE');
-            const hasRec = data.sections.some((s) => s.type === 'RECOMMENDATIONS');
-            const updated = [...data.sections];
-            if (!hasCat) {
-              updated.unshift({
-                id: 'sec_category_circles',
-                type: 'CATEGORY_CIRCLES',
-                title: 'Khám Phá Thể Loại Sách',
-                enabled: true,
-                dataSource: 'CATEGORY',
-                displayStyle: 'GRID',
-                itemLimit: 10,
-              });
-            }
-            if (!hasFs) {
-              updated.splice(1, 0, {
-                id: 'sec_flash_sale',
-                type: 'FLASH_SALE',
-                title: 'Flash Sale Giờ Vàng',
-                enabled: true,
-                dataSource: 'FLASH_SALE',
-                displayStyle: 'SLIDER',
-                itemLimit: 10,
-                showViewAll: true,
-                viewAllUrl: '/books',
-              });
-            }
-            if (!hasRec) {
-              updated.splice(2, 0, {
-                id: 'sec_personalized',
-                type: 'RECOMMENDATIONS',
-                title: 'Gợi Ý Dành Riêng Cho Bạn',
-                enabled: true,
-                dataSource: 'PERSONALIZED',
-                displayStyle: 'GRID',
-                itemLimit: 8,
-              });
-            }
-            data.sections = updated;
           }
           setConfig(data);
         }

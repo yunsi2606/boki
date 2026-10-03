@@ -1,14 +1,12 @@
 package com.boki.interfaces.rest;
 
-import com.boki.infrastructure.persistence.entity.StoreConfigJpaEntity;
+import com.boki.application.service.PublicConfigService;
 import com.boki.infrastructure.persistence.entity.VoucherJpaEntity;
-import com.boki.infrastructure.persistence.repository.StoreConfigJpaRepository;
 import com.boki.infrastructure.persistence.repository.VoucherJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,17 +16,12 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class PublicConfigController {
 
-    private final StoreConfigJpaRepository storeConfigRepository;
+    private final PublicConfigService publicConfigService;
     private final VoucherJpaRepository voucherRepository;
 
     @GetMapping("/config")
     public ResponseEntity<Map<String, String>> getPublicConfig() {
-        List<StoreConfigJpaEntity> configs = storeConfigRepository.findAll();
-        Map<String, String> configMap = new HashMap<>();
-        for (StoreConfigJpaEntity config : configs) {
-            configMap.put(config.getConfigKey(), config.getConfigValue());
-        }
-        return ResponseEntity.ok(configMap);
+        return ResponseEntity.ok(publicConfigService.getPublicConfig());
     }
 
     @GetMapping("/vouchers")

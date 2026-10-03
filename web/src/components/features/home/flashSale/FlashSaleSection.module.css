@@ -1,16 +1,18 @@
 .sectionWrapper {
-  padding: 36px 0;
+  padding: 28px 0 20px;
   position: relative;
+  width: 100%;
 }
 
 .cardContainer {
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  border-radius: 16px;
+  background: var(--color-neutral-100, #ffffff);
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  border-radius: var(--radius-lg, 16px);
   padding: 24px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .topAccentLine {
@@ -19,7 +21,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #ee4d2d 0%, #f97316 50%, #fbbf24 100%);
+  background: linear-gradient(90deg, #ee4d2d 0%, #ff9800 100%);
 }
 
 .headerRow {
@@ -149,4 +151,28 @@
 .emptySubtitle {
   font-size: 13.5px;
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .sectionWrapper {
+    padding: 16px 0 12px;
+  }
+
+  .cardContainer {
+    padding: 16px 14px;
+    border-radius: var(--radius-md, 12px);
+  }
+
+  .headerRow {
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .titleArea {
+    gap: 10px;
+  }
 }

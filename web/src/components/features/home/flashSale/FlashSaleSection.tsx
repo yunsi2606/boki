@@ -72,63 +72,65 @@ export default function FlashSaleSection({
 
   return (
     <section className={styles.sectionWrapper} id="flash-sale-section">
-      <div className={styles.cardContainer}>
-        <div className={styles.topAccentLine} />
+      <div className="container">
+        <div className={styles.cardContainer}>
+          <div className={styles.topAccentLine} />
 
-        <div className={styles.headerRow}>
-          <div className={styles.titleArea}>
-            <div className={styles.titleGroup}>
-              <div className={styles.iconBox}>
-                <Zap size={22} strokeWidth={2.2} />
+          <div className={styles.headerRow}>
+            <div className={styles.titleArea}>
+              <div className={styles.titleGroup}>
+                <div className={styles.iconBox}>
+                  <Zap size={22} strokeWidth={2.2} />
+                </div>
+                <h2 className={styles.sectionTitle}>{title}</h2>
               </div>
-              <h2 className={styles.sectionTitle}>{title}</h2>
+
+              {sale.remainingSeconds > 0 && (
+                <FlashSaleCountdown
+                  initialSeconds={sale.remainingSeconds}
+                  onExpire={() => setSale(null)}
+                />
+              )}
             </div>
 
-            {sale.remainingSeconds > 0 && (
-              <FlashSaleCountdown
-                initialSeconds={sale.remainingSeconds}
-                onExpire={() => setSale(null)}
+            <div className={styles.headerControls}>
+              <div className={styles.sliderArrows}>
+                <button
+                  type="button"
+                  className={styles.arrowBtn}
+                  onClick={() => handleScroll('left')}
+                  aria-label="Cuộn trái"
+                >
+                  <ChevronLeft size={18} strokeWidth={2} />
+                </button>
+                <button
+                  type="button"
+                  className={styles.arrowBtn}
+                  onClick={() => handleScroll('right')}
+                  aria-label="Cuộn phải"
+                >
+                  <ChevronRight size={18} strokeWidth={2} />
+                </button>
+              </div>
+
+              {section?.showViewAll && (
+                <Link href={section.viewAllUrl || '/books'} className={styles.viewAllLink}>
+                  Xem tất cả
+                  <ArrowRight size={14} strokeWidth={2.2} />
+                </Link>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.scrollArea} ref={scrollRef}>
+            {sale.items.map((item) => (
+              <FlashSaleCard
+                key={item.id}
+                item={item}
+                onAddToCart={handleAddToCart}
               />
-            )}
+            ))}
           </div>
-
-          <div className={styles.headerControls}>
-            <div className={styles.sliderArrows}>
-              <button
-                type="button"
-                className={styles.arrowBtn}
-                onClick={() => handleScroll('left')}
-                aria-label="Cuộn trái"
-              >
-                <ChevronLeft size={18} strokeWidth={2} />
-              </button>
-              <button
-                type="button"
-                className={styles.arrowBtn}
-                onClick={() => handleScroll('right')}
-                aria-label="Cuộn phải"
-              >
-                <ChevronRight size={18} strokeWidth={2} />
-              </button>
-            </div>
-
-            {section?.showViewAll && (
-              <Link href={section.viewAllUrl || '/books'} className={styles.viewAllLink}>
-                Xem tất cả
-                <ArrowRight size={14} strokeWidth={2.2} />
-              </Link>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.scrollArea} ref={scrollRef}>
-          {sale.items.map((item) => (
-            <FlashSaleCard
-              key={item.id}
-              item={item}
-              onAddToCart={handleAddToCart}
-            />
-          ))}
         </div>
       </div>
     </section>
