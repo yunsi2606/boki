@@ -1,46 +1,83 @@
 .categoriesSection {
-  padding: 24px 0 16px;
+  padding: 32px 0 20px;
 }
 
 .sectionHeader {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  gap: 16px;
 }
 
-.titleGroup {
+.titleCol {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  flex-direction: column;
 }
 
 .sectionTitle {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 26px;
+  font-weight: 900;
   color: #0f172a;
   letter-spacing: -0.02em;
   margin: 0;
+  line-height: 1.2;
+}
+
+.accentTitle {
+  color: #ee4d2d;
+  background: linear-gradient(135deg, #ee4d2d 0%, #ff5722 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-  font-size: 13px;
+  font-size: 13.5px;
   color: #64748b;
+  margin-top: 5px;
   font-weight: 500;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.viewAllLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: all 0.15s ease;
+}
+
+.viewAllLink:hover {
+  color: #ee4d2d;
+  border-color: #fdba74;
+  background-color: #fff7ed;
 }
 
 .sliderControls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .navButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid #e2e8f0;
   background-color: #ffffff;
@@ -66,12 +103,12 @@
   display: grid;
   grid-template-rows: repeat(2, 1fr);
   grid-auto-flow: column;
-  grid-auto-columns: 134px;
-  gap: 12px;
+  grid-auto-columns: 215px;
+  gap: 16px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
-  padding: 4px 2px 14px;
+  padding: 4px 2px 16px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -82,59 +119,146 @@
 .categoryCard {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 10px;
   background: #ffffff;
   border: 1px solid #f1f5f9;
-  border-radius: 14px;
+  border-radius: 18px;
   text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  min-height: 104px;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .categoryCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.08);
-  border-color: rgba(238, 77, 45, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.09);
+  border-color: #fed7aa;
 }
 
-.iconContainer {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.cardVisual {
+  height: 104px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  padding-bottom: 6px;
+  border-radius: 17px 17px 0 0;
+}
+
+.organicBlob {
+  position: absolute;
+  top: -15px;
+  left: -20px;
+  right: -20px;
+  bottom: 0;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 55%;
+  opacity: 0.9;
+  filter: blur(8px);
+}
+
+.bookStack {
+  position: relative;
+  width: 110px;
+  height: 92px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1;
+}
+
+.bookItem {
+  position: absolute;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff;
+}
+
+.bookBack {
+  width: 53px;
+  height: 75px;
+  right: 14px;
+  bottom: 5px;
+  transform: rotate(8deg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.bookFront {
+  width: 57px;
+  height: 81px;
+  left: 14px;
+  bottom: 3px;
+  transform: rotate(-6deg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+}
+
+.categoryCard:hover .bookBack {
+  transform: rotate(12deg) scale(1.04);
+}
+
+.categoryCard:hover .bookFront {
+  transform: rotate(-9deg) scale(1.04);
+}
+
+.bookCoverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cardFooter {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-  transition: transform 0.2s ease;
+  justify-content: space-between;
+  padding: 10px 14px 12px;
+  background: #ffffff;
 }
 
-.categoryCard:hover .iconContainer {
-  transform: scale(1.1);
+.infoCol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .categoryName {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1e293b;
-  text-align: center;
-  line-height: 1.25;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  white-space: nowrap;
   overflow: hidden;
-  transition: color 0.15s ease;
+  text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
-.categoryCard:hover .categoryName {
-  color: #ee4d2d;
+.categoryCount {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.arrowBadge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.categoryCard:hover .arrowBadge {
+  transform: translateX(3px);
 }
 
 .skeletonCard {
-  min-height: 104px;
-  border-radius: 14px;
+  min-height: 154px;
+  border-radius: 18px;
   background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -146,33 +270,13 @@
 }
 
 @media (max-width: 768px) {
-  .subtitle {
-    display: none;
-  }
-
-  .sliderControls {
-    display: none;
-  }
-
-  .sliderGrid {
-    grid-auto-columns: 112px;
-    gap: 10px;
-    padding-bottom: 8px;
-  }
-
-  .categoryCard {
-    padding: 10px 6px;
-    min-height: 94px;
-  }
-
-  .iconContainer {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    margin-bottom: 6px;
-  }
-
-  .categoryName {
-    font-size: 12px;
-  }
+  .sectionTitle { font-size: 20px; }
+  .subtitle, .sliderControls { display: none; }
+  .sliderGrid { grid-auto-columns: 165px; gap: 12px; padding-bottom: 8px; }
+  .cardVisual { height: 88px; }
+  .bookStack { width: 95px; height: 78px; }
+  .bookBack { width: 45px; height: 64px; right: 12px; }
+  .bookFront { width: 49px; height: 69px; left: 12px; }
+  .cardFooter { padding: 8px 10px 10px; }
+  .categoryName { font-size: 13px; }
 }
