@@ -242,11 +242,16 @@ public class BlogApplicationService implements ManageBlogUseCase, GetBlogsUseCas
     }
 
     private void applyStatusChange(Blog blog, String newStatus) {
+        if (newStatus == null || newStatus.isBlank()) {
+            return;
+        }
         BlogStatus status = BlogStatus.valueOf(newStatus.toUpperCase());
-        switch (status) {
-            case PUBLISHED -> blog.publish();
-            case ARCHIVED -> blog.archive();
-            case DRAFT -> blog.moveToDraft();
+        if (status == BlogStatus.PUBLISHED) {
+            blog.publish();
+        } else if (status == BlogStatus.ARCHIVED) {
+            blog.archive();
+        } else if (status == BlogStatus.DRAFT) {
+            blog.moveToDraft();
         }
     }
 
