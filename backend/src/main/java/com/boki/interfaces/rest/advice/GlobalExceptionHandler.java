@@ -34,11 +34,17 @@ public class GlobalExceptionHandler {
                 .map(fe -> new ApiErrorResponse.FieldError(fe.getField(), fe.getDefaultMessage()))
                 .toList();
 
+        log.warn("Validation failed for URI {}: {}", request.getRequestURI(), details);
+
+        String summary = details.stream()
+                .map(fe -> fe.field() + ": " + fe.message())
+                .collect(java.util.stream.Collectors.joining("; "));
+
         return ResponseEntity.badRequest().body(
                 ApiErrorResponse.withDetails(
                         HttpStatus.BAD_REQUEST.value(),
                         "VALIDATION_ERROR",
-                        "Input validation failed",
+                        summary.isBlank() ? "Input validation failed" : "Input validation failed: " + summary,
                         details,
                         request.getRequestURI()
                 )

@@ -70,8 +70,8 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
   }, []);
 
   const handleApplyAiContent = (data: AiBlogAppliedData) => {
-    if (data.title) setTitle(data.title);
-    if (data.excerpt) setExcerpt(data.excerpt);
+    if (data.title) setTitle(data.title.slice(0, 255));
+    if (data.excerpt) setExcerpt(data.excerpt.slice(0, 500));
     if (data.content) setContent(data.content);
     if (data.category) {
       setCategories((prev) => (prev.includes(data.category!) ? prev : [data.category!, ...prev]));
@@ -125,11 +125,24 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
 
   // Submit Handler
   const handleSubmit = async (publishNow: boolean) => {
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
       setErrorMsg('Vui lòng nhập tiêu đề bài viết');
       return;
     }
-    if (!content.trim() || content.trim() === '<p></p>') {
+    if (trimmedTitle.length > 255) {
+      setErrorMsg(`Tiêu đề không được vượt quá 255 ký tự (hiện tại: ${trimmedTitle.length} ký tự)`);
+      return;
+    }
+
+    const trimmedExcerpt = excerpt.trim();
+    if (trimmedExcerpt.length > 500) {
+      setErrorMsg(`Tóm tắt ngắn (excerpt) không được vượt quá 500 ký tự (hiện tại: ${trimmedExcerpt.length} ký tự)`);
+      return;
+    }
+
+    const trimmedContent = content.trim();
+    if (!trimmedContent || trimmedContent === '<p></p>') {
       setErrorMsg('Vui lòng nhập nội dung bài viết');
       return;
     }
@@ -137,30 +150,35 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
     setIsSubmitting(true);
     setErrorMsg('');
 
+    const safeCategory = category.trim() || 'Chung';
+    const sanitizedLinkedBookIds = linkedBooks
+      .map((b) => b.id)
+      .filter((id) => Boolean(id && typeof id === 'string' && id.trim()));
+
     try {
       if (isEditing && initialBlog) {
         const payload: UpdateBlogPayload = {
-          title: title.trim(),
-          excerpt: excerpt.trim() || undefined,
-          content: content.trim(),
+          title: trimmedTitle,
+          excerpt: trimmedExcerpt || undefined,
+          content: trimmedContent,
           coverImage: coverImage || null,
-          category,
+          category: safeCategory,
           tags,
           postType,
-          linkedBookIds: linkedBooks.map((b) => b.id),
+          linkedBookIds: sanitizedLinkedBookIds,
           status: publishNow ? 'PUBLISHED' : status,
         };
         await blogService.updateBlog(initialBlog.id, payload);
       } else {
         const payload: CreateBlogPayload = {
-          title: title.trim(),
-          excerpt: excerpt.trim() || undefined,
-          content: content.trim(),
+          title: trimmedTitle,
+          excerpt: trimmedExcerpt || undefined,
+          content: trimmedContent,
           coverImage: coverImage || null,
-          category,
+          category: safeCategory,
           tags,
           postType,
-          linkedBookIds: linkedBooks.map((b) => b.id),
+          linkedBookIds: sanitizedLinkedBookIds,
           publish: publishNow,
         };
         await blogService.createBlog(payload);
@@ -169,7 +187,10 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
       router.push('/admin/blogs');
     } catch (err: any) {
       console.error('Failed to save blog:', err);
-      setErrorMsg(err?.message || 'Có lỗi xảy ra khi lưu bài viết. Vui lòng thử lại.');
+      const detailMsg = err?.details && Array.isArray(err.details) && err.details.length > 0
+        ? err.details.map((d: any) => `${d.field}: ${d.message}`).join(', ')
+        : null;
+      setErrorMsg(detailMsg ? `Lỗi kiểm tra dữ liệu: ${detailMsg}` : (err?.message || 'Có lỗi xảy ra khi lưu bài viết. Vui lòng thử lại.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -213,9 +234,15 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
           {/* Title & Excerpt Card */}
           <div className={styles.card}>
             <div className={styles.formGroup}>
-              <label className={styles.label}>Tiêu đề bài viết *</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <label className={styles.label} style={{ margin: 0 }}>Tiêu đề bài viết *</label>
+                <span style={{ fontSize: '12px', color: title.length > 240 ? '#ef4444' : '#94a3b8' }}>
+                  {title.length}/255
+                </span>
+              </div>
               <input
                 type="text"
+                maxLength={255}
                 placeholder="Ví dụ: Top 10 cuốn sách hay nhất để bắt đầu năm mới"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -225,8 +252,14 @@ export default function BlogEditorForm({ initialBlog, isEditing = false }: BlogE
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.label}>Tóm tắt ngắn (Excerpt)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <label className={styles.label} style={{ margin: 0 }}>Tóm tắt ngắn (Excerpt)</label>
+                <span style={{ fontSize: '12px', color: excerpt.length > 480 ? '#ef4444' : '#94a3b8' }}>
+                  {excerpt.length}/500
+                </span>
+              </div>
               <textarea
+                maxLength={500}
                 placeholder="Mô tả tóm tắt nội dung bài viết hiển thị ở trang danh sách..."
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}
