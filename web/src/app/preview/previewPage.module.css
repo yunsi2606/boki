@@ -24,10 +24,13 @@
   font-weight: 700;
 }
 
-/* Flexible Masonry / Mosaic Grid (Tùy biến tỉ lệ ngang dọc linh hoạt) */
+/* Horizontal CSS Grid Mosaic (Dàn trải theo hàng ngang, đan xen khít nhau) */
 .grid {
-  column-count: 4;
-  column-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-auto-flow: dense;
+  gap: 20px;
+  align-items: start;
 }
 
 .emptyState {
@@ -63,16 +66,14 @@
 }
 
 .loadingGrid {
-  column-count: 4;
-  column-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .skeletonCard {
-  break-inside: avoid;
-  margin-bottom: 20px;
-  display: inline-block;
   width: 100%;
-  height: 280px;
+  aspect-ratio: 2 / 3;
   border-radius: var(--radius-lg, 14px);
   background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
@@ -80,15 +81,12 @@
 }
 
 .skeletonCard:nth-child(2n) {
-  height: 360px;
+  aspect-ratio: 16 / 10;
+  grid-column: span 2;
 }
 
 .skeletonCard:nth-child(3n) {
-  height: 240px;
-}
-
-.skeletonCard:nth-child(4n) {
-  height: 320px;
+  aspect-ratio: 1 / 1;
 }
 
 @keyframes shimmer {
@@ -100,29 +98,21 @@
   }
 }
 
-@media (max-width: 1200px) {
-  .grid,
-  .loadingGrid {
-    column-count: 3;
-    column-gap: 18px;
-  }
-}
-
 @media (max-width: 768px) {
   .pageContainer {
     padding: 16px 14px 60px;
   }
   .grid,
   .loadingGrid {
-    column-count: 2;
-    column-gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
   .grid,
   .loadingGrid {
-    column-count: 1;
-    column-gap: 14px;
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 }
