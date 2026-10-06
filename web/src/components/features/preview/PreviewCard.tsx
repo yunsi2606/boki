@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookOpen, Clock, Eye, Sparkles } from 'lucide-react';
+import { BookOpen, Sparkles } from 'lucide-react';
 import type { BlogPost } from '@/types/blog';
 import styles from './previewCard.module.css';
 
@@ -10,71 +10,46 @@ interface PreviewCardProps {
 }
 
 export default function PreviewCard({ post }: PreviewCardProps) {
-  const primaryBook = post.linkedBooks && post.linkedBooks.length > 0 ? post.linkedBooks[0] : null;
+  const coverUrl = post.effectiveCoverImage || '/images/default-blog-cover.png';
 
   return (
-    <article className={styles.card}>
-      <div className={styles.coverWrapper}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={post.effectiveCoverImage || '/images/default-blog-cover.png'}
-          alt={post.title}
-          className={styles.coverImg}
-          loading="lazy"
-        />
-        <div className={styles.coverBadge}>
-          <Sparkles size={12} />
-          <span>Đọc thử miễn phí</span>
-        </div>
-        <div className={styles.categoryBadge}>{post.category}</div>
-      </div>
+    <article className={styles.cardItem}>
+      <Link href={`/preview/${post.slug}`} className={styles.cardLink} title={post.title}>
+        <div className={styles.imageWrapper}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={coverUrl}
+            alt={post.title}
+            className={styles.coverImg}
+            loading="lazy"
+          />
 
-      <div className={styles.body}>
-        <Link href={`/preview/${post.slug}`} className={styles.titleLink}>
-          <h2 className={styles.title}>{post.title}</h2>
-        </Link>
+          {/* Hover Overlay with Title */}
+          <div className={styles.overlay}>
+            <div className={styles.topRow}>
+              {post.category && (
+                <span className={styles.categoryBadge}>
+                  <Sparkles size={11} />
+                  <span>{post.category}</span>
+                </span>
+              )}
+            </div>
 
-        {post.excerpt && <p className={styles.excerpt}>{post.excerpt}</p>}
-
-        <div className={styles.metaRow}>
-          <div className={styles.metaItem}>
-            <Clock size={13} />
-            <span>{post.readingTimeMinutes} phút đọc</span>
-          </div>
-          <span>•</span>
-          <div className={styles.metaItem}>
-            <Eye size={13} />
-            <span>{post.viewsCount.toLocaleString()}</span>
-          </div>
-        </div>
-
-        {/* Linked Book Quick Box if available */}
-        {primaryBook && (
-          <div className={styles.linkedBookBar}>
-            {primaryBook.coverImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={primaryBook.coverImage} alt={primaryBook.title} className={styles.bookThumb} />
-            ) : (
-              <div className={styles.bookThumbPlaceholder}>
-                <BookOpen size={12} />
-              </div>
-            )}
-            <div className={styles.bookInfo}>
-              <div className={styles.bookTitle} title={primaryBook.title}>
-                {primaryBook.title}
-              </div>
-              <div className={styles.bookPrice}>
-                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(primaryBook.price)}
+            <div className={styles.bottomContent}>
+              <h3 className={styles.title}>{post.title}</h3>
+              <div className={styles.ctaRow}>
+                <span className={styles.ctaButton}>
+                  <BookOpen size={13} />
+                  <span>Đọc thử ngay</span>
+                </span>
+                {post.readingTimeMinutes > 0 && (
+                  <span className={styles.readingTime}>{post.readingTimeMinutes} phút đọc</span>
+                )}
               </div>
             </div>
           </div>
-        )}
-
-        <Link href={`/preview/${post.slug}`} className={styles.readBtn}>
-          <BookOpen size={15} />
-          <span>Đọc thử ngay</span>
-        </Link>
-      </div>
+        </div>
+      </Link>
     </article>
   );
 }

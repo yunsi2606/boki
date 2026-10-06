@@ -1,7 +1,7 @@
 .pageContainer {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 32px 20px 80px;
+  padding: 24px 20px 80px;
 }
 
 .toolbar {
@@ -15,75 +15,114 @@
 
 .resultsCount {
   font-size: 0.9375rem;
-  color: #64748b;
+  color: var(--color-neutral-600, #495057);
+  font-weight: 500;
 }
 
 .resultsCount strong {
-  color: #0f172a;
+  color: var(--color-neutral-900, #111827);
+  font-weight: 700;
 }
 
+/* Flexible Masonry / Mosaic Grid (Tùy biến tỉ lệ ngang dọc linh hoạt) */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  column-count: 4;
+  column-gap: 20px;
 }
 
 .emptyState {
-  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 72px 16px;
   text-align: center;
-  color: #64748b;
-  background: #f8fafc;
-  border-radius: 20px;
-  border: 1px dashed #cbd5e1;
+  color: var(--color-neutral-600, #495057);
+  background: var(--color-neutral-100, #ffffff);
+  border-radius: var(--radius-xl, 20px);
+  border: 1px dashed var(--color-neutral-400, #ced4da);
+  margin-top: 12px;
 }
 
 .emptyIcon {
-  color: #94a3b8;
+  color: var(--color-neutral-400, #ced4da);
   margin-bottom: 16px;
 }
 
 .emptyTitle {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-neutral-900, #111827);
   margin-bottom: 6px;
 }
 
 .emptyDesc {
   font-size: 0.875rem;
-  max-width: 420px;
-  line-height: 1.5;
+  max-width: 440px;
+  line-height: 1.6;
 }
 
 .loadingGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  column-count: 4;
+  column-gap: 20px;
 }
 
 .skeletonCard {
-  height: 380px;
-  border-radius: 16px;
+  break-inside: avoid;
+  margin-bottom: 20px;
+  display: inline-block;
+  width: 100%;
+  height: 280px;
+  border-radius: var(--radius-lg, 14px);
   background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.skeletonCard:nth-child(2n) {
+  height: 360px;
 }
 
-@media (max-width: 640px) {
-  .pageContainer {
-    padding: 20px 14px 60px;
+.skeletonCard:nth-child(3n) {
+  height: 240px;
+}
+
+.skeletonCard:nth-child(4n) {
+  height: 320px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
   }
-  .grid {
-    grid-template-columns: 1fr;
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@media (max-width: 1200px) {
+  .grid,
+  .loadingGrid {
+    column-count: 3;
+    column-gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 16px 14px 60px;
+  }
+  .grid,
+  .loadingGrid {
+    column-count: 2;
+    column-gap: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid,
+  .loadingGrid {
+    column-count: 1;
+    column-gap: 14px;
   }
 }
