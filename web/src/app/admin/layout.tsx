@@ -16,7 +16,7 @@ import {
   ActivityIcon,
   FileTextIcon,
 } from '@/components/ui/LineIcons';
-import { Bot, Sparkles, Layers, HardDrive, Zap, Menu, X, LogOut } from 'lucide-react';
+import { Bot, Sparkles, Layers, HardDrive, Zap, Menu, X, LogOut, Calendar } from 'lucide-react';
 import styles from './adminLayout.module.css';
 import AdminChatbotWidget from '@/components/features/chatbot/admin/AdminChatbotWidget';
 
@@ -24,6 +24,7 @@ const navItems = [
   { name: 'Tổng quan', path: '/admin', icon: <BarChartIcon size={20} /> },
   { name: 'Quản lý sách', path: '/admin/books', icon: <BookOpenIcon size={20} /> },
   { name: 'Quản lý danh mục', path: '/admin/categories', icon: <Layers size={20} /> },
+  { name: 'Lịch phát hành', path: '/admin/schedule', icon: <Calendar size={20} /> },
   { name: 'Quản lý bài viết', path: '/admin/blogs', icon: <FileTextIcon size={20} /> },
   { name: 'Quản lý đơn hàng', path: '/admin/orders', icon: <PackageIcon size={20} /> },
   { name: 'Mã giảm giá', path: '/admin/vouchers', icon: <TicketIcon size={20} /> },

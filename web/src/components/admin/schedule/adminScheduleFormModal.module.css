@@ -1,0 +1,231 @@
+/* Admin Schedule Form Modal Styles - Strict < 250 lines */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal {
+  background: #FFFFFF;
+  border-radius: var(--radius-xl, 16px);
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E9ECEF;
+}
+
+.header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #E9ECEF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #868E96;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.closeBtn:hover {
+  background: #F1F3F5;
+  color: #111827;
+}
+
+.formBody {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #343A40;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  font-size: 13px;
+  color: #212529;
+  outline: none;
+  background: #FFFFFF;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  border-color: #EE4D2D;
+}
+
+.presetsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.presetChip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #DEE2E6;
+  background: #F8F9FA;
+  color: #495057;
+  cursor: pointer;
+}
+
+.presetChip:hover {
+  background: #EE4D2D;
+  border-color: #EE4D2D;
+  color: #FFFFFF;
+}
+
+.linkBookSection {
+  background: #F8F9FA;
+  border: 1px dashed #CED4DA;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.selectedBookBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F0FDF4;
+  border: 1px solid #DCFCE7;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #166534;
+}
+
+.unlinkBtn {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.resultsDropdown {
+  margin-top: 4px;
+  background: #FFFFFF;
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  max-height: 140px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.resultItem {
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #F1F3F5;
+}
+
+.resultItem:hover {
+  background: #FFF5F7;
+  color: #EE4D2D;
+}
+
+.actionsFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #E9ECEF;
+}
+
+.cancelBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #DEE2E6;
+  background: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  color: #495057;
+  cursor: pointer;
+}
+
+.cancelBtn:hover {
+  background: #F1F3F5;
+}
+
+.submitBtn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #EE4D2D;
+  font-size: 13px;
+  font-weight: 800;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.submitBtn:hover {
+  background: #D83A1B;
+}
+
+@media (max-width: 600px) {
+  .formRow {
+    flex-direction: column;
+  }
+}

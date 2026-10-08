@@ -1,0 +1,128 @@
+/* Admin Schedule Page Styles - Strict < 250 lines */
+
+.adminSchedulePage {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.topHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: #6C757D;
+  margin: 4px 0 0 0;
+}
+
+.createBtn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #EE4D2D;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.createBtn:hover {
+  background: #D83A1B;
+  transform: translateY(-1px);
+}
+
+.filterCard {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: var(--radius-xl, 14px);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.searchBox {
+  flex: 1;
+  min-width: 240px;
+}
+
+.searchBox input {
+  width: 100%;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  font-size: 13px;
+  background: #F8F9FA;
+  outline: none;
+}
+
+.searchBox input:focus {
+  border-color: #EE4D2D;
+  background: #FFFFFF;
+}
+
+.selectGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.selectGroup select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  font-size: 13px;
+  font-weight: 600;
+  color: #343A40;
+  background: #FFFFFF;
+  cursor: pointer;
+  outline: none;
+}
+
+.selectGroup select:focus {
+  border-color: #EE4D2D;
+}
+
+.loadingBox {
+  padding: 48px;
+  text-align: center;
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: 14px;
+  font-size: 14px;
+  color: #868E96;
+}
+
+@media (max-width: 768px) {
+  .topHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .createBtn {
+    width: 100%;
+    text-align: center;
+  }
+  .filterCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -8,6 +8,23 @@ export interface GetSchedulesParams {
   hasBook?: boolean;
 }
 
+export interface CreateSchedulePayload {
+  title: string;
+  originalTitle?: string;
+  publisher: string;
+  author?: string;
+  releaseDate: string;
+  estimatedPrice?: number;
+  editionType?: 'STANDARD' | 'SPECIAL' | 'LIMITED' | 'BOXSET';
+  gifts?: string;
+  coverUrl?: string;
+  description?: string;
+  status?: 'SCHEDULED' | 'RELEASED' | 'DELAYED' | 'CANCELLED';
+  bookId?: string | null;
+}
+
+export interface UpdateSchedulePayload extends Partial<CreateSchedulePayload> {}
+
 export const scheduleService = {
   getSchedules: async (params?: GetSchedulesParams): Promise<ReleaseScheduleItem[]> => {
     const searchParams = new URLSearchParams();
@@ -26,5 +43,17 @@ export const scheduleService = {
 
   getPublishers: async (): Promise<string[]> => {
     return api.get<string[]>('/release-schedules/publishers');
+  },
+
+  createSchedule: async (payload: CreateSchedulePayload): Promise<ReleaseScheduleItem> => {
+    return api.post<ReleaseScheduleItem>('/release-schedules', payload);
+  },
+
+  updateSchedule: async (id: string, payload: UpdateSchedulePayload): Promise<ReleaseScheduleItem> => {
+    return api.put<ReleaseScheduleItem>(`/release-schedules/${id}`, payload);
+  },
+
+  deleteSchedule: async (id: string): Promise<void> => {
+    return api.delete<void>(`/release-schedules/${id}`);
   },
 };
