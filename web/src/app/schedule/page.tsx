@@ -1,124 +1,85 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { bookService } from '@/services/bookService';
-import type { Book } from '@/types';
+import { scheduleService } from '@/services/scheduleService';
 import type {
-  ScheduleFilterType,
   ReleaseScheduleItem,
-  ReleaseDateGroup,
+  ScheduleTabFilter,
+  ScheduleTimelineGroup as GroupType,
 } from '@/types/schedule';
 import ScheduleFilterBar from '@/components/features/schedule/ScheduleFilterBar';
 import ScheduleTimelineGroup from '@/components/features/schedule/ScheduleTimelineGroup';
+import ScheduleDetailModal from '@/components/features/schedule/ScheduleDetailModal';
 import styles from './schedule.module.css';
 
 export default function ReleaseSchedulePage() {
-  const [books, setBooks] = useState<Book[]>([]);
+  const [items, setItems] = useState<ReleaseScheduleItem[]>([]);
+  const [publishers, setPublishers] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterType, setFilterType] = useState<ScheduleFilterType>('ALL');
+  const [activeTab, setActiveTab] = useState<ScheduleTabFilter>('ALL');
   const [selectedPublisher, setSelectedPublisher] = useState<string | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [detailItem, setDetailItem] = useState<ReleaseScheduleItem | null>(null);
 
   useEffect(() => {
-    async function fetchScheduleBooks() {
+    scheduleService.getPublishers()
+      .then((data) => setPublishers(data || []))
+      .catch((err) => console.error('Failed to load publishers', err));
+  }, []);
+
+  useEffect(() => {
+    async function fetchSchedules() {
       try {
         setLoading(true);
-        const data = await bookService.searchBooks();
-        setBooks(data || []);
+        const data = await scheduleService.getSchedules({
+          month: selectedMonth ?? undefined,
+          year: selectedMonth ? 2026 : undefined,
+          publisher: selectedPublisher ?? undefined,
+        });
+        setItems(data || []);
       } catch (err) {
-        console.error('Failed to load schedule books', err);
-        setBooks([]);
+        console.error('Failed to load release schedules', err);
+        setItems([]);
       } finally {
         setLoading(false);
       }
     }
-    fetchScheduleBooks();
-  }, []);
+    fetchSchedules();
+  }, [selectedMonth, selectedPublisher]);
 
-  // Transform books to ReleaseScheduleItem
-  const scheduleItems = useMemo<ReleaseScheduleItem[]>(() => {
-    const now = new Date();
-    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-    return books.map((b) => {
-      const createdDate = b.createdAt ? new Date(b.createdAt) : new Date();
-      const isRecent = createdDate >= twoWeeksAgo && !b.isPreOrder;
-      const statusBadge: ReleaseScheduleItem['statusBadge'] = b.isPreOrder
-        ? 'PREORDER'
-        : isRecent
-        ? 'RECENT'
-        : 'RELEASED';
-
-      const releaseDate = createdDate.toISOString().slice(0, 10);
-      const releaseDateDisplay = `${createdDate.getDate().toString().padStart(2, '0')}/${(createdDate.getMonth() + 1).toString().padStart(2, '0')}/${createdDate.getFullYear()}`;
-
-      return {
-        id: b.id,
-        title: b.title,
-        author: b.author,
-        publisher: b.publisher || 'Nhà xuất bản',
-        supplier: b.supplier || b.publisher || 'Đang cập nhật',
-        price: b.price,
-        originalPrice: b.originalPrice,
-        coverUrl: b.imageUrls?.[0] || '',
-        isPreOrder: Boolean(b.isPreOrder),
-        preOrderDays: b.preOrderDays,
-        releaseDate,
-        releaseDateDisplay,
-        statusBadge,
-        slug: b.slug || b.id,
-      };
-    }).sort((a, b) => b.releaseDate.localeCompare(a.releaseDate));
-  }, [books]);
-
-  // Unique Publishers
-  const publishers = useMemo(() => {
-    const set = new Set<string>();
-    scheduleItems.forEach((item) => {
-      if (item.supplier && item.supplier.trim() && item.supplier !== 'Đang cập nhật') {
-        set.add(item.supplier.trim());
-      }
-    });
-    return Array.from(set).sort();
-  }, [scheduleItems]);
-
-  // Counts for filter tabs
   const counts = useMemo(() => {
-    const preorder = scheduleItems.filter((i) => i.isPreOrder).length;
-    const recent = scheduleItems.filter((i) => i.statusBadge === 'RECENT').length;
-    return { all: scheduleItems.length, preorder, recent };
-  }, [scheduleItems]);
+    const linked = items.filter((i) => Boolean(i.linkedBook || i.bookId)).length;
+    const special = items.filter((i) => i.editionType && i.editionType !== 'STANDARD').length;
+    return { all: items.length, linked, special };
+  }, [items]);
 
-  // Filtered items
   const filteredItems = useMemo(() => {
-    return scheduleItems.filter((item) => {
-      if (filterType === 'PREORDER' && !item.isPreOrder) return false;
-      if (filterType === 'RECENT' && item.statusBadge !== 'RECENT') return false;
-      if (selectedPublisher && item.supplier !== selectedPublisher) return false;
+    return items.filter((item) => {
+      if (activeTab === 'LINKED') return Boolean(item.linkedBook || item.bookId);
+      if (activeTab === 'SPECIAL') return item.editionType && item.editionType !== 'STANDARD';
       return true;
     });
-  }, [scheduleItems, filterType, selectedPublisher]);
+  }, [items, activeTab]);
 
-  // Group items by Month (e.g. "Tháng 10/2026")
-  const dateGroups = useMemo<ReleaseDateGroup[]>(() => {
+  const dateGroups = useMemo<GroupType[]>(() => {
     const groupsMap = new Map<string, ReleaseScheduleItem[]>();
 
     filteredItems.forEach((item) => {
-      const monthKey = item.releaseDate.slice(0, 7); // "YYYY-MM"
+      const monthKey = item.releaseDate ? item.releaseDate.slice(0, 7) : '2026-10';
       if (!groupsMap.has(monthKey)) {
         groupsMap.set(monthKey, []);
       }
       groupsMap.get(monthKey)!.push(item);
     });
 
-    const result: ReleaseDateGroup[] = [];
-    groupsMap.forEach((items, monthKey) => {
-      const [year, month] = monthKey.split('-');
-      const dateLabel = `Tháng ${month}/${year}`;
+    const result: GroupType[] = [];
+    groupsMap.forEach((groupItems, monthKey) => {
+      const parts = monthKey.split('-');
+      const label = parts.length === 2 ? `Kỳ xuất bản Tháng ${parts[1]}/${parts[0]}` : monthKey;
       result.push({
         dateKey: monthKey,
-        dateLabel,
-        isTodayOrFuture: false,
-        items,
+        dateLabel: label,
+        items: groupItems,
       });
     });
 
@@ -128,50 +89,51 @@ export default function ReleaseSchedulePage() {
   return (
     <div className={styles.schedulePage}>
       <div className={styles.container}>
-        {/* Hero Header */}
         <div className={styles.heroHeader}>
-          <h1 className={styles.pageTitle}>Lịch Phát Hành Truyện & Sách Bản Quyền</h1>
+          <h1 className={styles.pageTitle}>Lịch Phát Hành Manga & Sách Xuất Bản</h1>
           <p className={styles.pageSubtitle}>
-            Theo dõi tiến độ phát hành mới nhất, các đợt phát hành định kỳ và danh sách đặt trước từ các nhà xuất bản hàng đầu.
+            Cập nhật chi tiết lịch xuất bản từ các nhà phát hành hàng đầu (Kim Đồng, IPM, NXB Trẻ...).
+            Theo dõi quà tặng, ấn bản giới hạn và truy cập trực tiếp sản phẩm trên Boki.
           </p>
 
           <div className={styles.summaryMetaBar}>
             <span className={styles.metaItem}>
-              Tổng số tựa: <strong>{scheduleItems.length}</strong>
+              Tổng số tác phẩm: <strong>{items.length}</strong>
             </span>
             <span className={styles.metaDivider}>|</span>
             <span className={styles.metaItem}>
-              Đang mở đặt trước: <strong>{counts.preorder}</strong>
+              Đã có link trên Boki: <strong>{counts.linked}</strong>
             </span>
             <span className={styles.metaDivider}>|</span>
             <span className={styles.metaItem}>
-              Mới lên kệ gần đây: <strong>{counts.recent}</strong>
+              Bản đặc biệt & Boxset: <strong>{counts.special}</strong>
             </span>
           </div>
         </div>
 
-        {/* Filter Controls */}
         <ScheduleFilterBar
-          activeType={filterType}
-          onSelectType={setFilterType}
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
           publishers={publishers}
           selectedPublisher={selectedPublisher}
           onSelectPublisher={setSelectedPublisher}
+          selectedMonth={selectedMonth}
+          onSelectMonth={setSelectedMonth}
           counts={counts}
         />
 
-        {/* Timeline Content */}
         {loading ? (
-          <div className={styles.loadingBox}>Đang tải lịch phát hành sách...</div>
+          <div className={styles.loadingBox}>Đang tải dữ liệu lịch phát hành...</div>
         ) : filteredItems.length === 0 ? (
           <div className={styles.emptyBox}>
-            <p>Không có tựa sách nào phù hợp với bộ lọc đã chọn</p>
+            <p>Không tìm thấy mục lịch nào trong kỳ phát hành và bộ lọc đã chọn.</p>
             <button
               type="button"
               className={styles.resetBtn}
               onClick={() => {
-                setFilterType('ALL');
+                setActiveTab('ALL');
                 setSelectedPublisher(null);
+                setSelectedMonth(null);
               }}
             >
               Xem lại tất cả lịch
@@ -180,10 +142,19 @@ export default function ReleaseSchedulePage() {
         ) : (
           <div className={styles.timelineSections}>
             {dateGroups.map((group) => (
-              <ScheduleTimelineGroup key={group.dateKey} group={group} />
+              <ScheduleTimelineGroup
+                key={group.dateKey}
+                group={group}
+                onOpenDetail={(item) => setDetailItem(item)}
+              />
             ))}
           </div>
         )}
+
+        <ScheduleDetailModal
+          item={detailItem}
+          onClose={() => setDetailItem(null)}
+        />
       </div>
     </div>
   );

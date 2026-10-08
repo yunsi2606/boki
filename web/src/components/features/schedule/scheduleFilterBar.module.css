@@ -11,6 +11,14 @@
   box-shadow: var(--shadow-sm);
 }
 
+.topControlRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .typeTabsRow {
   display: flex;
   align-items: center;
@@ -47,6 +55,36 @@
   border-color: #EE4D2D;
   color: #FFFFFF !important;
   box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
+}
+
+.monthSelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.monthLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6C757D;
+  white-space: nowrap;
+}
+
+.monthSelectInput {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  background: #F8F9FA;
+  font-size: 13px;
+  font-weight: 700;
+  color: #212529;
+  cursor: pointer;
+  outline: none;
+}
+
+.monthSelectInput:focus {
+  border-color: #EE4D2D;
+  background: #FFFFFF;
 }
 
 .publishersRow {
@@ -96,12 +134,15 @@
     padding: 14px 12px;
     gap: 12px;
   }
+  .topControlRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .monthSelector {
+    justify-content: space-between;
+  }
   .tabBtn {
     padding: 7px 12px;
     font-size: 12px;
-  }
-  .pubChip {
-    font-size: 11px;
-    padding: 4px 10px;
   }
 }

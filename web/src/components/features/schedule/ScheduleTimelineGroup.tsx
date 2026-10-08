@@ -1,14 +1,15 @@
 'use client';
 
-import type { ReleaseDateGroup } from '@/types/schedule';
+import type { ReleaseScheduleItem, ScheduleTimelineGroup as GroupType } from '@/types/schedule';
 import ScheduleBookCard from './ScheduleBookCard';
 import styles from './scheduleTimelineGroup.module.css';
 
 interface ScheduleTimelineGroupProps {
-  group: ReleaseDateGroup;
+  group: GroupType;
+  onOpenDetail: (item: ReleaseScheduleItem) => void;
 }
 
-export default function ScheduleTimelineGroup({ group }: ScheduleTimelineGroupProps) {
+export default function ScheduleTimelineGroup({ group, onOpenDetail }: ScheduleTimelineGroupProps) {
   if (group.items.length === 0) return null;
 
   return (
@@ -22,7 +23,11 @@ export default function ScheduleTimelineGroup({ group }: ScheduleTimelineGroupPr
 
       <div className={styles.cardsGrid}>
         {group.items.map((item) => (
-          <ScheduleBookCard key={item.id} item={item} />
+          <ScheduleBookCard
+            key={item.id}
+            item={item}
+            onOpenDetail={onOpenDetail}
+          />
         ))}
       </div>
     </div>

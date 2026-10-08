@@ -1,52 +1,84 @@
 'use client';
 
-import type { ScheduleFilterType } from '@/types/schedule';
+import type { ScheduleTabFilter } from '@/types/schedule';
 import styles from './scheduleFilterBar.module.css';
 
 interface ScheduleFilterBarProps {
-  activeType: ScheduleFilterType;
-  onSelectType: (type: ScheduleFilterType) => void;
+  activeTab: ScheduleTabFilter;
+  onSelectTab: (tab: ScheduleTabFilter) => void;
   publishers: string[];
   selectedPublisher: string | null;
   onSelectPublisher: (pub: string | null) => void;
-  counts: { all: number; preorder: number; recent: number };
+  selectedMonth: number | null;
+  onSelectMonth: (month: number | null) => void;
+  counts: { all: number; linked: number; special: number };
 }
 
 export default function ScheduleFilterBar({
-  activeType,
-  onSelectType,
+  activeTab,
+  onSelectTab,
   publishers,
   selectedPublisher,
   onSelectPublisher,
+  selectedMonth,
+  onSelectMonth,
   counts,
 }: ScheduleFilterBarProps) {
+  const monthOptions = [
+    { label: 'Tất cả tháng', value: null },
+    { label: 'Tháng 10/2026', value: 10 },
+    { label: 'Tháng 11/2026', value: 11 },
+    { label: 'Tháng 12/2026', value: 12 },
+  ];
+
   return (
     <div className={styles.filterContainer}>
-      {/* Category Tabs */}
-      <div className={styles.typeTabsRow}>
-        <button
-          type="button"
-          className={`${styles.tabBtn} ${activeType === 'ALL' ? styles.tabBtnActive : ''}`}
-          onClick={() => onSelectType('ALL')}
-        >
-          Tất cả lịch ({counts.all})
-        </button>
+      {/* Category Tabs & Month selector Row */}
+      <div className={styles.topControlRow}>
+        <div className={styles.typeTabsRow}>
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${activeTab === 'ALL' ? styles.tabBtnActive : ''}`}
+            onClick={() => onSelectTab('ALL')}
+          >
+            Tất cả lịch ({counts.all})
+          </button>
 
-        <button
-          type="button"
-          className={`${styles.tabBtn} ${activeType === 'PREORDER' ? styles.tabBtnActive : ''}`}
-          onClick={() => onSelectType('PREORDER')}
-        >
-          Đang mở đặt trước ({counts.preorder})
-        </button>
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${activeTab === 'LINKED' ? styles.tabBtnActive : ''}`}
+            onClick={() => onSelectTab('LINKED')}
+          >
+            Đã có link trên Boki ({counts.linked})
+          </button>
 
-        <button
-          type="button"
-          className={`${styles.tabBtn} ${activeType === 'RECENT' ? styles.tabBtnActive : ''}`}
-          onClick={() => onSelectType('RECENT')}
-        >
-          Mới lên kệ gần đây ({counts.recent})
-        </button>
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${activeTab === 'SPECIAL' ? styles.tabBtnActive : ''}`}
+            onClick={() => onSelectTab('SPECIAL')}
+          >
+            Bản đặc biệt / Giới hạn ({counts.special})
+          </button>
+        </div>
+
+        {/* Month Filter Selector */}
+        <div className={styles.monthSelector}>
+          <span className={styles.monthLabel}>Kỳ phát hành:</span>
+          <select
+            className={styles.monthSelectInput}
+            value={selectedMonth ?? ''}
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : null;
+              onSelectMonth(val);
+            }}
+          >
+            {monthOptions.map((opt) => (
+              <option key={opt.label} value={opt.value ?? ''}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Publisher Badges Filter */}

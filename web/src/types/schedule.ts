@@ -1,26 +1,41 @@
-export type ScheduleFilterType = 'ALL' | 'PREORDER' | 'RECENT';
+export type ReleaseEditionType = 'STANDARD' | 'SPECIAL' | 'LIMITED' | 'BOXSET';
+
+export type ReleaseScheduleStatus = 'SCHEDULED' | 'RELEASED' | 'DELAYED' | 'CANCELLED';
+
+export interface LinkedBookInfo {
+  id: string;
+  title: string;
+  slug: string;
+  price: number;
+  stockQuantity: number;
+  isPreOrder: boolean;
+  coverUrl?: string;
+  status: string;
+}
 
 export interface ReleaseScheduleItem {
   id: string;
   title: string;
-  author: string;
+  originalTitle?: string;
   publisher: string;
-  supplier: string;
-  price: number;
-  originalPrice?: number;
-  coverUrl: string;
-  isPreOrder: boolean;
-  preOrderDays?: number | null;
-  releaseDate: string; // YYYY-MM-DD
-  releaseDateDisplay: string; // "15/10/2026"
-  statusBadge: 'PREORDER' | 'RECENT' | 'RELEASED';
-  bonusGifts?: string | null;
-  slug: string;
+  author?: string;
+  releaseDate: string; // ISO YYYY-MM-DD
+  estimatedPrice?: number;
+  editionType: ReleaseEditionType;
+  gifts?: string;
+  coverUrl?: string;
+  description?: string;
+  status: ReleaseScheduleStatus;
+  bookId?: string;
+  linkedBook?: LinkedBookInfo;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface ReleaseDateGroup {
-  dateKey: string; // e.g. "2026-10-02" or "2026-10"
-  dateLabel: string; // e.g. "Tháng 10/2026" or "02/10/2026"
-  isTodayOrFuture: boolean;
+export type ScheduleTabFilter = 'ALL' | 'LINKED' | 'SPECIAL';
+
+export interface ScheduleTimelineGroup {
+  dateKey: string;
+  dateLabel: string;
   items: ReleaseScheduleItem[];
 }

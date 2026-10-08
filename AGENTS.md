@@ -130,3 +130,15 @@ Hệ thống sử dụng bảng màu thương hiệu chuẩn (`web/src/styles/to
 ## 11. KIỂM THỬ & CHẤT LƯỢNG MÃ NGUỒN
 - Luôn kiểm tra build backend (`mvn compile -DskipTests`) và frontend (`npx tsc --noEmit`) sau khi hoàn thành.
 - Giữ lịch sử Git sạch, áp dụng Conventional Commits: `type(scope): message`.
+
+---
+
+## 12. NGHIỆP VỤ LỊCH PHÁT HÀNH SÁCH & MANGA (RELEASE SCHEDULE)
+- **Entity độc lập**: Lịch phát hành là một Entity riêng biệt (`release_schedules`), đại diện cho lịch xuất bản từ các nhà phát hành (Kim Đồng, Trẻ, IPM, AZ...). Tuyệt đối không nhầm lẫn với ngày tạo/đăng tải sách (`books.created_at`).
+- **Liên kết mềm với Sách (`book_id` Nullable)**:
+  - Khi NXB công bố lịch, sách có thể chưa có trên sàn Boki (`book_id = null`).
+  - Khi Admin đăng bán sách hoặc mở đặt trước trên sàn, Admin có thể liên kết (link) `book_id` vào phần tử lịch này.
+  - Phía UI: Nếu có `book_id`, cho phép ấn nút "Xem sản phẩm" / "Đặt trước" chuyển hướng đến `/books/[slug]`. Nếu chưa có, hiển thị trạng thái thông tin lịch phát hành.
+- **Xem chi tiết phần tử lịch**: Mỗi mục lịch cho phép xem chi tiết (Modal / Drawer / Trang riêng) gồm: ảnh bìa dự kiến, tên truyện/tập, ngày phát hành, nhà xuất bản, phiên bản (bản thường / đặc biệt), quà tặng kèm, giá dự kiến, mô tả nội dung và link sang sản phẩm Boki (nếu đã liên kết).
+- **Phạm vi hiển thị**: Chỉ triển khai tập trung ở trang lịch riêng (`/schedule`) và quản trị Admin, không làm tràn lan ở các trang khác khi chưa cần thiết.
+
