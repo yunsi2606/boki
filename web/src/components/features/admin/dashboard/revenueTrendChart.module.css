@@ -1,12 +1,13 @@
+/* Revenue Trend Chart Professional Styles - Strict < 250 lines */
+
 .chartCard {
   background: #FFFFFF;
   border: 1px solid #E9ECEF;
-  border-radius: var(--radius-xl, 20px);
+  border-radius: var(--radius-xl);
   padding: 24px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  position: relative;
   min-width: 0;
 }
 
@@ -15,8 +16,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  gap: 16px;
   flex-wrap: wrap;
-  gap: 12px;
 }
 
 .titleGroup {
@@ -29,8 +30,8 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: var(--color-pink-50, #FFF5F7);
-  color: var(--color-primary-500, #EE4D2D);
+  background: #FFF0F3;
+  color: #EE4D2D;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,96 +39,138 @@
 }
 
 .chartTitle {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
   color: #111827;
-  margin: 0;
 }
 
 .chartSubtitle {
   font-size: 13px;
   color: #6C757D;
-  margin: 2px 0 0 0;
+  margin-top: 2px;
 }
 
 .chartSubtitle strong {
-  color: var(--color-primary-500, #EE4D2D);
-  font-weight: 700;
+  color: #EE4D2D;
+  font-weight: 800;
 }
 
-.filterGroup {
+/* Apple/Linear style Segmented Control */
+.segmentedControl {
   display: inline-flex;
-  padding: 3px;
   background: #F1F3F5;
-  border-radius: var(--radius-md, 10px);
-  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  gap: 2px;
 }
 
-.filterBtn {
-  padding: 6px 14px;
-  border-radius: 8px;
-  border: none;
+.segmentedBtn {
   background: transparent;
-  color: #495057;
+  border: none;
+  padding: 6px 14px;
   font-size: 12px;
   font-weight: 700;
+  color: #6C757D;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
-.filterBtn:hover {
+.segmentedBtn:hover:not(:disabled) {
   color: #111827;
 }
 
-.filterBtnActive {
+.segmentedBtnActive {
   background: #FFFFFF;
-  color: var(--color-primary-500, #EE4D2D) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  color: #111827 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .svgWrapper {
   position: relative;
   width: 100%;
-  height: 200px;
-  overflow: visible;
+  min-height: 220px;
+  user-select: none;
+}
+
+.loadingBox,
+.emptyBox {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6C757D;
+  font-size: 13px;
+  background: #FAFAFA;
+  border-radius: var(--radius-md);
+  border: 1px dashed #E9ECEF;
 }
 
 .svgChart {
   width: 100%;
-  height: 100%;
+  height: 220px;
   overflow: visible;
+  cursor: crosshair;
 }
 
 .gridLine {
   stroke: #F1F3F5;
+  stroke-width: 1;
   stroke-dasharray: 4 4;
+}
+
+.axisBaseLine {
+  stroke: #E9ECEF;
   stroke-width: 1;
 }
 
+.axisLabel {
+  font-size: 11px;
+  fill: #868E96;
+  font-weight: 600;
+  font-family: var(--font-sans, inherit);
+}
+
+.axisDateLabel {
+  font-size: 11px;
+  fill: #6C757D;
+  font-weight: 600;
+  font-family: var(--font-sans, inherit);
+}
+
 .lineStroke {
-  stroke: var(--color-primary-500, #EE4D2D);
-  stroke-width: 3;
+  stroke: #EE4D2D;
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  filter: drop-shadow(0 2px 4px rgba(238, 77, 45, 0.2));
 }
 
-.pointGroup {
-  cursor: pointer;
+.crosshairLine {
+  stroke: #CBD5E1;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
 }
 
-.pointCircle {
+.activeGlowCircle {
+  fill: rgba(238, 77, 45, 0.2);
+  stroke: #EE4D2D;
+  stroke-width: 1.5;
+  animation: pulseGlow 1.8s infinite;
+}
+
+.activePointCircle {
   fill: #FFFFFF;
-  stroke: var(--color-primary-500, #EE4D2D);
+  stroke: #EE4D2D;
   stroke-width: 2.5;
-  transition: r 0.15s ease, stroke-width 0.15s ease;
 }
 
-.pointCircleHovered {
-  fill: var(--color-primary-500, #EE4D2D);
-  stroke: #FFFFFF;
-  stroke-width: 3;
+@keyframes pulseGlow {
+  0%, 100% { r: 6px; opacity: 0.6; }
+  50% { r: 9px; opacity: 1; }
 }
 
+/* Polished Floating Tooltip */
 .tooltip {
   position: absolute;
   transform: translate(-50%, -115%);
@@ -137,73 +180,40 @@
   border-radius: 8px;
   font-size: 11px;
   pointer-events: none;
-  white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   z-index: 10;
-  animation: fadeIn 0.15s ease;
+  white-space: nowrap;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px 4px 0 4px;
+  border-style: solid;
+  border-color: #111827 transparent transparent transparent;
 }
 
 .tooltipDate {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   color: #9CA3AF;
   font-size: 10px;
-  margin-bottom: 2px;
 }
 
 .tooltipRevenue {
   font-size: 13px;
   font-weight: 800;
-  color: #FF8066;
+  color: #FF9800;
 }
 
 .tooltipOrders {
-  color: #D1D5DB;
-  font-size: 10px;
-}
-
-.dateLabelsRow {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 10px 0;
-  border-top: 1px solid #F1F3F5;
-  margin-top: 8px;
-}
-
-.dateLabel {
   font-size: 11px;
-  color: #868E96;
-  font-weight: 600;
-}
-
-.dateLabelEmpty {
-  width: 0;
-  visibility: hidden;
-}
-
-.loadingBox,
-.emptyBox {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #868E96;
-  font-size: 13px;
-  font-style: italic;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -105%); }
-  to { opacity: 1; transform: translate(-50%, -115%); }
-}
-
-@media (max-width: 768px) {
-  .chartCard {
-    padding: 18px 14px;
-    border-radius: var(--radius-lg, 14px);
-  }
-  .chartTitle {
-    font-size: 15px;
-  }
+  color: #E5E7EB;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Calendar, TrendingUp } from 'lucide-react';
 import type { DailyRevenuePoint } from '@/types/adminAnalytics';
 import styles from './revenueTrendChart.module.css';
@@ -23,51 +23,97 @@ export default function RevenueTrendChart({
   isLoading,
 }: RevenueTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
   };
 
-  const chartData = useMemo(() => {
+  const formatShort = (val: number) => {
+    if (val >= 1000000) return `${(val / 1000000).toFixed(1).replace('.0', '')}tr`;
+    if (val >= 1000) return `${Math.round(val / 1000)}k`;
+    return `${val}đ`;
+  };
+
+  const chart = useMemo(() => {
+    const width = 720;
+    const height = 220;
+    const padLeft = 68;
+    const padRight = 16;
+    const padTop = 20;
+    const padBottom = 32;
+
+    const plotW = width - padLeft - padRight;
+    const plotH = height - padTop - padBottom;
+    const baselineY = height - padBottom;
+
     if (!timeline || timeline.length === 0) {
-      return { points: [], maxVal: 1, pathD: '', areaD: '', width: 640, height: 180 };
+      return { width, height, padLeft, baselineY, maxVal: 1, points: [], pathD: '', areaD: '', yTop: padTop, yMid: padTop + plotH / 2 };
     }
 
-    const maxVal = Math.max(...timeline.map((d) => Number(d.revenue) || 0), 100000);
-    const width = 640;
-    const height = 180;
-    const paddingX = 20;
-    const paddingY = 20;
+    const rawMax = Math.max(...timeline.map((d) => Number(d.revenue) || 0));
+    // Round max value up to a sensible nice number (e.g. 200k, 500k, 1m)
+    const maxVal = rawMax > 0 ? Math.ceil(rawMax / 50000) * 50000 : 100000;
+    const stepX = timeline.length > 1 ? plotW / (timeline.length - 1) : plotW / 2;
 
-    const availableWidth = width - paddingX * 2;
-    const availableHeight = height - paddingY * 2;
-    const stepX = timeline.length > 1 ? availableWidth / (timeline.length - 1) : availableWidth / 2;
-
-    const coords = timeline.map((item, idx) => {
-      const x = paddingX + idx * stepX;
+    const points = timeline.map((item, idx) => {
+      const x = padLeft + idx * stepX;
       const rev = Number(item.revenue) || 0;
-      const y = height - paddingY - (rev / maxVal) * availableHeight;
-      return { x, y, item };
+      const y = baselineY - (rev / maxVal) * plotH;
+      return { x, y, item, rev };
     });
 
-    // Build curved SVG path
-    let pathD = `M ${coords[0].x} ${coords[0].y}`;
-    for (let i = 1; i < coords.length; i++) {
-      const prev = coords[i - 1];
-      const curr = coords[i];
-      const cpX1 = prev.x + (curr.x - prev.x) / 2;
+    // Build smoothed curve path
+    let pathD = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const dx = curr.x - prev.x;
+      // Smooth tension: only bend if points are not both zero
+      const cpX1 = prev.x + dx * 0.35;
       const cpY1 = prev.y;
-      const cpX2 = prev.x + (curr.x - prev.x) / 2;
+      const cpX2 = curr.x - dx * 0.35;
       const cpY2 = curr.y;
       pathD += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${curr.x} ${curr.y}`;
     }
 
-    const last = coords[coords.length - 1];
-    const first = coords[0];
-    const areaD = `${pathD} L ${last.x} ${height - paddingY} L ${first.x} ${height - paddingY} Z`;
+    const last = points[points.length - 1];
+    const first = points[0];
+    const areaD = `${pathD} L ${last.x} ${baselineY} L ${first.x} ${baselineY} Z`;
 
-    return { points: coords, maxVal, pathD, areaD, width, height };
+    return {
+      width,
+      height,
+      padLeft,
+      baselineY,
+      maxVal,
+      points,
+      pathD,
+      areaD,
+      yTop: padTop,
+      yMid: padTop + plotH / 2,
+    };
   }, [timeline]);
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!svgRef.current || chart.points.length === 0) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const mouseX = ((e.clientX - rect.left) / rect.width) * chart.width;
+
+    // Find closest data point
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    chart.points.forEach((pt, idx) => {
+      const diff = Math.abs(pt.x - mouseX);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
+    });
+    setHoveredIndex(closestIdx);
+  };
+
+  const hoveredPoint = hoveredIndex !== null ? chart.points[hoveredIndex] : null;
 
   return (
     <div className={styles.chartCard}>
@@ -84,10 +130,10 @@ export default function RevenueTrendChart({
           </div>
         </div>
 
-        <div className={styles.filterGroup}>
+        <div className={styles.segmentedControl}>
           <button
             type="button"
-            className={`${styles.filterBtn} ${days === 7 ? styles.filterBtnActive : ''}`}
+            className={`${styles.segmentedBtn} ${days === 7 ? styles.segmentedBtnActive : ''}`}
             onClick={() => onDaysChange(7)}
             disabled={isLoading}
           >
@@ -95,7 +141,7 @@ export default function RevenueTrendChart({
           </button>
           <button
             type="button"
-            className={`${styles.filterBtn} ${days === 30 ? styles.filterBtnActive : ''}`}
+            className={`${styles.segmentedBtn} ${days === 30 ? styles.segmentedBtnActive : ''}`}
             onClick={() => onDaysChange(30)}
             disabled={isLoading}
           >
@@ -111,88 +157,91 @@ export default function RevenueTrendChart({
           <div className={styles.emptyBox}>Chưa có dữ liệu giao dịch trong khoảng thời gian này</div>
         ) : (
           <svg
-            viewBox={`0 0 ${chartData.width} ${chartData.height}`}
+            ref={svgRef}
+            viewBox={`0 0 ${chart.width} ${chart.height}`}
             className={styles.svgChart}
             preserveAspectRatio="none"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setHoveredIndex(null)}
           >
             <defs>
-              <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#EE4D2D" stopOpacity="0.32" />
-                <stop offset="100%" stopColor="#EE4D2D" stopOpacity="0.01" />
+              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#EE4D2D" stopOpacity="0.16" />
+                <stop offset="100%" stopColor="#EE4D2D" stopOpacity="0.00" />
               </linearGradient>
             </defs>
 
-            {/* Grid horizontal guidelines */}
-            <line x1="20" y1="20" x2="620" y2="20" className={styles.gridLine} />
-            <line x1="20" y1="80" x2="620" y2="80" className={styles.gridLine} />
-            <line x1="20" y1="140" x2="620" y2="140" className={styles.gridLine} />
+            {/* Horizontal Gridlines & Y-Axis Labels */}
+            <line x1={chart.padLeft} y1={chart.yTop} x2={chart.width - 16} y2={chart.yTop} className={styles.gridLine} />
+            <text x={chart.padLeft - 8} y={chart.yTop + 4} textAnchor="end" className={styles.axisLabel}>
+              {formatShort(chart.maxVal)}
+            </text>
 
-            {/* Gradient Area Fill */}
-            <path d={chartData.areaD} fill="url(#revenueGradient)" />
+            <line x1={chart.padLeft} y1={chart.yMid} x2={chart.width - 16} y2={chart.yMid} className={styles.gridLine} />
+            <text x={chart.padLeft - 8} y={chart.yMid + 4} textAnchor="end" className={styles.axisLabel}>
+              {formatShort(chart.maxVal / 2)}
+            </text>
 
-            {/* Curve Stroke Line */}
-            <path d={chartData.pathD} fill="none" className={styles.lineStroke} />
+            <line x1={chart.padLeft} y1={chart.baselineY} x2={chart.width - 16} y2={chart.baselineY} className={styles.axisBaseLine} />
+            <text x={chart.padLeft - 8} y={chart.baselineY + 4} textAnchor="end" className={styles.axisLabel}>
+              0đ
+            </text>
 
-            {/* Interactive Data Points */}
-            {chartData.points.map((pt, idx) => {
-              const isHovered = hoveredIndex === idx;
+            {/* Area Fill */}
+            <path d={chart.areaD} fill="url(#revGrad)" />
+
+            {/* Spline Curve (NO static circle dots) */}
+            <path d={chart.pathD} fill="none" className={styles.lineStroke} />
+
+            {/* X-Axis Date Labels aligned directly on ticks */}
+            {chart.points.map((pt, idx) => {
+              const showDate = days === 7 || idx === 0 || idx === Math.floor(days / 4) || idx === Math.floor(days / 2) || idx === Math.floor((3 * days) / 4) || idx === days - 1;
+              if (!showDate) return null;
               return (
-                <g
-                  key={idx}
-                  onMouseEnter={() => setHoveredIndex(idx)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  className={styles.pointGroup}
-                >
-                  <circle
-                    cx={pt.x}
-                    cy={pt.y}
-                    r={isHovered ? 6 : 4}
-                    className={`${styles.pointCircle} ${isHovered ? styles.pointCircleHovered : ''}`}
-                  />
-                  {/* Invisible larger hover zone for easier touch */}
-                  <circle cx={pt.x} cy={pt.y} r={14} fill="transparent" />
-                </g>
+                <text key={idx} x={pt.x} y={chart.baselineY + 18} textAnchor="middle" className={styles.axisDateLabel}>
+                  {pt.item.date.slice(5)}
+                </text>
               );
             })}
+
+            {/* Interactive Crosshair & Single Active Point */}
+            {hoveredPoint && (
+              <g>
+                <line
+                  x1={hoveredPoint.x}
+                  y1={chart.yTop}
+                  x2={hoveredPoint.x}
+                  y2={chart.baselineY}
+                  className={styles.crosshairLine}
+                />
+                <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r={7} className={styles.activeGlowCircle} />
+                <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r={3.5} className={styles.activePointCircle} />
+              </g>
+            )}
           </svg>
         )}
 
         {/* Floating Tooltip */}
-        {hoveredIndex !== null && chartData.points[hoveredIndex] && (
+        {hoveredPoint && (
           <div
             className={styles.tooltip}
             style={{
-              left: `${(chartData.points[hoveredIndex].x / chartData.width) * 100}%`,
-              top: `${(chartData.points[hoveredIndex].y / chartData.height) * 100}%`,
+              left: `${(hoveredPoint.x / chart.width) * 100}%`,
+              top: `${(hoveredPoint.y / chart.height) * 100}%`,
             }}
           >
             <div className={styles.tooltipDate}>
               <Calendar size={11} />
-              <span>{chartData.points[hoveredIndex].item.date}</span>
+              <span>{hoveredPoint.item.date}</span>
             </div>
             <div className={styles.tooltipRevenue}>
-              {formatCurrency(Number(chartData.points[hoveredIndex].item.revenue))}
+              {formatCurrency(Number(hoveredPoint.item.revenue))}
             </div>
             <div className={styles.tooltipOrders}>
-              {chartData.points[hoveredIndex].item.ordersCount} đơn hàng
+              {hoveredPoint.item.ordersCount} đơn hàng
             </div>
           </div>
         )}
-      </div>
-
-      {/* Date Labels below chart */}
-      <div className={styles.dateLabelsRow}>
-        {timeline.map((item, idx) => {
-          // Show fewer labels on 30-day view
-          const shouldShow = days === 7 || idx === 0 || idx === Math.floor(days / 2) || idx === days - 1;
-          if (!shouldShow) return <span key={idx} className={styles.dateLabelEmpty} />;
-          const shortDate = item.date.slice(5); // "MM-DD"
-          return (
-            <span key={idx} className={styles.dateLabel}>
-              {shortDate}
-            </span>
-          );
-        })}
       </div>
     </div>
   );

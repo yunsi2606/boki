@@ -97,42 +97,46 @@ export default function AdminDashboardPage() {
       {/* Metric Cards Grid */}
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
-          <div className={styles.metricIconBox} style={{ background: '#FFF0F3', color: '#EE4D2D' }}>
-            <BanknotesIcon size={24} color="#EE4D2D" />
+          <div className={styles.metricIconBox} style={{ background: '#FFF0F3', borderColor: '#FFE0E6', color: '#EE4D2D' }}>
+            <BanknotesIcon size={22} color="#EE4D2D" />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricLabel}>Tổng doanh thu</span>
             <h3 className={styles.metricValue}>{formatCurrency(stats?.totalRevenue || 0)}</h3>
+            <span className={styles.metricContext}>Tích lũy từ đơn thành công</span>
           </div>
         </div>
 
         <div className={styles.metricCard}>
-          <div className={styles.metricIconBox} style={{ background: '#EBF8FF', color: '#3182CE' }}>
-            <PackageIcon size={24} color="#3182CE" />
+          <div className={styles.metricIconBox} style={{ background: '#EBF8FF', borderColor: '#BEE3F8', color: '#3182CE' }}>
+            <PackageIcon size={22} color="#3182CE" />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricLabel}>Tổng đơn hàng</span>
             <h3 className={styles.metricValue}>{stats?.totalOrders} đơn</h3>
+            <span className={styles.metricContext}>Toàn bộ giao dịch hệ thống</span>
           </div>
         </div>
 
         <div className={styles.metricCard}>
-          <div className={styles.metricIconBox} style={{ background: '#F0FDF4', color: '#16A34A' }}>
-            <BookOpenIcon size={24} color="#16A34A" />
+          <div className={styles.metricIconBox} style={{ background: '#F0FDF4', borderColor: '#BBF7D0', color: '#16A34A' }}>
+            <BookOpenIcon size={22} color="#16A34A" />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricLabel}>Số lượng sách</span>
             <h3 className={styles.metricValue}>{stats?.totalBooks} đầu sách</h3>
+            <span className={styles.metricContext}>Đang kinh doanh trên sàn</span>
           </div>
         </div>
 
         <div className={styles.metricCard}>
-          <div className={styles.metricIconBox} style={{ background: '#FFFBEB', color: '#D97706' }}>
-            <ClockIcon size={24} color="#D97706" />
+          <div className={styles.metricIconBox} style={{ background: '#FFFBEB', borderColor: '#FDE68A', color: '#D97706' }}>
+            <ClockIcon size={22} color="#D97706" />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricLabel}>Sắp hết hàng</span>
             <h3 className={styles.metricValue}>{stats?.lowStockCount} sản phẩm</h3>
+            <span className={styles.metricContext}>Tồn kho dưới 10 cuốn</span>
           </div>
         </div>
       </div>

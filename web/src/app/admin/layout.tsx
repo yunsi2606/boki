@@ -16,7 +16,7 @@ import {
   ActivityIcon,
   FileTextIcon,
 } from '@/components/ui/LineIcons';
-import { Bot, Sparkles, Layers, HardDrive, Zap, Menu, X } from 'lucide-react';
+import { Bot, Sparkles, Layers, HardDrive, Zap, Menu, X, LogOut } from 'lucide-react';
 import styles from './adminLayout.module.css';
 import AdminChatbotWidget from '@/components/features/chatbot/admin/AdminChatbotWidget';
 
@@ -153,10 +153,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <Menu size={22} />
             </button>
-            <h2 className={styles.headerTitle}>Hệ Thống Quản Trị BokiStore</h2>
+            <div className={styles.headerBrand}>
+              <div className={styles.headerLogoBox}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/brand/logo.png" alt="Boki Logo" className={styles.headerLogoImg} />
+              </div>
+              <div className={styles.headerBrandMeta}>
+                <div className={styles.headerTitleRow}>
+                  <span className={styles.headerBrandName}>BOKI</span>
+                  <span className={styles.headerAdminBadge}>ADMIN CONSOLE</span>
+                </div>
+                <span className={styles.headerSubtitle}>Bảng điều khiển & Báo cáo bán hàng</span>
+              </div>
+            </div>
           </div>
 
           <div className={styles.headerRight}>
+            <div className={styles.statusIndicator} title="Hệ thống hoạt động thời gian thực">
+              <span className={styles.statusDot} />
+              <span className={styles.statusText}>Trực tuyến</span>
+            </div>
+
             <div className={styles.adminUser}>
               <div className={styles.adminAvatar}>
                 {user.displayName ? user.displayName.charAt(0).toUpperCase() : 'A'}
@@ -169,8 +186,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={logout}
                 title="Đăng xuất"
                 className={styles.logoutBtn}
+                aria-label="Đăng xuất"
               >
-                Đăng xuất
+                <LogOut size={13} />
+                <span>Đăng xuất</span>
               </button>
             </div>
           </div>

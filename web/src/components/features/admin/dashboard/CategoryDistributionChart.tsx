@@ -20,11 +20,15 @@ export default function CategoryDistributionChart({
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
   };
 
-  // Compute SVG Donut segments using stroke-dasharray
+  const totalRev = useMemo(() => {
+    return categories.reduce((sum, c) => sum + (Number(c.revenue) || 0), 0);
+  }, [categories]);
+
+  // Compute SVG Donut segments
   const donutSegments = useMemo(() => {
     if (!categories || categories.length === 0) return [];
 
-    const radius = 60;
+    const radius = 48;
     const circumference = 2 * Math.PI * radius;
     let accumulatedAngle = 0;
 
@@ -52,7 +56,7 @@ export default function CategoryDistributionChart({
         </div>
         <div>
           <h3 className={styles.title}>Cơ Cấu Thể Loại Sách</h3>
-          <p className={styles.subtitle}>Tỷ trọng doanh thu theo danh mục</p>
+          <p className={styles.subtitle}>Tỷ trọng doanh thu theo từng danh mục</p>
         </div>
       </div>
 
@@ -62,56 +66,66 @@ export default function CategoryDistributionChart({
         <div className={styles.emptyBox}>Chưa có phát sinh doanh thu theo danh mục</div>
       ) : (
         <div className={styles.body}>
-          {/* Donut graphic */}
+          {/* Slim Donut graphic */}
           <div className={styles.donutWrapper}>
-            <svg viewBox="0 0 160 160" className={styles.donutSvg}>
+            <svg viewBox="0 0 120 120" className={styles.donutSvg}>
               {/* Background base track */}
-              <circle
-                cx="80"
-                cy="80"
-                r="60"
-                fill="none"
-                stroke="#F1F3F5"
-                strokeWidth="18"
-              />
-              {/* Colored Segments */}
+              <circle cx="60" cy="60" r="48" className={styles.donutTrack} />
+
+              {/* Segments */}
               {donutSegments.map((seg, idx) => (
                 <circle
                   key={idx}
-                  cx="80"
-                  cy="80"
-                  r="60"
-                  fill="none"
+                  cx="60"
+                  cy="60"
+                  r="48"
                   stroke={seg.strokeColor}
-                  strokeWidth="18"
                   strokeDasharray={seg.dashArray}
                   strokeDashoffset={seg.strokeDashoffset}
-                  transform="rotate(-90 80 80)"
                   className={styles.donutSegment}
                 />
               ))}
             </svg>
+
             <div className={styles.donutCenter}>
-              <span className={styles.donutCenterCount}>{categories.length}</span>
+              <span className={styles.donutCenterValue}>
+                {categories.length}
+              </span>
               <span className={styles.donutCenterLabel}>Thể loại</span>
             </div>
           </div>
 
-          {/* Legend items */}
-          <div className={styles.legendList}>
+          {/* Breakdown list with Progress Bars */}
+          <div className={styles.categoryList}>
             {categories.map((cat, idx) => {
               const color = PALETTE[idx % PALETTE.length];
               return (
-                <div key={idx} className={styles.legendItem}>
-                  <div className={styles.legendLeft}>
-                    <span className={styles.colorDot} style={{ backgroundColor: color }} />
-                    <span className={styles.categoryName} title={cat.categoryName}>
-                      {cat.categoryName}
-                    </span>
+                <div key={idx} className={styles.categoryItem}>
+                  <div className={styles.itemHeader}>
+                    <div className={styles.itemLeft}>
+                      <span className={styles.colorDot} style={{ backgroundColor: color }} />
+                      <span className={styles.categoryName} title={cat.categoryName}>
+                        {cat.categoryName}
+                      </span>
+                      <span className={styles.unitsChip}>
+                        {cat.unitsSold} cuốn
+                      </span>
+                    </div>
+
+                    <div className={styles.itemRight}>
+                      <span className={styles.pctBadge}>{cat.percentage}%</span>
+                      <span className={styles.amountText}>{formatCurrency(cat.revenue)}</span>
+                    </div>
                   </div>
-                  <div className={styles.legendRight}>
-                    <span className={styles.pctBadge}>{cat.percentage}%</span>
-                    <span className={styles.amountText}>{formatCurrency(cat.revenue)}</span>
+
+                  <div className={styles.progressTrack}>
+                    <div
+                      className={styles.progressFill}
+                      style={{
+                        width: `${Math.min(Math.max(cat.percentage, 5), 100)}%`,
+                        backgroundColor: color,
+                      }}
+                    />
                   </div>
                 </div>
               );
