@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Trophy, BookOpen } from 'lucide-react';
 import type { TopSellingBook } from '@/types/adminAnalytics';
@@ -14,6 +15,8 @@ export default function TopSellingBooksCard({
   books,
   isLoading,
 }: TopSellingBooksCardProps) {
+  const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
   };
@@ -52,12 +55,13 @@ export default function TopSellingBooksCard({
                 </div>
 
                 <div className={styles.coverBox}>
-                  {book.coverUrl ? (
+                  {book.coverUrl && !imgErrors[book.bookId] ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={book.coverUrl}
                       alt={book.title}
                       className={styles.coverImg}
+                      onError={() => setImgErrors((prev) => ({ ...prev, [book.bookId]: true }))}
                     />
                   ) : (
                     <div className={styles.coverFallback}>
