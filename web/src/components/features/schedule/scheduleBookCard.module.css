@@ -1,0 +1,204 @@
+/* Schedule Book Card Styles - Strict < 250 lines */
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: var(--radius-xl, 14px);
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  min-width: 0;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #DEE2E6;
+}
+
+.coverContainer {
+  width: 100px;
+  height: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #F1F3F5;
+  flex-shrink: 0;
+  position: relative;
+  border: 1px solid #E9ECEF;
+}
+
+.coverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .coverImg {
+  transform: scale(1.03);
+}
+
+.coverFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ADB5BD;
+  text-align: center;
+  padding: 8px;
+}
+
+.infoColumn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.topMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.statusBadge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-full, 9999px);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.badgePreorder {
+  background: #FFF9DB;
+  color: #D97706;
+  border: 1px solid #FFE066;
+}
+
+.badgeRecent {
+  background: #FFF0F3;
+  color: #EE4D2D;
+  border: 1px solid #FFE0E6;
+}
+
+.badgeReleased {
+  background: #F1F3F5;
+  color: #495057;
+  border: 1px solid #DEE2E6;
+}
+
+.datePill {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6C757D;
+}
+
+.bookTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+  text-decoration: none;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--transition-fast);
+}
+
+.bookTitle:hover {
+  color: #EE4D2D;
+}
+
+.authorPublisher {
+  font-size: 12px;
+  color: #6C757D;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.authorPublisher strong {
+  color: #343A40;
+}
+
+.bottomActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F3F5;
+}
+
+.priceGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.priceMain {
+  font-size: 15px;
+  font-weight: 800;
+  color: #EE4D2D;
+}
+
+.priceOriginal {
+  font-size: 12px;
+  color: #ADB5BD;
+  text-decoration: line-through;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  background: #111827;
+  color: #FFFFFF;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.actionBtn:hover {
+  background: #EE4D2D;
+}
+
+@media (max-width: 580px) {
+  .card {
+    padding: 12px;
+    gap: 12px;
+  }
+  .coverContainer {
+    width: 80px;
+    height: 112px;
+  }
+  .bookTitle {
+    font-size: 13px;
+  }
+  .bottomActionRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .actionBtn {
+    width: 100%;
+    text-align: center;
+  }
+}

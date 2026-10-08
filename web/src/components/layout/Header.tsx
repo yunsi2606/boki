@@ -59,6 +59,7 @@ export default function Header() {
             <nav className={styles.navLinks}>
               <Link href="/" className={pathname === '/' ? styles.navLinkActive : styles.navLink}>Trang chủ</Link>
               <Link href="/books" className={pathname?.startsWith('/books') ? styles.navLinkActive : styles.navLink}>Cửa hàng</Link>
+              <Link href="/schedule" className={pathname?.startsWith('/schedule') ? styles.navLinkActive : styles.navLink}>Lịch phát hành</Link>
               <Link href="/preview" className={pathname?.startsWith('/preview') ? styles.navLinkActive : styles.navLink}>Đọc thử</Link>
               <Link href="/blog" className={pathname?.startsWith('/blog') ? styles.navLinkActive : styles.navLink}>Bài viết</Link>
               <Link href="/#vouchers" className={styles.navLink}>Mã giảm giá</Link>

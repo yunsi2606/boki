@@ -1,0 +1,45 @@
+/* Schedule Timeline Group Styles - Strict < 250 lines */
+
+.groupContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #E9ECEF;
+}
+
+.dateHeading {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.countTag {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6C757D;
+  background: #F1F3F5;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 9999px);
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+}

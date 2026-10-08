@@ -1,0 +1,109 @@
+/* Schedule Page Styles - Strict < 250 lines */
+
+.schedulePage {
+  min-height: 80vh;
+  background: #F8F9FA;
+  padding: 32px 16px 64px 16px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heroHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.5px;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: #6C757D;
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+.summaryMetaBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #495057;
+  padding-top: 4px;
+  flex-wrap: wrap;
+}
+
+.metaItem strong {
+  color: #EE4D2D;
+}
+
+.metaDivider {
+  color: #CED4DA;
+}
+
+.timelineSections {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  margin-top: 8px;
+}
+
+.loadingBox,
+.emptyBox {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: var(--radius-xl, 14px);
+  padding: 48px 24px;
+  text-align: center;
+  color: #6C757D;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.resetBtn {
+  background: #EE4D2D;
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.resetBtn:hover {
+  background: #D83A1B;
+}
+
+@media (max-width: 768px) {
+  .schedulePage {
+    padding: 20px 12px 48px 12px;
+  }
+  .pageTitle {
+    font-size: 22px;
+  }
+  .pageSubtitle {
+    font-size: 13px;
+  }
+  .summaryMetaBar {
+    gap: 8px;
+    font-size: 12px;
+  }
+}

@@ -41,12 +41,13 @@ Hệ thống sử dụng bảng màu thương hiệu chuẩn (`web/src/styles/to
 
 ---
 
-## 3. QUY CHUẨN ICON & TYPOGRAPHY
-- **100% Vector SVG Stroke**: Chỉ sử dụng vector icons từ thư viện chuẩn (`lucide-react`).
+## 3. QUY CHUẨN ICON, LOGO & TYPOGRAPHY
+- **Hạn chế tối đa icon**: Tuyệt đối KHÔNG lạm dụng icon bừa bãi (kể cả icon từ thư viện như `lucide-react`) vì sẽ tạo cảm giác giao diện sơ sài, rẻ tiền giống sản phẩm do AI sinh tự động.
+- **Ưu tiên nhận diện chuẩn**: Sử dụng Typography phân cấp tinh tế, nhãn chữ rõ ràng (Text labels), huy hiệu thương hiệu (Brand badges) hoặc Logo chính thức (nếu cần người dùng sẽ cung cấp/tạo logo).
+- **Khi bắt buộc phải có icon**: Chỉ sử dụng icon vector SVG stroke chuẩn cho các hành động chức năng thiết yếu (như đóng mở menu, giỏ hàng, tìm kiếm).
 - **Tuyệt đối cấm**:
   - Không sử dụng icon dạng text (ví dụ: `[x]`, `+`, `->`, `...`, `v`, `^`).
   - Không sử dụng emoji (ví dụ: 🗑️, ⚡, 📦, ❌, ✅, ⚠️).
-- **Vị trí hiển thị**: Chỉ dùng icon ở những nơi thực sự cần thiết và tinh tế. Tránh lạm dụng icon bừa bãi làm rối mắt giao diện.
 
 ---
 
