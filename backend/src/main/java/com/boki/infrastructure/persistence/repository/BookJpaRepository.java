@@ -19,6 +19,7 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
     Page<BookJpaEntity> findByIsCombo(boolean isCombo, Pageable pageable);
 
     List<BookJpaEntity> findBySellerId(UUID sellerId);
+    long countByStockQuantityLessThanEqual(int threshold);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"images"})
     @Query("SELECT b FROM BookJpaEntity b WHERE b.id IN :ids")

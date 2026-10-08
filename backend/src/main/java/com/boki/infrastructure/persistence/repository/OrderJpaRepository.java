@@ -26,6 +26,20 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> 
     @Query("SELECT COALESCE(SUM(o.memberDiscountAmount), 0) FROM OrderJpaEntity o WHERE o.buyerId = :buyerId")
     java.math.BigDecimal sumMemberDiscountAmountByBuyerId(@Param("buyerId") UUID buyerId);
 
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM OrderJpaEntity o WHERE o.status != com.boki.infrastructure.persistence.entity.OrderJpaEntity.OrderStatusJpa.CANCELLED")
+    java.math.BigDecimal sumTotalRevenue();
+
+    long countByStatus(OrderJpaEntity.OrderStatusJpa status);
+
+    @Query(value = "SELECT CAST(o.created_at AS date) AS orderDate, " +
+                   "COALESCE(SUM(o.total_amount), 0) AS dailyRevenue, " +
+                   "COUNT(o.id) AS dailyOrders " +
+                   "FROM orders o " +
+                   "WHERE o.status != 'CANCELLED' AND o.created_at >= :since " +
+                   "GROUP BY CAST(o.created_at AS date) " +
+                   "ORDER BY orderDate ASC", nativeQuery = true)
+    List<Object[]> getDailyRevenueTrends(@Param("since") java.time.Instant since);
+
     Page<OrderJpaEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Page<OrderJpaEntity> findByStatusOrderByCreatedAtDesc(OrderJpaEntity.OrderStatusJpa status, Pageable pageable);

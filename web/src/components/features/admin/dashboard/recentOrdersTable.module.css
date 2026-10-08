@@ -1,0 +1,141 @@
+/* Recent Orders Table Styles */
+
+.tableCard {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  min-width: 0;
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.viewAllLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #EE4D2D;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.viewAllLink:hover {
+  color: #C83214;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ordersTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.ordersTable th {
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #6C757D;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #E9ECEF;
+  white-space: nowrap;
+}
+
+.ordersTable td {
+  padding: 16px;
+  font-size: 14px;
+  color: #212529;
+  border-bottom: 1px solid #E9ECEF;
+  vertical-align: middle;
+}
+
+.ordersTable tbody tr:hover {
+  background-color: #F8F9FA;
+}
+
+.orderIdCell {
+  font-weight: 700;
+  color: #EE4D2D;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.amountCell {
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #EE4D2D;
+  background: #FFF0F3;
+  border: 1px solid #FFE0E6;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.actionBtn:hover {
+  background: #EE4D2D;
+  color: #FFFFFF;
+  border-color: #EE4D2D;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 40px !important;
+  color: #6C757D;
+  font-style: italic;
+}
+
+.statusBadge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.badgePending { background: #FFFBEB; color: #D97706; }
+.badgeConfirmed { background: #EBF8FF; color: #3182CE; }
+.badgeShipped { background: #F3E8FF; color: #9333EA; }
+.badgeDelivered { background: #F0FDF4; color: #16A34A; }
+.badgeCancelled { background: #FEF2F2; color: #EF4444; }
+
+@media (max-width: 768px) {
+  .tableCard {
+    padding: 18px 14px;
+    border-radius: var(--radius-lg);
+  }
+  .ordersTable th,
+  .ordersTable td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+}

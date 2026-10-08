@@ -17,4 +17,29 @@ public interface OrderItemJpaRepository extends JpaRepository<OrderItemJpaEntity
            "GROUP BY i1.bookId, i2.bookId " +
            "HAVING COUNT(DISTINCT i1.order.id) >= 1")
     List<Object[]> findCoPurchasedPairs();
+
+    @Query(value = "SELECT oi.book_id AS bookId, " +
+                   "b.title AS title, b.author AS author, b.category_cover_url AS coverUrl, " +
+                   "COALESCE(SUM(oi.quantity), 0) AS totalSold, " +
+                   "COALESCE(SUM(oi.quantity * oi.unit_price), 0) AS totalRevenue " +
+                   "FROM order_items oi " +
+                   "JOIN orders o ON o.id = oi.order_id " +
+                   "JOIN books b ON b.id = oi.book_id " +
+                   "WHERE o.status != 'CANCELLED' " +
+                   "GROUP BY oi.book_id, b.title, b.author, b.category_cover_url " +
+                   "ORDER BY totalSold DESC " +
+                   "LIMIT :limit", nativeQuery = true)
+    List<Object[]> findTopSellingBooks(@org.springframework.data.repository.query.Param("limit") int limit);
+
+    @Query(value = "SELECT COALESCE(c.name, 'Chung') AS categoryName, " +
+                   "COALESCE(SUM(oi.quantity * oi.unit_price), 0) AS totalRevenue, " +
+                   "COALESCE(SUM(oi.quantity), 0) AS totalUnitsSold " +
+                   "FROM order_items oi " +
+                   "JOIN orders o ON o.id = oi.order_id " +
+                   "JOIN books b ON b.id = oi.book_id " +
+                   "LEFT JOIN categories c ON c.id = b.category_id " +
+                   "WHERE o.status != 'CANCELLED' " +
+                   "GROUP BY c.id, c.name " +
+                   "ORDER BY totalRevenue DESC", nativeQuery = true)
+    List<Object[]> findCategoryRevenueDistribution();
 }

@@ -25,6 +25,9 @@
 }
 
 .primaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: linear-gradient(135deg, #FF6B52 0%, #EE4D2D 100%);
   color: #FFFFFF;
   padding: 10px 20px;
@@ -42,7 +45,7 @@
   box-shadow: 0 6px 20px rgba(238, 77, 45, 0.35);
 }
 
-/* Metrics Grid - 4 Columns Wide, 2x2 on Laptops/Tablets */
+/* Metrics Grid - 4 Columns Wide, 2x2 on Tablets */
 .metricsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -68,7 +71,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
   flex-shrink: 0;
 }
 
@@ -93,154 +95,28 @@
   white-space: nowrap;
 }
 
-/* Content Grid - Left Table Auto, Right Quick Actions 280px */
-.contentGrid {
+/* Analytics Row (Revenue Trend + Category Donut) */
+.analyticsGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* Operations Row (Orders Table + Top Books & Quick Actions) */
+.operationsGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
 
-.tableCard {
-  background: #FFFFFF;
-  border: 1px solid #E9ECEF;
-  border-radius: var(--radius-xl);
-  padding: 24px;
-  box-shadow: var(--shadow-sm);
-  min-width: 0;
-}
-
-.tableHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.tableHeader h3,
-.sectionTitle {
-  font-size: 17px;
-  font-weight: 800;
-  color: #111827;
-}
-
-.viewAllLink {
-  font-size: 13px;
-  font-weight: 700;
-  color: #EE4D2D;
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.viewAllLink:hover {
-  color: #C83214;
-}
-
-.tableWrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.ordersTable {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.ordersTable th {
-  padding: 14px 16px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #6C757D;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 2px solid #E9ECEF;
-  white-space: nowrap;
-}
-
-.ordersTable td {
-  padding: 16px;
-  font-size: 14px;
-  color: #212529;
-  border-bottom: 1px solid #E9ECEF;
-  vertical-align: middle;
-}
-
-.ordersTable tbody tr:hover {
-  background-color: #F8F9FA;
-}
-
-.orderIdCell {
-  font-weight: 700;
-  color: #EE4D2D;
-  font-family: monospace;
-  font-size: 13px;
-}
-
-.customerBox {
+.sideColumn {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+  min-width: 0;
 }
-
-.customerName {
-  font-weight: 700;
-  color: #111827;
-}
-
-.customerPhone {
-  font-size: 12px;
-  color: #6C757D;
-}
-
-.amountCell {
-  font-weight: 800;
-  color: #111827;
-  white-space: nowrap;
-}
-
-.actionBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #EE4D2D;
-  background: #FFF0F3;
-  border: 1px solid #FFE0E6;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-}
-
-.actionBtn:hover {
-  background: #EE4D2D;
-  color: #FFFFFF;
-  border-color: #EE4D2D;
-  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
-}
-
-.emptyRow {
-  text-align: center;
-  padding: 40px !important;
-  color: #6C757D;
-  font-style: italic;
-}
-
-.statusBadge {
-  font-size: 11px;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-}
-
-.badgePending { background: #FFFBEB; color: #D97706; }
-.badgeConfirmed { background: #EBF8FF; color: #3182CE; }
-.badgeShipped { background: #F3E8FF; color: #9333EA; }
-.badgeDelivered { background: #F0FDF4; color: #16A34A; }
-.badgeCancelled { background: #FEF2F2; color: #EF4444; }
 
 .sideCard {
   background: #FFFFFF;
@@ -293,7 +169,8 @@
 
 /* Responsive Breakpoints */
 @media (max-width: 1180px) {
-  .contentGrid {
+  .analyticsGrid,
+  .operationsGrid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
@@ -332,7 +209,6 @@
   .metricIconBox {
     width: 42px;
     height: 42px;
-    font-size: 20px;
   }
   .metricLabel {
     font-size: 12px;
@@ -340,15 +216,9 @@
   .metricValue {
     font-size: 16px;
   }
-  .tableCard,
   .sideCard {
     padding: 18px 14px;
     border-radius: var(--radius-lg);
-  }
-  .ordersTable th,
-  .ordersTable td {
-    padding: 12px 10px;
-    font-size: 13px;
   }
 }
 
