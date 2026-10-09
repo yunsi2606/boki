@@ -51,8 +51,17 @@ export type ScheduleTabFilter = 'ALL' | 'LINKED' | 'SPECIAL';
 
 export type ScheduleViewMode = 'DAY' | 'MONTH';
 
+export type ScheduleEventType = 'PRE_ORDER' | 'RELEASE';
+
+export interface ScheduleTimelineItem {
+  schedule: ReleaseScheduleItem;
+  eventType: ScheduleEventType;
+  targetEditionIdx: number;
+  eventDate: string;
+}
+
 export interface ScheduleTimelineGroup {
   dateKey: string;
   dateLabel: string;
-  items: ReleaseScheduleItem[];
+  items: ScheduleTimelineItem[];
 }

@@ -1,18 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import type { ReleaseScheduleItem, ReleaseScheduleEditionItem } from '@/types/schedule';
+import type {
+  ReleaseScheduleItem,
+  ReleaseScheduleEditionItem,
+  ScheduleEventType,
+} from '@/types/schedule';
 import styles from './scheduleBookCard.module.css';
 
 interface ScheduleBookCardProps {
   item: ReleaseScheduleItem;
+  eventType?: ScheduleEventType;
+  initialEditionIdx?: number;
+  eventDate?: string;
   onOpenDetail: (item: ReleaseScheduleItem, selectedEditionIdx?: number) => void;
 }
 
-export default function ScheduleBookCard({ item, onOpenDetail }: ScheduleBookCardProps) {
-  const [activeEditionIdx, setActiveEditionIdx] = useState(0);
+export default function ScheduleBookCard({
+  item,
+  eventType,
+  initialEditionIdx = 0,
+  eventDate,
+  onOpenDetail,
+}: ScheduleBookCardProps) {
+  const [activeEditionIdx, setActiveEditionIdx] = useState(initialEditionIdx);
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setActiveEditionIdx(initialEditionIdx);
+  }, [initialEditionIdx]);
 
   const editions = item.editions && item.editions.length > 0
     ? item.editions
@@ -51,7 +68,11 @@ export default function ScheduleBookCard({ item, onOpenDetail }: ScheduleBookCar
   };
 
   const displayCover = currentEdition.coverUrl || item.coverUrl || item.editions?.find((e) => e.coverUrl)?.coverUrl;
-  const displayDate = currentEdition.effectiveReleaseDate || currentEdition.releaseDate || item.releaseDate;
+  const displayDate = eventDate || (
+    eventType === 'PRE_ORDER'
+      ? (currentEdition.effectivePreOrderDate || currentEdition.preOrderDate || item.preOrderDate)
+      : (currentEdition.effectiveReleaseDate || currentEdition.releaseDate || item.releaseDate)
+  );
 
   return (
     <div className={styles.card}>
@@ -76,6 +97,12 @@ export default function ScheduleBookCard({ item, onOpenDetail }: ScheduleBookCar
         <div>
           <div className={styles.topMetaRow}>
             <span className={styles.publisherBadge}>{item.publisher}</span>
+            {eventType === 'PRE_ORDER' && (
+              <span className={styles.eventBadgePreOrder}>Mở Pre-order</span>
+            )}
+            {eventType === 'RELEASE' && (
+              <span className={styles.eventBadgeRelease}>Phát hành</span>
+            )}
             {(editions.length > 1 || currentEdition.editionType !== 'STANDARD') && (
               <span className={styles.editionBadge}>{getEditionLabel(currentEdition.editionType)}</span>
             )}

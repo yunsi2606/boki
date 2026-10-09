@@ -77,6 +77,26 @@
   border-radius: 6px;
 }
 
+.eventBadgePreOrder {
+  font-size: 11px;
+  font-weight: 800;
+  color: #B45309;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.eventBadgeRelease {
+  font-size: 11px;
+  font-weight: 800;
+  color: #EE4D2D;
+  background: #FFF5F7;
+  border: 1px solid #FFE4E8;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
 .editionBadge {
   font-size: 11px;
   font-weight: 700;
@@ -107,9 +127,7 @@
   overflow: hidden;
   transition: color var(--transition-fast);
 }
-.bookTitle:hover {
-  color: #EE4D2D;
-}
+.bookTitle:hover { color: #EE4D2D; }
 
 .originalTitle {
   font-size: 11px;
@@ -123,9 +141,7 @@
   color: #6C757D;
   margin-bottom: 4px;
 }
-.metaRow strong {
-  color: #343A40;
-}
+.metaRow strong { color: #343A40; }
 
 .editionsChipsRow {
   display: flex;
@@ -152,15 +168,8 @@
   cursor: pointer;
   transition: all var(--transition-fast);
 }
-.editionChipBtn:hover {
-  border-color: #EE4D2D;
-  color: #EE4D2D;
-}
-.editionChipBtnActive {
-  background: #111827;
-  color: #FFFFFF !important;
-  border-color: #111827;
-}
+.editionChipBtn:hover { border-color: #EE4D2D; color: #EE4D2D; }
+.editionChipBtnActive { background: #111827; color: #FFFFFF !important; border-color: #111827; }
 
 .giftsTag {
   font-size: 11px;
@@ -174,10 +183,7 @@
   text-overflow: ellipsis;
   max-width: 100%;
 }
-.giftsLabel {
-  font-weight: 700;
-  color: #EE4D2D;
-}
+.giftsLabel { font-weight: 700; color: #EE4D2D; }
 
 .bottomActionRow {
   display: flex;
@@ -189,18 +195,11 @@
   border-top: 1px solid #F1F3F5;
 }
 
-.priceGroup {
-  display: flex;
-  flex-direction: column;
-}
+.priceGroup { display: flex; flex-direction: column; }
 .priceLabel { font-size: 10px; font-weight: 600; color: #868E96; }
 .priceMain { font-size: 15px; font-weight: 800; color: #EE4D2D; }
 
-.actionsBtnGroup {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.actionsBtnGroup { display: flex; align-items: center; gap: 6px; }
 
 .detailBtn {
   padding: 6px 12px;

@@ -22,10 +22,13 @@ export default function ScheduleTimelineGroup({ group, onOpenDetail }: ScheduleT
       </div>
 
       <div className={styles.cardsGrid}>
-        {group.items.map((item) => (
+        {group.items.map((entry, idx) => (
           <ScheduleBookCard
-            key={item.id}
-            item={item}
+            key={`${entry.schedule.id}-${entry.eventType}-${entry.targetEditionIdx}-${entry.eventDate}-${idx}`}
+            item={entry.schedule}
+            eventType={entry.eventType}
+            initialEditionIdx={entry.targetEditionIdx}
+            eventDate={entry.eventDate}
             onOpenDetail={onOpenDetail}
           />
         ))}

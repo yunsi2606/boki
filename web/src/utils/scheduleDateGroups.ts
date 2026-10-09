@@ -1,4 +1,9 @@
-import type { ReleaseScheduleItem, ScheduleTimelineGroup } from '@/types/schedule';
+import type {
+  ReleaseScheduleItem,
+  ScheduleTimelineGroup,
+  ScheduleTimelineItem,
+  ScheduleEventType,
+} from '@/types/schedule';
 
 const DAY_OF_WEEK_NAMES = [
   'Chủ Nhật',
@@ -50,15 +55,90 @@ export function formatDayGroupLabel(dateStr: string): string {
   }
 }
 
-export function groupSchedulesByDay(items: ReleaseScheduleItem[]): ScheduleTimelineGroup[] {
-  const groupsMap = new Map<string, ReleaseScheduleItem[]>();
+interface ExtractedTimelineEvent {
+  dateKey: string;
+  schedule: ReleaseScheduleItem;
+  eventType: ScheduleEventType;
+  targetEditionIdx: number;
+}
+
+function extractTimelineEvents(items: ReleaseScheduleItem[]): ExtractedTimelineEvent[] {
+  const events: ExtractedTimelineEvent[] = [];
 
   items.forEach((item) => {
-    const dayKey = item.releaseDate ? item.releaseDate.trim() : '2026-10-01';
-    if (!groupsMap.has(dayKey)) {
-      groupsMap.set(dayKey, []);
+    const editions = item.editions && item.editions.length > 0 ? item.editions : null;
+
+    if (!editions) {
+      const releaseDate = item.releaseDate ? item.releaseDate.trim() : '2026-10-01';
+      const preOrderDate = item.preOrderDate ? item.preOrderDate.trim() : null;
+
+      if (preOrderDate && preOrderDate !== releaseDate) {
+        events.push({
+          dateKey: preOrderDate,
+          schedule: item,
+          eventType: 'PRE_ORDER',
+          targetEditionIdx: 0,
+        });
+      }
+      events.push({
+        dateKey: releaseDate,
+        schedule: item,
+        eventType: 'RELEASE',
+        targetEditionIdx: 0,
+      });
+      return;
     }
-    groupsMap.get(dayKey)!.push(item);
+
+    editions.forEach((ed, idx) => {
+      const releaseDate = (ed.effectiveReleaseDate || ed.releaseDate || item.releaseDate || '2026-10-01').trim();
+      const preOrderDate = (ed.effectivePreOrderDate || ed.preOrderDate || item.preOrderDate || '').trim();
+
+      if (preOrderDate && preOrderDate !== releaseDate) {
+        events.push({
+          dateKey: preOrderDate,
+          schedule: item,
+          eventType: 'PRE_ORDER',
+          targetEditionIdx: idx,
+        });
+      }
+
+      if (releaseDate) {
+        events.push({
+          dateKey: releaseDate,
+          schedule: item,
+          eventType: 'RELEASE',
+          targetEditionIdx: idx,
+        });
+      }
+    });
+  });
+
+  return events;
+}
+
+export function groupSchedulesByDay(items: ReleaseScheduleItem[]): ScheduleTimelineGroup[] {
+  const allEvents = extractTimelineEvents(items);
+  const groupsMap = new Map<string, ScheduleTimelineItem[]>();
+  const seenMap = new Map<string, Set<string>>();
+
+  allEvents.forEach((ev) => {
+    const { dateKey, schedule, eventType, targetEditionIdx } = ev;
+    if (!groupsMap.has(dateKey)) {
+      groupsMap.set(dateKey, []);
+      seenMap.set(dateKey, new Set<string>());
+    }
+
+    const seenSet = seenMap.get(dateKey)!;
+    const dedupKey = `${schedule.id}-${eventType}`;
+    if (!seenSet.has(dedupKey)) {
+      seenSet.add(dedupKey);
+      groupsMap.get(dateKey)!.push({
+        schedule,
+        eventType,
+        targetEditionIdx,
+        eventDate: dateKey,
+      });
+    }
   });
 
   const result: ScheduleTimelineGroup[] = [];
@@ -70,19 +150,32 @@ export function groupSchedulesByDay(items: ReleaseScheduleItem[]): ScheduleTimel
     });
   });
 
-  // Sort ascending by release date
   return result.sort((a, b) => a.dateKey.localeCompare(b.dateKey));
 }
 
 export function groupSchedulesByMonth(items: ReleaseScheduleItem[]): ScheduleTimelineGroup[] {
-  const groupsMap = new Map<string, ReleaseScheduleItem[]>();
+  const allEvents = extractTimelineEvents(items);
+  const groupsMap = new Map<string, ScheduleTimelineItem[]>();
+  const seenMap = new Map<string, Set<string>>();
 
-  items.forEach((item) => {
-    const monthKey = item.releaseDate ? item.releaseDate.slice(0, 7) : '2026-10';
+  allEvents.forEach((ev) => {
+    const monthKey = ev.dateKey.slice(0, 7) || '2026-10';
     if (!groupsMap.has(monthKey)) {
       groupsMap.set(monthKey, []);
+      seenMap.set(monthKey, new Set<string>());
     }
-    groupsMap.get(monthKey)!.push(item);
+
+    const seenSet = seenMap.get(monthKey)!;
+    const dedupKey = ev.schedule.id;
+    if (!seenSet.has(dedupKey)) {
+      seenSet.add(dedupKey);
+      groupsMap.get(monthKey)!.push({
+        schedule: ev.schedule,
+        eventType: ev.eventType,
+        targetEditionIdx: ev.targetEditionIdx,
+        eventDate: ev.dateKey,
+      });
+    }
   });
 
   const result: ScheduleTimelineGroup[] = [];
@@ -96,6 +189,5 @@ export function groupSchedulesByMonth(items: ReleaseScheduleItem[]): ScheduleTim
     });
   });
 
-  // Sort descending by month key
   return result.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
 }
