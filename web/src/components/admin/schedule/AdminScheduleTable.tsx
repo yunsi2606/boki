@@ -7,7 +7,7 @@ import styles from './adminScheduleTable.module.css';
 interface AdminScheduleTableProps {
   items: ReleaseScheduleItem[];
   onEdit: (item: ReleaseScheduleItem) => void;
-  onDelete: (id: string, title: string) => void;
+  onDelete: (item: ReleaseScheduleItem) => void;
 }
 
 export default function AdminScheduleTable({
@@ -142,7 +142,7 @@ export default function AdminScheduleTable({
                     <button
                       type="button"
                       className={styles.deleteBtn}
-                      onClick={() => onDelete(item.id, item.title)}
+                      onClick={() => onDelete(item)}
                     >
                       Xóa
                     </button>

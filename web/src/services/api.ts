@@ -1,5 +1,11 @@
 import { API_BASE_URL, REFRESH_TOKEN_STORAGE_KEY, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '@/lib/constants';
 import type { ApiError, AuthResponse } from '@/types';
+import {
+  inFlightRequests,
+  responseCache,
+  getDefaultCacheTtl,
+  invalidateCache,
+} from './apiCache';
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -8,7 +14,7 @@ let failedQueue: Array<{
 }> = [];
 
 const processQueue = (error: unknown, token: string | null = null) => {
-  failedQueue.forEach(prom => {
+  failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else if (token) {
@@ -18,70 +24,12 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-export class ApiRequestError extends Error {
-  status: number;
-  error: string;
-  details?: { field: string; message: string }[];
-  timestamp?: string;
-  path?: string;
-
-  constructor(data: ApiError) {
-    const detailMsg = data.details && data.details.length > 0
-      ? data.details.map(d => `${d.field}: ${d.message}`).join(', ')
-      : null;
-    const fullMsg = detailMsg
-      ? `${data.message || 'Lỗi dữ liệu'}: ${detailMsg}`
-      : (data.message || data.error || 'Yêu cầu API thất bại');
-    super(fullMsg);
-    this.name = 'ApiRequestError';
-    this.status = data.status;
-    this.error = data.error;
-    this.details = data.details;
-    this.timestamp = data.timestamp;
-    this.path = data.path;
-  }
-}
+import { ApiRequestError } from './apiError';
+export { ApiRequestError };
 
 interface RequestOptions extends RequestInit {
   cacheTtlMs?: number;
   bypassCache?: boolean;
-}
-
-interface CacheItem<T> {
-  data: T;
-  expiresAt: number;
-}
-
-// In-flight request deduplication map
-const inFlightRequests = new Map<string, Promise<unknown>>();
-
-// In-memory response cache for GET requests
-const responseCache = new Map<string, CacheItem<unknown>>();
-
-/**
- * Default cache TTL for frequently accessed lookup endpoints (in milliseconds)
- */
-function getDefaultCacheTtl(endpoint: string): number {
-  if (endpoint.includes('/categories')) return 180_000; // 3 minutes
-  if (endpoint.includes('/vouchers')) return 60_000;    // 1 minute
-  if (endpoint.startsWith('/books?') || endpoint === '/books') return 10_000; // 10 seconds
-  if (endpoint.startsWith('/blogs?') || endpoint === '/blogs') return 10_000; // 10 seconds
-  return 0; // Default: no cache beyond in-flight deduplication
-}
-
-/**
- * Invalidate cache entries matching a prefix or pattern.
- */
-function invalidateCache(pattern?: string) {
-  if (!pattern) {
-    responseCache.clear();
-    return;
-  }
-  for (const key of responseCache.keys()) {
-    if (key.includes(pattern)) {
-      responseCache.delete(key);
-    }
-  }
 }
 
 /**
@@ -154,7 +102,6 @@ async function apiFetch<T>(
               processQueue(null, newAccessToken);
               isRefreshing = false;
 
-              // Retry original request with new access token
               (headers as Record<string, string>)['Authorization'] = `Bearer ${newAccessToken}`;
               const retryRes = await fetch(`${API_BASE_URL}${endpoint}`, {
                 credentials: 'include',
@@ -173,9 +120,12 @@ async function apiFetch<T>(
                 throw new ApiRequestError(retryError);
               }
 
-              return retryRes.json() as Promise<T>;
+              if (retryRes.status === 204 || retryRes.headers.get('content-length') === '0') {
+                return undefined as T;
+              }
+              const retryText = await retryRes.text();
+              return (retryText ? JSON.parse(retryText) : undefined) as T;
             } else {
-              // Refresh token expired or invalid
               localStorage.removeItem(TOKEN_STORAGE_KEY);
               localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
               localStorage.removeItem(USER_STORAGE_KEY);
@@ -187,12 +137,15 @@ async function apiFetch<T>(
             isRefreshing = false;
           }
         } else {
-          // Queue parallel requests until refresh completes
           return new Promise<string>((resolve, reject) => {
             failedQueue.push({ resolve, reject });
-          }).then(newToken => {
+          }).then((newToken) => {
             (headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`;
-            return fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers }).then(res => res.json() as Promise<T>);
+            return fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers }).then(async (res) => {
+              if (res.status === 204 || res.headers.get('content-length') === '0') return undefined as T;
+              const txt = await res.text();
+              return (txt ? JSON.parse(txt) : undefined) as T;
+            });
           });
         }
       }
@@ -209,16 +162,18 @@ async function apiFetch<T>(
       throw new ApiRequestError(error);
     }
 
-    const data = (await response.json()) as T;
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+      return undefined as T;
+    }
+
+    const text = await response.text();
+    const data = (text ? JSON.parse(text) : undefined) as T;
 
     // Cache successful GET responses if TTL specified or endpoint has default TTL
     if (method === 'GET' && !options.bypassCache) {
       const ttl = options.cacheTtlMs ?? getDefaultCacheTtl(endpoint);
       if (ttl > 0) {
-        responseCache.set(cacheKey, {
-          data,
-          expiresAt: Date.now() + ttl,
-        });
+        responseCache.set(cacheKey, { data, expiresAt: Date.now() + ttl });
       }
     }
 
@@ -233,15 +188,20 @@ async function apiFetch<T>(
   return fetchPromise;
 }
 
+const invalidateMutationCaches = (endpoint: string) => {
+  if (endpoint.includes('/books')) invalidateCache('/books');
+  if (endpoint.includes('/blogs')) invalidateCache('/blogs');
+  if (endpoint.includes('/vouchers')) invalidateCache('/vouchers');
+  if (endpoint.includes('/config')) invalidateCache('/config');
+  if (endpoint.includes('/release-schedules')) invalidateCache('/release-schedules');
+};
+
 export const api = {
   get: <T>(endpoint: string, options?: RequestOptions) =>
     apiFetch<T>(endpoint, { method: 'GET', ...options }),
 
   post: <T>(endpoint: string, body: unknown = {}, options?: RequestOptions) => {
-    // Invalidate caches when mutations occur
-    if (endpoint.includes('/books')) invalidateCache('/books');
-    if (endpoint.includes('/blogs')) invalidateCache('/blogs');
-    if (endpoint.includes('/vouchers')) invalidateCache('/vouchers');
+    invalidateMutationCaches(endpoint);
     return apiFetch<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(body),
@@ -250,10 +210,7 @@ export const api = {
   },
 
   put: <T>(endpoint: string, body: unknown = {}, options?: RequestOptions) => {
-    if (endpoint.includes('/books')) invalidateCache('/books');
-    if (endpoint.includes('/blogs')) invalidateCache('/blogs');
-    if (endpoint.includes('/vouchers')) invalidateCache('/vouchers');
-    if (endpoint.includes('/config')) invalidateCache('/config');
+    invalidateMutationCaches(endpoint);
     return apiFetch<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(body),
@@ -262,16 +219,12 @@ export const api = {
   },
 
   delete: <T>(endpoint: string, options?: RequestOptions) => {
-    if (endpoint.includes('/books')) invalidateCache('/books');
-    if (endpoint.includes('/blogs')) invalidateCache('/blogs');
-    if (endpoint.includes('/vouchers')) invalidateCache('/vouchers');
+    invalidateMutationCaches(endpoint);
     return apiFetch<T>(endpoint, { method: 'DELETE', ...options });
   },
 
   patch: <T>(endpoint: string, body: unknown = {}, options?: RequestOptions) => {
-    if (endpoint.includes('/books')) invalidateCache('/books');
-    if (endpoint.includes('/blogs')) invalidateCache('/blogs');
-    if (endpoint.includes('/vouchers')) invalidateCache('/vouchers');
+    invalidateMutationCaches(endpoint);
     return apiFetch<T>(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(body),

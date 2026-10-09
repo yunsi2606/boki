@@ -6,6 +6,7 @@ import type { CreateSchedulePayload } from '@/services/scheduleService';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import AdminScheduleTable from '@/components/admin/schedule/AdminScheduleTable';
 import AdminScheduleFormModal from '@/components/admin/schedule/AdminScheduleFormModal';
+import DeleteScheduleModal from '@/components/admin/schedule/DeleteScheduleModal';
 import styles from './adminSchedule.module.css';
 
 export default function AdminSchedulePage() {
@@ -18,9 +19,11 @@ export default function AdminSchedulePage() {
   const [selectedPublisher, setSelectedPublisher] = useState<string>('ALL');
   const [linkFilter, setLinkFilter] = useState<'ALL' | 'LINKED' | 'UNLINKED'>('ALL');
 
-  // Modal
+  // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ReleaseScheduleItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<ReleaseScheduleItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchSchedules = async () => {
     try {
@@ -52,14 +55,22 @@ export default function AdminSchedulePage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string, title: string) => {
-    if (!window.confirm(`Bạn có chắc muốn xóa đầu sách "${title}" và toàn bộ phiên bản liên quan?`)) return;
+  const handleRequestDelete = (item: ReleaseScheduleItem) => {
+    setDeletingItem(item);
+  };
 
+  const handleConfirmDelete = async (id: string) => {
     try {
+      setIsDeleting(true);
       await scheduleService.deleteSchedule(id);
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      setDeletingItem(null);
       await fetchSchedules();
     } catch (err) {
+      console.error('Failed to delete schedule item:', err);
       alert('Không thể xóa mục lịch. Vui lòng thử lại!');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -150,7 +161,7 @@ export default function AdminSchedulePage() {
         <AdminScheduleTable
           items={filteredItems}
           onEdit={handleOpenEdit}
-          onDelete={handleDelete}
+          onDelete={handleRequestDelete}
         />
       )}
 
@@ -160,6 +171,15 @@ export default function AdminSchedulePage() {
         initialItem={editingItem}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmitForm}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteScheduleModal
+        isOpen={!!deletingItem}
+        item={deletingItem}
+        onClose={() => setDeletingItem(null)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );
