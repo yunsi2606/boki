@@ -77,18 +77,23 @@ public class StorageManagementService {
         Set<String> activeKeys = mediaReferenceService.getActiveReferencedKeys();
 
         String basePublicUrl = publicUrl.replaceAll("/$", "");
+        Instant safetyThreshold = Instant.now().minus(Duration.ofHours(2));
 
         return allObjects.stream()
                 .filter(obj -> !activeKeys.contains(obj.key()))
                 .sorted((a, b) -> b.lastModified().compareTo(a.lastModified()))
-                .map(obj -> new OrphanFileResponse(
-                        obj.key(),
-                        String.format("%s/%s", basePublicUrl, obj.key()),
-                        obj.size(),
-                        formatBytes(obj.size()),
-                        obj.lastModified(),
-                        extractExtension(obj.key())
-                ))
+                .map(obj -> {
+                    boolean withinGracePeriod = obj.lastModified() != null && obj.lastModified().isAfter(safetyThreshold);
+                    return new OrphanFileResponse(
+                            obj.key(),
+                            String.format("%s/%s", basePublicUrl, obj.key()),
+                            obj.size(),
+                            formatBytes(obj.size()),
+                            obj.lastModified(),
+                            extractExtension(obj.key()),
+                            withinGracePeriod
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -117,11 +122,10 @@ public class StorageManagementService {
 
     public StorageCleanResultResponse cleanAllOrphanFiles() {
         List<OrphanFileResponse> orphans = getOrphanFiles();
-        Instant safetyThreshold = Instant.now().minus(Duration.ofHours(2));
 
         // Filter orphans older than 2 hours to avoid deleting files currently being drafted
         List<OrphanFileResponse> eligibleForDeletion = orphans.stream()
-                .filter(o -> o.lastModified() == null || o.lastModified().isBefore(safetyThreshold))
+                .filter(o -> !o.withinGracePeriod())
                 .collect(Collectors.toList());
 
         int deletedCount = 0;

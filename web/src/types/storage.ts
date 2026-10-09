@@ -16,6 +16,7 @@ export interface OrphanFile {
   sizeFormatted: string;
   lastModified: string;
   extension: string;
+  withinGracePeriod?: boolean;
 }
 
 export interface StorageCleanResult {

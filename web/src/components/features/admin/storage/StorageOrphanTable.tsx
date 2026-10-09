@@ -156,9 +156,28 @@ export default function StorageOrphanTable({
                       <span className={styles.sizeBadge}>{file.sizeFormatted}</span>
                     </td>
                     <td className={styles.td}>
-                      <span style={{ fontSize: '12px', color: '#64748b' }}>
+                      <span style={{ fontSize: '12px', color: '#64748b', display: 'block' }}>
                         {formatDate(file.lastModified)}
                       </span>
+                      {file.withinGracePeriod && (
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            marginTop: '3px',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            background: '#FEF3C7',
+                            color: '#B45309',
+                            border: '1px solid #FDE68A',
+                            whiteSpace: 'nowrap',
+                          }}
+                          title="Tệp mới upload trong 2 giờ qua. Tự động giữ lại khi Dọn rác tất cả để tránh xóa nhầm ảnh đang soạn thảo."
+                        >
+                          Đệm an toàn 2h
+                        </span>
+                      )}
                     </td>
                     <td className={styles.td} style={{ textAlign: 'center' }}>
                       <button

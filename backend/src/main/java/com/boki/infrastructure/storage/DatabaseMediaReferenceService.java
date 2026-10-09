@@ -33,8 +33,9 @@ public class DatabaseMediaReferenceService {
         // 2. Book category clean covers
         collectKeysFromQuery("SELECT category_cover_url FROM books WHERE category_cover_url IS NOT NULL", activeKeys);
 
-        // 3. Blog thumbnails and inline content images
-        collectKeysFromQuery("SELECT thumbnail_url FROM blogs WHERE thumbnail_url IS NOT NULL", activeKeys);
+        // 3. Blog cover image and media attachments
+        collectKeysFromQuery("SELECT cover_image FROM blogs WHERE cover_image IS NOT NULL", activeKeys);
+        collectKeysFromQuery("SELECT media_url FROM blog_media_refs WHERE media_url IS NOT NULL", activeKeys);
         collectInlineKeysFromBlogContent(activeKeys);
 
         // 4. User avatars
@@ -42,6 +43,18 @@ public class DatabaseMediaReferenceService {
 
         // 5. Book variant images
         collectKeysFromQuery("SELECT image_url FROM book_variants WHERE image_url IS NOT NULL", activeKeys);
+
+        // 6. Release schedule main covers
+        collectKeysFromQuery("SELECT cover_url FROM release_schedules WHERE cover_url IS NOT NULL", activeKeys);
+
+        // 7. Release schedule edition covers
+        collectKeysFromQuery("SELECT cover_url FROM release_schedule_editions WHERE cover_url IS NOT NULL", activeKeys);
+
+        // 8. Flash sales banners
+        collectKeysFromQuery("SELECT banner_url FROM flash_sales WHERE banner_url IS NOT NULL", activeKeys);
+
+        // 9. Store configs (banners, logos)
+        collectKeysFromQuery("SELECT config_value FROM store_config WHERE config_value IS NOT NULL", activeKeys);
 
         return activeKeys;
     }

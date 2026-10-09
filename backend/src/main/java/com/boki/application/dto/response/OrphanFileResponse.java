@@ -11,6 +11,7 @@ public record OrphanFileResponse(
         long sizeBytes,
         String sizeFormatted,
         Instant lastModified,
-        String extension
+        String extension,
+        boolean withinGracePeriod
 ) {
 }
