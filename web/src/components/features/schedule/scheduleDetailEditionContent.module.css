@@ -99,9 +99,18 @@
   text-align: right;
 }
 
-.highlightDate { color: #D97706; }
-.preOrderHighlight { color: #2563EB; }
-.priceHighlight { color: #EE4D2D; font-size: 13px; }
+.highlightDate {
+  color: #D97706;
+}
+
+.preOrderHighlight {
+  color: #2563EB;
+}
+
+.priceHighlight {
+  color: #EE4D2D;
+  font-size: 13px;
+}
 
 .giftsBox {
   background: #FFF0F3;
@@ -192,7 +201,10 @@
   text-decoration: none;
   white-space: nowrap;
 }
-.ctaButton:hover { background: #D83A1B; }
+
+.ctaButton:hover {
+  background: #D83A1B;
+}
 
 .unlinkedNotice {
   background: #F8F9FA;
@@ -217,6 +229,12 @@
 }
 
 @media (max-width: 600px) {
-  .bodyLayout { flex-direction: column; }
-  .coverSide { width: 100%; flex-direction: row; }
+  .bodyLayout {
+    flex-direction: column;
+  }
+
+  .coverSide {
+    width: 100%;
+    flex-direction: row;
+  }
 }
