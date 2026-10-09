@@ -181,41 +181,40 @@
   justify-content: center;
   font-size: 11px;
   font-weight: 800;
-  color: #FFFFFF;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  background: #FFFFFF;
+  border: 1px solid var(--color-neutral-300);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   transition: all var(--transition-fast);
+  cursor: pointer;
   overflow: hidden;
   padding: 0;
+  text-decoration: none;
 }
 
 .fabItem:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
 
-.fabZalo {
-  background: #0068FF;
-}
+.fabZalo { color: #0068FF; }
+.fabZalo:hover { border-color: #0068FF; }
 
-.fabMessenger {
-  background: linear-gradient(135deg, #0084FF, #A824FB);
-}
+.fabMessenger { color: #0084FF; }
+.fabMessenger:hover { border-color: #A824FB; }
 
-.fabShopee {
-  background: #EE4D2D;
-}
+.fabShopee { color: #EE4D2D; }
+.fabShopee:hover { border-color: #EE4D2D; }
 
 .fabTop {
   background: #212529;
+  border-color: #212529;
+  color: #FFFFFF;
 }
 
 .fabIcon {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
   display: block;
 }
 

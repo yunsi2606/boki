@@ -111,9 +111,9 @@ export default function Footer() {
                 Đại lý cung cấp sách & truyện bản quyền uy tín hàng đầu. Chuyên phân phối các đầu sách Manga, Light Novel, Văn học và Kỹ năng chính hãng.
               </p>
               <div className={styles.contactInfo}>
-                <p>📍 <strong>Địa chỉ:</strong> Hà Nội / TP. Hồ Chí Minh</p>
-                <p>📞 <strong>Hotline:</strong> 1900 6868 (8:00 - 21:00)</p>
-                <p>✉️ <strong>Email:</strong> hotro@bokistore.vn</p>
+                <p><strong>Địa chỉ:</strong> Hà Nội / TP. Hồ Chí Minh</p>
+                <p><strong>Hotline:</strong> 1900 6868 (8:00 - 21:00)</p>
+                <p><strong>Email:</strong> hotro@bokistore.vn</p>
               </div>
             </div>
 
