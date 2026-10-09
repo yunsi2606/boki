@@ -96,6 +96,7 @@ public class ReleaseScheduleApplicationService {
                 .author(request.getAuthor() != null ? request.getAuthor().trim() : null)
                 .releaseDate(request.getReleaseDate())
                 .preOrderDate(request.getPreOrderDate())
+                .coverUrl(request.getCoverUrl() != null && !request.getCoverUrl().isBlank() ? request.getCoverUrl().trim() : null)
                 .description(request.getDescription())
                 .status(request.getStatus() != null ? request.getStatus() : ReleaseScheduleStatus.SCHEDULED)
                 .createdAt(OffsetDateTime.now())
@@ -113,6 +114,7 @@ public class ReleaseScheduleApplicationService {
                     .schedule(schedule)
                     .editionName("Bản Phổ Thông")
                     .editionType(ReleaseEditionType.STANDARD)
+                    .coverUrl(schedule.getCoverUrl())
                     .sortOrder(0)
                     .build());
         }
@@ -133,6 +135,7 @@ public class ReleaseScheduleApplicationService {
         if (request.getAuthor() != null) entity.setAuthor(request.getAuthor().trim());
         if (request.getReleaseDate() != null) entity.setReleaseDate(request.getReleaseDate());
         if (request.getPreOrderDate() != null) entity.setPreOrderDate(request.getPreOrderDate());
+        if (request.getCoverUrl() != null) entity.setCoverUrl(request.getCoverUrl().trim());
         if (request.getDescription() != null) entity.setDescription(request.getDescription());
         if (request.getStatus() != null) entity.setStatus(request.getStatus());
 
@@ -157,7 +160,6 @@ public class ReleaseScheduleApplicationService {
 
         return ReleaseScheduleEditionJpaEntity.builder()
                 .schedule(parent)
-                .scheduleId(parent.getId())
                 .editionName(req.getEditionName().trim())
                 .editionType(req.getEditionType() != null ? req.getEditionType() : ReleaseEditionType.STANDARD)
                 .releaseDate(req.getReleaseDate())

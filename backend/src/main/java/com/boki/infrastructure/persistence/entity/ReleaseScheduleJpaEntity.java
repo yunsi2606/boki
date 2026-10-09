@@ -42,6 +42,9 @@ public class ReleaseScheduleJpaEntity {
     @Column(name = "pre_order_date")
     private LocalDate preOrderDate;
 
+    @Column(name = "cover_url", length = 500)
+    private String coverUrl;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 

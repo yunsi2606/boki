@@ -22,6 +22,7 @@ public class ReleaseSchedule {
     private String author;
     private LocalDate releaseDate;
     private LocalDate preOrderDate;
+    private String coverUrl;
     private String description;
     private ReleaseScheduleStatus status;
     private List<ReleaseScheduleEdition> editions;

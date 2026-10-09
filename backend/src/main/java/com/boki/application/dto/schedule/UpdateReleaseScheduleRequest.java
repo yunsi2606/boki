@@ -21,6 +21,7 @@ public class UpdateReleaseScheduleRequest {
     private String author;
     private LocalDate releaseDate;
     private LocalDate preOrderDate;
+    private String coverUrl;
     private String description;
     private ReleaseScheduleStatus status;
 

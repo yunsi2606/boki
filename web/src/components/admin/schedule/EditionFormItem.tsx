@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { ReleaseEditionType, ReleaseScheduleStatus } from '@/types/schedule';
 import type { CreateEditionPayload } from '@/services/scheduleService';
 import type { Book } from '@/types';
+import ImageUploadInput from '@/components/ui/ImageUploadInput';
 import BookSearchSelector from './BookSearchSelector';
 import styles from './editionFormItem.module.css';
 
@@ -111,12 +112,12 @@ export default function EditionFormItem({
         </div>
 
         <div className={styles.formGroup}>
-          <label>Ảnh bìa riêng (tùy chọn nếu khác bìa chính)</label>
-          <input
-            type="url"
+          <ImageUploadInput
+            label="Ảnh bìa riêng của bản này (tùy chọn nếu khác bìa chính)"
             value={edition.coverUrl || ''}
-            onChange={(e) => onChange({ ...edition, coverUrl: e.target.value })}
-            placeholder="https://..."
+            onChange={(url) => onChange({ ...edition, coverUrl: url })}
+            placeholder="Chọn hoặc kéo thả ảnh bìa riêng của bản này"
+            helperText="Để trống sẽ tự động hiển thị theo ảnh bìa chính của đầu sách."
           />
         </div>
 

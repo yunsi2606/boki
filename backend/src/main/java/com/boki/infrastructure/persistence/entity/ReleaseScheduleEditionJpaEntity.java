@@ -24,12 +24,13 @@ public class ReleaseScheduleEditionJpaEntity {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Column(name = "schedule_id", nullable = false)
-    private UUID scheduleId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", insertable = false, updatable = false)
+    @JoinColumn(name = "schedule_id", nullable = false)
     private ReleaseScheduleJpaEntity schedule;
+
+    public UUID getScheduleId() {
+        return schedule != null ? schedule.getId() : null;
+    }
 
     @Column(name = "edition_name", length = 100, nullable = false)
     private String editionName;

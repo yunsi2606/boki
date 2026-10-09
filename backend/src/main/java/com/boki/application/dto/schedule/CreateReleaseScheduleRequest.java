@@ -27,6 +27,7 @@ public class CreateReleaseScheduleRequest {
     @NotNull(message = "Ngày phát hành không được để trống")
     private LocalDate releaseDate;
     private LocalDate preOrderDate;
+    private String coverUrl;
     private String description;
     private ReleaseScheduleStatus status;
 

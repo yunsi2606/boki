@@ -59,7 +59,7 @@ export default function AdminScheduleTable({
         </thead>
         <tbody>
           {items.map((item) => {
-            const firstCover = item.editions?.find((e) => e.coverUrl)?.coverUrl;
+            const firstCover = item.coverUrl || item.editions?.find((e) => e.coverUrl)?.coverUrl;
             const linkedEditions = item.editions?.filter((e) => e.linkedBook || e.bookId) || [];
 
             return (

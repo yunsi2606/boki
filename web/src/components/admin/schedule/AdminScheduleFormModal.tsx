@@ -3,6 +3,7 @@
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import type { CreateSchedulePayload } from '@/services/scheduleService';
 import { useScheduleFormState } from '@/hooks/useScheduleFormState';
+import ImageUploadInput from '@/components/ui/ImageUploadInput';
 import EditionFormItem from './EditionFormItem';
 import styles from './adminScheduleFormModal.module.css';
 
@@ -28,6 +29,7 @@ export default function AdminScheduleFormModal({
     author, setAuthor,
     releaseDate, setReleaseDate,
     preOrderDate, setPreOrderDate,
+    coverUrl, setCoverUrl,
     description, setDescription,
     editions,
     submitting,
@@ -128,6 +130,16 @@ export default function AdminScheduleFormModal({
                 onChange={(e) => setPreOrderDate(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <ImageUploadInput
+              label="Ảnh bìa chính của đầu sách *"
+              value={coverUrl}
+              onChange={setCoverUrl}
+              placeholder="Chọn hoặc kéo thả ảnh bìa chính của sách/manga"
+              helperText="Ảnh bìa chính dùng cho lịch và hiển thị mặc định cho các phiên bản."
+            />
           </div>
 
           <div className={styles.formGroup}>

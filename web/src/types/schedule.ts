@@ -39,6 +39,7 @@ export interface ReleaseScheduleItem {
   author?: string;
   releaseDate: string;
   preOrderDate?: string;
+  coverUrl?: string;
   description?: string;
   status: ReleaseScheduleStatus;
   editions: ReleaseScheduleEditionItem[];

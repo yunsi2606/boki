@@ -14,6 +14,7 @@ export function useScheduleFormState(
   const [author, setAuthor] = useState('');
   const [releaseDate, setReleaseDate] = useState('');
   const [preOrderDate, setPreOrderDate] = useState('');
+  const [coverUrl, setCoverUrl] = useState('');
   const [description, setDescription] = useState('');
   const [editions, setEditions] = useState<CreateEditionPayload[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -26,6 +27,7 @@ export function useScheduleFormState(
       setAuthor(initialItem.author || '');
       setReleaseDate(initialItem.releaseDate || '');
       setPreOrderDate(initialItem.preOrderDate || '');
+      setCoverUrl(initialItem.coverUrl || '');
       setDescription(initialItem.description || '');
 
       if (initialItem.editions && initialItem.editions.length > 0) {
@@ -62,6 +64,7 @@ export function useScheduleFormState(
       setAuthor('');
       setReleaseDate(today);
       setPreOrderDate('');
+      setCoverUrl('');
       setDescription('');
       setEditions([
         {
@@ -111,6 +114,7 @@ export function useScheduleFormState(
         author: author.trim() || undefined,
         releaseDate,
         preOrderDate: preOrderDate.trim() || undefined,
+        coverUrl: coverUrl.trim() || undefined,
         description: description.trim() || undefined,
         editions,
       });
@@ -127,6 +131,7 @@ export function useScheduleFormState(
     author, setAuthor,
     releaseDate, setReleaseDate,
     preOrderDate, setPreOrderDate,
+    coverUrl, setCoverUrl,
     description, setDescription,
     editions,
     submitting,

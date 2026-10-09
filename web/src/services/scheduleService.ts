@@ -29,6 +29,7 @@ export interface CreateSchedulePayload {
   author?: string;
   releaseDate: string;
   preOrderDate?: string;
+  coverUrl?: string;
   description?: string;
   status?: 'SCHEDULED' | 'RELEASED' | 'DELAYED' | 'CANCELLED';
   editions?: CreateEditionPayload[];

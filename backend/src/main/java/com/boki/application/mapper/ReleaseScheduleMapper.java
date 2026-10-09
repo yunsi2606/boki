@@ -34,6 +34,7 @@ public class ReleaseScheduleMapper {
                 .author(entity.getAuthor())
                 .releaseDate(entity.getReleaseDate())
                 .preOrderDate(entity.getPreOrderDate())
+                .coverUrl(entity.getCoverUrl())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .editions(editionDtos)

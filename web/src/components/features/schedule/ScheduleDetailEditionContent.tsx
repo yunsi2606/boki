@@ -43,7 +43,7 @@ export default function ScheduleDetailEditionContent({
     }
   };
 
-  const displayCover = currentEdition.coverUrl || item.editions?.find((e) => e.coverUrl)?.coverUrl;
+  const displayCover = currentEdition.coverUrl || item.coverUrl || item.editions?.find((e) => e.coverUrl)?.coverUrl;
   const displayReleaseDate = currentEdition.effectiveReleaseDate || currentEdition.releaseDate || item.releaseDate;
   const displayPreOrderDate = currentEdition.effectivePreOrderDate || currentEdition.preOrderDate || item.preOrderDate;
 

@@ -50,7 +50,7 @@ export default function ScheduleBookCard({ item, onOpenDetail }: ScheduleBookCar
     }
   };
 
-  const displayCover = currentEdition.coverUrl || item.editions?.find((e) => e.coverUrl)?.coverUrl;
+  const displayCover = currentEdition.coverUrl || item.coverUrl || item.editions?.find((e) => e.coverUrl)?.coverUrl;
   const displayDate = currentEdition.effectiveReleaseDate || currentEdition.releaseDate || item.releaseDate;
 
   return (
