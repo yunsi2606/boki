@@ -12,7 +12,6 @@
   min-width: 0;
   position: relative;
 }
-
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -20,8 +19,8 @@
 }
 
 .coverContainer {
-  width: 104px;
-  height: 146px;
+  width: 108px;
+  height: 152px;
   border-radius: 8px;
   overflow: hidden;
   background: #F1F3F5;
@@ -29,14 +28,12 @@
   cursor: pointer;
   border: 1px solid #E9ECEF;
 }
-
 .coverImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
-
 .card:hover .coverImg {
   transform: scale(1.04);
 }
@@ -110,7 +107,6 @@
   overflow: hidden;
   transition: color var(--transition-fast);
 }
-
 .bookTitle:hover {
   color: #EE4D2D;
 }
@@ -127,16 +123,50 @@
   color: #6C757D;
   margin-bottom: 4px;
 }
-
 .metaRow strong {
   color: #343A40;
+}
+
+.editionsChipsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 6px 0;
+}
+
+.editionsChipsLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #868E96;
+}
+
+.editionChipBtn {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #DEE2E6;
+  background: #F8F9FA;
+  color: #495057;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.editionChipBtn:hover {
+  border-color: #EE4D2D;
+  color: #EE4D2D;
+}
+.editionChipBtnActive {
+  background: #111827;
+  color: #FFFFFF !important;
+  border-color: #111827;
 }
 
 .giftsTag {
   font-size: 11px;
   color: #495057;
-  background: #F8F9FA;
-  border: 1px solid #E9ECEF;
+  background: #FFF0F3;
+  border: 1px solid #FFE0E6;
   border-radius: 6px;
   padding: 3px 8px;
   white-space: nowrap;
@@ -144,7 +174,6 @@
   text-overflow: ellipsis;
   max-width: 100%;
 }
-
 .giftsLabel {
   font-weight: 700;
   color: #EE4D2D;
@@ -164,19 +193,8 @@
   display: flex;
   flex-direction: column;
 }
-
-.priceLabel {
-  font-size: 10px;
-  font-weight: 600;
-  color: #868E96;
-  text-transform: uppercase;
-}
-
-.priceMain {
-  font-size: 15px;
-  font-weight: 800;
-  color: #EE4D2D;
-}
+.priceLabel { font-size: 10px; font-weight: 600; color: #868E96; }
+.priceMain { font-size: 15px; font-weight: 800; color: #EE4D2D; }
 
 .actionsBtnGroup {
   display: flex;
@@ -195,11 +213,7 @@
   cursor: pointer;
   transition: all var(--transition-fast);
 }
-
-.detailBtn:hover {
-  background: #E9ECEF;
-  color: #111827;
-}
+.detailBtn:hover { background: #E9ECEF; color: #111827; }
 
 .viewProductBtn {
   padding: 6px 13px;
@@ -212,10 +226,7 @@
   transition: all var(--transition-fast);
   white-space: nowrap;
 }
-
-.viewProductBtn:hover {
-  background: #D83A1B;
-}
+.viewProductBtn:hover { background: #D83A1B; }
 
 .notOnSaleTag {
   font-size: 11px;
@@ -228,26 +239,10 @@
 }
 
 @media (max-width: 580px) {
-  .card {
-    padding: 12px;
-    gap: 12px;
-  }
-  .coverContainer {
-    width: 84px;
-    height: 118px;
-  }
-  .bookTitle {
-    font-size: 13px;
-  }
-  .bottomActionRow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .actionsBtnGroup {
-    width: 100%;
-  }
-  .detailBtn, .viewProductBtn, .notOnSaleTag {
-    flex: 1;
-    text-align: center;
-  }
+  .card { padding: 12px; gap: 12px; }
+  .coverContainer { width: 88px; height: 124px; }
+  .bookTitle { font-size: 13px; }
+  .bottomActionRow { flex-direction: column; align-items: flex-start; }
+  .actionsBtnGroup { width: 100%; }
+  .detailBtn, .viewProductBtn, .notOnSaleTag { flex: 1; text-align: center; }
 }

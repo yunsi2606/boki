@@ -53,7 +53,7 @@ export default function AdminSchedulePage() {
   };
 
   const handleDelete = async (id: string, title: string) => {
-    if (!window.confirm(`Bạn có chắc muốn xóa mục lịch "${title}"?`)) return;
+    if (!window.confirm(`Bạn có chắc muốn xóa đầu sách "${title}" và toàn bộ phiên bản liên quan?`)) return;
 
     try {
       await scheduleService.deleteSchedule(id);
@@ -80,13 +80,17 @@ export default function AdminSchedulePage() {
         const matchesTitle = item.title.toLowerCase().includes(term);
         const matchesOrig = item.originalTitle?.toLowerCase().includes(term);
         const matchesAuthor = item.author?.toLowerCase().includes(term);
-        if (!matchesTitle && !matchesOrig && !matchesAuthor) return false;
+        const matchesEditions = item.editions?.some((e) =>
+          e.editionName.toLowerCase().includes(term) || (e.gifts && e.gifts.toLowerCase().includes(term))
+        );
+        if (!matchesTitle && !matchesOrig && !matchesAuthor && !matchesEditions) return false;
       }
       if (selectedPublisher !== 'ALL' && item.publisher !== selectedPublisher) {
         return false;
       }
-      if (linkFilter === 'LINKED' && !item.linkedBook && !item.bookId) return false;
-      if (linkFilter === 'UNLINKED' && (item.linkedBook || item.bookId)) return false;
+      const hasAnyLinked = item.editions?.some((e) => e.linkedBook || e.bookId);
+      if (linkFilter === 'LINKED' && !hasAnyLinked) return false;
+      if (linkFilter === 'UNLINKED' && hasAnyLinked) return false;
       return true;
     });
   }, [items, searchTerm, selectedPublisher, linkFilter]);
@@ -98,7 +102,7 @@ export default function AdminSchedulePage() {
         <div>
           <h1 className={styles.pageTitle}>Quản Lý Lịch Phát Hành Sách & Manga</h1>
           <p className={styles.pageSubtitle}>
-            Theo dõi kế hoạch phát hành từ các nhà xuất bản, biên soạn phụ kiện quà tặng và gắn liên kết sản phẩm trên Boki.
+            Quản lý kế hoạch xuất bản (1 Đầu sách - N Phiên bản), phân bổ quà tặng độc quyền và liên kết sản phẩm trên Boki.
           </p>
         </div>
         <button type="button" className={styles.createBtn} onClick={handleOpenCreate}>
@@ -113,7 +117,7 @@ export default function AdminSchedulePage() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Tìm theo tên truyện, tên gốc, tác giả..."
+            placeholder="Tìm theo tên truyện, tên gốc, tác giả, quà tặng..."
           />
         </div>
 
@@ -133,8 +137,8 @@ export default function AdminSchedulePage() {
             onChange={(e) => setLinkFilter(e.target.value as 'ALL' | 'LINKED' | 'UNLINKED')}
           >
             <option value="ALL">Tất cả tình trạng link</option>
-            <option value="LINKED">Đã liên kết sách Boki</option>
-            <option value="UNLINKED">Chưa liên kết sách</option>
+            <option value="LINKED">Đã có bản link sách Boki</option>
+            <option value="UNLINKED">Chưa có bản nào link</option>
           </select>
         </div>
       </div>

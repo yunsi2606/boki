@@ -13,21 +13,35 @@ export interface LinkedBookInfo {
   status: string;
 }
 
+export interface ReleaseScheduleEditionItem {
+  id?: string;
+  scheduleId?: string;
+  editionName: string;
+  editionType: ReleaseEditionType;
+  releaseDate?: string | null;
+  preOrderDate?: string | null;
+  effectiveReleaseDate?: string;
+  effectivePreOrderDate?: string;
+  estimatedPrice?: number;
+  gifts?: string;
+  coverUrl?: string;
+  status: ReleaseScheduleStatus;
+  bookId?: string | null;
+  linkedBook?: LinkedBookInfo;
+  sortOrder?: number;
+}
+
 export interface ReleaseScheduleItem {
   id: string;
   title: string;
   originalTitle?: string;
   publisher: string;
   author?: string;
-  releaseDate: string; // ISO YYYY-MM-DD
-  estimatedPrice?: number;
-  editionType: ReleaseEditionType;
-  gifts?: string;
-  coverUrl?: string;
+  releaseDate: string;
+  preOrderDate?: string;
   description?: string;
   status: ReleaseScheduleStatus;
-  bookId?: string;
-  linkedBook?: LinkedBookInfo;
+  editions: ReleaseScheduleEditionItem[];
   createdAt?: string;
   updatedAt?: string;
 }

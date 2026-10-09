@@ -8,19 +8,30 @@ export interface GetSchedulesParams {
   hasBook?: boolean;
 }
 
+export interface CreateEditionPayload {
+  id?: string;
+  editionName: string;
+  editionType?: 'STANDARD' | 'SPECIAL' | 'LIMITED' | 'BOXSET';
+  releaseDate?: string | null;
+  preOrderDate?: string | null;
+  estimatedPrice?: number;
+  gifts?: string;
+  coverUrl?: string;
+  status?: 'SCHEDULED' | 'RELEASED' | 'DELAYED' | 'CANCELLED';
+  bookId?: string | null;
+  sortOrder?: number;
+}
+
 export interface CreateSchedulePayload {
   title: string;
   originalTitle?: string;
   publisher: string;
   author?: string;
   releaseDate: string;
-  estimatedPrice?: number;
-  editionType?: 'STANDARD' | 'SPECIAL' | 'LIMITED' | 'BOXSET';
-  gifts?: string;
-  coverUrl?: string;
+  preOrderDate?: string;
   description?: string;
   status?: 'SCHEDULED' | 'RELEASED' | 'DELAYED' | 'CANCELLED';
-  bookId?: string | null;
+  editions?: CreateEditionPayload[];
 }
 
 export interface UpdateSchedulePayload extends Partial<CreateSchedulePayload> {}

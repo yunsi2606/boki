@@ -1,12 +1,11 @@
 package com.boki.application.service;
 
-import com.boki.application.dto.schedule.CreateReleaseScheduleRequest;
-import com.boki.application.dto.schedule.ReleaseScheduleDto;
-import com.boki.application.dto.schedule.UpdateReleaseScheduleRequest;
+import com.boki.application.dto.schedule.*;
 import com.boki.application.exception.ResourceNotFoundException;
 import com.boki.application.mapper.ReleaseScheduleMapper;
 import com.boki.domain.model.schedule.ReleaseEditionType;
 import com.boki.domain.model.schedule.ReleaseScheduleStatus;
+import com.boki.infrastructure.persistence.entity.ReleaseScheduleEditionJpaEntity;
 import com.boki.infrastructure.persistence.entity.ReleaseScheduleJpaEntity;
 import com.boki.infrastructure.persistence.repository.BookJpaRepository;
 import com.boki.infrastructure.persistence.repository.ReleaseScheduleJpaRepository;
@@ -40,7 +39,8 @@ public class ReleaseScheduleApplicationService {
     public List<ReleaseScheduleDto> getSchedules(Integer month, Integer year, String publisher, Boolean hasBook) {
         Specification<ReleaseScheduleJpaEntity> spec = (root, query, cb) -> {
             if (query != null && Long.class != query.getResultType()) {
-                root.fetch("book", JoinType.LEFT);
+                query.distinct(true);
+                root.fetch("editions", JoinType.LEFT).fetch("book", JoinType.LEFT);
             }
             List<Predicate> predicates = new ArrayList<>();
 
@@ -55,28 +55,29 @@ public class ReleaseScheduleApplicationService {
                 predicates.add(cb.equal(cb.lower(root.get("publisher")), publisher.trim().toLowerCase()));
             }
 
-            if (hasBook != null) {
-                if (hasBook) {
-                    predicates.add(cb.isNotNull(root.get("bookId")));
-                } else {
-                    predicates.add(cb.isNull(root.get("bookId")));
-                }
-            }
-
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
         Sort sort = Sort.by(Sort.Direction.ASC, "releaseDate").and(Sort.by(Sort.Direction.ASC, "title"));
         List<ReleaseScheduleJpaEntity> entities = releaseScheduleJpaRepository.findAll(spec, sort);
 
-        return entities.stream()
+        List<ReleaseScheduleDto> dtos = entities.stream()
                 .map(releaseScheduleMapper::toDto)
                 .collect(Collectors.toList());
+
+        if (hasBook != null) {
+            dtos = dtos.stream().filter(s -> {
+                boolean hasLinked = s.getEditions().stream().anyMatch(e -> e.getBookId() != null || e.getLinkedBook() != null);
+                return hasBook ? hasLinked : !hasLinked;
+            }).collect(Collectors.toList());
+        }
+
+        return dtos;
     }
 
     @Transactional(readOnly = true)
     public ReleaseScheduleDto getScheduleById(UUID id) {
-        ReleaseScheduleJpaEntity entity = releaseScheduleJpaRepository.findByIdWithBook(id)
+        ReleaseScheduleJpaEntity entity = releaseScheduleJpaRepository.findByIdWithEditions(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ReleaseSchedule", "id", id));
         return releaseScheduleMapper.toDto(entity);
     }
@@ -88,35 +89,42 @@ public class ReleaseScheduleApplicationService {
 
     @Transactional
     public ReleaseScheduleDto createSchedule(CreateReleaseScheduleRequest request) {
-        if (request.getBookId() != null) {
-            bookJpaRepository.findById(request.getBookId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Book", "id", request.getBookId()));
-        }
-
-        ReleaseScheduleJpaEntity entity = ReleaseScheduleJpaEntity.builder()
+        ReleaseScheduleJpaEntity schedule = ReleaseScheduleJpaEntity.builder()
                 .title(request.getTitle().trim())
                 .originalTitle(request.getOriginalTitle() != null ? request.getOriginalTitle().trim() : null)
                 .publisher(request.getPublisher().trim())
                 .author(request.getAuthor() != null ? request.getAuthor().trim() : null)
                 .releaseDate(request.getReleaseDate())
-                .estimatedPrice(request.getEstimatedPrice())
-                .editionType(request.getEditionType() != null ? request.getEditionType() : ReleaseEditionType.STANDARD)
-                .gifts(request.getGifts())
-                .coverUrl(request.getCoverUrl())
+                .preOrderDate(request.getPreOrderDate())
                 .description(request.getDescription())
                 .status(request.getStatus() != null ? request.getStatus() : ReleaseScheduleStatus.SCHEDULED)
-                .bookId(request.getBookId())
                 .createdAt(OffsetDateTime.now())
                 .updatedAt(OffsetDateTime.now())
                 .build();
 
-        ReleaseScheduleJpaEntity saved = releaseScheduleJpaRepository.save(entity);
+        List<ReleaseScheduleEditionJpaEntity> editions = new ArrayList<>();
+        if (request.getEditions() != null && !request.getEditions().isEmpty()) {
+            for (int i = 0; i < request.getEditions().size(); i++) {
+                ReleaseScheduleEditionRequest edReq = request.getEditions().get(i);
+                editions.add(buildEditionEntity(edReq, schedule, i));
+            }
+        } else {
+            editions.add(ReleaseScheduleEditionJpaEntity.builder()
+                    .schedule(schedule)
+                    .editionName("Bản Phổ Thông")
+                    .editionType(ReleaseEditionType.STANDARD)
+                    .sortOrder(0)
+                    .build());
+        }
+        schedule.setEditions(editions);
+
+        ReleaseScheduleJpaEntity saved = releaseScheduleJpaRepository.save(schedule);
         return getScheduleById(saved.getId());
     }
 
     @Transactional
     public ReleaseScheduleDto updateSchedule(UUID id, UpdateReleaseScheduleRequest request) {
-        ReleaseScheduleJpaEntity entity = releaseScheduleJpaRepository.findById(id)
+        ReleaseScheduleJpaEntity entity = releaseScheduleJpaRepository.findByIdWithEditions(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ReleaseSchedule", "id", id));
 
         if (request.getTitle() != null) entity.setTitle(request.getTitle().trim());
@@ -124,22 +132,45 @@ public class ReleaseScheduleApplicationService {
         if (request.getPublisher() != null) entity.setPublisher(request.getPublisher().trim());
         if (request.getAuthor() != null) entity.setAuthor(request.getAuthor().trim());
         if (request.getReleaseDate() != null) entity.setReleaseDate(request.getReleaseDate());
-        if (request.getEstimatedPrice() != null) entity.setEstimatedPrice(request.getEstimatedPrice());
-        if (request.getEditionType() != null) entity.setEditionType(request.getEditionType());
-        if (request.getGifts() != null) entity.setGifts(request.getGifts());
-        if (request.getCoverUrl() != null) entity.setCoverUrl(request.getCoverUrl());
+        if (request.getPreOrderDate() != null) entity.setPreOrderDate(request.getPreOrderDate());
         if (request.getDescription() != null) entity.setDescription(request.getDescription());
         if (request.getStatus() != null) entity.setStatus(request.getStatus());
 
-        if (request.getBookId() != null) {
-            bookJpaRepository.findById(request.getBookId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Book", "id", request.getBookId()));
-            entity.setBookId(request.getBookId());
+        if (request.getEditions() != null) {
+            entity.getEditions().clear();
+            for (int i = 0; i < request.getEditions().size(); i++) {
+                entity.getEditions().add(buildEditionEntity(request.getEditions().get(i), entity, i));
+            }
         }
 
         entity.setUpdatedAt(OffsetDateTime.now());
         ReleaseScheduleJpaEntity saved = releaseScheduleJpaRepository.save(entity);
         return getScheduleById(saved.getId());
+    }
+
+    private ReleaseScheduleEditionJpaEntity buildEditionEntity(
+            ReleaseScheduleEditionRequest req, ReleaseScheduleJpaEntity parent, int sortOrder) {
+        if (req.getBookId() != null) {
+            bookJpaRepository.findById(req.getBookId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Book", "id", req.getBookId()));
+        }
+
+        return ReleaseScheduleEditionJpaEntity.builder()
+                .schedule(parent)
+                .scheduleId(parent.getId())
+                .editionName(req.getEditionName().trim())
+                .editionType(req.getEditionType() != null ? req.getEditionType() : ReleaseEditionType.STANDARD)
+                .releaseDate(req.getReleaseDate())
+                .preOrderDate(req.getPreOrderDate())
+                .estimatedPrice(req.getEstimatedPrice())
+                .gifts(req.getGifts())
+                .coverUrl(req.getCoverUrl())
+                .status(req.getStatus() != null ? req.getStatus() : ReleaseScheduleStatus.SCHEDULED)
+                .bookId(req.getBookId())
+                .sortOrder(req.getSortOrder() != null ? req.getSortOrder() : sortOrder)
+                .createdAt(OffsetDateTime.now())
+                .updatedAt(OffsetDateTime.now())
+                .build();
     }
 
     @Transactional

@@ -45,13 +45,11 @@
   align-items: center;
   justify-content: center;
 }
-
 .thumbImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .noThumb {
   font-size: 10px;
   color: #ADB5BD;
@@ -62,21 +60,18 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-width: 260px;
+  max-width: 240px;
 }
-
 .mainTitle {
   font-size: 14px;
   color: #111827;
   line-height: 1.3;
 }
-
 .subTitle {
   font-size: 11px;
   color: #868E96;
   font-style: italic;
 }
-
 .authorText {
   font-size: 11px;
   color: #6C757D;
@@ -95,7 +90,30 @@
 .dateText {
   font-weight: 700;
   color: #212529;
+  display: block;
   white-space: nowrap;
+}
+.preOrderDateText {
+  font-size: 11px;
+  color: #D97706;
+  font-weight: 600;
+  display: block;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.editionsPillsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 280px;
+}
+
+.editionRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .badge {
@@ -106,25 +124,21 @@
   white-space: nowrap;
   display: inline-block;
 }
-
 .badgeStandard {
   background: #F1F3F5;
   color: #495057;
   border: 1px solid #DEE2E6;
 }
-
 .badgeSpecial {
   background: #EEF2FF;
   color: #4338CA;
   border: 1px solid #E0E7FF;
 }
-
 .badgeLimited {
   background: #FFF0F3;
   color: #EE4D2D;
   border: 1px solid #FFE0E6;
 }
-
 .badgeBoxset {
   background: #FEF3C7;
   color: #B45309;
@@ -132,30 +146,28 @@
 }
 
 .giftsText {
-  max-width: 180px;
-  font-size: 12px;
-  color: #495057;
+  font-size: 11px;
+  color: #6C757D;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 170px;
 }
 
 .linkedBox {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  max-width: 180px;
+  max-width: 200px;
 }
-
 .linkedBadge {
   font-size: 10px;
   font-weight: 800;
   color: #16A34A;
   text-transform: uppercase;
 }
-
 .linkedLink {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #EE4D2D;
   text-decoration: none;
@@ -163,7 +175,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .linkedLink:hover {
   text-decoration: underline;
 }
@@ -185,35 +196,28 @@
   gap: 6px;
 }
 
-.editBtn {
+.editBtn, .deleteBtn {
   padding: 5px 12px;
   border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.editBtn {
   border: 1px solid #DEE2E6;
   background: #FFFFFF;
   color: #212529;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition-fast);
 }
-
 .editBtn:hover {
   background: #F1F3F5;
-  border-color: #CED4DA;
 }
 
 .deleteBtn {
-  padding: 5px 12px;
-  border-radius: 6px;
   border: 1px solid #FCA5A5;
   background: #FEF2F2;
   color: #DC2626;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition-fast);
 }
-
 .deleteBtn:hover {
   background: #FEE2E2;
 }
@@ -225,7 +229,6 @@
   border: 1px solid #E9ECEF;
   border-radius: 14px;
 }
-
 .emptyText {
   font-size: 14px;
   color: #6C757D;

@@ -1,6 +1,5 @@
 package com.boki.application.dto.schedule;
 
-import com.boki.domain.model.schedule.ReleaseEditionType;
 import com.boki.domain.model.schedule.ReleaseScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -23,15 +24,12 @@ public class ReleaseScheduleDto {
     private String publisher;
     private String author;
     private LocalDate releaseDate;
-    private BigDecimal estimatedPrice;
-    private ReleaseEditionType editionType;
-    private String gifts;
-    private String coverUrl;
+    private LocalDate preOrderDate;
     private String description;
     private ReleaseScheduleStatus status;
-    private UUID bookId;
     
-    private LinkedBookDto linkedBook;
+    @Builder.Default
+    private List<ReleaseScheduleEditionDto> editions = new ArrayList<>();
 
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

@@ -20,6 +20,7 @@ export default function ReleaseSchedulePage() {
   const [selectedPublisher, setSelectedPublisher] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [detailItem, setDetailItem] = useState<ReleaseScheduleItem | null>(null);
+  const [detailEditionIdx, setDetailEditionIdx] = useState<number>(0);
 
   useEffect(() => {
     scheduleService.getPublishers()
@@ -48,15 +49,23 @@ export default function ReleaseSchedulePage() {
   }, [selectedMonth, selectedPublisher]);
 
   const counts = useMemo(() => {
-    const linked = items.filter((i) => Boolean(i.linkedBook || i.bookId)).length;
-    const special = items.filter((i) => i.editionType && i.editionType !== 'STANDARD').length;
+    const linked = items.filter((i) =>
+      i.editions?.some((e) => Boolean(e.linkedBook || e.bookId))
+    ).length;
+    const special = items.filter((i) =>
+      i.editions?.some((e) => e.editionType && e.editionType !== 'STANDARD')
+    ).length;
     return { all: items.length, linked, special };
   }, [items]);
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
-      if (activeTab === 'LINKED') return Boolean(item.linkedBook || item.bookId);
-      if (activeTab === 'SPECIAL') return item.editionType && item.editionType !== 'STANDARD';
+      if (activeTab === 'LINKED') {
+        return item.editions?.some((e) => Boolean(e.linkedBook || e.bookId));
+      }
+      if (activeTab === 'SPECIAL') {
+        return item.editions?.some((e) => e.editionType && e.editionType !== 'STANDARD');
+      }
       return true;
     });
   }, [items, activeTab]);
@@ -85,6 +94,11 @@ export default function ReleaseSchedulePage() {
 
     return result.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
   }, [filteredItems]);
+
+  const handleOpenDetail = (item: ReleaseScheduleItem, editionIdx?: number) => {
+    setDetailItem(item);
+    setDetailEditionIdx(editionIdx || 0);
+  };
 
   return (
     <div className={styles.schedulePage}>
@@ -145,7 +159,7 @@ export default function ReleaseSchedulePage() {
               <ScheduleTimelineGroup
                 key={group.dateKey}
                 group={group}
-                onOpenDetail={(item) => setDetailItem(item)}
+                onOpenDetail={handleOpenDetail}
               />
             ))}
           </div>
@@ -153,6 +167,7 @@ export default function ReleaseSchedulePage() {
 
         <ScheduleDetailModal
           item={detailItem}
+          initialEditionIdx={detailEditionIdx}
           onClose={() => setDetailItem(null)}
         />
       </div>

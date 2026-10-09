@@ -6,7 +6,7 @@ import styles from './scheduleTimelineGroup.module.css';
 
 interface ScheduleTimelineGroupProps {
   group: GroupType;
-  onOpenDetail: (item: ReleaseScheduleItem) => void;
+  onOpenDetail: (item: ReleaseScheduleItem, selectedEditionIdx?: number) => void;
 }
 
 export default function ScheduleTimelineGroup({ group, onOpenDetail }: ScheduleTimelineGroupProps) {

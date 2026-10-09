@@ -1,0 +1,222 @@
+.bodyLayout {
+  padding: 22px;
+  overflow-y: auto;
+  display: flex;
+  gap: 22px;
+}
+
+.coverSide {
+  width: 150px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coverBox {
+  width: 100%;
+  aspect-ratio: 1 / 1.45;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #F1F3F5;
+  border: 1px solid #E9ECEF;
+}
+
+.coverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ADB5BD;
+  text-align: center;
+  padding: 8px;
+}
+
+.publisherTagBox {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.pubTagLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #92400E;
+  text-transform: uppercase;
+}
+
+.pubTagName {
+  font-size: 12px;
+  font-weight: 800;
+  color: #D97706;
+}
+
+.detailsSide {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.metaList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: #F8F9FA;
+  border: 1px solid #E9ECEF;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.metaLabel {
+  color: #6C757D;
+  font-weight: 600;
+}
+
+.metaValue {
+  color: #212529;
+  font-weight: 700;
+  text-align: right;
+}
+
+.highlightDate { color: #D97706; }
+.preOrderHighlight { color: #2563EB; }
+.priceHighlight { color: #EE4D2D; font-size: 13px; }
+
+.giftsBox {
+  background: #FFF0F3;
+  border: 1px solid #FFE0E6;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.giftsTitle {
+  font-size: 12px;
+  font-weight: 800;
+  color: #EE4D2D;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+}
+
+.giftsText {
+  font-size: 12px;
+  color: #343A40;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.descBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.descTitle {
+  font-size: 11px;
+  font-weight: 800;
+  color: #495057;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.descText {
+  font-size: 12px;
+  color: #495057;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.storeLinkCard {
+  margin-top: auto;
+  border-top: 1px solid #E9ECEF;
+  padding-top: 12px;
+}
+
+.linkedSuccess {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #F0FDF4;
+  border: 1px solid #DCFCE7;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.linkedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.linkedBadge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #16A34A;
+  text-transform: uppercase;
+}
+
+.linkedPrice {
+  font-size: 12px;
+  font-weight: 800;
+  color: #15803D;
+}
+
+.ctaButton {
+  padding: 7px 14px;
+  background: #EE4D2D;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ctaButton:hover { background: #D83A1B; }
+
+.unlinkedNotice {
+  background: #F8F9FA;
+  border: 1px dashed #CED4DA;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.noticeTitle {
+  font-size: 10px;
+  font-weight: 800;
+  color: #6C757D;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.noticeText {
+  font-size: 11px;
+  color: #6C757D;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .bodyLayout { flex-direction: column; }
+  .coverSide { width: 100%; flex-direction: row; }
+}

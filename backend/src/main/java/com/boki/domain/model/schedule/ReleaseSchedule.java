@@ -5,9 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -21,13 +21,10 @@ public class ReleaseSchedule {
     private String publisher;
     private String author;
     private LocalDate releaseDate;
-    private BigDecimal estimatedPrice;
-    private ReleaseEditionType editionType;
-    private String gifts;
-    private String coverUrl;
+    private LocalDate preOrderDate;
     private String description;
     private ReleaseScheduleStatus status;
-    private UUID bookId;
+    private List<ReleaseScheduleEdition> editions;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

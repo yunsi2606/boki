@@ -15,8 +15,17 @@ import java.util.UUID;
 public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseScheduleJpaEntity, UUID>,
         JpaSpecificationExecutor<ReleaseScheduleJpaEntity> {
 
-    @Query("SELECT r FROM ReleaseScheduleJpaEntity r LEFT JOIN FETCH r.book WHERE r.id = :id")
-    Optional<ReleaseScheduleJpaEntity> findByIdWithBook(@Param("id") UUID id);
+    @Query("SELECT DISTINCT r FROM ReleaseScheduleJpaEntity r " +
+           "LEFT JOIN FETCH r.editions e " +
+           "LEFT JOIN FETCH e.book " +
+           "WHERE r.id = :id")
+    Optional<ReleaseScheduleJpaEntity> findByIdWithEditions(@Param("id") UUID id);
+
+    @Query("SELECT DISTINCT r FROM ReleaseScheduleJpaEntity r " +
+           "LEFT JOIN FETCH r.editions e " +
+           "LEFT JOIN FETCH e.book " +
+           "ORDER BY r.releaseDate ASC, r.title ASC")
+    List<ReleaseScheduleJpaEntity> findAllWithEditions();
 
     @Query("SELECT DISTINCT r.publisher FROM ReleaseScheduleJpaEntity r ORDER BY r.publisher ASC")
     List<String> findDistinctPublishers();

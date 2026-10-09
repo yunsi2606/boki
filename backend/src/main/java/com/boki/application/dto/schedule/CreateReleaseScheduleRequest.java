@@ -1,7 +1,7 @@
 package com.boki.application.dto.schedule;
 
-import com.boki.domain.model.schedule.ReleaseEditionType;
 import com.boki.domain.model.schedule.ReleaseScheduleStatus;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,9 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -26,11 +26,11 @@ public class CreateReleaseScheduleRequest {
     private String author;
     @NotNull(message = "Ngày phát hành không được để trống")
     private LocalDate releaseDate;
-    private BigDecimal estimatedPrice;
-    private ReleaseEditionType editionType;
-    private String gifts;
-    private String coverUrl;
+    private LocalDate preOrderDate;
     private String description;
     private ReleaseScheduleStatus status;
-    private UUID bookId;
+
+    @Valid
+    @Builder.Default
+    private List<ReleaseScheduleEditionRequest> editions = new ArrayList<>();
 }

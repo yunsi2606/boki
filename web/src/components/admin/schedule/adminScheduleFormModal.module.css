@@ -3,7 +3,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.6);
+  background: rgba(17, 24, 39, 0.65);
   backdrop-filter: blur(4px);
   z-index: 9999;
   display: flex;
@@ -15,29 +15,36 @@
 .modal {
   background: #FFFFFF;
   border-radius: var(--radius-xl, 16px);
-  max-width: 640px;
+  max-width: 720px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 92vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15);
   border: 1px solid #E9ECEF;
 }
 
 .header {
-  padding: 16px 20px;
+  padding: 16px 22px;
   border-bottom: 1px solid #E9ECEF;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.header h3 {
+.headerSubtitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #EE4D2D;
+  text-transform: uppercase;
+}
+
+.headerTitle {
   font-size: 16px;
   font-weight: 800;
   color: #111827;
-  margin: 0;
+  margin: 2px 0 0 0;
 }
 
 .closeBtn {
@@ -46,7 +53,7 @@
   font-size: 16px;
   color: #868E96;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 6px;
   border-radius: 6px;
 }
 
@@ -56,11 +63,57 @@
 }
 
 .formBody {
-  padding: 20px;
+  padding: 20px 22px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.sectionHeader {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sectionSub {
+  font-size: 11px;
+  color: #6C757D;
+  margin: 2px 0 0 0;
+}
+
+.editionsSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #E9ECEF;
+  margin-top: 6px;
+}
+
+.addEditionBtn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px dashed #EE4D2D;
+  background: #FFF5F7;
+  color: #EE4D2D;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.addEditionBtn:hover {
+  background: #EE4D2D;
+  color: #FFFFFF;
+}
+
+.editionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .formRow {
@@ -122,79 +175,18 @@
   color: #FFFFFF;
 }
 
-.linkBookSection {
-  background: #F8F9FA;
-  border: 1px dashed #CED4DA;
-  border-radius: 10px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.sectionLabel {
-  font-size: 12px;
-  font-weight: 800;
-  color: #111827;
-}
-
-.selectedBookBox {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #F0FDF4;
-  border: 1px solid #DCFCE7;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #166534;
-}
-
-.unlinkBtn {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
-  color: #DC2626;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.resultsDropdown {
-  margin-top: 4px;
-  background: #FFFFFF;
-  border: 1px solid #CED4DA;
-  border-radius: 8px;
-  max-height: 140px;
-  overflow-y: auto;
-  box-shadow: var(--shadow-sm);
-}
-
-.resultItem {
-  padding: 8px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  border-bottom: 1px solid #F1F3F5;
-}
-
-.resultItem:hover {
-  background: #FFF5F7;
-  color: #EE4D2D;
-}
-
 .actionsFooter {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
-  padding-top: 12px;
+  margin-top: 12px;
+  padding-top: 14px;
   border-top: 1px solid #E9ECEF;
 }
 
 .cancelBtn {
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: 8px;
   border: 1px solid #DEE2E6;
   background: #FFFFFF;
@@ -209,7 +201,7 @@
 }
 
 .submitBtn {
-  padding: 8px 20px;
+  padding: 8px 22px;
   border-radius: 8px;
   border: none;
   background: #EE4D2D;
@@ -217,6 +209,7 @@
   font-weight: 800;
   color: #FFFFFF;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
   transition: background var(--transition-fast);
 }
 
