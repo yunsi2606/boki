@@ -12,6 +12,7 @@ import { groupSchedulesByDay, groupSchedulesByMonth } from '@/utils/scheduleDate
 import { useScheduleLazyGroups } from '@/hooks/useScheduleLazyGroups';
 import ScheduleFilterBar from '@/components/features/schedule/ScheduleFilterBar';
 import ScheduleTimelineGroup from '@/components/features/schedule/ScheduleTimelineGroup';
+import SchedulePastSection from '@/components/features/schedule/SchedulePastSection';
 import ScheduleDetailModal from '@/components/features/schedule/ScheduleDetailModal';
 import styles from './schedule.module.css';
 
@@ -25,6 +26,8 @@ export default function ReleaseSchedulePage() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [detailItem, setDetailItem] = useState<ReleaseScheduleItem | null>(null);
   const [detailEditionIdx, setDetailEditionIdx] = useState<number>(0);
+
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
     scheduleService.getPublishers()
@@ -81,7 +84,33 @@ export default function ReleaseSchedulePage() {
     return groupSchedulesByMonth(filteredItems);
   }, [filteredItems, viewMode]);
 
-  const { visibleGroups, hasMore, sentinelRef } = useScheduleLazyGroups(dateGroups, {
+  const { pastGroups, upcomingGroups, isAllPast } = useMemo(() => {
+    const past: GroupType[] = [];
+    const upcoming: GroupType[] = [];
+    const currentMonthKey = todayStr.slice(0, 7);
+
+    dateGroups.forEach((g) => {
+      const isPast = g.dateKey.length === 10
+        ? g.dateKey < todayStr
+        : g.dateKey < currentMonthKey;
+
+      if (isPast) {
+        past.push(g);
+      } else {
+        upcoming.push(g);
+      }
+    });
+
+    past.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+
+    return {
+      pastGroups: past,
+      upcomingGroups: upcoming,
+      isAllPast: upcoming.length === 0 && past.length > 0,
+    };
+  }, [dateGroups, todayStr]);
+
+  const { visibleGroups, hasMore, sentinelRef } = useScheduleLazyGroups(upcomingGroups, {
     batchSize: 4,
     initialCount: 5,
     resetDeps: [viewMode, activeTab, selectedPublisher, selectedMonth],
@@ -149,6 +178,14 @@ export default function ReleaseSchedulePage() {
           </div>
         ) : (
           <div className={styles.timelineSections}>
+            {pastGroups.length > 0 && (
+              <SchedulePastSection
+                pastGroups={pastGroups}
+                isAllPast={isAllPast}
+                onOpenDetail={handleOpenDetail}
+              />
+            )}
+
             {visibleGroups.map((group) => (
               <ScheduleTimelineGroup
                 key={group.dateKey}
