@@ -1,0 +1,114 @@
+/* Single Edition Fields Styles */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #F8F9FA;
+  border: 1px solid #E9ECEF;
+  border-radius: var(--radius-lg, 12px);
+  padding: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #343A40;
+}
+
+.formGroup input {
+  padding: 10px 14px;
+  border: 1px solid #CED4DA;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #FFFFFF;
+  color: #212529;
+  outline: none;
+  font-family: inherit;
+}
+
+.formGroup input:focus {
+  border-color: #EE4D2D;
+}
+
+.multiEditionsBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #FFFFFF;
+  border: 1px dashed #CED4DA;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 4px;
+}
+
+.multiEditionsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.multiEditionsTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.multiEditionsSub {
+  font-size: 12px;
+  color: #6C757D;
+}
+
+.enableMultiBtn {
+  background: #FFF5F7;
+  color: #EE4D2D;
+  border: 1px solid #FFE4E8;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.enableMultiBtn:hover {
+  background: #EE4D2D;
+  color: #FFFFFF;
+  border-color: #EE4D2D;
+}
+
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+  }
+  .multiEditionsBanner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

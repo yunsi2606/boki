@@ -97,6 +97,13 @@ export function useScheduleFormState(
     setEditions(list);
   };
 
+  const handleUpdateSingleEdition = (fields: Partial<CreateEditionPayload>) => {
+    if (editions.length === 0) return;
+    const list = [...editions];
+    list[0] = { ...list[0], ...fields };
+    setEditions(list);
+  };
+
   const handleRemoveEdition = (idx: number) => {
     setEditions(editions.filter((_, i) => i !== idx));
   };
@@ -137,6 +144,7 @@ export function useScheduleFormState(
     submitting,
     handleAddEdition,
     handleUpdateEdition,
+    handleUpdateSingleEdition,
     handleRemoveEdition,
     handleSubmit,
   };

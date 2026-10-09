@@ -47,6 +47,8 @@ export default function ScheduleDetailEditionContent({
   const displayReleaseDate = currentEdition.effectiveReleaseDate || currentEdition.releaseDate || item.releaseDate;
   const displayPreOrderDate = currentEdition.effectivePreOrderDate || currentEdition.preOrderDate || item.preOrderDate;
 
+  const hasMultipleEditions = item.editions && item.editions.length > 1;
+
   return (
     <div className={styles.bodyLayout}>
       <div className={styles.coverSide}>
@@ -97,10 +99,12 @@ export default function ScheduleDetailEditionContent({
               </span>
             </div>
           )}
-          <div className={styles.metaRow}>
-            <span className={styles.metaLabel}>Phiên bản:</span>
-            <span className={styles.metaValue}>{getEditionLabel(currentEdition.editionType)}</span>
-          </div>
+          {(hasMultipleEditions || currentEdition.editionType !== 'STANDARD') && (
+            <div className={styles.metaRow}>
+              <span className={styles.metaLabel}>Phiên bản:</span>
+              <span className={styles.metaValue}>{getEditionLabel(currentEdition.editionType)}</span>
+            </div>
+          )}
           <div className={styles.metaRow}>
             <span className={styles.metaLabel}>Giá bìa dự kiến:</span>
             <span className={`${styles.metaValue} ${styles.priceHighlight}`}>
@@ -111,7 +115,11 @@ export default function ScheduleDetailEditionContent({
 
         {currentEdition.gifts && (
           <div className={styles.giftsBox}>
-            <h5 className={styles.giftsTitle}>Phụ kiện & Quà tặng kèm ({currentEdition.editionName})</h5>
+            <h5 className={styles.giftsTitle}>
+              {hasMultipleEditions
+                ? `Phụ kiện & Quà tặng kèm (${currentEdition.editionName})`
+                : 'Phụ kiện & Quà tặng kèm'}
+            </h5>
             <p className={styles.giftsText}>{currentEdition.gifts}</p>
           </div>
         )}
@@ -127,7 +135,11 @@ export default function ScheduleDetailEditionContent({
           {currentEdition.linkedBook ? (
             <div className={styles.linkedSuccess}>
               <div className={styles.linkedInfo}>
-                <span className={styles.linkedBadge}>Đã có trên Boki ({currentEdition.editionName})</span>
+                <span className={styles.linkedBadge}>
+                  {hasMultipleEditions
+                    ? `Đã có trên Boki (${currentEdition.editionName})`
+                    : 'Đã có trên Boki'}
+                </span>
                 <span className={styles.linkedPrice}>
                   Giá mở bán: {formatCurrency(currentEdition.linkedBook.price)}
                 </span>

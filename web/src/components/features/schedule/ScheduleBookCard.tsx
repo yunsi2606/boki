@@ -76,7 +76,9 @@ export default function ScheduleBookCard({ item, onOpenDetail }: ScheduleBookCar
         <div>
           <div className={styles.topMetaRow}>
             <span className={styles.publisherBadge}>{item.publisher}</span>
-            <span className={styles.editionBadge}>{getEditionLabel(currentEdition.editionType)}</span>
+            {(editions.length > 1 || currentEdition.editionType !== 'STANDARD') && (
+              <span className={styles.editionBadge}>{getEditionLabel(currentEdition.editionType)}</span>
+            )}
             <span className={styles.datePill}>{formatDate(displayDate)}</span>
           </div>
 
@@ -125,7 +127,9 @@ export default function ScheduleBookCard({ item, onOpenDetail }: ScheduleBookCar
         {/* Bottom Actions */}
         <div className={styles.bottomActionRow}>
           <div className={styles.priceGroup}>
-            <span className={styles.priceLabel}>Giá bìa ({currentEdition.editionName})</span>
+            <span className={styles.priceLabel}>
+              {editions.length > 1 ? `Giá bìa (${currentEdition.editionName})` : 'Giá bìa'}
+            </span>
             <span className={styles.priceMain}>
               {formatCurrency(currentEdition.linkedBook?.price || currentEdition.estimatedPrice)}
             </span>

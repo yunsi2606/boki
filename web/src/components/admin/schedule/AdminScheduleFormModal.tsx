@@ -4,6 +4,7 @@ import type { ReleaseScheduleItem } from '@/types/schedule';
 import type { CreateSchedulePayload } from '@/services/scheduleService';
 import { useScheduleFormState } from '@/hooks/useScheduleFormState';
 import ImageUploadInput from '@/components/ui/ImageUploadInput';
+import SingleEditionFields from './SingleEditionFields';
 import EditionFormItem from './EditionFormItem';
 import styles from './adminScheduleFormModal.module.css';
 
@@ -35,6 +36,7 @@ export default function AdminScheduleFormModal({
     submitting,
     handleAddEdition,
     handleUpdateEdition,
+    handleUpdateSingleEdition,
     handleRemoveEdition,
     handleSubmit,
   } = useScheduleFormState(initialItem, isOpen, onSubmit, onClose);
@@ -152,32 +154,42 @@ export default function AdminScheduleFormModal({
             />
           </div>
 
-          <div className={styles.editionsSectionHeader}>
-            <div>
-              <span className={styles.sectionHeader}>2. Các phiên bản phát hành ({editions.length})</span>
-              <p className={styles.sectionSub}>
-                Mỗi phiên bản có quà tặng, giá bìa và liên kết sản phẩm trên sàn Boki riêng.
-              </p>
-            </div>
-            <button type="button" className={styles.addEditionBtn} onClick={handleAddEdition}>
-              + Thêm phiên bản
-            </button>
-          </div>
+          {editions.length <= 1 ? (
+            <SingleEditionFields
+              edition={editions[0] || { editionName: 'Bản Phổ Thông', editionType: 'STANDARD' }}
+              onChange={handleUpdateSingleEdition}
+              onEnableMultipleEditions={handleAddEdition}
+            />
+          ) : (
+            <>
+              <div className={styles.editionsSectionHeader}>
+                <div>
+                  <span className={styles.sectionHeader}>2. Các phiên bản phát hành ({editions.length})</span>
+                  <p className={styles.sectionSub}>
+                    Mỗi phiên bản có quà tặng, giá bìa và liên kết sản phẩm trên sàn Boki riêng.
+                  </p>
+                </div>
+                <button type="button" className={styles.addEditionBtn} onClick={handleAddEdition}>
+                  + Thêm phiên bản
+                </button>
+              </div>
 
-          <div className={styles.editionsList}>
-            {editions.map((ed, idx) => (
-              <EditionFormItem
-                key={ed.id || idx}
-                index={idx}
-                edition={ed}
-                parentReleaseDate={releaseDate}
-                parentPreOrderDate={preOrderDate}
-                onChange={(updated) => handleUpdateEdition(idx, updated)}
-                onRemove={() => handleRemoveEdition(idx)}
-                canRemove={editions.length > 1}
-              />
-            ))}
-          </div>
+              <div className={styles.editionsList}>
+                {editions.map((ed, idx) => (
+                  <EditionFormItem
+                    key={ed.id || idx}
+                    index={idx}
+                    edition={ed}
+                    parentReleaseDate={releaseDate}
+                    parentPreOrderDate={preOrderDate}
+                    onChange={(updated) => handleUpdateEdition(idx, updated)}
+                    onRemove={() => handleRemoveEdition(idx)}
+                    canRemove={true}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           <div className={styles.actionsFooter}>
             <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={submitting}>Hủy</button>
