@@ -1,10 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import styles from './Footer.module.css';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [zaloError, setZaloError] = useState(false);
+  const [messengerError, setMessengerError] = useState(false);
+  const [shopeeError, setShopeeError] = useState(false);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -14,17 +18,80 @@ export default function Footer() {
     <>
       {/* Floating Action Buttons (FAB) */}
       <div className={styles.fabContainer}>
-        <a href="https://zalo.me" target="_blank" rel="noopener noreferrer" className={`${styles.fabItem} ${styles.fabZalo}`} title="Chat Zalo">
-          Zalo
+        <a
+          href="https://zalo.me"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${styles.fabItem} ${styles.fabZalo}`}
+          title="Chat Zalo"
+        >
+          {!zaloError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/icons/zalo.png"
+              alt="Zalo"
+              className={styles.fabIcon}
+              onError={() => setZaloError(true)}
+            />
+          ) : (
+            'Zalo'
+          )}
         </a>
-        <a href="https://m.me" target="_blank" rel="noopener noreferrer" className={`${styles.fabItem} ${styles.fabMessenger}`} title="Messenger">
-          Messenger
+        <a
+          href="https://m.me"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${styles.fabItem} ${styles.fabMessenger}`}
+          title="Messenger"
+        >
+          {!messengerError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/icons/messenger.png"
+              alt="Messenger"
+              className={styles.fabIcon}
+              onError={() => setMessengerError(true)}
+            />
+          ) : (
+            'Messenger'
+          )}
         </a>
-        <a href="https://shopee.vn" target="_blank" rel="noopener noreferrer" className={`${styles.fabItem} ${styles.fabShopee}`} title="Shopee Store">
-          Shopee
+        <a
+          href="https://shopee.vn"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${styles.fabItem} ${styles.fabShopee}`}
+          title="Shopee Store"
+        >
+          {!shopeeError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/icons/shopee.png"
+              alt="Shopee"
+              className={styles.fabIcon}
+              onError={() => setShopeeError(true)}
+            />
+          ) : (
+            'Shopee'
+          )}
         </a>
-        <button onClick={scrollToTop} className={`${styles.fabItem} ${styles.fabTop}`} title="Về đầu trang">
-          ↑
+        <button
+          onClick={scrollToTop}
+          className={`${styles.fabItem} ${styles.fabTop}`}
+          title="Về đầu trang"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={styles.fabTopIcon}
+            aria-hidden="true"
+          >
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
         </button>
       </div>
 

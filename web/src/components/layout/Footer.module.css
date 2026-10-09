@@ -179,7 +179,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   color: #FFFFFF;
   text-decoration: none;
@@ -187,6 +187,8 @@
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   transition: all var(--transition-fast);
+  overflow: hidden;
+  padding: 0;
 }
 
 .fabItem:hover {
@@ -208,7 +210,18 @@
 
 .fabTop {
   background: #212529;
-  font-size: 16px;
+}
+
+.fabIcon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fabTopIcon {
+  width: 18px;
+  height: 18px;
 }
 
 @media (max-width: 992px) {
