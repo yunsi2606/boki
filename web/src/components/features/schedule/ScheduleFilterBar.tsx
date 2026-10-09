@@ -1,11 +1,14 @@
 'use client';
 
-import type { ScheduleTabFilter } from '@/types/schedule';
+import type { ScheduleTabFilter, ScheduleViewMode } from '@/types/schedule';
+import ScheduleViewModeToggle from './ScheduleViewModeToggle';
 import styles from './scheduleFilterBar.module.css';
 
 interface ScheduleFilterBarProps {
   activeTab: ScheduleTabFilter;
   onSelectTab: (tab: ScheduleTabFilter) => void;
+  viewMode: ScheduleViewMode;
+  onChangeViewMode: (mode: ScheduleViewMode) => void;
   publishers: string[];
   selectedPublisher: string | null;
   onSelectPublisher: (pub: string | null) => void;
@@ -17,6 +20,8 @@ interface ScheduleFilterBarProps {
 export default function ScheduleFilterBar({
   activeTab,
   onSelectTab,
+  viewMode,
+  onChangeViewMode,
   publishers,
   selectedPublisher,
   onSelectPublisher,
@@ -33,7 +38,7 @@ export default function ScheduleFilterBar({
 
   return (
     <div className={styles.filterContainer}>
-      {/* Category Tabs & Month selector Row */}
+      {/* Category Tabs & View Mode & Month selector Row */}
       <div className={styles.topControlRow}>
         <div className={styles.typeTabsRow}>
           <button
@@ -61,23 +66,30 @@ export default function ScheduleFilterBar({
           </button>
         </div>
 
-        {/* Month Filter Selector */}
-        <div className={styles.monthSelector}>
-          <span className={styles.monthLabel}>Kỳ phát hành:</span>
-          <select
-            className={styles.monthSelectInput}
-            value={selectedMonth ?? ''}
-            onChange={(e) => {
-              const val = e.target.value ? parseInt(e.target.value, 10) : null;
-              onSelectMonth(val);
-            }}
-          >
-            {monthOptions.map((opt) => (
-              <option key={opt.label} value={opt.value ?? ''}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+        {/* View Mode & Month Filter Controls */}
+        <div className={styles.rightControls}>
+          <ScheduleViewModeToggle
+            viewMode={viewMode}
+            onChangeViewMode={onChangeViewMode}
+          />
+
+          <div className={styles.monthSelector}>
+            <span className={styles.monthLabel}>Kỳ phát hành:</span>
+            <select
+              className={styles.monthSelectInput}
+              value={selectedMonth ?? ''}
+              onChange={(e) => {
+                const val = e.target.value ? parseInt(e.target.value, 10) : null;
+                onSelectMonth(val);
+              }}
+            >
+              {monthOptions.map((opt) => (
+                <option key={opt.label} value={opt.value ?? ''}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

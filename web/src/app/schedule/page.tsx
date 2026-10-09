@@ -5,8 +5,11 @@ import { scheduleService } from '@/services/scheduleService';
 import type {
   ReleaseScheduleItem,
   ScheduleTabFilter,
+  ScheduleViewMode,
   ScheduleTimelineGroup as GroupType,
 } from '@/types/schedule';
+import { groupSchedulesByDay, groupSchedulesByMonth } from '@/utils/scheduleDateGroups';
+import { useScheduleLazyGroups } from '@/hooks/useScheduleLazyGroups';
 import ScheduleFilterBar from '@/components/features/schedule/ScheduleFilterBar';
 import ScheduleTimelineGroup from '@/components/features/schedule/ScheduleTimelineGroup';
 import ScheduleDetailModal from '@/components/features/schedule/ScheduleDetailModal';
@@ -16,6 +19,7 @@ export default function ReleaseSchedulePage() {
   const [items, setItems] = useState<ReleaseScheduleItem[]>([]);
   const [publishers, setPublishers] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<ScheduleViewMode>('DAY');
   const [activeTab, setActiveTab] = useState<ScheduleTabFilter>('ALL');
   const [selectedPublisher, setSelectedPublisher] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
@@ -71,29 +75,17 @@ export default function ReleaseSchedulePage() {
   }, [items, activeTab]);
 
   const dateGroups = useMemo<GroupType[]>(() => {
-    const groupsMap = new Map<string, ReleaseScheduleItem[]>();
+    if (viewMode === 'DAY') {
+      return groupSchedulesByDay(filteredItems);
+    }
+    return groupSchedulesByMonth(filteredItems);
+  }, [filteredItems, viewMode]);
 
-    filteredItems.forEach((item) => {
-      const monthKey = item.releaseDate ? item.releaseDate.slice(0, 7) : '2026-10';
-      if (!groupsMap.has(monthKey)) {
-        groupsMap.set(monthKey, []);
-      }
-      groupsMap.get(monthKey)!.push(item);
-    });
-
-    const result: GroupType[] = [];
-    groupsMap.forEach((groupItems, monthKey) => {
-      const parts = monthKey.split('-');
-      const label = parts.length === 2 ? `Kỳ xuất bản Tháng ${parts[1]}/${parts[0]}` : monthKey;
-      result.push({
-        dateKey: monthKey,
-        dateLabel: label,
-        items: groupItems,
-      });
-    });
-
-    return result.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
-  }, [filteredItems]);
+  const { visibleGroups, hasMore, sentinelRef } = useScheduleLazyGroups(dateGroups, {
+    batchSize: 4,
+    initialCount: 5,
+    resetDeps: [viewMode, activeTab, selectedPublisher, selectedMonth],
+  });
 
   const handleOpenDetail = (item: ReleaseScheduleItem, editionIdx?: number) => {
     setDetailItem(item);
@@ -128,6 +120,8 @@ export default function ReleaseSchedulePage() {
         <ScheduleFilterBar
           activeTab={activeTab}
           onSelectTab={setActiveTab}
+          viewMode={viewMode}
+          onChangeViewMode={setViewMode}
           publishers={publishers}
           selectedPublisher={selectedPublisher}
           onSelectPublisher={setSelectedPublisher}
@@ -155,13 +149,24 @@ export default function ReleaseSchedulePage() {
           </div>
         ) : (
           <div className={styles.timelineSections}>
-            {dateGroups.map((group) => (
+            {visibleGroups.map((group) => (
               <ScheduleTimelineGroup
                 key={group.dateKey}
                 group={group}
                 onOpenDetail={handleOpenDetail}
               />
             ))}
+
+            {hasMore && (
+              <div ref={sentinelRef} className={styles.lazyLoadingTrigger}>
+                <div className={styles.lazyLoadingSpinner} />
+                <span>
+                  {viewMode === 'DAY'
+                    ? 'Đang tải thêm ngày phát hành...'
+                    : 'Đang tải thêm kỳ phát hành...'}
+                </span>
+              </div>
+            )}
           </div>
         )}
 

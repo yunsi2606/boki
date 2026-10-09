@@ -57,6 +57,13 @@
   box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
 }
 
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .monthSelector {
   display: flex;
   align-items: center;
@@ -138,8 +145,12 @@
     flex-direction: column;
     align-items: stretch;
   }
-  .monthSelector {
+  .rightControls {
     justify-content: space-between;
+    width: 100%;
+  }
+  .monthSelector {
+    justify-content: flex-end;
   }
   .tabBtn {
     padding: 7px 12px;

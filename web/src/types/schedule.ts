@@ -49,6 +49,8 @@ export interface ReleaseScheduleItem {
 
 export type ScheduleTabFilter = 'ALL' | 'LINKED' | 'SPECIAL';
 
+export type ScheduleViewMode = 'DAY' | 'MONTH';
+
 export interface ScheduleTimelineGroup {
   dateKey: string;
   dateLabel: string;

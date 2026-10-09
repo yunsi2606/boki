@@ -1,0 +1,34 @@
+/* Schedule View Mode Toggle Styles */
+.toggleContainer {
+  display: inline-flex;
+  align-items: center;
+  background: #F1F3F5;
+  border-radius: var(--radius-md, 10px);
+  padding: 3px;
+  border: 1px solid #E9ECEF;
+  gap: 2px;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #495057;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.toggleBtn:hover {
+  color: #111827;
+}
+
+.toggleBtnActive {
+  background: #FFFFFF;
+  color: #EE4D2D;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
