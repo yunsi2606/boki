@@ -63,20 +63,22 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
 
   if (!isAuthenticated || !isAuthorizedAdmin) {
     return (
-      <div className={styles.accessDenied}>
-        <div className={styles.accessDeniedCard}>
-          <div className={styles.accessDeniedIconWrapper}>
-            <LockIcon size={48} color="#EE4D2D" />
+      <div className={styles.unauthorizedScreen}>
+        <div className={styles.unauthorizedCard}>
+          <div className={styles.lockIconBox}>
+            <LockIcon size={36} color="#ef4444" />
           </div>
-          <h2>Truy Cập Bị Giới Hạn</h2>
-          <p>Khu vực quản trị chỉ dành riêng cho Quản trị viên (Admin) hoặc Nhân viên Bán hàng (Seller).</p>
-          <div className={styles.deniedActions}>
-            <button onClick={() => router.push('/login')} className={styles.loginBtn}>
-              Đăng nhập tài khoản Admin
+          <h2>Yêu Cầu Quyền Admin</h2>
+          <p>
+            Bạn cần đăng nhập tài khoản có phân quyền <strong>ADMIN</strong> hoặc <strong>SELLER</strong> để vào khu vực Quản trị BokiStore.
+          </p>
+          <div className={styles.unauthorizedActions}>
+            <button onClick={() => router.push('/login')} className={styles.primaryAuthBtn}>
+              Đăng nhập ngay
             </button>
-            <button onClick={() => router.push('/')} className={styles.homeBtn}>
-              Về trang chủ Boki
-            </button>
+            <Link href="/" className={styles.secondaryHomeBtn}>
+              Về trang chủ
+            </Link>
           </div>
         </div>
       </div>
@@ -84,13 +86,26 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
   }
 
   return (
-    <div className={styles.adminLayout}>
+    <div className={styles.adminContainer}>
+      {isSidebarOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarHeader}>
-          <Link href="/admin" className={styles.logo}>
-            <span className={styles.logoBadge}>BOKI ADMIN</span>
+          <Link href="/" className={styles.logo}>
+            <div className={styles.logoBadge}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo.png" alt="Boki Admin Logo" className={styles.logoImg} />
+            </div>
+            <span className={styles.logoText}>BOKI ADMIN</span>
           </Link>
           <button
+            type="button"
             className={styles.closeDrawerBtn}
             onClick={() => setIsSidebarOpen(false)}
             aria-label="Đóng menu"
@@ -106,80 +121,80 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
               <Link
                 key={item.path}
                 href={item.path}
+                onClick={() => setIsSidebarOpen(false)}
                 className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
               >
                 <span className={styles.navIcon}>{item.icon}</span>
-                <span className={styles.navText}>{item.name}</span>
+                <span className={styles.navName}>{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <div className={styles.userProfile}>
-            <div className={styles.avatar}>
-              {user?.displayName?.charAt(0).toUpperCase() || 'A'}
-            </div>
-            <div className={styles.userInfo}>
-              <span className={styles.userName}>{user?.displayName || 'Admin'}</span>
-              <span className={styles.userRole}>{user?.role}</span>
-            </div>
-          </div>
-          <div className={styles.footerActions}>
-            <Link href="/" target="_blank" className={styles.storeLink} title="Xem trang bán hàng">
-              <GlobeIcon size={18} />
-            </Link>
-            <button onClick={logout} className={styles.logoutBtn} title="Đăng xuất">
-              <LogOut size={18} />
-            </button>
-          </div>
+          <Link href="/" className={styles.storefrontBtn}>
+            <GlobeIcon size={18} />
+            <span>Xem Cửa hàng</span>
+          </Link>
         </div>
       </aside>
 
-      {isSidebarOpen && (
-        <div
-          className={styles.backdrop}
-          onClick={() => setIsSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
       <div className={styles.mainWrapper}>
         <header className={styles.topHeader}>
-          <button
-            className={styles.hamburgerBtn}
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            aria-label="Mở menu quản trị"
-          >
-            <Menu size={22} />
-          </button>
-          <div className={styles.breadcrumb}>
-            <span className={styles.breadcrumbBrand}>BOKI</span>
-            <span className={styles.breadcrumbSep}>/</span>
-            <span className={styles.breadcrumbCurrent}>
-              {navItems.find((item) => item.path === pathname)?.name || 'Quản trị'}
-            </span>
+          <div className={styles.headerLeft}>
+            <button
+              type="button"
+              className={styles.menuToggleBtn}
+              onClick={() => setIsSidebarOpen(true)}
+              aria-label="Mở menu"
+            >
+              <Menu size={22} />
+            </button>
+            <div className={styles.headerBrand}>
+              <div className={styles.headerLogoBox}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/brand/logo.png" alt="Boki Logo" className={styles.headerLogoImg} />
+              </div>
+              <div className={styles.headerBrandMeta}>
+                <div className={styles.headerTitleRow}>
+                  <span className={styles.headerBrandName}>BOKI</span>
+                  <span className={styles.headerAdminBadge}>ADMIN CONSOLE</span>
+                </div>
+                <span className={styles.headerSubtitle}>Bảng điều khiển & Báo cáo bán hàng</span>
+              </div>
+            </div>
           </div>
+
           <div className={styles.headerRight}>
-            <Link href="/" target="_blank" className={styles.visitShopBtn}>
-              <GlobeIcon size={16} />
-              <span>Sàn Boki</span>
-            </Link>
-            <div className={styles.userBadge}>
-              <span className={styles.badgeAvatar}>
-                {user?.displayName?.charAt(0).toUpperCase() || 'A'}
-              </span>
-              <span className={styles.badgeName}>{user?.displayName || 'Admin'}</span>
+            <div className={styles.statusIndicator} title="Hệ thống hoạt động thời gian thực">
+              <span className={styles.statusDot} />
+              <span className={styles.statusText}>Trực tuyến</span>
+            </div>
+
+            <div className={styles.adminUser}>
+              <div className={styles.adminAvatar}>
+                {user.displayName ? user.displayName.charAt(0).toUpperCase() : 'A'}
+              </div>
+              <div className={styles.adminInfo}>
+                <span className={styles.adminName}>{user.displayName}</span>
+                <span className={styles.adminRole}>{user.role}</span>
+              </div>
+              <button
+                onClick={logout}
+                title="Đăng xuất"
+                className={styles.logoutBtn}
+                aria-label="Đăng xuất"
+              >
+                <LogOut size={13} />
+                <span>Đăng xuất</span>
+              </button>
             </div>
           </div>
         </header>
 
-        <main className={styles.contentArea}>
-          {children}
-        </main>
+        <main className={styles.contentArea}>{children}</main>
+        <AdminChatbotWidget />
       </div>
-
-      <AdminChatbotWidget />
     </div>
   );
 }

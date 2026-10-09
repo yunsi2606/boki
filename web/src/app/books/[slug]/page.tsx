@@ -6,15 +6,20 @@ import BookDetailClient from '@/components/features/books/BookDetailClient';
 import { API_BASE_URL } from '@/lib/constants';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const id = extractBookId(params.slug);
   try {
+    const { slug } = await params;
+    const id = extractBookId(slug);
+    if (!id) throw new Error('No book id found');
+
     const res = await fetch(`${API_BASE_URL}/books/${id}`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(1500),
     });
+
     if (res.ok) {
       const book = await res.json();
       const cover = book.categoryCoverUrl || (book.images && book.images[0]?.imageUrl);
@@ -33,8 +38,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
       };
     }
-  } catch (err) {
-    console.error('Failed to generate metadata for book:', err);
+  } catch {
+    // Graceful fallback without blocking SSR or throwing
   }
 
   return {

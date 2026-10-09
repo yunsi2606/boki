@@ -3,18 +3,21 @@ import PreviewReaderClient from '@/components/features/preview/PreviewReaderClie
 import { API_BASE_URL } from '@/lib/constants';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const res = await fetch(`${API_BASE_URL}/blogs/${params.slug}`, {
+    const { slug } = await params;
+    const res = await fetch(`${API_BASE_URL}/blogs/${slug}`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(1500),
     });
     if (res.ok) {
       const post = await res.json();
       const title = `Đọc Thử: ${post.title}`;
       const description = `Trải nghiệm đọc thử miễn phí tác phẩm ${post.title} trước khi mua tại Boki.`;
+      const cover = post.coverImage || post.effectiveCoverImage;
 
       return {
         title,
@@ -22,12 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         openGraph: {
           title: `${title} | Boki`,
           description,
-          images: post.thumbnailUrl ? [{ url: post.thumbnailUrl, alt: post.title }] : undefined,
+          images: cover ? [{ url: cover, alt: post.title }] : undefined,
         },
       };
     }
-  } catch (err) {
-    console.error('Failed to generate metadata for preview reader:', err);
+  } catch {
+    // Graceful fallback
   }
 
   return {
@@ -36,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function PreviewReaderPage({ params }: Props) {
-  return <PreviewReaderClient slug={params.slug} />;
+export default async function PreviewReaderPage({ params }: Props) {
+  const { slug } = await params;
+  return <PreviewReaderClient slug={slug} />;
 }

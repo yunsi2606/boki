@@ -3,18 +3,21 @@ import BlogDetailClient from '@/components/features/blog/BlogDetailClient';
 import { API_BASE_URL } from '@/lib/constants';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const res = await fetch(`${API_BASE_URL}/blogs/${params.slug}`, {
+    const { slug } = await params;
+    const res = await fetch(`${API_BASE_URL}/blogs/${slug}`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(1500),
     });
     if (res.ok) {
       const post = await res.json();
       const title = post.title;
       const description = post.excerpt || post.content?.slice(0, 160).replace(/<[^>]*>/g, '') || 'Bài viết từ Boki Blog.';
+      const cover = post.coverImage || post.effectiveCoverImage;
 
       return {
         title,
@@ -22,12 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         openGraph: {
           title: `${title} | Boki Blog`,
           description,
-          images: post.thumbnailUrl ? [{ url: post.thumbnailUrl, alt: post.title }] : undefined,
+          images: cover ? [{ url: cover, alt: post.title }] : undefined,
         },
       };
     }
-  } catch (err) {
-    console.error('Failed to generate metadata for blog:', err);
+  } catch {
+    // Graceful fallback
   }
 
   return {
@@ -36,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function BlogDetailPage({ params }: Props) {
-  return <BlogDetailClient slug={params.slug} />;
+export default async function BlogDetailPage({ params }: Props) {
+  const { slug } = await params;
+  return <BlogDetailClient slug={slug} />;
 }
