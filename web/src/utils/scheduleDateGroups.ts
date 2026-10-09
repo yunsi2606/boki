@@ -71,46 +71,38 @@ function extractTimelineEvents(items: ReleaseScheduleItem[]): ExtractedTimelineE
     if (!editions) {
       const releaseDate = item.releaseDate ? item.releaseDate.trim() : '2026-10-01';
       const preOrderDate = item.preOrderDate ? item.preOrderDate.trim() : null;
+      const hasPreOrder = Boolean(preOrderDate && preOrderDate !== releaseDate);
 
-      if (preOrderDate && preOrderDate !== releaseDate) {
-        events.push({
-          dateKey: preOrderDate,
-          schedule: item,
-          eventType: 'PRE_ORDER',
-          targetEditionIdx: 0,
-        });
-      }
+      // Mỗi tác phẩm chỉ có duy nhất 1 ngày mốc: Ưu tiên Pre-order nếu có, ngược lại lấy ngày phát hành
       events.push({
-        dateKey: releaseDate,
+        dateKey: hasPreOrder ? preOrderDate! : releaseDate,
         schedule: item,
-        eventType: 'RELEASE',
+        eventType: hasPreOrder ? 'PRE_ORDER' : 'RELEASE',
         targetEditionIdx: 0,
       });
       return;
     }
 
+    // Với từng phiên bản: Ưu tiên ngày Pre-order riêng, không lặp lại ở ngày phát hành
     editions.forEach((ed, idx) => {
       const releaseDate = (ed.effectiveReleaseDate || ed.releaseDate || item.releaseDate || '2026-10-01').trim();
       const preOrderDate = (ed.effectivePreOrderDate || ed.preOrderDate || item.preOrderDate || '').trim();
+      const hasPreOrder = Boolean(preOrderDate && preOrderDate !== releaseDate);
 
-      if (preOrderDate && preOrderDate !== releaseDate) {
-        events.push({
-          dateKey: preOrderDate,
-          schedule: item,
-          eventType: 'PRE_ORDER',
-          targetEditionIdx: idx,
-        });
-      }
-
-      if (releaseDate) {
-        events.push({
-          dateKey: releaseDate,
-          schedule: item,
-          eventType: 'RELEASE',
-          targetEditionIdx: idx,
-        });
-      }
+      events.push({
+        dateKey: hasPreOrder ? preOrderDate : releaseDate,
+        schedule: item,
+        eventType: hasPreOrder ? 'PRE_ORDER' : 'RELEASE',
+        targetEditionIdx: idx,
+      });
     });
+  });
+
+  // Ưu tiên hiển thị PRE_ORDER trước nếu trùng ngày
+  events.sort((a, b) => {
+    if (a.eventType === 'PRE_ORDER' && b.eventType !== 'PRE_ORDER') return -1;
+    if (b.eventType === 'PRE_ORDER' && a.eventType !== 'PRE_ORDER') return 1;
+    return 0;
   });
 
   return events;
@@ -129,7 +121,8 @@ export function groupSchedulesByDay(items: ReleaseScheduleItem[]): ScheduleTimel
     }
 
     const seenSet = seenMap.get(dateKey)!;
-    const dedupKey = `${schedule.id}-${eventType}`;
+    // Trong cùng một ngày, mỗi đầu sách chỉ xuất hiện đúng 1 thẻ
+    const dedupKey = schedule.id;
     if (!seenSet.has(dedupKey)) {
       seenSet.add(dedupKey);
       groupsMap.get(dateKey)!.push({
