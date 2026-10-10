@@ -66,6 +66,9 @@ public class ScheduleSeriesMatchingService {
         String s = fullTitle.trim();
         s = CLEAN_EXTRA_PATTERN.matcher(s).replaceAll("");
 
+        int tapParenIndex = s.toLowerCase().indexOf(" (tập");
+        if (tapParenIndex > 0) return s.substring(0, tapParenIndex).trim();
+
         int tapIndex = s.toLowerCase().indexOf(" - tập");
         if (tapIndex > 0) return s.substring(0, tapIndex).trim();
 

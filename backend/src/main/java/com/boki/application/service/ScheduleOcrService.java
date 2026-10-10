@@ -86,7 +86,7 @@ public class ScheduleOcrService {
                 + "1. Nhận diện Nhà xuất bản (detectedPublisher) và Thời gian (năm: year, tháng: month).\n"
                 + "2. Bóc tách từng đầu sách phát hành, gồm:\n"
                 + "   - day: số ngày phát hành trong tháng (1-31)\n"
-                + "   - title: tên sách đầy đủ kèm số tập (ví dụ: 'Ao Ashi - Tân binh sân cỏ - Tập 7')\n"
+                + "   - title: tên sách đầy đủ kèm số tập trong dấu ngoặc đơn (ví dụ: 'Ao Ashi - Tân binh sân cỏ (Tập 7)', 'Tamon - Thần tượng hai mặt (Tập 2)')\n"
                 + "   - volume: số tập (ví dụ: 'Tập 7', 'Tập 25+26', 'Tập 1', hoặc để trống nếu sách lẻ)\n"
                 + "   - price: giá bìa dạng số nguyên VND (ví dụ: 35000, 105000)\n"
                 + "   - editionName: tên phiên bản (ví dụ: 'Bản thường', 'Bản đặc biệt 2 in 1', 'Box Set 3 tập')\n"
@@ -94,7 +94,7 @@ public class ScheduleOcrService {
                 + "   - gifts: quà tặng kèm nếu có ghi trên ảnh (hoặc rỗng)\n"
                 + "   - isNew: true nếu có nhãn NEW hoặc là tập 1 bộ mới, ngược lại false\n"
                 + "Trả về CHÍNH XÁC định dạng JSON thuần:\n"
-                + "{\"detectedPublisher\":\"...\",\"year\":2026,\"month\":10,\"books\":[{\"day\":2,\"title\":\"...\",\"volume\":\"...\",\"price\":35000,\"editionName\":\"Bản thường\",\"editionType\":\"STANDARD\",\"gifts\":\"\",\"isNew\":false}]}";
+                + "{\"detectedPublisher\":\"...\",\"year\":2026,\"month\":10,\"books\":[{\"day\":2,\"title\":\"Ao Ashi - Tân binh sân cỏ (Tập 7)\",\"volume\":\"Tập 7\",\"price\":35000,\"editionName\":\"Bản thường\",\"editionType\":\"STANDARD\",\"gifts\":\"\",\"isNew\":false}]}";
 
         Map<String, Object> imagePart = Map.of(
                 "inline_data", Map.of(
@@ -155,8 +155,9 @@ public class ScheduleOcrService {
                 int day = b.hasNonNull("day") ? b.get("day").asInt(1) : 1;
                 LocalDate date = createSafeDate(year, month, day);
 
-                String title = b.hasNonNull("title") ? b.get("title").asText() : "";
+                String rawTitle = b.hasNonNull("title") ? b.get("title").asText() : "";
                 String volume = b.hasNonNull("volume") ? b.get("volume").asText() : "";
+                String title = formatTitleWithVolume(rawTitle, volume);
                 long priceVal = b.hasNonNull("price") ? b.get("price").asLong(0) : 0;
                 String editionName = b.hasNonNull("editionName") ? b.get("editionName").asText("Bản thường") : "Bản thường";
                 String edTypeStr = b.hasNonNull("editionType") ? b.get("editionType").asText("STANDARD") : "STANDARD";
@@ -167,7 +168,7 @@ public class ScheduleOcrService {
                 OcrParsedBookItemDto item = OcrParsedBookItemDto.builder()
                         .tempId(UUID.randomUUID().toString())
                         .releaseDate(date)
-                        .rawText(title)
+                        .rawText(rawTitle)
                         .title(title)
                         .volume(volume)
                         .publisher(detectedPublisher)
@@ -212,5 +213,23 @@ public class ScheduleOcrService {
         } catch (IllegalArgumentException e) {
             return ReleaseEditionType.STANDARD;
         }
+    }
+
+    private String formatTitleWithVolume(String title, String volume) {
+        if (title == null || title.isBlank()) return "";
+        String formatted = title.trim();
+        formatted = formatted.replaceAll("(?i)\\s*-\\s*tập\\s*([\\d+\\-~+]+(?:\\+[\\d]+)?)", " (Tập $1)");
+        formatted = formatted.replaceAll("(?i)\\(\\s*tập\\s*([\\d+\\-~+]+(?:\\+[\\d]+)?)\\s*\\)", "(Tập $1)");
+
+        if (volume != null && !volume.isBlank() && !formatted.toLowerCase().contains("tập") && !formatted.toLowerCase().contains("vol")) {
+            String cleanVol = volume.trim();
+            if (!cleanVol.toLowerCase().startsWith("tập") && !cleanVol.toLowerCase().startsWith("vol")) {
+                cleanVol = "Tập " + cleanVol;
+            } else if (cleanVol.toLowerCase().startsWith("tập") && cleanVol.length() > 3) {
+                cleanVol = "Tập" + cleanVol.substring(3);
+            }
+            formatted = formatted + " (" + cleanVol + ")";
+        }
+        return formatted;
     }
 }
