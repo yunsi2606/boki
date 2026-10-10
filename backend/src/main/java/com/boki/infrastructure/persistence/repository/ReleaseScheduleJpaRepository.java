@@ -29,4 +29,9 @@ public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseSched
 
     @Query("SELECT DISTINCT r.publisher FROM ReleaseScheduleJpaEntity r ORDER BY r.publisher ASC")
     List<String> findDistinctPublishers();
+
+    @Query("SELECT r FROM ReleaseScheduleJpaEntity r " +
+           "WHERE LOWER(r.publisher) = LOWER(:publisher) " +
+           "ORDER BY r.releaseDate DESC")
+    List<ReleaseScheduleJpaEntity> findByPublisher(@Param("publisher") String publisher);
 }

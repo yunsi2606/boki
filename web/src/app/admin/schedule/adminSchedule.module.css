@@ -27,6 +27,32 @@
   margin: 4px 0 0 0;
 }
 
+.headerActionGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ocrBtn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  background: #FFFFFF;
+  color: #212529;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.ocrBtn:hover {
+  background: #F8F9FA;
+  border-color: #ADB5BD;
+  transform: translateY(-1px);
+}
+
 .createBtn {
   padding: 10px 18px;
   border-radius: 8px;

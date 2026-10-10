@@ -176,6 +176,18 @@ public class ReleaseScheduleApplicationService {
     }
 
     @Transactional
+    public List<ReleaseScheduleDto> batchCreateSchedules(BatchCreateScheduleRequest request) {
+        if (request == null || request.getItems() == null || request.getItems().isEmpty()) {
+            return List.of();
+        }
+        List<ReleaseScheduleDto> results = new ArrayList<>();
+        for (CreateReleaseScheduleRequest item : request.getItems()) {
+            results.add(createSchedule(item));
+        }
+        return results;
+    }
+
+    @Transactional
     public void deleteSchedule(UUID id) {
         if (!releaseScheduleJpaRepository.existsById(id)) {
             throw new ResourceNotFoundException("ReleaseSchedule", "id", id);

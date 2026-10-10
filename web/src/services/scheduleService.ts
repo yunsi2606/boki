@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { ReleaseScheduleItem } from '@/types/schedule';
+import type { OcrScheduleScanResponse, ReleaseScheduleItem } from '@/types/schedule';
 
 export interface GetSchedulesParams {
   month?: number;
@@ -61,6 +61,22 @@ export const scheduleService = {
     return api.post<ReleaseScheduleItem>('/release-schedules', payload);
   },
 
+  batchCreateSchedules: async (items: CreateSchedulePayload[]): Promise<ReleaseScheduleItem[]> => {
+    return api.post<ReleaseScheduleItem[]>('/release-schedules/batch', { items });
+  },
+
+  scanScheduleImage: async (
+    file: File,
+    publisher?: string,
+    apiKey?: string
+  ): Promise<OcrScheduleScanResponse> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    if (publisher && publisher !== 'ALL') formData.append('publisher', publisher);
+    if (apiKey) formData.append('apiKey', apiKey);
+    return api.upload<OcrScheduleScanResponse>('/release-schedules/ocr-scan', formData);
+  },
+
   updateSchedule: async (id: string, payload: UpdateSchedulePayload): Promise<ReleaseScheduleItem> => {
     return api.put<ReleaseScheduleItem>(`/release-schedules/${id}`, payload);
   },
@@ -69,3 +85,4 @@ export const scheduleService = {
     return api.delete<void>(`/release-schedules/${id}`);
   },
 };
+

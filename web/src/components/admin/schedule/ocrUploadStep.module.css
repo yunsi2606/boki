@@ -1,0 +1,108 @@
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dropzone {
+  border: 2px dashed var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--color-neutral-50);
+  transition: all var(--transition-fast);
+}
+
+.dropzone:hover {
+  border-color: var(--color-primary-500);
+  background: #FFF5F7;
+}
+
+.dropzoneText {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+  margin: 8px 0 4px;
+}
+
+.dropzoneHint {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
+
+.filePreviewRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+
+.previewThumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-neutral-300);
+}
+
+.previewInfo {
+  flex: 1;
+}
+
+.fileName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+}
+
+.fileSize {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+  margin-top: 2px;
+}
+
+.changeFileBtn {
+  background: transparent;
+  border: 1px solid var(--color-neutral-300);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+}
+
+.formInput {
+  padding: 8px 12px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-neutral-900);
+  outline: none;
+  font-family: inherit;
+}
+
+.formInput:focus {
+  border-color: var(--color-primary-500);
+}

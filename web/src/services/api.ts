@@ -58,8 +58,9 @@ async function apiFetch<T>(
   }
 
   const fetchPromise = (async (): Promise<T> => {
+    const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...options.headers,
     };
 
@@ -230,6 +231,11 @@ export const api = {
       body: JSON.stringify(body),
       ...options,
     });
+  },
+
+  upload: <T>(endpoint: string, formData: FormData, options?: RequestOptions) => {
+    invalidateMutationCaches(endpoint);
+    return apiFetch<T>(endpoint, { method: 'POST', body: formData, ...options });
   },
 
   clearCache: (pattern?: string) => invalidateCache(pattern),

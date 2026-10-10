@@ -65,3 +65,36 @@ export interface ScheduleTimelineGroup {
   dateLabel: string;
   items: ScheduleTimelineItem[];
 }
+
+export type OcrMatchStatus = 'EXACT_MATCH' | 'SIMILAR_MATCH' | 'NEW_SERIES';
+
+export interface OcrParsedBookItem {
+  tempId: string;
+  releaseDate: string;
+  rawText?: string;
+  title: string;
+  seriesTitle?: string;
+  volume?: string;
+  publisher: string;
+  estimatedPrice?: number;
+  editionType: ReleaseEditionType;
+  editionName: string;
+  gifts?: string;
+  author?: string;
+  originalTitle?: string;
+  coverUrl?: string;
+  description?: string;
+  matchStatus: OcrMatchStatus;
+  matchMessage: string;
+  matchedBookId?: string;
+  selected: boolean;
+}
+
+export interface OcrScheduleScanResponse {
+  detectedPublisher: string;
+  year: number;
+  month: number;
+  totalDetected: number;
+  items: OcrParsedBookItem[];
+}
+

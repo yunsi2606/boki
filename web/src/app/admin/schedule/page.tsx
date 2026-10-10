@@ -6,6 +6,7 @@ import type { CreateSchedulePayload } from '@/services/scheduleService';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import AdminScheduleTable from '@/components/admin/schedule/AdminScheduleTable';
 import AdminScheduleFormModal from '@/components/admin/schedule/AdminScheduleFormModal';
+import AdminScheduleOcrModal from '@/components/admin/schedule/AdminScheduleOcrModal';
 import DeleteScheduleModal from '@/components/admin/schedule/DeleteScheduleModal';
 import styles from './adminSchedule.module.css';
 
@@ -21,6 +22,7 @@ export default function AdminSchedulePage() {
 
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ReleaseScheduleItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<ReleaseScheduleItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -116,9 +118,18 @@ export default function AdminSchedulePage() {
             Quản lý kế hoạch xuất bản (1 Đầu sách - N Phiên bản), phân bổ quà tặng độc quyền và liên kết sản phẩm trên Boki.
           </p>
         </div>
-        <button type="button" className={styles.createBtn} onClick={handleOpenCreate}>
-          + Thêm mục lịch mới
-        </button>
+        <div className={styles.headerActionGroup}>
+          <button
+            type="button"
+            className={styles.ocrBtn}
+            onClick={() => setIsOcrModalOpen(true)}
+          >
+            Quét ảnh lịch (AI)
+          </button>
+          <button type="button" className={styles.createBtn} onClick={handleOpenCreate}>
+            + Thêm mục lịch mới
+          </button>
+        </div>
       </div>
 
       {/* Control / Filter Bar */}
@@ -171,6 +182,14 @@ export default function AdminSchedulePage() {
         initialItem={editingItem}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmitForm}
+      />
+
+      {/* OCR Staging Modal */}
+      <AdminScheduleOcrModal
+        isOpen={isOcrModalOpen}
+        publishers={publishers}
+        onClose={() => setIsOcrModalOpen(false)}
+        onSuccess={fetchSchedules}
       />
 
       {/* Delete Confirmation Modal */}
