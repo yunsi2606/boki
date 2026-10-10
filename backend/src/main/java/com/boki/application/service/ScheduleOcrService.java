@@ -22,7 +22,7 @@ public class ScheduleOcrService {
     @Value("${boki.ai.gemini.api-key:}")
     private String configuredGeminiKey;
 
-    @Value("${boki.ai.gemini.model:gemini-1.5-flash}")
+    @Value("${boki.ai.gemini.model:gemini-3.8-flash}")
     private String geminiModel;
 
     private final ScheduleSeriesMatchingService matchingService;
@@ -57,8 +57,28 @@ public class ScheduleOcrService {
     }
 
     private String callGeminiVision(String base64Image, String mimeType, String apiKey) throws Exception {
+        List<String> candidates = new ArrayList<>();
+        if (geminiModel != null && !geminiModel.isBlank() && !geminiModel.contains("1.5")) {
+            candidates.add(geminiModel.trim());
+        }
+        if (!candidates.contains("gemini-3.8-flash")) candidates.add("gemini-3.8-flash");
+        if (!candidates.contains("gemini-flash-latest")) candidates.add("gemini-flash-latest");
+
+        Exception lastEx = null;
+        for (String modelName : candidates) {
+            try {
+                return executeGeminiCall(modelName, base64Image, mimeType, apiKey);
+            } catch (Exception e) {
+                lastEx = e;
+                log.warn("Model {} failed: {}, trying next candidate...", modelName, e.getMessage());
+            }
+        }
+        throw lastEx != null ? lastEx : new IllegalStateException("Không có model Gemini nào phản hồi");
+    }
+
+    private String executeGeminiCall(String modelName, String base64Image, String mimeType, String apiKey) {
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
-                geminiModel != null && !geminiModel.isBlank() ? geminiModel : "gemini-1.5-flash", apiKey);
+                modelName, apiKey);
 
         String prompt = "Bạn là trợ lý AI chuyên gia bóc tách lịch phát hành sách/manga của các nhà xuất bản Việt Nam (Kim Đồng, Trẻ, IPM, Wings Books, Nhã Nam, Amak...).\n"
                 + "Ảnh có thể theo BẤT KỲ bố cục nào (bảng biểu nhiều cột, lưới lịch tháng calendar, các khối thẻ chia theo ngày, hoặc dòng thời gian timeline).\n"
@@ -97,9 +117,9 @@ public class ScheduleOcrService {
                 .body(Map.class);
 
         if (response != null && response.containsKey("candidates")) {
-            List<?> candidates = (List<?>) response.get("candidates");
-            if (!candidates.isEmpty()) {
-                Map<?, ?> first = (Map<?, ?>) candidates.get(0);
+            List<?> responseCandidates = (List<?>) response.get("candidates");
+            if (!responseCandidates.isEmpty()) {
+                Map<?, ?> first = (Map<?, ?>) responseCandidates.get(0);
                 Map<?, ?> content = (Map<?, ?>) first.get("content");
                 if (content != null && content.containsKey("parts")) {
                     List<?> parts = (List<?>) content.get("parts");
@@ -112,7 +132,7 @@ public class ScheduleOcrService {
                 }
             }
         }
-        throw new IllegalStateException("Không nhận được phản hồi hợp lệ từ Gemini Vision");
+        throw new IllegalStateException("Không nhận được nội dung từ model " + modelName);
     }
 
     private OcrScheduleScanResponse processJsonResponse(String rawJson, String publisherOverride) throws Exception {
