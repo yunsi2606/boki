@@ -116,7 +116,6 @@ public class ScheduleSeriesMatchingService {
         if (exactMatch != null) {
             item.setAuthor(exactMatch.getAuthor());
             item.setOriginalTitle(exactMatch.getOriginalTitle());
-            item.setCoverUrl(exactMatch.getCoverUrl());
             item.setDescription(exactMatch.getDescription());
             item.setMatchStatus(OcrMatchStatus.EXACT_MATCH);
             item.setMatchMessage("Khớp chính xác: Kế thừa từ bộ đã có (" + exactMatch.getTitle() + ")");
@@ -126,7 +125,6 @@ public class ScheduleSeriesMatchingService {
         if (similarMatch != null) {
             item.setAuthor(similarMatch.getAuthor());
             item.setOriginalTitle(similarMatch.getOriginalTitle());
-            item.setCoverUrl(similarMatch.getCoverUrl());
             item.setMatchStatus(OcrMatchStatus.SIMILAR_MATCH);
             item.setMatchMessage("Gợi ý khớp tương đồng (" + similarMatch.getTitle() + ")");
             return true;
@@ -146,9 +144,6 @@ public class ScheduleSeriesMatchingService {
             item.setAuthor(book.getAuthor());
             if (book.getPublicationDetails() != null && book.getPublicationDetails().containsKey("original_title")) {
                 item.setOriginalTitle(book.getPublicationDetails().get("original_title"));
-            }
-            if (book.getCategoryCoverUrl() != null && !book.getCategoryCoverUrl().isBlank()) {
-                item.setCoverUrl(book.getCategoryCoverUrl());
             }
             item.setMatchedBookId(book.getId());
             item.setMatchStatus(OcrMatchStatus.EXACT_MATCH);
