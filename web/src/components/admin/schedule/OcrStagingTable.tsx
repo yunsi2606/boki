@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { OcrParsedBookItem, ReleaseEditionType } from '@/types/schedule';
+import OcrCoverCell from './OcrCoverCell';
 import styles from './ocrStagingTable.module.css';
 
 interface OcrStagingTableProps {
@@ -75,6 +76,7 @@ export default function OcrStagingTable({
                 />
               </th>
               <th>Ngày</th>
+              <th>Ảnh bìa</th>
               <th>Tên sách & Số tập</th>
               <th>Giá bìa</th>
               <th>Phiên bản</th>
@@ -107,6 +109,14 @@ export default function OcrStagingTable({
                       className={`${styles.inputField} ${styles.dateInput}`}
                       onChange={(e) =>
                         onUpdateItem(item.tempId, { releaseDate: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td>
+                    <OcrCoverCell
+                      coverUrl={item.coverUrl}
+                      onCoverChange={(url) =>
+                        onUpdateItem(item.tempId, { coverUrl: url })
                       }
                     />
                   </td>
