@@ -1,0 +1,36 @@
+.roleBadge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.tierBadge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+}
+
+.tierSTANDARD { background: #e5e7eb; color: #374151; }
+.tierSILVER { background: #e0e7ff; color: #4338ca; }
+.tierGOLD { background: #fef3c7; color: #b45309; }
+.tierDIAMOND { background: #fce7f3; color: #be185d; }
+
+.smartTag {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm, 6px);
+  white-space: nowrap;
+}
+
+.tagVip { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-weight: 600; }
+.tagRisk { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-weight: 600; }
+.tagNew { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.tagUnverified { background: #f3f4f6; color: #6b7280; border: 1px dashed #d1d5db; }
+.tagDefault { background: #f3f4f6; color: #374151; }

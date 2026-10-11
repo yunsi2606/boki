@@ -1,0 +1,108 @@
+.filterBar {
+  background: var(--color-neutral-100, #ffffff);
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  border-radius: var(--radius-md, 10px);
+  padding: 0.875rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.875rem;
+  color: var(--color-neutral-500, #868e96);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.625rem 2.25rem 0.625rem 2.5rem;
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.875rem;
+  background: var(--color-neutral-50, #f8f9fa);
+  color: var(--color-neutral-900, #111827);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary-500, #ee4d2d);
+  background: #ffffff;
+}
+
+.clearSearchBtn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--color-neutral-500, #868e96);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.filterControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.selectFilter {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.8125rem;
+  background: var(--color-neutral-50, #f8f9fa);
+  color: var(--color-neutral-700, #343a40);
+  outline: none;
+  cursor: pointer;
+}
+
+.resetFilterBtn {
+  background: none;
+  border: 1px dashed var(--color-neutral-300, #ced4da);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.75rem;
+  color: var(--color-neutral-600, #495057);
+  cursor: pointer;
+}
+
+.refreshBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  border-radius: var(--radius-sm, 6px);
+  background: #ffffff;
+  color: var(--color-neutral-600, #495057);
+  cursor: pointer;
+}
+
+.refreshBtn:hover {
+  border-color: var(--color-primary-500, #ee4d2d);
+  color: var(--color-primary-500, #ee4d2d);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

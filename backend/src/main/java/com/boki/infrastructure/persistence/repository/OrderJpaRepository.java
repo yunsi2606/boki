@@ -13,6 +13,7 @@ import java.util.UUID;
 public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, UUID> {
 
     List<OrderJpaEntity> findByBuyerIdOrderByCreatedAtDesc(UUID buyerId);
+    long countByBuyerId(UUID buyerId);
     java.util.Optional<OrderJpaEntity> findByTrackingNumber(String trackingNumber);
     java.util.Optional<OrderJpaEntity> findByPaymentCode(String paymentCode);
 

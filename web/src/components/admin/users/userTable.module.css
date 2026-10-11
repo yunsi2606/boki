@@ -1,0 +1,231 @@
+.tableCard {
+  background: var(--color-neutral-100, #ffffff);
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  border-radius: var(--radius-md, 10px);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.table th {
+  background: var(--color-neutral-50, #f8f9fa);
+  padding: 0.875rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-neutral-600, #495057);
+  border-bottom: 1px solid var(--color-neutral-300, #e9ecef);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-neutral-200, #f1f3f5);
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: rgba(248, 249, 250, 0.7);
+}
+
+.inactiveRow {
+  opacity: 0.6;
+  background: #fafafa;
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatarBox {
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--color-neutral-200, #f1f3f5);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarInitial {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--color-neutral-700, #343a40);
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--color-neutral-900, #111827);
+}
+
+.userEmail {
+  font-size: 0.75rem;
+  color: var(--color-neutral-500, #868e96);
+}
+
+.userPhone {
+  font-size: 0.75rem;
+  color: var(--color-neutral-600, #495057);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.verifiedDot {
+  color: #059669;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.roleTagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tierCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.loyaltyPts {
+  font-size: 0.75rem;
+  color: var(--color-neutral-500, #868e96);
+}
+
+.spentAmount {
+  font-weight: 600;
+  color: var(--color-neutral-900, #111827);
+  white-space: nowrap;
+}
+
+.dateText {
+  font-size: 0.75rem;
+  color: var(--color-neutral-500, #868e96);
+  white-space: nowrap;
+}
+
+.statusToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s ease;
+}
+
+.statusToggle:hover { opacity: 0.85; }
+
+.statusActive { background: #ecfdf5; color: #059669; }
+.statusBlocked { background: #fef2f2; color: #dc2626; }
+
+.statusIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.thActions, .tdActions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actionBtnPrimary, .actionBtnSecondary {
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 0.35rem;
+}
+
+.actionBtnPrimary {
+  background: var(--color-primary-500, #ee4d2d);
+  color: #ffffff;
+  border: none;
+}
+
+.actionBtnPrimary:hover {
+  background: var(--color-primary-600, #d83a1b);
+}
+
+.actionBtnSecondary {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  color: var(--color-neutral-700, #343a40);
+}
+
+.actionBtnSecondary:hover {
+  border-color: var(--color-neutral-400, #ced4da);
+  background: var(--color-neutral-50, #f8f9fa);
+}
+
+.paginationBar {
+  padding: 0.875rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-neutral-300, #e9ecef);
+}
+
+.pageInfo {
+  font-size: 0.8125rem;
+  color: var(--color-neutral-500, #868e96);
+}
+
+.pageButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pageBtn {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--color-neutral-300, #e9ecef);
+  border-radius: var(--radius-sm, 6px);
+  background: #ffffff;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem !important;
+  color: var(--color-neutral-500, #868e96);
+}

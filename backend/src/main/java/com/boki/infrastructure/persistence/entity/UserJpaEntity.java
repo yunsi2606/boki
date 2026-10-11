@@ -99,6 +99,14 @@ public class UserJpaEntity {
     @Column(name = "shipping_delivery_note", length = 500)
     private String shippingDeliveryNote;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private java.util.Set<RoleJpaEntity> dynamicRoles = new java.util.HashSet<>();
+
     public enum UserRoleJpa {
         BUYER, SELLER, ADMIN
     }
@@ -192,5 +200,8 @@ public class UserJpaEntity {
 
     public String getShippingDeliveryNote() { return shippingDeliveryNote; }
     public void setShippingDeliveryNote(String shippingDeliveryNote) { this.shippingDeliveryNote = shippingDeliveryNote; }
+
+    public java.util.Set<RoleJpaEntity> getDynamicRoles() { return dynamicRoles; }
+    public void setDynamicRoles(java.util.Set<RoleJpaEntity> dynamicRoles) { this.dynamicRoles = dynamicRoles; }
 }
 

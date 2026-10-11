@@ -16,12 +16,13 @@ import {
   ActivityIcon,
   FileTextIcon,
 } from '@/components/ui/LineIcons';
-import { Bot, Sparkles, Layers, HardDrive, Zap, Menu, X, LogOut, Calendar } from 'lucide-react';
+import { Bot, Sparkles, Layers, HardDrive, Zap, Menu, X, LogOut, Calendar, Users } from 'lucide-react';
 import styles from '@/app/admin/adminLayout.module.css';
 import AdminChatbotWidget from '@/components/features/chatbot/admin/AdminChatbotWidget';
 
 const navItems = [
   { name: 'Tổng quan', path: '/admin', icon: <BarChartIcon size={20} /> },
+  { name: 'Quản lý người dùng', path: '/admin/users', icon: <Users size={20} /> },
   { name: 'Quản lý sách', path: '/admin/books', icon: <BookOpenIcon size={20} /> },
   { name: 'Quản lý danh mục', path: '/admin/categories', icon: <Layers size={20} /> },
   { name: 'Lịch phát hành', path: '/admin/schedule', icon: <Calendar size={20} /> },
