@@ -2,11 +2,10 @@
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import Button from '@/components/ui/Button';
-import { activityTracker } from '@/services/activityTracker';
+import SmartSearchBar from '@/components/features/search/SmartSearchBar';
 import UserAvatarDropdown from './UserAvatarDropdown';
 import styles from './Header.module.css';
 
@@ -15,7 +14,6 @@ export default function Header() {
   const { cartCount } = useCart();
   const router = useRouter();
   const pathname = usePathname();
-  const [searchQuery, setSearchQuery] = useState('');
 
   const initials = user?.displayName
     ?.split(' ')
@@ -23,16 +21,6 @@ export default function Header() {
     .join('')
     .toUpperCase()
     .slice(0, 2) || 'U';
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      activityTracker.trackSearch(searchQuery.trim());
-      router.push(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      router.push('/books');
-    }
-  };
 
   return (
     <>
@@ -118,24 +106,7 @@ export default function Header() {
               <span>Danh mục sách</span>
             </button>
 
-            <form className={styles.searchBar} onSubmit={handleSearchSubmit}>
-              <div className={styles.searchInputWrapper}>
-                <svg className={styles.searchIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm sách, tác giả, NXB, thể loại..."
-                  className={styles.searchInput}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <button type="submit" className={styles.searchSubmit}>
-                Tìm kiếm
-              </button>
-            </form>
+            <SmartSearchBar />
           </div>
         </div>
       </header>

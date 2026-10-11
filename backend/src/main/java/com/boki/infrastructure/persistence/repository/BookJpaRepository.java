@@ -32,9 +32,11 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"images"})
     java.util.Optional<BookJpaEntity> findBySlug(String slug);
 
-    @Query("SELECT b FROM BookJpaEntity b WHERE b.status = :status AND " +
-           "(LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
+    @Query("SELECT b FROM BookJpaEntity b WHERE b.status = :status AND (" +
+           "LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(REPLACE(b.slug, '-', ' ')) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.publisher) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<BookJpaEntity> searchActiveBooks(
             @Param("status") BookJpaEntity.BookStatusJpa status,
             @Param("query") String query,
@@ -50,9 +52,11 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
     );
 
     @Query("SELECT DISTINCT b FROM BookJpaEntity b LEFT JOIN b.categoryIds catId " +
-           "WHERE b.status = :status AND (b.categoryId = :categoryId OR catId = :categoryId) AND " +
-           "(LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
+           "WHERE b.status = :status AND (b.categoryId = :categoryId OR catId = :categoryId) AND (" +
+           "LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(REPLACE(b.slug, '-', ' ')) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.publisher) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<BookJpaEntity> searchActiveBooksByCategory(
             @Param("status") BookJpaEntity.BookStatusJpa status,
             @Param("categoryId") Integer categoryId,
@@ -69,9 +73,11 @@ public interface BookJpaRepository extends JpaRepository<BookJpaEntity, UUID> {
     );
 
     @Query("SELECT DISTINCT b FROM BookJpaEntity b LEFT JOIN b.categoryIds catId " +
-           "WHERE b.status = :status AND (b.categoryId IN :categoryIds OR catId IN :categoryIds) AND " +
-           "(LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')))")
+           "WHERE b.status = :status AND (b.categoryId IN :categoryIds OR catId IN :categoryIds) AND (" +
+           "LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(REPLACE(b.slug, '-', ' ')) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(b.publisher) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<BookJpaEntity> searchActiveBooksByCategoryIdsIn(
             @Param("status") BookJpaEntity.BookStatusJpa status,
             @Param("categoryIds") List<Integer> categoryIds,
