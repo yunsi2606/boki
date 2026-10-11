@@ -41,8 +41,34 @@ public class AdminUserApplicationService {
     public Page<AdminUserSummaryResponse> getUsers(
             String keyword, Boolean active, Boolean phoneVerified, String memberTier, int page, int size
     ) {
+        org.springframework.data.jpa.domain.Specification<UserJpaEntity> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if (keyword != null && !keyword.isBlank()) {
+                String term = "%" + keyword.trim().toLowerCase() + "%";
+                jakarta.persistence.criteria.Predicate emailLike = cb.like(cb.lower(root.get("email")), term);
+                jakarta.persistence.criteria.Predicate nameLike = cb.like(cb.lower(root.get("displayName")), term);
+                jakarta.persistence.criteria.Predicate phoneLike = cb.like(cb.lower(cb.coalesce(root.get("phoneNumber"), "")), term);
+                predicates.add(cb.or(emailLike, nameLike, phoneLike));
+            }
+
+            if (active != null) {
+                predicates.add(cb.equal(root.get("active"), active));
+            }
+
+            if (phoneVerified != null) {
+                predicates.add(cb.equal(root.get("phoneVerified"), phoneVerified));
+            }
+
+            if (memberTier != null && !memberTier.isBlank() && !"ALL".equalsIgnoreCase(memberTier)) {
+                predicates.add(cb.equal(cb.upper(root.get("memberTier")), memberTier.trim().toUpperCase()));
+            }
+
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<UserJpaEntity> userPage = userRepository.findUsersForAdmin(keyword, active, phoneVerified, memberTier, pageRequest);
+        Page<UserJpaEntity> userPage = userRepository.findAll(spec, pageRequest);
 
         return userPage.map(this::toSummaryResponse);
     }
@@ -99,10 +125,14 @@ public class AdminUserApplicationService {
         List<String> smartTags = computeSmartTags(user, totalOrders, cancelledOrders);
 
         return new AdminUserDetailResponse(
-                user.getId(), user.getEmail(), user.getDisplayName(), user.getPhoneNumber(),
+                user.getId(), user.getEmail(),
+                user.getDisplayName() != null ? user.getDisplayName() : user.getEmail(),
+                user.getPhoneNumber(),
                 user.isPhoneVerified(), user.isEmailVerified(), user.getAvatarUrl(),
                 user.getRole() != null ? user.getRole().name() : "BUYER",
-                user.getMemberTier(), user.getTotalSpent(), user.getLoyaltyPoints(),
+                user.getMemberTier() != null ? user.getMemberTier() : "STANDARD",
+                user.getTotalSpent() != null ? user.getTotalSpent() : BigDecimal.ZERO,
+                user.getLoyaltyPoints() != null ? user.getLoyaltyPoints() : 0,
                 user.isActive(), user.getCreatedAt(), user.getUpdatedAt(),
                 user.getShippingFullName(), user.getShippingPhone(), user.getShippingProvince(),
                 user.getShippingDistrict(), user.getShippingWard(), user.getShippingStreetAddress(),
@@ -161,15 +191,27 @@ public class AdminUserApplicationService {
     }
 
     private AdminUserSummaryResponse toSummaryResponse(UserJpaEntity u) {
-        List<String> roleCodes = u.getDynamicRoles().stream().map(RoleJpaEntity::getCode).sorted().toList();
+        List<String> roleCodes = u.getDynamicRoles() != null
+                ? u.getDynamicRoles().stream().map(RoleJpaEntity::getCode).sorted().toList()
+                : Collections.emptyList();
         List<String> tags = computeSmartTags(u, 0, 0);
 
         return new AdminUserSummaryResponse(
-                u.getId(), u.getEmail(), u.getDisplayName(), u.getPhoneNumber(),
-                u.isPhoneVerified(), u.isEmailVerified(), u.getAvatarUrl(),
+                u.getId(),
+                u.getEmail(),
+                u.getDisplayName() != null ? u.getDisplayName() : u.getEmail(),
+                u.getPhoneNumber(),
+                u.isPhoneVerified(),
+                u.isEmailVerified(),
+                u.getAvatarUrl(),
                 u.getRole() != null ? u.getRole().name() : "BUYER",
-                u.getMemberTier(), u.getTotalSpent(), u.getLoyaltyPoints(),
-                u.isActive(), u.getCreatedAt(), roleCodes, tags
+                u.getMemberTier() != null ? u.getMemberTier() : "STANDARD",
+                u.getTotalSpent() != null ? u.getTotalSpent() : BigDecimal.ZERO,
+                u.getLoyaltyPoints() != null ? u.getLoyaltyPoints() : 0,
+                u.isActive(),
+                u.getCreatedAt(),
+                roleCodes,
+                tags
         );
     }
 

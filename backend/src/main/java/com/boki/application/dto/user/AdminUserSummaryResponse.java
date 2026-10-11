@@ -16,7 +16,7 @@ public record AdminUserSummaryResponse(
         String primaryRole,
         String memberTier,
         BigDecimal totalSpent,
-        int loyaltyPoints,
+        Integer loyaltyPoints,
         boolean active,
         Instant createdAt,
         List<String> roleCodes,
