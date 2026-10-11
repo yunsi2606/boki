@@ -34,9 +34,10 @@ export default function ImageUploadInput({
     try {
       const res = await mediaService.uploadMedia(file);
       onChange(res.url);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to upload image', err);
-      alert('Tải ảnh thất bại. Vui lòng thử lại.');
+      const msg = err instanceof Error ? err.message : 'Tải ảnh thất bại. Vui lòng thử lại.';
+      alert(msg);
     } finally {
       setUploading(false);
     }

@@ -24,7 +24,8 @@ export const mediaService = {
 
     if (!response.ok) {
       const errData = await response.json().catch(() => null);
-      const errorMessage = errData?.error || `Upload failed with status ${response.status}`;
+      const errorMessage =
+        errData?.message || errData?.error || `Upload failed with status ${response.status}`;
       throw new Error(errorMessage);
     }
 

@@ -37,6 +37,13 @@ spring:
       write-dates-as-timestamps: false
     default-property-inclusion: non_null
 
+  # Multipart Upload
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
 # JWT & External API configs
 app:
   jwt:
