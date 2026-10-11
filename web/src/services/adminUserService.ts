@@ -27,23 +27,23 @@ export const adminUserService = {
     if (params.size !== undefined) searchParams.set('size', String(params.size));
 
     const query = searchParams.toString();
-    const endpoint = `/api/admin/users${query ? `?${query}` : ''}`;
+    const endpoint = `/admin/users${query ? `?${query}` : ''}`;
     return api.get<PageResponse<AdminUserSummary>>(endpoint, { bypassCache: true });
   },
 
   async getUserStats(): Promise<AdminUserStats> {
-    return api.get<AdminUserStats>('/api/admin/users/stats', { bypassCache: true });
+    return api.get<AdminUserStats>('/admin/users/stats', { bypassCache: true });
   },
 
   async getUserDetail(id: string): Promise<AdminUserDetail> {
-    return api.get<AdminUserDetail>(`/api/admin/users/${id}`, { bypassCache: true });
+    return api.get<AdminUserDetail>(`/admin/users/${id}`, { bypassCache: true });
   },
 
   async updateUserStatus(id: string, active: boolean, reason?: string): Promise<{ message: string }> {
-    return api.patch<{ message: string }>(`/api/admin/users/${id}/status`, { active, reason });
+    return api.patch<{ message: string }>(`/admin/users/${id}/status`, { active, reason });
   },
 
   async updateUserRoles(id: string, roleCodes: string[], memberTier?: string): Promise<{ message: string }> {
-    return api.patch<{ message: string }>(`/api/admin/users/${id}/roles`, { roleCodes, memberTier });
+    return api.patch<{ message: string }>(`/admin/users/${id}/roles`, { roleCodes, memberTier });
   },
 };
