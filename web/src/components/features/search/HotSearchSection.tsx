@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import styles from './smartSearch.module.css';
+import styles from './hotSearch.module.css';
 
 interface HotSearchSectionProps {
   keywords: string[];

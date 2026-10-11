@@ -1,0 +1,91 @@
+/* Hot Search Section Styles */
+
+.hotSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-neutral-800, #212529);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hotGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 14px;
+}
+
+.hotItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+  transition: background var(--transition-fast, 0.2s ease);
+}
+
+.hotItem:hover {
+  background: var(--color-neutral-50, #F8F9FA);
+}
+
+.rankBadge {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rankTop1 {
+  background: #FFE4E8;
+  color: var(--color-primary-500, #EE4D2D);
+}
+
+.rankTop2 {
+  background: #FFF3E0;
+  color: var(--color-secondary-500, #FF9800);
+}
+
+.rankTop3 {
+  background: #FFF8E1;
+  color: #FFA000;
+}
+
+.rankOther {
+  background: var(--color-neutral-200, #F1F3F5);
+  color: var(--color-neutral-600, #495057);
+}
+
+.hotLabel {
+  font-size: 13px;
+  color: var(--color-neutral-800, #212529);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .hotGrid {
+    grid-template-columns: 1fr;
+  }
+}
