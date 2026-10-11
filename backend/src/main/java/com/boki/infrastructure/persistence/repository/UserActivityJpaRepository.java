@@ -32,21 +32,14 @@ public interface UserActivityJpaRepository extends JpaRepository<UserActivityJpa
     @Query("SELECT a.targetName, COUNT(a) as cnt FROM UserActivityJpaEntity a WHERE a.eventType = 'SEARCH' AND a.targetName IS NOT NULL AND a.targetName <> '' GROUP BY a.targetName ORDER BY cnt DESC")
     List<Object[]> findTopSearchKeywords(Pageable pageable);
 
-    @Query("SELECT LOWER(TRIM(a.targetName)) as kw, " +
-           "COUNT(DISTINCT a.sessionId) as uniqueSessions, " +
-           "SUM(CASE WHEN a.createdAt >= :oneDayAgo THEN 2.0 ELSE 1.0 END) as score " +
+    @Query("SELECT LOWER(TRIM(a.targetName)), COUNT(DISTINCT a.sessionId) as cnt " +
            "FROM UserActivityJpaEntity a " +
            "WHERE a.eventType = 'SEARCH' " +
            "AND a.targetName IS NOT NULL " +
-           "AND LENGTH(TRIM(a.targetName)) >= 2 " +
-           "AND a.createdAt >= :sevenDaysAgo " +
+           "AND a.createdAt >= :since " +
            "GROUP BY LOWER(TRIM(a.targetName)) " +
-           "ORDER BY score DESC, uniqueSessions DESC")
-    List<Object[]> findHotSearchKeywords(
-            @Param("oneDayAgo") Instant oneDayAgo,
-            @Param("sevenDaysAgo") Instant sevenDaysAgo,
-            Pageable pageable
-    );
+           "ORDER BY cnt DESC")
+    List<Object[]> findTopSearchKeywordsSince(@Param("since") Instant since, Pageable pageable);
 
     @Query("SELECT a.targetName, COUNT(a) as cnt FROM UserActivityJpaEntity a WHERE a.eventType = 'VIEW_BOOK' AND a.targetName IS NOT NULL GROUP BY a.targetName ORDER BY cnt DESC")
     List<Object[]> findTopViewedBooks(Pageable pageable);

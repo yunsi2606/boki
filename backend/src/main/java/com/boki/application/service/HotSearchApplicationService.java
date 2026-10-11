@@ -60,21 +60,34 @@ public class HotSearchApplicationService {
         Instant oneDayAgo = now.minus(24, ChronoUnit.HOURS);
         Instant sevenDaysAgo = now.minus(7, ChronoUnit.DAYS);
 
+        Map<String, Double> scoreMap = new HashMap<>();
         try {
-            List<Object[]> rawHotList = activityRepository.findHotSearchKeywords(
-                    oneDayAgo,
-                    sevenDaysAgo,
-                    PageRequest.of(0, 15)
-            );
-
-            for (Object[] row : rawHotList) {
+            // 24h searches (recency weight 2.0)
+            List<Object[]> dayList = activityRepository.findTopSearchKeywordsSince(oneDayAgo, PageRequest.of(0, 10));
+            for (Object[] row : dayList) {
                 if (row == null || row.length == 0 || row[0] == null) continue;
-                String kw = row[0].toString().trim();
+                String kw = row[0].toString().trim().toLowerCase();
                 if (isValidKeyword(kw)) {
-                    resultSet.add(capitalizeWords(kw));
+                    long cnt = row.length > 1 && row[1] instanceof Number n ? n.longValue() : 1L;
+                    scoreMap.put(kw, scoreMap.getOrDefault(kw, 0.0) + cnt * 2.0);
                 }
-                if (resultSet.size() >= TARGET_KEYWORDS_COUNT) break;
             }
+
+            // 7d searches (base weight 1.0)
+            List<Object[]> weekList = activityRepository.findTopSearchKeywordsSince(sevenDaysAgo, PageRequest.of(0, 15));
+            for (Object[] row : weekList) {
+                if (row == null || row.length == 0 || row[0] == null) continue;
+                String kw = row[0].toString().trim().toLowerCase();
+                if (isValidKeyword(kw)) {
+                    long cnt = row.length > 1 && row[1] instanceof Number n ? n.longValue() : 1L;
+                    scoreMap.put(kw, scoreMap.getOrDefault(kw, 0.0) + cnt * 1.0);
+                }
+            }
+
+            scoreMap.entrySet().stream()
+                    .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                    .limit(TARGET_KEYWORDS_COUNT)
+                    .forEach(entry -> resultSet.add(capitalizeWords(entry.getKey())));
         } catch (Exception e) {
             log.warn("Failed to aggregate hot search keywords from activity log: {}", e.getMessage());
         }
