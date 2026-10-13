@@ -73,6 +73,62 @@ public class CloudflareR2StorageService {
         return saveToLocalStorage(file, objectKey);
     }
 
+    public String uploadBytes(byte[] bytes, String originalFilename, String contentType) throws IOException {
+        if (bytes == null || bytes.length == 0) {
+            throw new IllegalArgumentException("Byte array upload cannot be empty.");
+        }
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        } else if (contentType != null && contentType.contains("/")) {
+            String sub = contentType.substring(contentType.indexOf("/") + 1);
+            extension = "." + (sub.equalsIgnoreCase("jpeg") ? "jpg" : sub);
+        }
+        String datePrefix = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        String objectKey = String.format("uploads/%s/%s%s", datePrefix, UUID.randomUUID(), extension);
+
+        if (r2S3Client != null) {
+            try {
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(objectKey)
+                        .contentType(contentType != null ? contentType : "image/jpeg")
+                        .build();
+                r2S3Client.putObject(putObjectRequest, RequestBody.fromBytes(bytes));
+                return String.format("%s/%s", publicUrl.replaceAll("/$", ""), objectKey);
+            } catch (Exception e) {
+                log.error("Cloudflare R2 byte upload failed, saving locally: {}", e.getMessage());
+            }
+        }
+
+        Path uploadPath = Paths.get("uploads", objectKey).toAbsolutePath();
+        Files.createDirectories(uploadPath.getParent());
+        Files.write(uploadPath, bytes);
+        return String.format("http://localhost:8080/uploads/%s", objectKey);
+    }
+
+    public String uploadFromUrl(String remoteUrl) {
+        if (remoteUrl == null || remoteUrl.isBlank()) return null;
+        if (remoteUrl.contains(publicUrl) || remoteUrl.contains("pub-") || remoteUrl.contains("localhost:8080/uploads")) {
+            return remoteUrl; // Already in R2/local storage
+        }
+        try {
+            org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+            org.springframework.http.HttpEntity<Void> entity = new org.springframework.http.HttpEntity<>(headers);
+            org.springframework.http.ResponseEntity<byte[]> response = restTemplate.exchange(
+                    remoteUrl, org.springframework.http.HttpMethod.GET, entity, byte[].class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                String cType = response.getHeaders().getContentType() != null ? response.getHeaders().getContentType().toString() : "image/jpeg";
+                return uploadBytes(response.getBody(), "remote_image.jpg", cType);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to fetch and re-upload remote URL {} to R2: {}", remoteUrl, e.getMessage());
+        }
+        return remoteUrl; // Fallback to original url if download failed
+    }
+
     private String saveToLocalStorage(MultipartFile file, String objectKey) throws IOException {
         Path uploadPath = Paths.get("uploads", objectKey).toAbsolutePath();
         Files.createDirectories(uploadPath.getParent());

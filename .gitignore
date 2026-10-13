@@ -45,3 +45,6 @@ dist/
 *.sln
 *.swp
 *.swo
+~$*.xlsx
+~$*.xls
+

@@ -15,6 +15,7 @@ import { BookOpen, Package, Tag, AlertCircle, X, ArrowRight, ArrowLeft } from 'l
 import AdminComboCreateModal from '@/components/features/admin/combos/AdminComboCreateModal';
 import { MultiCategorySelector } from '@/components/features/admin/books/MultiCategorySelector';
 import { getBookPriceDisplay } from '@/utils/bookPrice';
+import BookExcelImportModal from '@/components/admin/books/excel/BookExcelImportModal';
 
 export interface SpecificationItem {
   id: string;
@@ -53,6 +54,9 @@ export default function AdminBooksPage() {
 
   // Quick Add Category Modal State
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
+
+  // Excel Import Modal State
+  const [isExcelImportModalOpen, setIsExcelImportModalOpen] = useState(false);
 
   // Form Active Tab
   const [activeTab, setActiveTab] = useState<'required' | 'optional'>('required');
@@ -430,6 +434,26 @@ export default function AdminBooksPage() {
             }}
           >
             <Package size={16} /> + Tạo Combo
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsExcelImportModalOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: '#059669',
+              color: '#ffffff',
+              padding: '10px 16px',
+              borderRadius: '10px',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              boxShadow: '0 2px 4px rgba(5, 150, 105, 0.2)',
+            }}
+          >
+            Nhập từ Excel
           </button>
           <button onClick={handleOpenAddModal} className={styles.primaryBtn}>
             + Thêm Sách Mới
@@ -1303,6 +1327,19 @@ export default function AdminBooksPage() {
         onClose={() => setIsComboModalOpen(false)}
         onSuccess={(newCombo) => {
           setBooks((prev) => [newCombo, ...prev]);
+        }}
+      />
+
+      {/* Book Excel Import Modal */}
+      <BookExcelImportModal
+        isOpen={isExcelImportModalOpen}
+        onClose={() => setIsExcelImportModalOpen(false)}
+        onSuccess={() => {
+          setLoading(true);
+          bookService.getAdminBooks().then((data) => {
+            setBooks(data);
+            setLoading(false);
+          }).catch(() => setLoading(false));
         }}
       />
     </div>

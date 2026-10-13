@@ -52,4 +52,29 @@ export const bookService = {
   incrementViews: async (idOrSlug: string): Promise<void> => {
     return api.post<void>(`/books/${idOrSlug}/views`, {});
   },
+
+  downloadExcelTemplate: async (): Promise<void> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('boki_access_token') : null;
+    const res = await fetch('http://localhost:8080/api/admin/books/excel/template', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) throw new Error('Không thể tải biểu mẫu Excel');
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'boki_bieu_mau_them_sach.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  },
+
+  importBookExcel: async (formData: FormData, dryRun: boolean): Promise<import('@/types/bookExcel').BookExcelImportResult> => {
+    return api.upload<import('@/types/bookExcel').BookExcelImportResult>(
+      `/admin/books/excel/import?dryRun=${dryRun}`,
+      formData
+    );
+  },
 };
+

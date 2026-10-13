@@ -1,0 +1,217 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 16px;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 980px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.header {
+  padding: 18px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.downloadBanner {
+  background: #fff5f5;
+  border: 1px dashed #ee4d2d;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.downloadText {
+  font-size: 0.88rem;
+  color: #1e293b;
+}
+
+.downloadBtn {
+  background: #ffffff;
+  color: #ee4d2d;
+  border: 1px solid #ee4d2d;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.downloadBtn:hover {
+  background: #ee4d2d;
+  color: #ffffff;
+}
+
+.dropzoneGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.dropzoneCard {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.dropzoneCard:hover {
+  border-color: #ee4d2d;
+  background: #fffafa;
+}
+
+.dropzoneTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 8px 0 4px 0;
+}
+
+.dropzoneDesc {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.fileBadge {
+  margin-top: 10px;
+  display: inline-block;
+  background: #e2e8f0;
+  color: #1e293b;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.statsBar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statItem {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
+.statItemStrong {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.statItemSuccess {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.statItemError {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #f8fafc;
+}
+
+.cancelBtn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  background: #ee4d2d;
+  color: #ffffff;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.primaryBtn:hover {
+  background: #d83a1b;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
