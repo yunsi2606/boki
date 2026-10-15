@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/lib/constants';
+import { getApiBaseUrl } from '@/lib/constants';
 import type { RecordActivityPayload, BatchActivityPayload } from '@/types/activity';
 
 const SESSION_STORAGE_KEY = 'boki_session_id';
@@ -103,7 +103,7 @@ class ActivityTracker {
     };
 
     try {
-      await fetch(`${API_BASE_URL}/activities/batch`, {
+      await fetch(`${getApiBaseUrl()}/activities/batch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -115,26 +115,21 @@ class ActivityTracker {
     }
   }
 
-  /**
-   * Synchronous beacon flush for page dismissal (pagehide/visibilitychange)
-   */
   private flushBeacon() {
     if (this.buffer.length === 0) return;
-
-    const eventsToSend = [...this.buffer];
-    this.buffer = [];
-
     const batchPayload: BatchActivityPayload = {
       sessionId: this.getSessionId(),
-      events: eventsToSend,
+      events: [...this.buffer],
     };
+    this.buffer = [];
 
     try {
+      const url = `${getApiBaseUrl()}/activities/batch`;
       const blob = new Blob([JSON.stringify(batchPayload)], { type: 'application/json' });
       if (navigator.sendBeacon) {
-        navigator.sendBeacon(`${API_BASE_URL}/activities/batch`, blob);
+        navigator.sendBeacon(url, blob);
       } else {
-        fetch(`${API_BASE_URL}/activities/batch`, {
+        fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

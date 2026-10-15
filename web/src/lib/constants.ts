@@ -1,5 +1,9 @@
+import { getActiveApiBaseUrl, PRIMARY_API_URL, BACKUP_API_URL } from '@/services/apiEndpoint';
+
 /** Application-wide constants */
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+export const API_BASE_URL = PRIMARY_API_URL;
+export const BACKUP_API_BASE_URL = BACKUP_API_URL;
+export const getApiBaseUrl = getActiveApiBaseUrl;
 export const TOKEN_STORAGE_KEY = 'boki_auth_token';
 export const REFRESH_TOKEN_STORAGE_KEY = 'boki_refresh_token';
 export const USER_STORAGE_KEY = 'boki_user';

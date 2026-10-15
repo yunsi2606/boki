@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { extractBookId } from '@/lib/slug';
 import { BookDetailSkeleton } from '@/components/ui/Skeleton';
 import BookDetailClient from '@/components/features/books/BookDetailClient';
-import { API_BASE_URL } from '@/lib/constants';
+import { fetchWithFailover } from '@/services/apiEndpoint';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -15,9 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const id = extractBookId(slug);
     if (!id) throw new Error('No book id found');
 
-    const res = await fetch(`${API_BASE_URL}/books/${id}`, {
+    const res = await fetchWithFailover(`/books/${id}`, {
       next: { revalidate: 60 },
-      signal: AbortSignal.timeout(1500),
     });
 
     if (res.ok) {

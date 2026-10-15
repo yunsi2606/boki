@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { adminService } from '@/services/adminService';
 import { paymentService } from '@/services/paymentService';
-import { API_BASE_URL } from '@/lib/constants';
+import { getApiBaseUrl } from '@/lib/constants';
 import styles from './PaymentConfigTab.module.css';
 
 interface PaymentConfigTabProps {
@@ -106,7 +106,7 @@ export default function PaymentConfigTab({ onSuccessNotice }: PaymentConfigTabPr
   };
 
   const getBackendWebhookUrl = (gateway: string) => {
-    const base = API_BASE_URL.replace(/\/+$/, '');
+    const base = getApiBaseUrl().replace(/\/+$/, '');
     return `${base}/webhooks/${gateway}`;
   };
 

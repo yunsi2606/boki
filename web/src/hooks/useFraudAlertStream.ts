@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { API_BASE_URL } from '@/lib/constants';
+import { getApiBaseUrl } from '@/lib/constants';
 import type { FraudAlertEvent } from '@/types';
 import { voiceAlertService } from '@/services/voiceAlertService';
 
@@ -49,7 +49,7 @@ export function useFraudAlertStream(options: UseFraudAlertStreamOptions = {}) {
 
     const connectSSE = () => {
       const token = typeof window !== 'undefined' ? localStorage.getItem('boki_token') : null;
-      const streamUrl = `${API_BASE_URL.replace(/\/+$/, '')}/admin/orders/alerts/stream${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+      const streamUrl = `${getApiBaseUrl().replace(/\/+$/, '')}/admin/orders/alerts/stream${token ? `?token=${encodeURIComponent(token)}` : ''}`;
 
       try {
         eventSource = new EventSource(streamUrl);

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import PreviewReaderClient from '@/components/features/preview/PreviewReaderClient';
-import { API_BASE_URL } from '@/lib/constants';
+import { fetchWithFailover } from '@/services/apiEndpoint';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -9,9 +9,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { slug } = await params;
-    const res = await fetch(`${API_BASE_URL}/blogs/${slug}`, {
+    const res = await fetchWithFailover(`/blogs/${slug}`, {
       next: { revalidate: 60 },
-      signal: AbortSignal.timeout(1500),
     });
     if (res.ok) {
       const post = await res.json();

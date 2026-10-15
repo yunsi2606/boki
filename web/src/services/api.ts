@@ -1,4 +1,5 @@
-import { API_BASE_URL, REFRESH_TOKEN_STORAGE_KEY, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '@/lib/constants';
+import { REFRESH_TOKEN_STORAGE_KEY, TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '@/lib/constants';
+import { fetchWithFailover } from './apiEndpoint';
 import type { ApiError, AuthResponse } from '@/types';
 import {
   inFlightRequests,
@@ -68,7 +69,7 @@ async function apiFetch<T>(
       (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetchWithFailover(endpoint, {
       credentials: 'include',
       ...options,
       headers,
@@ -82,7 +83,7 @@ async function apiFetch<T>(
           isRefreshing = true;
 
           try {
-            const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
+            const refreshRes = await fetchWithFailover('/auth/refresh', {
               method: 'POST',
               credentials: 'include',
               headers: { 'Content-Type': 'application/json' },
@@ -104,7 +105,7 @@ async function apiFetch<T>(
               isRefreshing = false;
 
               (headers as Record<string, string>)['Authorization'] = `Bearer ${newAccessToken}`;
-              const retryRes = await fetch(`${API_BASE_URL}${endpoint}`, {
+              const retryRes = await fetchWithFailover(endpoint, {
                 credentials: 'include',
                 ...options,
                 headers,
@@ -142,7 +143,7 @@ async function apiFetch<T>(
             failedQueue.push({ resolve, reject });
           }).then((newToken) => {
             (headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`;
-            return fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers }).then(async (res) => {
+            return fetchWithFailover(endpoint, { ...options, headers }).then(async (res) => {
               if (res.status === 204 || res.headers.get('content-length') === '0') return undefined as T;
               const txt = await res.text();
               return (txt ? JSON.parse(txt) : undefined) as T;

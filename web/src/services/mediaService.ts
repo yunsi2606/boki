@@ -1,4 +1,5 @@
-import { API_BASE_URL, TOKEN_STORAGE_KEY } from '@/lib/constants';
+import { TOKEN_STORAGE_KEY } from '@/lib/constants';
+import { fetchWithFailover } from './apiEndpoint';
 
 export interface UploadResponse {
   url: string;
@@ -16,7 +17,7 @@ export const mediaService = {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}/v1/media/upload`, {
+    const response = await fetchWithFailover('/v1/media/upload', {
       method: 'POST',
       headers,
       body: formData,
