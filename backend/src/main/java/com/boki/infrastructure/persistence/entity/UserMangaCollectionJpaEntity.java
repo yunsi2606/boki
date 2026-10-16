@@ -49,7 +49,7 @@ public class UserMangaCollectionJpaEntity {
     private String readingStatus = "UNREAD"; // UNREAD, READING, COMPLETED
 
     @Column(name = "personal_rating")
-    private Integer personalRating;
+    private Short personalRating;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;

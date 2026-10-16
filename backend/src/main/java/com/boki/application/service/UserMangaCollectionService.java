@@ -52,7 +52,7 @@ public class UserMangaCollectionService {
                     .purchasePlace(e.getPurchasePlace())
                     .purchasedAt(e.getPurchasedAt())
                     .readingStatus(e.getReadingStatus())
-                    .personalRating(e.getPersonalRating())
+                    .personalRating(e.getPersonalRating() != null ? e.getPersonalRating().intValue() : null)
                     .notes(e.getNotes())
                     .createdAt(e.getCreatedAt())
                     .updatedAt(e.getUpdatedAt())
@@ -82,7 +82,7 @@ public class UserMangaCollectionService {
         if (req.getReadingStatus() != null) {
             entity.setReadingStatus(req.getReadingStatus().toUpperCase());
         }
-        entity.setPersonalRating(req.getPersonalRating());
+        entity.setPersonalRating(req.getPersonalRating() != null ? req.getPersonalRating().shortValue() : null);
         entity.setNotes(req.getNotes());
         entity.setUpdatedAt(OffsetDateTime.now());
 
@@ -99,7 +99,7 @@ public class UserMangaCollectionService {
                 .purchasePlace(saved.getPurchasePlace())
                 .purchasedAt(saved.getPurchasedAt())
                 .readingStatus(saved.getReadingStatus())
-                .personalRating(saved.getPersonalRating())
+                .personalRating(saved.getPersonalRating() != null ? saved.getPersonalRating().intValue() : null)
                 .notes(saved.getNotes())
                 .createdAt(saved.getCreatedAt())
                 .updatedAt(saved.getUpdatedAt())
