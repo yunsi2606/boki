@@ -1,0 +1,161 @@
+.matrixContainer {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  margin-bottom: 32px;
+}
+
+.weekdaysRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--color-neutral-100);
+  border-bottom: 1px solid var(--color-neutral-300);
+}
+
+.weekdayCol {
+  padding: 12px 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-neutral-700);
+}
+
+.weekdayCol:last-child {
+  color: var(--color-primary-600);
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.emptyCell {
+  min-height: 110px;
+  background: var(--color-neutral-50);
+  border-right: 1px solid var(--color-neutral-200);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.dayCell {
+  position: relative;
+  min-height: 110px;
+  padding: 8px 10px;
+  border-right: 1px solid var(--color-neutral-200);
+  border-bottom: 1px solid var(--color-neutral-200);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.dayCell:nth-child(7n) {
+  border-right: none;
+}
+
+.activeCell {
+  cursor: pointer;
+}
+
+.activeCell:hover {
+  background: var(--color-pink-50);
+  border-color: var(--color-primary-300);
+  box-shadow: inset 0 0 0 1px var(--color-primary-400);
+}
+
+.todayCell {
+  background: #fffdf5;
+}
+
+.todayCell .dayNum {
+  color: #ffffff;
+  background: var(--color-primary-500);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 6px;
+}
+
+.dayNum {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+}
+
+.dotIndicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-secondary-500);
+  box-shadow: 0 0 4px rgba(255, 152, 0, 0.6);
+}
+
+.cellBgCover {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.12;
+  filter: saturate(1.2);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.itemsList {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: auto;
+}
+
+.miniItemTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--color-neutral-200);
+  line-height: 1.3;
+}
+
+.moreCount {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .dayCell,
+  .emptyCell {
+    min-height: 80px;
+    padding: 4px 6px;
+  }
+  .weekdayCol {
+    font-size: 11px;
+    padding: 8px 2px;
+  }
+  .miniItemTitle {
+    font-size: 9.5px;
+  }
+}

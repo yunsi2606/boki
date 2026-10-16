@@ -1,71 +1,200 @@
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 24px 16px 80px;
+  padding: 24px 16px 100px;
 }
 
-.header {
+.heroSection {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
   margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
 }
 
 .title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--color-neutral-900);
-  margin-bottom: 6px;
+  margin: 0 0 8px;
 }
 
 .subtitle {
   font-size: 14px;
   color: var(--color-neutral-600);
+  margin: 0 0 20px;
+}
+
+.searchBar {
+  max-width: 560px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  outline: none;
+  background: var(--color-neutral-50);
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  background: #ffffff;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.12);
+}
+
+.toolbarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.foundCount {
+  font-size: 14px;
+  color: var(--color-neutral-600);
+}
+
+.foundCount strong {
+  color: var(--color-neutral-900);
+  font-weight: 800;
+}
+
+.sortGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.sortBtn {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sortBtn:hover {
+  border-color: var(--color-neutral-400);
+  background: var(--color-neutral-100);
+}
+
+.activeSort {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  color: #ffffff;
+}
+
+.activeSort:hover {
+  background: var(--color-primary-600);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+  }
 }
 
 .seriesCard {
   display: flex;
+  flex-direction: column;
   background: #ffffff;
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--radius-md);
-  padding: 14px;
-  gap: 14px;
+  overflow: hidden;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
 .seriesCard:hover {
   border-color: var(--color-primary-400);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.coverWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: var(--color-neutral-200);
 }
 
 .seriesCover {
-  width: 70px;
-  aspect-ratio: 2 / 3;
-  border-radius: var(--radius-sm);
-  background: var(--color-neutral-200);
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  flex-shrink: 0;
+  display: block;
+}
+
+.placeholderCover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
+
+.formatBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 8px;
+  background: rgba(17, 24, 39, 0.85);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
 }
 
 .seriesInfo {
+  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  flex-grow: 1;
 }
 
 .seriesName {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--color-neutral-900);
-  margin-bottom: 4px;
+  margin: 0 0 6px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .volumeCount {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--color-primary-600);
-  font-weight: 600;
+  font-weight: 700;
+  margin-top: auto;
+}
+
+.emptyBox {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  color: var(--color-neutral-600);
 }

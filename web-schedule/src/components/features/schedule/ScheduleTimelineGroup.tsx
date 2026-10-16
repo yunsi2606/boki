@@ -9,22 +9,42 @@ interface Props {
 }
 
 export function ScheduleTimelineGroup({ group }: Props) {
+  // Parse dateKey (YYYY-MM-DD) into day of week, day, and day/month
+  let dayOfWeek = '';
+  let dayNum = '';
+  let dayMonth = '';
+
+  if (group.dateKey && group.dateKey.includes('-')) {
+    const d = new Date(group.dateKey + 'T00:00:00');
+    if (!isNaN(d.getTime())) {
+      const weekdays = ['CHỦ NHẬT', 'THỨ 2', 'THỨ 3', 'THỨ 4', 'THỨ 5', 'THỨ 6', 'THỨ 7'];
+      dayOfWeek = weekdays[d.getDay()];
+      dayNum = String(d.getDate());
+      dayMonth = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+  }
+
   return (
-    <section className={styles.groupContainer}>
-      <div className={styles.dateHeader}>
-        <div className={styles.dateBadge}>{group.dateKey}</div>
-        <div className={styles.dateLabel}>{group.dateLabel}</div>
-        <div className={styles.itemCount}>{group.items.length} tập truyện</div>
+    <section id={`date-${group.dateKey}`} className={styles.groupContainer}>
+      {/* Left Date Card */}
+      <div className={styles.dateBlock}>
+        <div className={styles.dayOfWeek}>{dayOfWeek || 'NGÀY'}</div>
+        <div className={styles.dayNum}>{dayNum || group.dateKey}</div>
+        {dayMonth && <div className={styles.dayMonth}>{dayMonth}</div>}
+        <div className={styles.countBadge}>{group.items.length} phát hành</div>
       </div>
 
-      <div className={styles.bookGrid}>
-        {group.items.map((item, idx) => (
-          <ScheduleBookCard
-            key={`${item.schedule.id}-${idx}`}
-            schedule={item.schedule}
-            highlightDate={item.eventDate}
-          />
-        ))}
+      {/* Right Books Grid / Row */}
+      <div className={styles.booksContainer}>
+        <div className={styles.bookGrid}>
+          {group.items.map((item, idx) => (
+            <ScheduleBookCard
+              key={`${item.schedule.id}-${idx}`}
+              schedule={item.schedule}
+              highlightDate={item.eventDate}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

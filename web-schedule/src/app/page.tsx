@@ -3,16 +3,26 @@
 import { useEffect, useState, useMemo } from 'react';
 import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem, ScheduleTimelineGroup as GroupType } from '@/types/schedule';
+import { GenrePillsBar } from '@/components/features/schedule/GenrePillsBar';
 import { ScheduleFilterBar } from '@/components/features/schedule/ScheduleFilterBar';
+import { ScheduleCalendarMatrix } from '@/components/features/schedule/ScheduleCalendarMatrix';
 import { ScheduleTimelineGroup } from '@/components/features/schedule/ScheduleTimelineGroup';
+import { FloatingScheduleNav } from '@/components/features/schedule/FloatingScheduleNav';
 import styles from './home.module.css';
 
 export default function ScheduleHomePage() {
   const [schedules, setSchedules] = useState<ReleaseScheduleItem[]>([]);
   const [publishers, setPublishers] = useState<string[]>([]);
   const [selectedPublisher, setSelectedPublisher] = useState<string>('ALL');
+  const [selectedGenre, setSelectedGenre] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Calendar month state (default to current month)
+  const now = new Date();
+  const [currentYear, setCurrentYear] = useState<number>(now.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(now.getMonth() + 1);
+  const [viewMode, setViewMode] = useState<'TIMELINE' | 'CALENDAR'>('TIMELINE');
 
   useEffect(() => {
     async function initData() {
@@ -33,17 +43,60 @@ export default function ScheduleHomePage() {
     initData();
   }, []);
 
+  const handlePrevMonth = () => {
+    if (currentMonth === 1) {
+      setCurrentMonth(12);
+      setCurrentYear((y) => y - 1);
+    } else {
+      setCurrentMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 12) {
+      setCurrentMonth(1);
+      setCurrentYear((y) => y + 1);
+    } else {
+      setCurrentMonth((m) => m + 1);
+    }
+  };
+
+  const handleJumpToday = () => {
+    const today = new Date();
+    setCurrentYear(today.getFullYear());
+    setCurrentMonth(today.getMonth() + 1);
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
+      today.getDate()
+    ).padStart(2, '0')}`;
+    const el = document.getElementById(`date-${dateStr}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleSelectDateFromCalendar = (dateStr: string) => {
+    setViewMode('TIMELINE');
+    setTimeout(() => {
+      const el = document.getElementById(`date-${dateStr}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   const timelineGroups = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     const filtered = schedules.filter((s) => {
       if (selectedPublisher !== 'ALL' && s.publisher !== selectedPublisher) return false;
+      if (selectedGenre && !s.title.toLowerCase().includes(selectedGenre.toLowerCase())) {
+        return false;
+      }
       if (query && !s.title.toLowerCase().includes(query) && !s.author?.toLowerCase().includes(query)) {
         return false;
       }
       return true;
     });
 
-    // Group by date - Volume-centric (1 card per volume on that date)
     const map = new Map<string, GroupType>();
     filtered.forEach((schedule) => {
       const dateKey = schedule.releaseDate || 'Đang cập nhật';
@@ -63,15 +116,44 @@ export default function ScheduleHomePage() {
     });
 
     return Array.from(map.values()).sort((a, b) => b.dateKey.localeCompare(a.dateKey));
-  }, [schedules, selectedPublisher, searchQuery]);
+  }, [schedules, selectedPublisher, selectedGenre, searchQuery]);
 
   return (
     <main className={styles.container}>
-      <div className={styles.heroSection}>
-        <h1 className={styles.heroTitle}>Lịch Phát Hành Manga & Sách Toàn Quốc</h1>
-        <p className={styles.heroSubtitle}>
-          Tra cứu lịch xuất bản chính thức từ các NXB Kim Đồng, Trẻ, IPM, Wings Books... So sánh giá và mua trực tiếp qua Boki Store, Shopee, TikTok Shop.
-        </p>
+      <GenrePillsBar
+        selectedGenre={selectedGenre}
+        onSelectGenre={setSelectedGenre}
+      />
+
+      {/* Main Schedule Header inspired by Kurano */}
+      <div className={styles.scheduleTopBar}>
+        <div>
+          <div className={styles.topRow}>
+            <h1 className={styles.scheduleTitle}>Lịch phát hành</h1>
+            <button
+              type="button"
+              className={styles.viewModeToggle}
+              onClick={() => setViewMode(viewMode === 'CALENDAR' ? 'TIMELINE' : 'CALENDAR')}
+            >
+              {viewMode === 'CALENDAR' ? 'Xem toàn bộ lịch dạng dòng thời gian →' : 'Xem dạng lưới tháng →'}
+            </button>
+          </div>
+          <div className={styles.countBadge}>
+            {schedules.length} TẬP TRUYỆN PHÁT HÀNH
+          </div>
+        </div>
+
+        <div className={styles.monthSelector}>
+          <button type="button" className={styles.arrowBtn} onClick={handlePrevMonth} title="Tháng trước">
+            &lt;
+          </button>
+          <span className={styles.monthDisplay}>
+            {String(currentMonth).padStart(2, '0')}/{String(currentYear).slice(-2)}
+          </span>
+          <button type="button" className={styles.arrowBtn} onClick={handleNextMonth} title="Tháng sau">
+            &gt;
+          </button>
+        </div>
       </div>
 
       <ScheduleFilterBar
@@ -84,6 +166,13 @@ export default function ScheduleHomePage() {
 
       {loading ? (
         <div className={styles.emptyBox}>Đang tải dữ liệu lịch phát hành...</div>
+      ) : viewMode === 'CALENDAR' ? (
+        <ScheduleCalendarMatrix
+          year={currentYear}
+          month={currentMonth}
+          schedules={schedules}
+          onSelectDate={handleSelectDateFromCalendar}
+        />
       ) : timelineGroups.length === 0 ? (
         <div className={styles.emptyBox}>Không có đầu sách nào phù hợp với bộ lọc.</div>
       ) : (
@@ -91,6 +180,17 @@ export default function ScheduleHomePage() {
           <ScheduleTimelineGroup key={group.dateKey} group={group} />
         ))
       )}
+
+      {/* Floating Bottom Navigator */}
+      <FloatingScheduleNav
+        month={currentMonth}
+        year={currentYear}
+        viewMode={viewMode}
+        onPrevMonth={handlePrevMonth}
+        onNextMonth={handleNextMonth}
+        onToggleView={() => setViewMode(viewMode === 'CALENDAR' ? 'TIMELINE' : 'CALENDAR')}
+        onJumpToday={handleJumpToday}
+      />
     </main>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { scheduleService } from '@/services/scheduleService';
 import styles from './boTruyenList.module.css';
@@ -16,6 +16,8 @@ interface SeriesSummary {
 export function SeriesListPage() {
   const [seriesList, setSeriesList] = useState<SeriesSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'NEWEST' | 'VOLUMES' | 'NAME'>('NEWEST');
 
   useEffect(() => {
     async function loadData() {
@@ -32,35 +34,93 @@ export function SeriesListPage() {
     loadData();
   }, []);
 
+  const filteredList = useMemo(() => {
+    let list = seriesList.filter((s) =>
+      s.seriesName.toLowerCase().includes(search.trim().toLowerCase())
+    );
+    if (sortBy === 'VOLUMES') {
+      list = [...list].sort((a, b) => b.totalVolumes - a.totalVolumes);
+    } else if (sortBy === 'NAME') {
+      list = [...list].sort((a, b) => a.seriesName.localeCompare(b.seriesName));
+    }
+    return list;
+  }, [seriesList, search, sortBy]);
+
   return (
     <main className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Danh Sách Bộ Truyện (Series)</h1>
+      <div className={styles.heroSection}>
+        <h1 className={styles.title}>Tác phẩm bản quyền</h1>
         <p className={styles.subtitle}>
-          Tổng hợp toàn bộ các bộ truyện tranh, light novel đang phát hành kèm tiến độ các tập.
+          Khám phá và tra cứu thông tin chi tiết các tựa manga, light novel bản quyền tại Việt Nam.
         </p>
+
+        {/* Search bar */}
+        <div className={styles.searchBar}>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Nhập tên bộ truyện cần tìm..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Sort row & count */}
+      <div className={styles.toolbarRow}>
+        <div className={styles.foundCount}>
+          Tìm thấy <strong>{filteredList.length}</strong> bộ truyện
+        </div>
+        <div className={styles.sortGroup}>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${sortBy === 'NEWEST' ? styles.activeSort : ''}`}
+            onClick={() => setSortBy('NEWEST')}
+          >
+            Mới cập nhật
+          </button>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${sortBy === 'VOLUMES' ? styles.activeSort : ''}`}
+            onClick={() => setSortBy('VOLUMES')}
+          >
+            Nhiều tập nhất
+          </button>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${sortBy === 'NAME' ? styles.activeSort : ''}`}
+            onClick={() => setSortBy('NAME')}
+          >
+            Tên A-Z
+          </button>
+        </div>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-neutral-600)' }}>
-          Đang tải danh sách bộ truyện...
-        </div>
-      ) : seriesList.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-neutral-600)' }}>
-          Chưa có dữ liệu bộ truyện.
-        </div>
+        <div className={styles.emptyBox}>Đang tải danh sách tác phẩm...</div>
+      ) : filteredList.length === 0 ? (
+        <div className={styles.emptyBox}>Không tìm thấy tác phẩm nào phù hợp.</div>
       ) : (
         <div className={styles.grid}>
-          {seriesList.map((item) => (
-            <Link key={item.seriesSlug} href={`/bo-truyen/${item.seriesSlug}`} className={styles.seriesCard}>
-              {item.sampleCover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.sampleCover} alt={item.seriesName} className={styles.seriesCover} />
-              ) : (
-                <div className={styles.seriesCover} />
-              )}
+          {filteredList.map((item) => (
+            <Link
+              key={item.seriesSlug}
+              href={`/bo-truyen/${item.seriesSlug}`}
+              className={styles.seriesCard}
+            >
+              <div className={styles.coverWrapper}>
+                {item.sampleCover ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.sampleCover} alt={item.seriesName} className={styles.seriesCover} />
+                ) : (
+                  <div className={styles.placeholderCover}>Bìa</div>
+                )}
+                <span className={styles.formatBadge}>MANGA</span>
+              </div>
               <div className={styles.seriesInfo}>
-                <div className={styles.seriesName}>{item.seriesName}</div>
+                <h3 className={styles.seriesName} title={item.seriesName}>
+                  {item.seriesName}
+                </h3>
                 <div className={styles.volumeCount}>{item.totalVolumes} tập đã lên lịch</div>
               </div>
             </Link>

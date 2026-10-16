@@ -1,0 +1,74 @@
+.container {
+  margin-bottom: 32px;
+}
+
+.sectionHeader {
+  margin-bottom: 14px;
+}
+
+.kicker {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--color-primary-600);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.genreCard {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.genreCard:hover {
+  border-color: var(--color-primary-400);
+  background: var(--color-pink-50);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(238, 77, 45, 0.08);
+}
+
+.selectedCard {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(238, 77, 45, 0.25);
+}
+
+.selectedCard .genreName,
+.selectedCard .genreCount {
+  color: #ffffff;
+}
+
+.genreName {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--color-neutral-900);
+}
+
+.genreCount {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-neutral-500);
+}

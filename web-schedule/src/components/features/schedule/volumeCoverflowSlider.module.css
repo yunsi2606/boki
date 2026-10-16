@@ -1,0 +1,216 @@
+.coverflowSection {
+  background: radial-gradient(circle at 50% 30%, #1e2227 0%, #111316 100%);
+  border-radius: var(--radius-lg);
+  padding: 36px 20px 28px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.headerInfo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.seriesKicker {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--color-secondary-400);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.currentVolTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 600px) {
+  .currentVolTitle {
+    font-size: 22px;
+  }
+}
+
+.stageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  perspective: 1000px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 24px;
+}
+
+.cardSide {
+  flex: 0 0 160px;
+  display: block;
+  text-decoration: none;
+  opacity: 0.55;
+  transform: scale(0.85);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cardSide:hover {
+  opacity: 0.9;
+  transform: scale(0.92);
+}
+
+.cardLeft {
+  transform: scale(0.85) rotateY(8deg);
+}
+
+.cardRight {
+  transform: scale(0.85) rotateY(-8deg);
+}
+
+@media (max-width: 650px) {
+  .cardSide {
+    display: none;
+  }
+}
+
+.coverWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #2b3038;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+.sideImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholderSide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #868e96;
+  font-size: 12px;
+}
+
+.sideBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 7px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.cardCenter {
+  flex: 0 0 240px;
+  z-index: 5;
+}
+
+@media (max-width: 600px) {
+  .cardCenter {
+    flex: 0 0 200px;
+  }
+}
+
+.activeCoverWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #2b3038;
+  border: 2px solid var(--color-secondary-400);
+  box-shadow: 0 12px 36px rgba(255, 152, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.5);
+  transform: scale(1.04);
+}
+
+.centerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholderCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #ced4da;
+  font-size: 14px;
+}
+
+.activePillBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(17, 24, 39, 0.85);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 9999px;
+  border: 1px solid var(--color-secondary-400);
+  backdrop-filter: blur(4px);
+}
+
+.goldDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-secondary-400);
+}
+
+.volumePillsTrack {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 8px 12px;
+  scrollbar-width: none;
+}
+
+.volumePillsTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.volPill {
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ced4da;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.volPill:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.activeVolPill {
+  background: var(--color-primary-500);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.4);
+}

@@ -4,8 +4,9 @@ import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem, ReleaseScheduleEditionItem } from '@/types/schedule';
-import { SeriesVolumeSlider } from '@/components/features/schedule/SeriesVolumeSlider';
+import { VolumeCoverflowSlider } from '@/components/features/schedule/VolumeCoverflowSlider';
 import { VolumeEditionsList } from '@/components/features/schedule/VolumeEditionsList';
+import { SeriesSidebarBox } from '@/components/features/schedule/SeriesSidebarBox';
 import { VolumeVaultAction } from '@/components/features/schedule/VolumeVaultAction';
 import { VolumeStoreLinks } from '@/components/features/schedule/VolumeStoreLinks';
 import { VolumeChangelogTimeline } from '@/components/features/schedule/VolumeChangelogTimeline';
@@ -69,8 +70,9 @@ export default function TapTruyenDetailPage({ params }: Props) {
       status: schedule.status,
     };
 
-  const cover = currentEdition.coverUrl || schedule.coverUrl;
-  const seriesSlug = schedule.seriesSlug || (schedule.seriesName ? schedule.seriesName.toLowerCase().replace(/\s+/g, '-') : '');
+  const seriesSlug =
+    schedule.seriesSlug ||
+    (schedule.seriesName ? schedule.seriesName.toLowerCase().replace(/\s+/g, '-') : '');
 
   return (
     <main className={styles.container}>
@@ -88,84 +90,25 @@ export default function TapTruyenDetailPage({ params }: Props) {
         <span>{schedule.title}</span>
       </nav>
 
-      {/* Series Volume Carousel */}
-      {seriesSlug && (
-        <SeriesVolumeSlider
-          seriesSlug={seriesSlug}
-          seriesName={schedule.seriesName}
-          currentScheduleId={schedule.id}
-          currentVolumeSlug={schedule.slug}
-        />
-      )}
+      {/* 3D Coverflow Volume Slider */}
+      <VolumeCoverflowSlider
+        seriesSlug={seriesSlug}
+        seriesName={schedule.seriesName}
+        currentScheduleId={schedule.id}
+        currentVolumeSlug={schedule.slug}
+        currentTitle={schedule.title}
+      />
 
-      <div className={styles.mainGrid}>
-        {/* Cover Column */}
-        <div className={styles.coverSide}>
-          <div className={styles.coverBox}>
-            {cover ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={cover} alt={schedule.title} className={styles.coverImg} />
-            ) : (
-              <div className={styles.placeholderCover}>Bìa dự kiến</div>
-            )}
-          </div>
-
-          <VolumeVaultAction
-            scheduleId={schedule.id}
-            editionId={currentEdition.id}
-          />
-        </div>
-
-        {/* Info Column */}
-        <div className={styles.infoSide}>
-          <div className={styles.badgeRow}>
-            <span className={styles.publisherBadge}>{schedule.publisher}</span>
-            {schedule.volumeNumber !== undefined && schedule.volumeNumber !== null && (
-              <span className={styles.volumeBadge}>Tập {schedule.volumeNumber}</span>
-            )}
-            <span className={styles.editionBadge}>{currentEdition.editionName}</span>
-          </div>
-
-          <h1 className={styles.bookTitle}>{schedule.title}</h1>
-          {schedule.originalTitle && <p className={styles.originalTitle}>{schedule.originalTitle}</p>}
-
-          <div className={styles.metaGrid}>
-            <div>
-              <div className={styles.metaItemLabel}>Tác giả</div>
-              <div className={styles.metaItemValue}>{schedule.author || 'Đang cập nhật'}</div>
-            </div>
-            <div>
-              <div className={styles.metaItemLabel}>Ngày phát hành</div>
-              <div className={styles.metaItemValue}>
-                {currentEdition.releaseDate || schedule.releaseDate || 'Đang cập nhật'}
-              </div>
-            </div>
-            <div>
-              <div className={styles.metaItemLabel}>Nhà xuất bản</div>
-              <div className={styles.metaItemValue}>{schedule.publisher}</div>
-            </div>
-            <div>
-              <div className={styles.metaItemLabel}>Thuộc bộ truyện</div>
-              <div className={styles.metaItemValue}>
-                {seriesSlug ? (
-                  <Link href={`/bo-truyen/${seriesSlug}`} className={styles.seriesLink}>
-                    {schedule.seriesName || 'Xem bộ truyện'}
-                  </Link>
-                ) : (
-                  <span>Tập truyện đơn lẻ</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Editions Breakdown */}
+      <div className={styles.detailGrid}>
+        {/* Main Column */}
+        <div className={styles.mainCol}>
           <VolumeEditionsList
             editions={editions}
             selectedEditionIdx={activeEditionIdx}
             onSelectEdition={setActiveEditionIdx}
           />
 
-          <h3 className={styles.sectionHeader}>Nơi mua sách chính hãng & Sàn thương mại</h3>
+          <h3 className={styles.sectionHeader}>Nơi mua chính hãng & Sàn thương mại</h3>
           <VolumeStoreLinks
             bookTitle={schedule.title}
             linkedBook={currentEdition.linkedBook}
@@ -178,6 +121,27 @@ export default function TapTruyenDetailPage({ params }: Props) {
               <VolumeChangelogTimeline changelogs={schedule.changelogs} />
             </>
           )}
+        </div>
+
+        {/* Sidebar Column */}
+        <div className={styles.sidebarCol}>
+          {seriesSlug && (
+            <SeriesSidebarBox
+              seriesSlug={seriesSlug}
+              seriesName={schedule.seriesName || schedule.title}
+              coverUrl={schedule.coverUrl || currentEdition.coverUrl}
+              author={schedule.author}
+              publisher={schedule.publisher}
+              totalVolumes={schedule.totalVolumes}
+            />
+          )}
+
+          <div style={{ marginTop: '20px' }}>
+            <VolumeVaultAction
+              scheduleId={schedule.id}
+              editionId={currentEdition.id}
+            />
+          </div>
         </div>
       </div>
     </main>
