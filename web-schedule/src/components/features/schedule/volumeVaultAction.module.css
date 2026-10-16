@@ -1,0 +1,48 @@
+.vaultActionBox {
+  width: 100%;
+  max-width: 280px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vaultBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.vaultBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vaultBtnOwned {
+  background: var(--color-primary-500);
+  color: #ffffff;
+}
+
+.vaultBtnOwned:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+.vaultBtnWishlist {
+  background: var(--color-neutral-100);
+  border-color: var(--color-neutral-300);
+  color: var(--color-neutral-800);
+}
+
+.vaultBtnWishlist:hover:not(:disabled) {
+  background: var(--color-neutral-200);
+  border-color: var(--color-neutral-400);
+}

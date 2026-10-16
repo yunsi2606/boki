@@ -1,0 +1,31 @@
+.changelogTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.changelogItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-300);
+  border-left: 3px solid var(--color-secondary-500);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.changelogTitle {
+  font-weight: 700;
+  color: var(--color-neutral-900);
+}
+
+.changelogReason {
+  color: var(--color-neutral-600);
+}
+
+.changelogDate {
+  font-size: 11px;
+  color: var(--color-neutral-500);
+}

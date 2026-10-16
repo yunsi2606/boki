@@ -1,0 +1,71 @@
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-neutral-600);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.seriesCard {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  gap: 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.seriesCard:hover {
+  border-color: var(--color-primary-400);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.seriesCover {
+  width: 70px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-200);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.seriesInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.seriesName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin-bottom: 4px;
+}
+
+.volumeCount {
+  font-size: 13px;
+  color: var(--color-primary-600);
+  font-weight: 600;
+}

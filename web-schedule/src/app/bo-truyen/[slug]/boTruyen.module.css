@@ -1,0 +1,50 @@
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.breadcrumbRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-neutral-500);
+  margin-bottom: 24px;
+}
+
+.breadcrumbLink {
+  color: var(--color-neutral-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumbLink:hover {
+  color: var(--color-primary-500);
+}
+
+.seriesHeader {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.seriesTitle {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin-bottom: 6px;
+}
+
+.seriesMeta {
+  font-size: 14px;
+  color: var(--color-neutral-600);
+}
+
+.volumesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}

@@ -1,0 +1,36 @@
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.heroSection {
+  background: linear-gradient(135deg, #ffffff 0%, var(--color-primary-50) 100%);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+
+.heroTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin-bottom: 6px;
+}
+
+.heroSubtitle {
+  font-size: 14px;
+  color: var(--color-neutral-600);
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+.emptyBox {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  color: var(--color-neutral-600);
+}

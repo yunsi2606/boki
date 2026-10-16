@@ -5,7 +5,10 @@
  */
 
 export const PRIMARY_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'https://api-boki.nhatcuong.io.vn/api';
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8080/api'
+    : 'https://api-boki.nhatcuong.io.vn/api');
 
 export const BACKUP_API_URL =
   process.env.NEXT_PUBLIC_BACKUP_API_URL || 'https://boki-api.onrender.com/api';
@@ -66,7 +69,7 @@ export function switchApiToPrimary(): void {
 export async function fetchWithFailover(
   endpoint: string,
   options: RequestInit = {},
-  primaryTimeoutMs = 3500
+  primaryTimeoutMs = 1500
 ): Promise<Response> {
   const currentBase = getActiveApiBaseUrl();
 

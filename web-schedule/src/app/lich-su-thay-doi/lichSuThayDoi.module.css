@@ -1,0 +1,54 @@
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-neutral-600);
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedCard {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-left: 4px solid var(--color-primary-500);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+}
+
+.feedTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin-bottom: 6px;
+}
+
+.feedReason {
+  font-size: 14px;
+  color: var(--color-neutral-600);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.feedMeta {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}

@@ -1,0 +1,40 @@
+import { scheduleApiFetch } from './api';
+import type { ReleaseScheduleItem } from '@/types/schedule';
+
+export const scheduleService = {
+  async getSchedules(params?: {
+    month?: number;
+    year?: number;
+    publisher?: string;
+    hasBook?: boolean;
+  }): Promise<ReleaseScheduleItem[]> {
+    const query = new URLSearchParams();
+    if (params?.month) query.set('month', params.month.toString());
+    if (params?.year) query.set('year', params.year.toString());
+    if (params?.publisher && params.publisher !== 'ALL') query.set('publisher', params.publisher);
+    if (params?.hasBook !== undefined) query.set('hasBook', params.hasBook.toString());
+
+    const qs = query.toString() ? `?${query.toString()}` : '';
+    return scheduleApiFetch<ReleaseScheduleItem[]>(`/release-schedules${qs}`);
+  },
+
+  async getScheduleDetail(id: string): Promise<ReleaseScheduleItem> {
+    return scheduleApiFetch<ReleaseScheduleItem>(`/release-schedules/${id}`);
+  },
+
+  async getScheduleBySlug(slug: string): Promise<ReleaseScheduleItem> {
+    return scheduleApiFetch<ReleaseScheduleItem>(`/release-schedules/slug/${slug}`);
+  },
+
+  async getSeriesVolumes(seriesSlug: string): Promise<ReleaseScheduleItem[]> {
+    return scheduleApiFetch<ReleaseScheduleItem[]>(`/release-schedules/series/${seriesSlug}`);
+  },
+
+  async getSeriesSummaries(): Promise<Array<{ seriesSlug: string; seriesName: string; totalVolumes: number; latestReleaseDate: string; sampleCover: string }>> {
+    return scheduleApiFetch(`/release-schedules/series`);
+  },
+
+  async getPublishers(): Promise<string[]> {
+    return scheduleApiFetch<string[]>('/release-schedules/publishers');
+  },
+};
