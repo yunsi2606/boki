@@ -1,0 +1,102 @@
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 24px 16px 100px;
+}
+
+.scheduleTopBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.topRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.scheduleTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin: 0;
+}
+
+.viewModeToggle {
+  background: transparent;
+  border: none;
+  color: var(--color-primary-600);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.viewModeToggle:hover {
+  color: var(--color-primary-700);
+  text-decoration: underline;
+}
+
+.countBadge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 9999px;
+}
+
+.monthSelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 9999px;
+  padding: 4px 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.arrowBtn {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-neutral-600);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.arrowBtn:hover {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-900);
+}
+
+.monthDisplay {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  min-width: 50px;
+  text-align: center;
+}
+
+.emptyBox {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  color: var(--color-neutral-600);
+}

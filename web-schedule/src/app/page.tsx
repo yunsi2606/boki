@@ -1,196 +1,118 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { scheduleService } from '@/services/scheduleService';
-import type { ReleaseScheduleItem, ScheduleTimelineGroup as GroupType } from '@/types/schedule';
-import { GenrePillsBar } from '@/components/features/schedule/GenrePillsBar';
-import { ScheduleFilterBar } from '@/components/features/schedule/ScheduleFilterBar';
+import type { ReleaseScheduleItem } from '@/types/schedule';
+import { HomeHeroSearch } from '@/components/features/home/HomeHeroSearch';
+import { HomeFeaturedSeries } from '@/components/features/home/HomeFeaturedSeries';
 import { ScheduleCalendarMatrix } from '@/components/features/schedule/ScheduleCalendarMatrix';
-import { ScheduleTimelineGroup } from '@/components/features/schedule/ScheduleTimelineGroup';
-import { FloatingScheduleNav } from '@/components/features/schedule/FloatingScheduleNav';
-import styles from './home.module.css';
+import { GenrePillsBar } from '@/components/features/schedule/GenrePillsBar';
+import { HomeUpcomingSpotlight } from '@/components/features/home/HomeUpcomingSpotlight';
+import { HomeVaultCta } from '@/components/features/home/HomeVaultCta';
+import styles from './homePortal.module.css';
+
+interface SeriesSummary {
+  seriesSlug: string;
+  seriesName: string;
+  totalVolumes: number;
+  sampleCover?: string;
+}
 
 export default function ScheduleHomePage() {
   const [schedules, setSchedules] = useState<ReleaseScheduleItem[]>([]);
-  const [publishers, setPublishers] = useState<string[]>([]);
-  const [selectedPublisher, setSelectedPublisher] = useState<string>('ALL');
-  const [selectedGenre, setSelectedGenre] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
+  const [seriesList, setSeriesList] = useState<SeriesSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  // Calendar month state (default to current month)
   const now = new Date();
-  const [currentYear, setCurrentYear] = useState<number>(now.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState<number>(now.getMonth() + 1);
-  const [viewMode, setViewMode] = useState<'TIMELINE' | 'CALENDAR'>('TIMELINE');
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
 
   useEffect(() => {
-    async function initData() {
+    async function loadPortalData() {
       try {
         setLoading(true);
-        const [items, pubs] = await Promise.all([
+        const [items, series] = await Promise.all([
           scheduleService.getSchedules(),
-          scheduleService.getPublishers().catch(() => ['Kim Đồng', 'NXB Trẻ', 'IPM']),
+          scheduleService.getSeriesSummaries().catch(() => []),
         ]);
         setSchedules(items || []);
-        setPublishers(pubs || []);
+        setSeriesList(series || []);
       } catch (err) {
-        console.error('Failed to load release schedules', err);
+        console.error('Failed to load portal home data', err);
       } finally {
         setLoading(false);
       }
     }
-    initData();
+    loadPortalData();
   }, []);
 
-  const handlePrevMonth = () => {
-    if (currentMonth === 1) {
-      setCurrentMonth(12);
-      setCurrentYear((y) => y - 1);
-    } else {
-      setCurrentMonth((m) => m - 1);
-    }
-  };
-
-  const handleNextMonth = () => {
-    if (currentMonth === 12) {
-      setCurrentMonth(1);
-      setCurrentYear((y) => y + 1);
-    } else {
-      setCurrentMonth((m) => m + 1);
-    }
-  };
-
-  const handleJumpToday = () => {
-    const today = new Date();
-    setCurrentYear(today.getFullYear());
-    setCurrentMonth(today.getMonth() + 1);
-    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
-      today.getDate()
-    ).padStart(2, '0')}`;
-    const el = document.getElementById(`date-${dateStr}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const handleSelectDateFromCalendar = (dateStr: string) => {
-    setViewMode('TIMELINE');
-    setTimeout(() => {
-      const el = document.getElementById(`date-${dateStr}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
+    router.push(`/lich-phat-hanh#date-${dateStr}`);
   };
 
-  const timelineGroups = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    const filtered = schedules.filter((s) => {
-      if (selectedPublisher !== 'ALL' && s.publisher !== selectedPublisher) return false;
-      if (selectedGenre && !s.title.toLowerCase().includes(selectedGenre.toLowerCase())) {
-        return false;
-      }
-      if (query && !s.title.toLowerCase().includes(query) && !s.author?.toLowerCase().includes(query)) {
-        return false;
-      }
-      return true;
-    });
-
-    const map = new Map<string, GroupType>();
-    filtered.forEach((schedule) => {
-      const dateKey = schedule.releaseDate || 'Đang cập nhật';
-      if (!map.has(dateKey)) {
-        map.set(dateKey, {
-          dateKey,
-          dateLabel: `Ngày phát hành: ${dateKey}`,
-          items: [],
-        });
-      }
-      map.get(dateKey)!.items.push({
-        schedule,
-        eventType: 'RELEASE',
-        targetEditionIdx: 0,
-        eventDate: dateKey,
-      });
-    });
-
-    return Array.from(map.values()).sort((a, b) => b.dateKey.localeCompare(a.dateKey));
-  }, [schedules, selectedPublisher, selectedGenre, searchQuery]);
+  const handleSelectGenre = (genre: string) => {
+    if (genre) {
+      router.push(`/bo-truyen?genre=${encodeURIComponent(genre)}`);
+    }
+  };
 
   return (
     <main className={styles.container}>
-      <GenrePillsBar
-        selectedGenre={selectedGenre}
-        onSelectGenre={setSelectedGenre}
+      {/* 1. Hero Search */}
+      <HomeHeroSearch
+        totalSchedules={schedules.length}
+        totalSeries={seriesList.length}
       />
 
-      {/* Main Schedule Header inspired by Kurano */}
-      <div className={styles.scheduleTopBar}>
-        <div>
-          <div className={styles.topRow}>
-            <h1 className={styles.scheduleTitle}>Lịch phát hành</h1>
-            <button
-              type="button"
-              className={styles.viewModeToggle}
-              onClick={() => setViewMode(viewMode === 'CALENDAR' ? 'TIMELINE' : 'CALENDAR')}
-            >
-              {viewMode === 'CALENDAR' ? 'Xem toàn bộ lịch dạng dòng thời gian →' : 'Xem dạng lưới tháng →'}
-            </button>
-          </div>
-          <div className={styles.countBadge}>
-            {schedules.length} TẬP TRUYỆN PHÁT HÀNH
-          </div>
-        </div>
-
-        <div className={styles.monthSelector}>
-          <button type="button" className={styles.arrowBtn} onClick={handlePrevMonth} title="Tháng trước">
-            &lt;
-          </button>
-          <span className={styles.monthDisplay}>
-            {String(currentMonth).padStart(2, '0')}/{String(currentYear).slice(-2)}
-          </span>
-          <button type="button" className={styles.arrowBtn} onClick={handleNextMonth} title="Tháng sau">
-            &gt;
-          </button>
-        </div>
-      </div>
-
-      <ScheduleFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedPublisher={selectedPublisher}
-        onSelectPublisher={setSelectedPublisher}
-        publishers={publishers}
-      />
-
-      {loading ? (
-        <div className={styles.emptyBox}>Đang tải dữ liệu lịch phát hành...</div>
-      ) : viewMode === 'CALENDAR' ? (
-        <ScheduleCalendarMatrix
-          year={currentYear}
-          month={currentMonth}
-          schedules={schedules}
-          onSelectDate={handleSelectDateFromCalendar}
-        />
-      ) : timelineGroups.length === 0 ? (
-        <div className={styles.emptyBox}>Không có đầu sách nào phù hợp với bộ lọc.</div>
-      ) : (
-        timelineGroups.map((group) => (
-          <ScheduleTimelineGroup key={group.dateKey} group={group} />
-        ))
+      {/* 2. Featured Series */}
+      {seriesList.length > 0 && (
+        <HomeFeaturedSeries series={seriesList} />
       )}
 
-      {/* Floating Bottom Navigator */}
-      <FloatingScheduleNav
-        month={currentMonth}
-        year={currentYear}
-        viewMode={viewMode}
-        onPrevMonth={handlePrevMonth}
-        onNextMonth={handleNextMonth}
-        onToggleView={() => setViewMode(viewMode === 'CALENDAR' ? 'TIMELINE' : 'CALENDAR')}
-        onJumpToday={handleJumpToday}
-      />
+      {/* 3. Monthly Release Calendar Spotlight */}
+      <section className={styles.calendarSection}>
+        <div className={styles.sectionHeaderRow}>
+          <div>
+            <div className={styles.kicker}>LỊCH XUẤT BẢN THÁNG {currentMonth}/{currentYear}</div>
+            <h2 className={styles.sectionTitle}>Lịch Phát Hành Manga & Sách</h2>
+            <div className={styles.releaseBadge}>
+              {schedules.length} TẬP TRUYỆN ĐÃ LÊN LỊCH
+            </div>
+          </div>
+          <Link href="/lich-phat-hanh" className={styles.fullScheduleLink}>
+            <span>Xem toàn bộ lịch phát hành</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </Link>
+        </div>
+
+        {loading ? (
+          <div className={styles.emptyBox}>Đang tải lịch phát hành tháng này...</div>
+        ) : (
+          <ScheduleCalendarMatrix
+            year={currentYear}
+            month={currentMonth}
+            schedules={schedules}
+            onSelectDate={handleSelectDateFromCalendar}
+          />
+        )}
+      </section>
+
+      {/* 4. Popular Genres */}
+      <GenrePillsBar onSelectGenre={handleSelectGenre} />
+
+      {/* 5. Upcoming Releases Spotlight */}
+      {schedules.length > 0 && (
+        <HomeUpcomingSpotlight schedules={schedules} />
+      )}
+
+      {/* 6. Vault CTA */}
+      <HomeVaultCta />
     </main>
   );
 }

@@ -7,7 +7,8 @@ import styles from './scheduleHeader.module.css';
 export function ScheduleHeader() {
   const pathname = usePathname();
 
-  const isHome = pathname === '/' || pathname === '/lich-phat-hanh';
+  const isHome = pathname === '/';
+  const isSchedule = pathname.startsWith('/lich-phat-hanh');
   const isSeries = pathname.startsWith('/bo-truyen');
   const isVault = pathname.startsWith('/tu-sach');
   const isChangelog = pathname.startsWith('/lich-su-thay-doi');
@@ -26,15 +27,30 @@ export function ScheduleHeader() {
 
           <nav className={styles.nav}>
             <Link href="/" className={`${styles.navLink} ${isHome ? styles.navLinkActive : ''}`}>
+              Trang chủ
+            </Link>
+            <Link
+              href="/lich-phat-hanh"
+              className={`${styles.navLink} ${isSchedule ? styles.navLinkActive : ''}`}
+            >
               Lịch phát hành
             </Link>
-            <Link href="/bo-truyen" className={`${styles.navLink} ${isSeries ? styles.navLinkActive : ''}`}>
-              Bộ truyện
+            <Link
+              href="/bo-truyen"
+              className={`${styles.navLink} ${isSeries ? styles.navLinkActive : ''}`}
+            >
+              Tác phẩm
             </Link>
-            <Link href="/tu-sach" className={`${styles.navLink} ${isVault ? styles.navLinkActive : ''}`}>
+            <Link
+              href="/tu-sach"
+              className={`${styles.navLink} ${isVault ? styles.navLinkActive : ''}`}
+            >
               Tủ sách
             </Link>
-            <Link href="/lich-su-thay-doi" className={`${styles.navLink} ${isChangelog ? styles.navLinkActive : ''}`}>
+            <Link
+              href="/lich-su-thay-doi"
+              className={`${styles.navLink} ${isChangelog ? styles.navLinkActive : ''}`}
+            >
               Lịch sử thay đổi
             </Link>
           </nav>
