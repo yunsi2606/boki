@@ -26,6 +26,7 @@ export default function AdminSchedulePage() {
   const [editingItem, setEditingItem] = useState<ReleaseScheduleItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<ReleaseScheduleItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const fetchSchedules = async () => {
     try {
@@ -76,6 +77,23 @@ export default function AdminSchedulePage() {
     }
   };
 
+  const handleSyncSeries = async () => {
+    if (!window.confirm('Chuẩn hóa và đồng bộ toàn bộ lịch phát hành theo Series và số Tập (Volume)?')) {
+      return;
+    }
+    try {
+      setIsSyncing(true);
+      const res = await scheduleService.syncSeries();
+      alert(res.message || 'Đồng bộ thành công!');
+      await fetchSchedules();
+    } catch (err) {
+      console.error('Failed to sync series:', err);
+      alert('Không thể đồng bộ series. Vui lòng thử lại!');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleSubmitForm = async (payload: CreateSchedulePayload) => {
     if (editingItem) {
       await scheduleService.updateSchedule(editingItem.id, payload);
@@ -119,6 +137,14 @@ export default function AdminSchedulePage() {
           </p>
         </div>
         <div className={styles.headerActionGroup}>
+          <button
+            type="button"
+            className={styles.syncBtn}
+            onClick={handleSyncSeries}
+            disabled={isSyncing}
+          >
+            {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ Series'}
+          </button>
           <button
             type="button"
             className={styles.ocrBtn}

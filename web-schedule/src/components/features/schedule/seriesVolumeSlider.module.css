@@ -1,0 +1,141 @@
+.container {
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerLabel {
+  font-size: 13px;
+  color: var(--color-neutral-600);
+  font-weight: 500;
+}
+
+.seriesName {
+  font-size: 14px;
+  color: var(--color-neutral-900);
+  font-weight: 700;
+}
+
+.viewAllLink {
+  font-size: 12.5px;
+  color: var(--color-primary-600);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.viewAllLink:hover {
+  color: var(--color-primary-700);
+  text-decoration: underline;
+}
+
+.sliderTrack {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sliderTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.volumeItem {
+  flex: 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  border: 1.5px solid transparent;
+  transition: all 0.15s ease;
+  background: var(--color-neutral-50);
+}
+
+.volumeItem:hover {
+  background: #ffffff;
+  border-color: var(--color-neutral-300);
+  transform: translateY(-2px);
+}
+
+.activeItem {
+  background: var(--color-pink-50);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.15);
+}
+
+.thumbWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-neutral-200);
+  margin-bottom: 6px;
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholderThumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 11px;
+  color: var(--color-neutral-500);
+}
+
+.volBadge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  padding: 1px 5px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 3px;
+}
+
+.activeItem .volBadge {
+  background: var(--color-primary-500);
+}
+
+.volTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.volDate {
+  font-size: 10.5px;
+  color: var(--color-neutral-500);
+  text-align: center;
+  margin-top: 2px;
+}

@@ -33,6 +33,30 @@
   gap: 10px;
 }
 
+.syncBtn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--color-secondary-300, #FFA726);
+  background: var(--color-secondary-50, #FFF8E1);
+  color: var(--color-secondary-700, #E65100);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.syncBtn:hover:not(:disabled) {
+  background: var(--color-secondary-100, #FFECB3);
+  transform: translateY(-1px);
+}
+
+.syncBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .ocrBtn {
   padding: 10px 18px;
   border-radius: 8px;

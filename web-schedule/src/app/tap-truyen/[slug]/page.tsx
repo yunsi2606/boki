@@ -4,6 +4,8 @@ import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem, ReleaseScheduleEditionItem } from '@/types/schedule';
+import { SeriesVolumeSlider } from '@/components/features/schedule/SeriesVolumeSlider';
+import { VolumeEditionsList } from '@/components/features/schedule/VolumeEditionsList';
 import { VolumeVaultAction } from '@/components/features/schedule/VolumeVaultAction';
 import { VolumeStoreLinks } from '@/components/features/schedule/VolumeStoreLinks';
 import { VolumeChangelogTimeline } from '@/components/features/schedule/VolumeChangelogTimeline';
@@ -17,12 +19,13 @@ export default function TapTruyenDetailPage({ params }: Props) {
   const { slug } = use(params);
   const [schedule, setSchedule] = useState<ReleaseScheduleItem | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeEditionIdx] = useState(0);
+  const [activeEditionIdx, setActiveEditionIdx] = useState(0);
 
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true);
+        setActiveEditionIdx(0);
         let data: ReleaseScheduleItem | null = null;
         try {
           data = await scheduleService.getScheduleBySlug(slug);
@@ -42,9 +45,7 @@ export default function TapTruyenDetailPage({ params }: Props) {
   if (loading) {
     return (
       <main className={styles.container}>
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-neutral-600)' }}>
-          Đang tải thông tin tập truyện...
-        </div>
+        <div className={styles.loadingBox}>Đang tải thông tin tập truyện...</div>
       </main>
     );
   }
@@ -52,36 +53,34 @@ export default function TapTruyenDetailPage({ params }: Props) {
   if (!schedule) {
     return (
       <main className={styles.container}>
-        <div style={{ textAlign: 'center', padding: '60px 0' }}>
+        <div className={styles.errorBox}>
           <h2>Không tìm thấy tập truyện</h2>
-          <Link href="/" style={{ color: 'var(--color-primary-500)' }}>
-            Quay lại Lịch phát hành
-          </Link>
+          <Link href="/" className={styles.backLink}>Quay lại Lịch phát hành</Link>
         </div>
       </main>
     );
   }
 
+  const editions = schedule.editions && schedule.editions.length > 0 ? schedule.editions : [];
   const currentEdition: ReleaseScheduleEditionItem =
-    schedule.editions?.[activeEditionIdx] || schedule.editions?.[0] || {
+    editions[activeEditionIdx] || editions[0] || {
       editionName: 'Bản phổ thông',
       editionType: 'STANDARD',
       status: schedule.status,
     };
 
   const cover = currentEdition.coverUrl || schedule.coverUrl;
-  const price = currentEdition.linkedBook?.price || currentEdition.estimatedPrice;
-  const seriesSlug = schedule.seriesSlug || 'truyen-tranh';
+  const seriesSlug = schedule.seriesSlug || (schedule.seriesName ? schedule.seriesName.toLowerCase().replace(/\s+/g, '-') : '');
 
   return (
     <main className={styles.container}>
       <nav className={styles.breadcrumbRow}>
         <Link href="/" className={styles.breadcrumbLink}>Lịch phát hành</Link>
         <span className={styles.breadcrumbSeparator}>/</span>
-        {schedule.seriesName && (
+        {seriesSlug && (
           <>
             <Link href={`/bo-truyen/${seriesSlug}`} className={styles.breadcrumbLink}>
-              {schedule.seriesName}
+              {schedule.seriesName || 'Bộ truyện'}
             </Link>
             <span className={styles.breadcrumbSeparator}>/</span>
           </>
@@ -89,7 +88,18 @@ export default function TapTruyenDetailPage({ params }: Props) {
         <span>{schedule.title}</span>
       </nav>
 
+      {/* Series Volume Carousel */}
+      {seriesSlug && (
+        <SeriesVolumeSlider
+          seriesSlug={seriesSlug}
+          seriesName={schedule.seriesName}
+          currentScheduleId={schedule.id}
+          currentVolumeSlug={schedule.slug}
+        />
+      )}
+
       <div className={styles.mainGrid}>
+        {/* Cover Column */}
         <div className={styles.coverSide}>
           <div className={styles.coverBox}>
             {cover ? (
@@ -106,9 +116,13 @@ export default function TapTruyenDetailPage({ params }: Props) {
           />
         </div>
 
+        {/* Info Column */}
         <div className={styles.infoSide}>
           <div className={styles.badgeRow}>
             <span className={styles.publisherBadge}>{schedule.publisher}</span>
+            {schedule.volumeNumber !== undefined && schedule.volumeNumber !== null && (
+              <span className={styles.volumeBadge}>Tập {schedule.volumeNumber}</span>
+            )}
             <span className={styles.editionBadge}>{currentEdition.editionName}</span>
           </div>
 
@@ -122,30 +136,34 @@ export default function TapTruyenDetailPage({ params }: Props) {
             </div>
             <div>
               <div className={styles.metaItemLabel}>Ngày phát hành</div>
-              <div className={styles.metaItemValue}>{currentEdition.releaseDate || schedule.releaseDate}</div>
-            </div>
-            <div>
-              <div className={styles.metaItemLabel}>Giá bìa niêm yết</div>
               <div className={styles.metaItemValue}>
-                {price ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price) : 'Đang cập nhật'}
+                {currentEdition.releaseDate || schedule.releaseDate || 'Đang cập nhật'}
               </div>
             </div>
             <div>
-              <div className={styles.metaItemLabel}>Bộ truyện</div>
+              <div className={styles.metaItemLabel}>Nhà xuất bản</div>
+              <div className={styles.metaItemValue}>{schedule.publisher}</div>
+            </div>
+            <div>
+              <div className={styles.metaItemLabel}>Thuộc bộ truyện</div>
               <div className={styles.metaItemValue}>
-                <Link href={`/bo-truyen/${seriesSlug}`} style={{ color: 'var(--color-primary-500)', textDecoration: 'none' }}>
-                  {schedule.seriesName || 'Xem bộ truyện'}
-                </Link>
+                {seriesSlug ? (
+                  <Link href={`/bo-truyen/${seriesSlug}`} className={styles.seriesLink}>
+                    {schedule.seriesName || 'Xem bộ truyện'}
+                  </Link>
+                ) : (
+                  <span>Tập truyện đơn lẻ</span>
+                )}
               </div>
             </div>
           </div>
 
-          {currentEdition.gifts && (
-            <div className={styles.giftsCard}>
-              <div className={styles.giftsTitle}>Quà tặng & Phụ kiện đi kèm:</div>
-              <div>{currentEdition.gifts}</div>
-            </div>
-          )}
+          {/* Editions Breakdown */}
+          <VolumeEditionsList
+            editions={editions}
+            selectedEditionIdx={activeEditionIdx}
+            onSelectEdition={setActiveEditionIdx}
+          />
 
           <h3 className={styles.sectionHeader}>Nơi mua sách chính hãng & Sàn thương mại</h3>
           <VolumeStoreLinks

@@ -43,28 +43,22 @@ export default function ScheduleHomePage() {
       return true;
     });
 
-    // Group by date
+    // Group by date - Volume-centric (1 card per volume on that date)
     const map = new Map<string, GroupType>();
     filtered.forEach((schedule) => {
-      const editions = schedule.editions && schedule.editions.length > 0
-        ? schedule.editions
-        : [{ editionName: 'Bản phổ thông', editionType: 'STANDARD' as const, status: schedule.status }];
-
-      editions.forEach((edition, idx) => {
-        const dateKey = edition.releaseDate || schedule.releaseDate || 'Đang cập nhật';
-        if (!map.has(dateKey)) {
-          map.set(dateKey, {
-            dateKey,
-            dateLabel: `Ngày phát hành: ${dateKey}`,
-            items: [],
-          });
-        }
-        map.get(dateKey)!.items.push({
-          schedule,
-          eventType: 'RELEASE',
-          targetEditionIdx: idx,
-          eventDate: dateKey,
+      const dateKey = schedule.releaseDate || 'Đang cập nhật';
+      if (!map.has(dateKey)) {
+        map.set(dateKey, {
+          dateKey,
+          dateLabel: `Ngày phát hành: ${dateKey}`,
+          items: [],
         });
+      }
+      map.get(dateKey)!.items.push({
+        schedule,
+        eventType: 'RELEASE',
+        targetEditionIdx: 0,
+        eventDate: dateKey,
       });
     });
 

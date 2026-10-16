@@ -103,5 +103,9 @@ export const scheduleService = {
   deleteSchedule: async (id: string): Promise<void> => {
     return api.delete<void>(`/release-schedules/${id}`);
   },
+
+  syncSeries: async (): Promise<{ status: string; totalSynced: number; message: string }> => {
+    return api.post<{ status: string; totalSynced: number; message: string }>('/release-schedules/admin/sync-series');
+  },
 };
 

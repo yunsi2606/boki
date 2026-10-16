@@ -7,6 +7,7 @@
   overflow: hidden;
   transition: all 0.2s ease;
   height: 100%;
+  text-decoration: none;
 }
 
 .card:hover {
@@ -52,6 +53,19 @@
   backdrop-filter: blur(4px);
 }
 
+.volBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  background: var(--color-primary-500);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(238, 77, 45, 0.35);
+}
+
 .body {
   padding: 12px 14px 14px;
   display: flex;
@@ -71,17 +85,31 @@
   overflow: hidden;
 }
 
-.editionBadge {
-  display: inline-block;
-  align-self: flex-start;
-  font-size: 11px;
+.editionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.standardBadge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+  border: 1px solid var(--color-neutral-300);
+}
+
+.specialBadge {
+  font-size: 10.5px;
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 4px;
-  margin-bottom: 8px;
   background: var(--color-secondary-50);
   color: var(--color-secondary-600);
-  border: 1px solid var(--color-secondary-100);
+  border: 1px solid var(--color-secondary-200);
 }
 
 .priceRow {
@@ -94,12 +122,12 @@
 }
 
 .price {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 800;
   color: var(--color-primary-600);
 }
 
 .date {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--color-neutral-500);
 }

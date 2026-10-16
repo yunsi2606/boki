@@ -20,6 +20,7 @@ import java.util.UUID;
 public class ReleaseScheduleController {
 
     private final ReleaseScheduleApplicationService scheduleService;
+    private final com.boki.application.service.ReleaseScheduleSyncService syncService;
 
     @GetMapping
     public ResponseEntity<List<ReleaseScheduleDto>> getSchedules(
@@ -79,5 +80,11 @@ public class ReleaseScheduleController {
     public ResponseEntity<Void> deleteSchedule(@PathVariable("id") UUID id) {
         scheduleService.deleteSchedule(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/admin/sync-series")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
+    public ResponseEntity<java.util.Map<String, Object>> syncSeries() {
+        return ResponseEntity.ok(syncService.syncAndNormalizeSeries());
     }
 }

@@ -14,15 +14,14 @@ export function ScheduleTimelineGroup({ group }: Props) {
       <div className={styles.dateHeader}>
         <div className={styles.dateBadge}>{group.dateKey}</div>
         <div className={styles.dateLabel}>{group.dateLabel}</div>
-        <div className={styles.itemCount}>{group.items.length} đầu sách</div>
+        <div className={styles.itemCount}>{group.items.length} tập truyện</div>
       </div>
 
       <div className={styles.bookGrid}>
         {group.items.map((item, idx) => (
           <ScheduleBookCard
-            key={`${item.schedule.id}-${item.targetEditionIdx}-${idx}`}
+            key={`${item.schedule.id}-${idx}`}
             schedule={item.schedule}
-            targetEditionIdx={item.targetEditionIdx}
             highlightDate={item.eventDate}
           />
         ))}
