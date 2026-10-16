@@ -34,4 +34,25 @@ public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseSched
            "WHERE LOWER(r.publisher) = LOWER(:publisher) " +
            "ORDER BY r.releaseDate DESC")
     List<ReleaseScheduleJpaEntity> findByPublisher(@Param("publisher") String publisher);
+
+    @Query("SELECT DISTINCT r FROM ReleaseScheduleJpaEntity r " +
+           "LEFT JOIN FETCH r.editions e " +
+           "LEFT JOIN FETCH e.book " +
+           "LEFT JOIN FETCH r.storeLinks " +
+           "LEFT JOIN FETCH r.changelogs " +
+           "WHERE r.slug = :slug")
+    Optional<ReleaseScheduleJpaEntity> findBySlugWithDetails(@Param("slug") String slug);
+
+    @Query("SELECT DISTINCT r FROM ReleaseScheduleJpaEntity r " +
+           "LEFT JOIN FETCH r.editions e " +
+           "WHERE r.seriesSlug = :seriesSlug " +
+           "ORDER BY r.volumeNumber ASC NULLS LAST, r.releaseDate ASC")
+    List<ReleaseScheduleJpaEntity> findBySeriesSlugOrderByVolumeNumberAsc(@Param("seriesSlug") String seriesSlug);
+
+    @Query("SELECT DISTINCT r.seriesName, r.seriesSlug, r.publisher, r.author, COUNT(r), MAX(r.coverUrl) " +
+           "FROM ReleaseScheduleJpaEntity r " +
+           "WHERE r.seriesSlug IS NOT NULL " +
+           "GROUP BY r.seriesName, r.seriesSlug, r.publisher, r.author " +
+           "ORDER BY r.seriesName ASC")
+    List<Object[]> findDistinctSeriesSummaries();
 }

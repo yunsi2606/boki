@@ -31,6 +31,31 @@ export interface ReleaseScheduleEditionItem {
   sortOrder?: number;
 }
 
+export interface ReleaseStoreLinkItem {
+  id?: string;
+  scheduleId?: string;
+  editionId?: string;
+  platform: 'BOKI_STORE' | 'SHOPEE' | 'TIKTOK_SHOP' | 'FAHASA' | 'OTHER';
+  storeName?: string;
+  productUrl: string;
+  marketPrice?: number;
+  isPreorder?: boolean;
+  sortOrder?: number;
+}
+
+export interface ReleaseChangelogItem {
+  id?: string;
+  scheduleId?: string;
+  editionId?: string;
+  changeType: 'DATE_DELAY' | 'PRICE_CHANGE' | 'EDITION_UPDATE' | 'ANNOUNCEMENT';
+  oldValue?: string;
+  newValue?: string;
+  title: string;
+  reason?: string;
+  sourceUrl?: string;
+  createdAt?: string;
+}
+
 export interface ReleaseScheduleItem {
   id: string;
   title: string;
@@ -42,7 +67,14 @@ export interface ReleaseScheduleItem {
   coverUrl?: string;
   description?: string;
   status: ReleaseScheduleStatus;
+  slug?: string;
+  seriesName?: string;
+  seriesSlug?: string;
+  volumeNumber?: number;
+  totalVolumes?: number;
   editions: ReleaseScheduleEditionItem[];
+  storeLinks?: ReleaseStoreLinkItem[];
+  changelogs?: ReleaseChangelogItem[];
   createdAt?: string;
   updatedAt?: string;
 }

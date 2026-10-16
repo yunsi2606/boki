@@ -53,6 +53,25 @@ export const scheduleService = {
     return api.get<ReleaseScheduleItem>(`/release-schedules/${id}`);
   },
 
+  getScheduleBySlug: async (slug: string): Promise<ReleaseScheduleItem> => {
+    return api.get<ReleaseScheduleItem>(`/release-schedules/slug/${encodeURIComponent(slug)}`);
+  },
+
+  getSeriesVolumes: async (seriesSlug: string): Promise<ReleaseScheduleItem[]> => {
+    return api.get<ReleaseScheduleItem[]>(`/release-schedules/series/${encodeURIComponent(seriesSlug)}`);
+  },
+
+  getSeriesSummaries: async (): Promise<Array<{
+    seriesName: string;
+    seriesSlug: string;
+    publisher: string;
+    author: string;
+    volumeCount: number;
+    coverUrl: string;
+  }>> => {
+    return api.get<any[]>('/release-schedules/series');
+  },
+
   getPublishers: async (): Promise<string[]> => {
     return api.get<string[]>('/release-schedules/publishers');
   },

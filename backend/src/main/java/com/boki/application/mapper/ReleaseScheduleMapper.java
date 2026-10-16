@@ -26,6 +26,41 @@ public class ReleaseScheduleMapper {
                     .collect(Collectors.toList());
         }
 
+        List<com.boki.application.dto.schedule.ReleaseStoreLinkDto> storeLinkDtos = new ArrayList<>();
+        if (entity.getStoreLinks() != null) {
+            storeLinkDtos = entity.getStoreLinks().stream()
+                    .map(s -> com.boki.application.dto.schedule.ReleaseStoreLinkDto.builder()
+                            .id(s.getId())
+                            .scheduleId(s.getScheduleId())
+                            .editionId(s.getEditionId())
+                            .platform(s.getPlatform())
+                            .storeName(s.getStoreName())
+                            .productUrl(s.getProductUrl())
+                            .marketPrice(s.getMarketPrice())
+                            .isPreorder(s.getIsPreorder())
+                            .sortOrder(s.getSortOrder())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
+        List<com.boki.application.dto.schedule.ReleaseChangelogDto> changelogDtos = new ArrayList<>();
+        if (entity.getChangelogs() != null) {
+            changelogDtos = entity.getChangelogs().stream()
+                    .map(c -> com.boki.application.dto.schedule.ReleaseChangelogDto.builder()
+                            .id(c.getId())
+                            .scheduleId(c.getScheduleId())
+                            .editionId(c.getEditionId())
+                            .changeType(c.getChangeType())
+                            .oldValue(c.getOldValue())
+                            .newValue(c.getNewValue())
+                            .title(c.getTitle())
+                            .reason(c.getReason())
+                            .sourceUrl(c.getSourceUrl())
+                            .createdAt(c.getCreatedAt())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
         return ReleaseScheduleDto.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
@@ -37,7 +72,14 @@ public class ReleaseScheduleMapper {
                 .coverUrl(entity.getCoverUrl())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
+                .slug(entity.getSlug())
+                .seriesName(entity.getSeriesName())
+                .seriesSlug(entity.getSeriesSlug())
+                .volumeNumber(entity.getVolumeNumber())
+                .totalVolumes(entity.getTotalVolumes())
                 .editions(editionDtos)
+                .storeLinks(storeLinkDtos)
+                .changelogs(changelogDtos)
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

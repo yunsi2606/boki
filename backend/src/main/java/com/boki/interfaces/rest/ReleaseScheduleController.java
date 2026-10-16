@@ -41,6 +41,21 @@ public class ReleaseScheduleController {
         return ResponseEntity.ok(scheduleService.getPublishers());
     }
 
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<ReleaseScheduleDto> getScheduleBySlug(@PathVariable("slug") String slug) {
+        return ResponseEntity.ok(scheduleService.getScheduleBySlug(slug));
+    }
+
+    @GetMapping("/series/{seriesSlug}")
+    public ResponseEntity<List<ReleaseScheduleDto>> getSeriesVolumes(@PathVariable("seriesSlug") String seriesSlug) {
+        return ResponseEntity.ok(scheduleService.getSeriesVolumes(seriesSlug));
+    }
+
+    @GetMapping("/series")
+    public ResponseEntity<List<java.util.Map<String, Object>>> getSeriesSummaries() {
+        return ResponseEntity.ok(scheduleService.getSeriesSummaries());
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public ResponseEntity<ReleaseScheduleDto> createSchedule(

@@ -28,9 +28,20 @@ public class ReleaseScheduleDto {
     private String coverUrl;
     private String description;
     private ReleaseScheduleStatus status;
+    private String slug;
+    private String seriesName;
+    private String seriesSlug;
+    private Integer volumeNumber;
+    private Integer totalVolumes;
     
     @Builder.Default
     private List<ReleaseScheduleEditionDto> editions = new ArrayList<>();
+
+    @Builder.Default
+    private List<ReleaseStoreLinkDto> storeLinks = new ArrayList<>();
+
+    @Builder.Default
+    private List<ReleaseChangelogDto> changelogs = new ArrayList<>();
 
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

@@ -53,10 +53,37 @@ public class ReleaseScheduleJpaEntity {
     @Builder.Default
     private ReleaseScheduleStatus status = ReleaseScheduleStatus.SCHEDULED;
 
+    @Column(name = "slug", length = 255, unique = true)
+    private String slug;
+
+    @Column(name = "series_name", length = 255)
+    private String seriesName;
+
+    @Column(name = "series_slug", length = 255)
+    private String seriesSlug;
+
+    @Column(name = "volume_number")
+    private Integer volumeNumber;
+
+    @Column(name = "total_volumes")
+    private Integer totalVolumes;
+
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("sortOrder ASC")
     @Builder.Default
     private List<ReleaseScheduleEditionJpaEntity> editions = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    @OrderBy("sortOrder ASC")
+    @Builder.Default
+    private List<ReleaseStoreLinkJpaEntity> storeLinks = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    @OrderBy("createdAt DESC")
+    @Builder.Default
+    private List<ReleaseChangelogJpaEntity> changelogs = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default

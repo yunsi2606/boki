@@ -87,6 +87,34 @@ public class ReleaseScheduleApplicationService {
         return releaseScheduleJpaRepository.findDistinctPublishers();
     }
 
+    @Transactional(readOnly = true)
+    public ReleaseScheduleDto getScheduleBySlug(String slug) {
+        ReleaseScheduleJpaEntity entity = releaseScheduleJpaRepository.findBySlugWithDetails(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("ReleaseSchedule", "slug", slug));
+        return releaseScheduleMapper.toDto(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReleaseScheduleDto> getSeriesVolumes(String seriesSlug) {
+        return releaseScheduleJpaRepository.findBySeriesSlugOrderByVolumeNumberAsc(seriesSlug).stream()
+                .map(releaseScheduleMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<java.util.Map<String, Object>> getSeriesSummaries() {
+        return releaseScheduleJpaRepository.findDistinctSeriesSummaries().stream().map(row -> {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("seriesName", row[0]);
+            map.put("seriesSlug", row[1]);
+            map.put("publisher", row[2]);
+            map.put("author", row[3]);
+            map.put("volumeCount", row[4]);
+            map.put("coverUrl", row[5]);
+            return map;
+        }).collect(Collectors.toList());
+    }
+
     @Transactional
     public ReleaseScheduleDto createSchedule(CreateReleaseScheduleRequest request) {
         ReleaseScheduleJpaEntity schedule = ReleaseScheduleJpaEntity.builder()

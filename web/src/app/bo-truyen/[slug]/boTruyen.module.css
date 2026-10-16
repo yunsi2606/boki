@@ -1,0 +1,146 @@
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.headerCard {
+  display: flex;
+  gap: 28px;
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+@media (max-width: 768px) {
+  .headerCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.coverBox {
+  width: 180px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  background: var(--color-neutral-200);
+  flex-shrink: 0;
+}
+
+.coverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.publisherTag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .publisherTag {
+    align-self: center;
+  }
+}
+
+.seriesTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin: 0 0 6px;
+}
+
+.authorText {
+  font-size: 14px;
+  color: var(--color-neutral-600);
+  margin: 0 0 16px;
+}
+
+.statsRow {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+}
+
+@media (max-width: 768px) {
+  .statsRow {
+    justify-content: center;
+  }
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin-bottom: 16px;
+}
+
+.volumesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.volumeCard {
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.volumeCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  border-color: var(--color-primary-400);
+}
+
+.volumeCoverWrap {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: var(--color-neutral-200);
+  overflow: hidden;
+}
+
+.volumeInfo {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.volumeTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin: 0 0 4px;
+}
+
+.volumeDate {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
