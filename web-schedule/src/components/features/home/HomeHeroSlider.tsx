@@ -29,12 +29,6 @@ export function HomeHeroSlider({ items }: Props) {
 
   if (slides.length === 0) return null;
 
-  const current = slides[currentIdx];
-  const targetSlug = current.slug || current.id;
-  const seriesSlug = current.seriesSlug || (current.seriesName ? current.seriesName.toLowerCase().replace(/\s+/g, '-') : '');
-  const cover = current.coverUrl || current.editions?.[0]?.coverUrl;
-  const price = current.editions?.[0]?.estimatedPrice;
-
   const handlePrev = () => {
     setCurrentIdx((prev) => (prev - 1 + slides.length) % slides.length);
   };
@@ -50,64 +44,96 @@ export function HomeHeroSlider({ items }: Props) {
       onMouseLeave={() => setIsPaused(false)}
       aria-label="Tác phẩm tiêu điểm"
     >
-      <div className={styles.slideContent}>
-        {/* Left Column: Editorial Information */}
-        <div className={styles.infoCol}>
-          <div className={styles.kickerBadge}>
-            <span className={styles.dotIndicator} />
-            <span>TÁC PHẨM TIÊU ĐIỂM</span>
-          </div>
+      <div className={styles.sliderViewport}>
+        <div
+          className={styles.sliderTrack}
+          style={{ transform: `translateX(-${currentIdx * 100}%)` }}
+        >
+          {slides.map((item, idx) => {
+            const targetSlug = item.slug || item.id;
+            const seriesSlug =
+              item.seriesSlug || (item.seriesName ? item.seriesName.toLowerCase().replace(/\s+/g, '-') : '');
+            const cover = item.coverUrl || item.editions?.[0]?.coverUrl;
+            const price = item.editions?.[0]?.estimatedPrice;
+            const isActive = idx === currentIdx;
 
-          <h1 className={styles.slideTitle} title={current.title}>
-            {current.title}
-          </h1>
+            return (
+              <div
+                key={item.id || idx}
+                className={`${styles.slideContent} ${isActive ? styles.activeSlide : ''}`}
+                aria-hidden={!isActive}
+              >
+                {/* Left Column: Editorial Information */}
+                <div className={styles.infoCol}>
+                  <div className={styles.kickerBadge}>
+                    <span className={styles.dotIndicator} />
+                    <span>TÁC PHẨM TIÊU ĐIỂM</span>
+                  </div>
 
-          <div className={styles.metaRow}>
-            <span className={styles.publisherBadge}>{current.publisher}</span>
-            {current.author && <span className={styles.metaText}>Tác giả: {current.author}</span>}
-            <span className={styles.metaText}>
-              Phát hành: {new Date(current.releaseDate).toLocaleDateString('vi-VN')}
-            </span>
-          </div>
+                  <h1 className={styles.slideTitle} title={item.title}>
+                    {item.title}
+                  </h1>
 
-          <p className={styles.description}>
-            {current.description ||
-              `Ấn bản mới nhất từ ${current.publisher} chính thức lên kệ với chất lượng in ấn tiêu chuẩn cao cấp, quà tặng kèm hấp dẫn cho độc giả và người sưu tầm.`}
-          </p>
+                  <div className={styles.metaRow}>
+                    <span className={styles.publisherBadge}>{item.publisher}</span>
+                    {item.author && <span className={styles.metaText}>Tác giả: {item.author}</span>}
+                    <span className={styles.metaText}>
+                      Phát hành: {new Date(item.releaseDate).toLocaleDateString('vi-VN')}
+                    </span>
+                  </div>
 
-          <div className={styles.actionRow}>
-            <Link href={`/tap-truyen/${targetSlug}`} className={styles.primaryBtn}>
-              Xem chi tiết tập
-              {price && (
-                <span className={styles.pricePill}>
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}
-                </span>
-              )}
-            </Link>
+                  <p className={styles.description}>
+                    {item.description ||
+                      `Ấn bản mới nhất từ ${item.publisher} chính thức lên kệ với chất lượng in ấn tiêu chuẩn cao cấp, quà tặng kèm hấp dẫn cho độc giả và người sưu tầm.`}
+                  </p>
 
-            {seriesSlug && (
-              <Link href={`/bo-truyen/${seriesSlug}`} className={styles.secondaryBtn}>
-                Khám phá bộ truyện
-              </Link>
-            )}
-          </div>
-        </div>
+                  <div className={styles.actionRow}>
+                    <Link href={`/tap-truyen/${targetSlug}`} className={styles.primaryBtn}>
+                      Xem chi tiết tập
+                      {price && (
+                        <span className={styles.pricePill}>
+                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}
+                        </span>
+                      )}
+                    </Link>
 
-        {/* Right Column: 3D Visual Book Showcase */}
-        <div className={styles.visualCol}>
-          <Link href={`/tap-truyen/${targetSlug}`} className={styles.coverLink}>
-            <div className={styles.coverFrame}>
-              {cover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={cover} alt={current.title} className={styles.coverImg} />
-              ) : (
-                <div className={styles.placeholderCover}>Bìa sách</div>
-              )}
-              {current.volumeNumber && (
-                <div className={styles.volPill}>TẬP {current.volumeNumber}</div>
-              )}
-            </div>
-          </Link>
+                    {seriesSlug && (
+                      <Link href={`/bo-truyen/${seriesSlug}`} className={styles.secondaryBtn}>
+                        Khám phá bộ truyện
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column: 3D Physical Book Showcase */}
+                <div className={styles.visualCol}>
+                  <Link href={`/tap-truyen/${targetSlug}`} className={styles.bookPerspectiveLink}>
+                    <div className={styles.book3DStage}>
+                      <div className={styles.book3DObject}>
+                        {/* Book Spine Overlay (Left curved shadow) */}
+                        <div className={styles.bookSpineLight} />
+                        {/* Front Cover Artwork Surface */}
+                        <div className={styles.bookCoverSurface}>
+                          {cover ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={cover} alt={item.title} className={styles.coverImg} />
+                          ) : (
+                            <div className={styles.placeholderCover}>Bìa sách</div>
+                          )}
+                        </div>
+                        {/* Volume Bookmark Ribbon */}
+                        {item.volumeNumber && (
+                          <div className={styles.volumeRibbon}>TẬP {item.volumeNumber}</div>
+                        )}
+                      </div>
+                      {/* Realistic Elliptical Ground Shadow */}
+                      <div className={styles.groundShadow} />
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
