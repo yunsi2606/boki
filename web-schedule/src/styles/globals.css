@@ -13,6 +13,20 @@ body {
   color: var(--color-neutral-700);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-neutral-900);
 }
 
 a {
@@ -21,7 +35,13 @@ a {
 }
 
 button {
-  font-family: inherit;
+  font-family: var(--font-family-display);
   border: none;
   background: none;
+}
+
+input,
+select,
+textarea {
+  font-family: var(--font-family-sans);
 }

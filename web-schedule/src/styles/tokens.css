@@ -1,6 +1,9 @@
 /* =============================================
  * Boki Schedule Design Tokens - Light Crisp Aesthetic
+ * Enhanced with Geometric Rounded Display Typography (Lexend)
  * ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   --color-primary-50: rgba(238, 77, 45, 0.04);
@@ -40,12 +43,18 @@
   --color-neutral-800: #212529;
   --color-neutral-900: #111827;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  /* Modern Rounded Geometric Radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-full: 9999px;
 
+  /* Display & Body Typography */
+  --font-family-display: 'Lexend', 'Plus Jakarta Sans', -apple-system, sans-serif;
   --font-family-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
   --container-max: 1200px;
   --header-height: 68px;
 }

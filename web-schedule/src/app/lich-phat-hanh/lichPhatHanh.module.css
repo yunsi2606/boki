@@ -8,7 +8,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   gap: 16px;
   flex-wrap: wrap;
 }
@@ -22,8 +22,10 @@
 }
 
 .scheduleTitle {
-  font-size: 28px;
-  font-weight: 800;
+  font-family: var(--font-family-display);
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
   color: var(--color-neutral-900);
   margin: 0;
 }
@@ -31,9 +33,10 @@
 .viewModeToggle {
   background: transparent;
   border: none;
+  font-family: var(--font-family-display);
   color: var(--color-primary-600);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   padding: 0;
   transition: color 0.15s ease;
@@ -46,14 +49,15 @@
 
 .countBadge {
   display: inline-block;
+  font-family: var(--font-family-display);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  padding: 3px 10px;
+  padding: 4px 12px;
   background: var(--color-neutral-100);
   color: var(--color-neutral-700);
   border: 1px solid var(--color-neutral-300);
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
 }
 
 .monthSelector {
@@ -62,9 +66,9 @@
   gap: 8px;
   background: #ffffff;
   border: 1px solid var(--color-neutral-300);
-  border-radius: 9999px;
-  padding: 4px 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .arrowBtn {
@@ -85,8 +89,9 @@
 }
 
 .monthDisplay {
-  font-size: 14px;
-  font-weight: 800;
+  font-family: var(--font-family-display);
+  font-size: 15px;
+  font-weight: 900;
   color: var(--color-neutral-900);
   min-width: 50px;
   text-align: center;
@@ -99,4 +104,5 @@
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--radius-lg);
   color: var(--color-neutral-600);
+  font-family: var(--font-family-display);
 }

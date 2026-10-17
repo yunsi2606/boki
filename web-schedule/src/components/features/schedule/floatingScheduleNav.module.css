@@ -9,8 +9,8 @@
   gap: 6px;
   background: rgba(33, 37, 41, 0.92);
   color: #ffffff;
-  padding: 6px 12px;
-  border-radius: 9999px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -55,8 +55,9 @@
   align-items: center;
   gap: 6px;
   padding: 0 6px;
-  font-size: 13px;
-  font-weight: 700;
+  font-family: var(--font-family-display);
+  font-size: 13.5px;
+  font-weight: 800;
   color: #ffffff;
   user-select: none;
 }
@@ -75,10 +76,11 @@
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  padding: 6px 12px;
-  border-radius: 9999px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-display);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.15s ease;
 }

@@ -2,9 +2,10 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-neutral-300);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
 }
 
 .container {
@@ -33,23 +34,28 @@
 .logoBadge {
   background: var(--color-primary-500);
   color: #ffffff;
-  font-weight: 800;
+  font-family: var(--font-family-display);
+  font-weight: 900;
   font-size: 15px;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
+  padding: 6px 11px;
+  border-radius: 10px;
   letter-spacing: -0.02em;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.25);
 }
 
 .logoTitle {
+  font-family: var(--font-family-display);
   font-size: 17px;
   font-weight: 800;
   color: var(--color-neutral-900);
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .logoSubtitle {
-  font-size: 11px;
-  font-weight: 600;
+  font-family: var(--font-family-display);
+  font-size: 10.5px;
+  font-weight: 700;
   color: var(--color-primary-600);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -58,14 +64,15 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .navLink {
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-display);
+  font-size: 13.5px;
+  font-weight: 700;
   color: var(--color-neutral-600);
   transition: all 0.2s ease;
 }
@@ -78,7 +85,7 @@
 .navLinkActive {
   color: var(--color-primary-600);
   background: var(--color-primary-50);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .rightSection {
@@ -91,17 +98,19 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 8px 16px;
   background: var(--color-neutral-100);
   border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-display);
   font-size: 13px;
   font-weight: 700;
   color: var(--color-neutral-800);
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .bokiStoreBtn:hover {
+  background: var(--color-primary-500);
   border-color: var(--color-primary-500);
-  color: var(--color-primary-600);
+  color: #ffffff;
 }

@@ -11,6 +11,7 @@
 }
 
 .kicker {
+  font-family: var(--font-family-display);
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 1.5px;
@@ -19,8 +20,10 @@
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 800;
+  font-family: var(--font-family-display);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
   color: var(--color-neutral-900);
   margin: 0;
 }
@@ -29,8 +32,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  font-family: var(--font-family-display);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-primary-600);
   text-decoration: none;
   transition: all 0.15s ease;
@@ -59,23 +63,27 @@
   flex-direction: column;
   background: #ffffff;
   border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .card:hover {
   border-color: var(--color-primary-400);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
 }
 
 .coverWrapper {
   position: relative;
-  width: 100%;
+  width: calc(100% - 16px);
+  margin: 8px 8px 0;
   aspect-ratio: 2 / 3;
   background: var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
 .coverImg {
@@ -83,6 +91,11 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .coverImg {
+  transform: scale(1.03);
 }
 
 .placeholderCover {
@@ -92,18 +105,21 @@
   height: 100%;
   font-size: 12px;
   color: var(--color-neutral-500);
+  font-family: var(--font-family-display);
+  font-weight: 700;
 }
 
 .formatBadge {
   position: absolute;
   top: 8px;
   left: 8px;
-  padding: 3px 8px;
+  padding: 3px 9px;
   background: rgba(17, 24, 39, 0.85);
   color: #ffffff;
+  font-family: var(--font-family-display);
   font-size: 10px;
   font-weight: 800;
-  border-radius: 4px;
+  border-radius: var(--radius-full);
   backdrop-filter: blur(4px);
 }
 
@@ -115,8 +131,9 @@
 }
 
 .seriesName {
-  font-size: 14px;
-  font-weight: 700;
+  font-family: var(--font-family-display);
+  font-size: 14.5px;
+  font-weight: 800;
   color: var(--color-neutral-900);
   margin: 0 0 6px;
   line-height: 1.35;
@@ -127,8 +144,9 @@
 }
 
 .volCount {
+  font-family: var(--font-family-display);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-primary-600);
   margin-top: auto;
 }
