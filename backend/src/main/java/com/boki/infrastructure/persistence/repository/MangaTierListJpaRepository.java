@@ -30,4 +30,10 @@ public interface MangaTierListJpaRepository extends JpaRepository<MangaTierListJ
            "LEFT JOIN FETCH i.schedule s " +
            "WHERE t.id = :id")
     Optional<MangaTierListJpaEntity> findByIdWithDetails(@Param("id") UUID id);
+
+    @Query("SELECT t FROM MangaTierListJpaEntity t " +
+           "LEFT JOIN FETCH t.user u " +
+           "WHERE (:keyword IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+           "ORDER BY t.createdAt DESC")
+    List<MangaTierListJpaEntity> findAllForAdmin(@Param("keyword") String keyword);
 }
