@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import { ScheduleBookCard } from '@/components/features/schedule/ScheduleBookCard';
+import { HomeGridSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
 import styles from './homeNewReleasesGrid.module.css';
 
 interface Props {
@@ -34,7 +35,7 @@ export function HomeNewReleasesGrid({ schedules, loading }: Props) {
       </div>
 
       {loading ? (
-        <div className={styles.loadingBox}>Đang tải 15 tập truyện mới nhất...</div>
+        <HomeGridSkeleton count={15} />
       ) : newReleases.length === 0 ? (
         <div className={styles.emptyBox}>Chưa có dữ liệu truyện mới.</div>
       ) : (

@@ -9,10 +9,15 @@ interface Props {
 }
 
 export function ScheduleTimelineGroup({ group }: Props) {
-  // Parse dateKey (YYYY-MM-DD) into day of week, day, and day/month
   let dayOfWeek = '';
   let dayNum = '';
   let dayMonth = '';
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
+    now.getDate()
+  ).padStart(2, '0')}`;
+  const isToday = group.dateKey === todayStr;
 
   if (group.dateKey && group.dateKey.includes('-')) {
     const d = new Date(group.dateKey + 'T00:00:00');
@@ -27,7 +32,8 @@ export function ScheduleTimelineGroup({ group }: Props) {
   return (
     <section id={`date-${group.dateKey}`} className={styles.groupContainer}>
       {/* Left Date Card */}
-      <div className={styles.dateBlock}>
+      <div className={`${styles.dateBlock} ${isToday ? styles.todayDateBlock : ''}`}>
+        {isToday && <div className={styles.todayPill}>HÔM NAY</div>}
         <div className={styles.dayOfWeek}>{dayOfWeek || 'NGÀY'}</div>
         <div className={styles.dayNum}>{dayNum || group.dateKey}</div>
         {dayMonth && <div className={styles.dayMonth}>{dayMonth}</div>}

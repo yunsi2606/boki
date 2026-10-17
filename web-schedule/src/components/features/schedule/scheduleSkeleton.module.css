@@ -1,0 +1,98 @@
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmerBox {
+  background: linear-gradient(90deg, #f1f3f5 25%, #e9ecef 37%, #f1f3f5 63%);
+  background-size: 300% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* Book Card Skeleton */
+.cardSkeleton {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  padding: 10px;
+}
+
+.coverShimmer {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+
+.titleShimmer {
+  width: 80%;
+  height: 14px;
+  margin-bottom: 6px;
+}
+
+.tagShimmer {
+  width: 45%;
+  height: 12px;
+  margin-bottom: 12px;
+}
+
+.priceRowShimmer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.priceShimmer {
+  width: 50%;
+  height: 14px;
+}
+
+.dateShimmer {
+  width: 35%;
+  height: 12px;
+}
+
+/* Home Grid of 15 Skeletons */
+.homeGridSkeleton {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .homeGridSkeleton { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+}
+@media (max-width: 640px) {
+  .homeGridSkeleton { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+
+/* Timeline Group Skeleton */
+.timelineSkeletonRow {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+@media (max-width: 768px) {
+  .timelineSkeletonRow { grid-template-columns: 1fr; gap: 14px; }
+}
+
+.dateBlockShimmer {
+  height: 140px;
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 768px) {
+  .dateBlockShimmer { height: 50px; }
+}
+
+.timelineCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
