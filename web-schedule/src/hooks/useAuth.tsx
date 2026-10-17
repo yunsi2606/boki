@@ -18,8 +18,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<ScheduleUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loginUrl, setLoginUrl] = useState<string>('');
+  const [registerUrl, setRegisterUrl] = useState<string>('');
 
   const syncAuth = useCallback(() => {
+    // Process SSO callback if redirected from main store with token
+    authService.handleSsoCallback();
     const t = authService.getStoredToken();
     const u = authService.getStoredUser();
     setToken(t);
@@ -29,6 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     syncAuth();
+    if (typeof window !== 'undefined') {
+      setLoginUrl(authService.getLoginUrl(window.location.href));
+      setRegisterUrl(authService.getRegisterUrl(window.location.href));
+    }
 
     const handleAuthChange = () => syncAuth();
     window.addEventListener('storage', handleAuthChange);
@@ -59,9 +67,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!token && !!user,
     isLoading,
     logout: handleLogout,
-    loginUrl: authService.getLoginUrl(),
-    registerUrl: authService.getRegisterUrl(),
-    redirectToLogin: (returnUrl?: string) => authService.redirectToLogin(returnUrl),
+    loginUrl: loginUrl || authService.getLoginUrl(),
+    registerUrl: registerUrl || authService.getRegisterUrl(),
+    redirectToLogin: (returnUrl?: string) =>
+      authService.redirectToLogin(
+        returnUrl || (typeof window !== 'undefined' ? window.location.href : undefined)
+      ),
     hasPurchased,
   };
 
@@ -71,19 +82,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) {
-    // Graceful fallback for components outside provider
     const u = authService.getStoredUser();
     const t = authService.getStoredToken();
     return {
       user: u,
       token: t,
-      isAuthenticated: !!u && !!t,
+      isAuthenticated: !!t && !!u,
       isLoading: false,
       logout: () => authService.logout(),
       loginUrl: authService.getLoginUrl(),
       registerUrl: authService.getRegisterUrl(),
       redirectToLogin: (returnUrl?: string) => authService.redirectToLogin(returnUrl),
-      hasPurchased: (id: string) => authService.hasPurchasedBook(id, u),
+      hasPurchased: () => false,
     };
   }
   return ctx;

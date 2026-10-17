@@ -21,6 +21,47 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleRedirectAfterLogin = (authData: any) => {
+    login(authData);
+
+    const token = authData.token || authData.accessToken;
+    let returnUrl: string | null = null;
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      returnUrl = searchParams.get('returnUrl');
+    }
+
+    if (returnUrl) {
+      if (returnUrl.startsWith('http://') || returnUrl.startsWith('https://')) {
+        try {
+          const targetUrl = new URL(returnUrl);
+          if (token) {
+            targetUrl.searchParams.set('sso_token', token);
+          }
+          if (authData.user) {
+            targetUrl.searchParams.set(
+              'sso_user',
+              encodeURIComponent(JSON.stringify(authData.user))
+            );
+          }
+          window.location.href = targetUrl.toString();
+          return;
+        } catch (e) {
+          console.error('Invalid returnUrl:', e);
+        }
+      } else {
+        router.push(returnUrl);
+        return;
+      }
+    }
+
+    if (authData.user?.role === 'ADMIN') {
+      router.push('/admin');
+    } else {
+      router.push('/');
+    }
+  };
+
   // Check query parameters for OAuth redirect callback
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -34,8 +75,7 @@ export default function LoginPage() {
 
         authService.loginOAuth(state, code, redirectUri)
           .then((response) => {
-            login(response);
-            router.push('/');
+            handleRedirectAfterLogin(response);
           })
           .catch((err: any) => {
             console.error('OAuth exchange failed:', err);
@@ -62,12 +102,7 @@ export default function LoginPage() {
       try {
         await new Promise((resolve) => setTimeout(resolve, 800)); // Simulating latency
         const response = await authService.loginOAuth(provider, mockToken);
-        login(response);
-        if (response.user?.role === 'ADMIN') {
-          router.push('/admin');
-        } else {
-          router.push('/');
-        }
+        handleRedirectAfterLogin(response);
       } catch (err: any) {
         console.error(`${provider} mock login failed:`, err);
         setError(err.message || `${provider} mock login failed. Please try again.`);
@@ -98,12 +133,7 @@ export default function LoginPage() {
 
     try {
       const response = await authService.login({ email, password });
-      login(response);
-      if (response.user?.role === 'ADMIN') {
-        router.push('/admin');
-      } else {
-        router.push('/');
-      }
+      handleRedirectAfterLogin(response);
     } catch (err) {
       const apiError = err as ApiError;
       setError(apiError.message || 'Login failed. Please try again.');

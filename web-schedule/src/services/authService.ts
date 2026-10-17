@@ -21,24 +21,71 @@ export const authService = {
   },
 
   getStoreBaseUrl(): string {
-    return process.env.NEXT_PUBLIC_STORE_URL || 'http://localhost:3000';
+    if (process.env.NEXT_PUBLIC_STORE_URL) {
+      return process.env.NEXT_PUBLIC_STORE_URL;
+    }
+    if (
+      typeof window !== 'undefined' &&
+      window.location.hostname !== 'localhost' &&
+      window.location.hostname !== '127.0.0.1'
+    ) {
+      return 'https://boki.nhatcuong.io.vn';
+    }
+    return 'http://localhost:3000';
   },
 
   getLoginUrl(returnUrl?: string): string {
     const storeUrl = this.getStoreBaseUrl();
-    const dest = returnUrl || (typeof window !== 'undefined' ? window.location.href : '/');
+    const dest =
+      returnUrl ||
+      (typeof window !== 'undefined'
+        ? window.location.href
+        : process.env.NEXT_PUBLIC_SCHEDULE_URL || 'https://boki-vlpo.vercel.app');
     return `${storeUrl}/login?returnUrl=${encodeURIComponent(dest)}`;
   },
 
   getRegisterUrl(returnUrl?: string): string {
     const storeUrl = this.getStoreBaseUrl();
-    const dest = returnUrl || (typeof window !== 'undefined' ? window.location.href : '/');
+    const dest =
+      returnUrl ||
+      (typeof window !== 'undefined'
+        ? window.location.href
+        : process.env.NEXT_PUBLIC_SCHEDULE_URL || 'https://boki-vlpo.vercel.app');
     return `${storeUrl}/register?returnUrl=${encodeURIComponent(dest)}`;
   },
 
   redirectToLogin(returnUrl?: string) {
     if (typeof window === 'undefined') return;
     window.location.href = this.getLoginUrl(returnUrl);
+  },
+
+  handleSsoCallback(): boolean {
+    if (typeof window === 'undefined') return false;
+    const url = new URL(window.location.href);
+    const ssoToken = url.searchParams.get('sso_token');
+    const ssoUserRaw = url.searchParams.get('sso_user');
+
+    if (ssoToken) {
+      localStorage.setItem(TOKEN_KEY, ssoToken);
+      if (ssoUserRaw) {
+        try {
+          const decoded = decodeURIComponent(ssoUserRaw);
+          localStorage.setItem(USER_KEY, decoded);
+        } catch {
+          // Ignore decoding errors
+        }
+      }
+      url.searchParams.delete('sso_token');
+      url.searchParams.delete('sso_user');
+      window.history.replaceState(
+        {},
+        '',
+        url.pathname + (url.search ? url.search : '') + url.hash
+      );
+      window.dispatchEvent(new Event('boki_auth_change'));
+      return true;
+    }
+    return false;
   },
 
   logout() {
@@ -48,13 +95,8 @@ export const authService = {
     window.dispatchEvent(new Event('boki_auth_change'));
   },
 
-  /**
-   * Check if user has purchased this volume/book on Boki Store
-   * Used for the "Đã mua chính hãng" / "Verified Reader" badge
-   */
   hasPurchasedBook(bookIdOrSlug: string, user: ScheduleUser | null): boolean {
     if (!user) return false;
-    // In dev / test, check purchased list from localStorage or mock storage
     if (typeof window !== 'undefined') {
       const purchasedRaw = localStorage.getItem('boki_user_purchases');
       if (purchasedRaw) {
@@ -66,7 +108,6 @@ export const authService = {
         }
       }
     }
-    // Default verified true for demo/admin/logged in active buyers to display badge
     return user.role === 'ADMIN' || user.role === 'BUYER';
   },
 };
