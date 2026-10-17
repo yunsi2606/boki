@@ -1,90 +1,72 @@
 .sectionContainer {
-  margin-bottom: 56px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
 }
 
 .sectionHeader {
-  margin-bottom: 24px;
+  margin-bottom: 14px;
 }
 
 .kicker {
   display: block;
   font-family: var(--font-family-display);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--color-primary-500);
-  margin-bottom: 4px;
+  letter-spacing: 1px;
+  color: var(--color-primary-600);
+  margin-bottom: 2px;
 }
 
 .sectionTitle {
   font-family: var(--font-family-display);
-  font-size: 26px;
+  font-size: 17px;
   font-weight: 900;
   color: var(--color-neutral-900);
-  margin: 0 0 4px 0;
-  letter-spacing: -0.02em;
-}
-
-.sectionSubtitle {
-  font-size: 14px;
-  color: var(--color-neutral-600);
   margin: 0;
 }
 
-.reviewsGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-@media (max-width: 960px) {
-  .reviewsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .reviewsGrid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .reviewCard {
-  background: #ffffff;
-  border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-lg);
-  padding: 22px 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .reviewCard:hover {
-  border-color: var(--color-neutral-400);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  transform: translateY(-2px);
+  border-color: rgba(238, 77, 45, 0.3);
+  background: #ffffff;
 }
 
 .cardTop {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .avatarCircle {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-family-display);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 800;
   flex-shrink: 0;
 }
@@ -97,68 +79,65 @@
 .nameRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 2px;
   flex-wrap: wrap;
 }
 
 .reviewerName {
   font-family: var(--font-family-display);
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 800;
   color: var(--color-neutral-900);
 }
 
 .verifiedTag {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   color: #2b8a3e;
   background: #ebfbee;
-  padding: 2px 7px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(43, 138, 62, 0.2);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
 }
 
 .starsRow {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .timeAgo {
-  font-size: 11.5px;
+  font-size: 10.5px;
   color: var(--color-neutral-500);
-  margin-left: 6px;
+  margin-left: 4px;
 }
 
 .bookReferenceLink {
   display: flex;
   align-items: baseline;
-  gap: 6px;
-  background: var(--color-neutral-50);
-  border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius-md);
-  padding: 7px 11px;
-  margin-bottom: 14px;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  margin-bottom: 8px;
   text-decoration: none;
   transition: all 0.15s ease;
 }
 
 .bookReferenceLink:hover {
-  background: #fff8f6;
-  border-color: rgba(238, 77, 45, 0.3);
+  border-color: var(--color-primary-500);
 }
 
 .bookTag {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  color: var(--color-primary-500);
-  text-transform: uppercase;
+  color: var(--color-primary-600);
   flex-shrink: 0;
 }
 
 .bookTitleText {
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--color-neutral-800);
   white-space: nowrap;
@@ -167,9 +146,8 @@
 }
 
 .commentBody {
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: 12.5px;
+  line-height: 1.5;
   color: var(--color-neutral-700);
   margin: 0;
-  flex: 1;
 }

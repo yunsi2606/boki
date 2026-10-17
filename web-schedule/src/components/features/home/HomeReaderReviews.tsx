@@ -49,25 +49,20 @@ const SAMPLE_REVIEWS: ReviewItem[] = [
     bookTitle: 'Sakamoto Days - Tập 25',
     bookSlug: 'sakamoto-days-tap-25',
     comment:
-      'Pha hành động vẽ mãn nhãn từng khung hình! Chất lượng mực in đậm nét, không bị lem trang sau. Lên lịch giao đúng ngày phát hành, đóng gói bọc xốp chống sốc rất an tâm.',
+      'Pha hành động vẽ mãn nhãn từng khung hình! Chất lượng mực in đậm nét, không bị lem trang sau. Đóng gói bọc xốp chống sốc rất an tâm.',
     timeAgo: '3 ngày trước',
   },
 ];
 
 export function HomeReaderReviews() {
   return (
-    <section className={styles.sectionContainer} aria-label="Bình luận người mua">
+    <div className={styles.sectionContainer} aria-label="Bình luận người mua">
       <div className={styles.sectionHeader}>
-        <div>
-          <span className={styles.kicker}>CẢM NHẬN & ĐÁNH GIÁ</span>
-          <h2 className={styles.sectionTitle}>Cộng Đồng Độc Giả Nói Gì</h2>
-          <p className={styles.sectionSubtitle}>
-            Chia sẻ chân thực từ độc giả đã sở hữu các ấn bản truyện tranh & light novel mới
-          </p>
-        </div>
+        <span className={styles.kicker}>CẢM NHẬN & ĐÁNH GIÁ</span>
+        <h3 className={styles.sectionTitle}>Độc Giả Nói Gì</h3>
       </div>
 
-      <div className={styles.reviewsGrid}>
+      <div className={styles.reviewsList}>
         {SAMPLE_REVIEWS.map((rev) => (
           <div key={rev.id} className={styles.reviewCard}>
             <div className={styles.cardTop}>
@@ -80,11 +75,11 @@ export function HomeReaderReviews() {
               <div className={styles.authorMeta}>
                 <div className={styles.nameRow}>
                   <span className={styles.reviewerName}>{rev.reviewerName}</span>
-                  {rev.verified && <span className={styles.verifiedTag}>Đã mua chính hãng</span>}
+                  {rev.verified && <span className={styles.verifiedTag}>Đã mua</span>}
                 </div>
                 <div className={styles.starsRow}>
                   {[...Array(rev.rating)].map((_, i) => (
-                    <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#FFA726" stroke="#FFA726" strokeWidth="1">
+                    <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#FFA726" stroke="#FFA726" strokeWidth="1">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                   ))}
@@ -93,17 +88,15 @@ export function HomeReaderReviews() {
               </div>
             </div>
 
-            {/* Target Book Reference Link */}
             <Link href={`/tap-truyen/${rev.bookSlug}`} className={styles.bookReferenceLink}>
               <span className={styles.bookTag}>Ấn bản:</span>
               <span className={styles.bookTitleText}>{rev.bookTitle}</span>
             </Link>
 
-            {/* Comment Body */}
             <p className={styles.commentBody}>{rev.comment}</p>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

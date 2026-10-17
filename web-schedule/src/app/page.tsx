@@ -7,9 +7,13 @@ import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import { HomeHeroSlider } from '@/components/features/home/HomeHeroSlider';
 import { HomeNewReleasesGrid } from '@/components/features/home/HomeNewReleasesGrid';
-import { ScheduleCalendarMatrix } from '@/components/features/schedule/ScheduleCalendarMatrix';
+import { HomeMangaComments } from '@/components/features/home/HomeMangaComments';
+import { HomeMangaTierList } from '@/components/features/home/HomeMangaTierList';
+import { HomeTopWatchlist } from '@/components/features/home/HomeTopWatchlist';
+import { HomeCustomRanking } from '@/components/features/home/HomeCustomRanking';
 import { HomeReaderReviews } from '@/components/features/home/HomeReaderReviews';
-import { GenrePillsBar } from '@/components/features/schedule/GenrePillsBar';
+import { GenreMarqueeSlider } from '@/components/features/home/GenreMarqueeSlider';
+import { ScheduleCalendarMatrix } from '@/components/features/schedule/ScheduleCalendarMatrix';
 import { HomeVaultCta } from '@/components/features/home/HomeVaultCta';
 import styles from './homePortal.module.css';
 
@@ -37,25 +41,36 @@ export default function ScheduleHomePage() {
     loadPortalData();
   }, []);
 
-  const handleSelectGenre = (genre: string) => {
-    if (genre) {
-      router.push(`/bo-truyen?genre=${encodeURIComponent(genre)}`);
-    }
-  };
-
   const handleSelectDateFromCalendar = (dateStr: string) => {
     router.push(`/lich-phat-hanh#date-${dateStr}`);
   };
 
   return (
     <main className={styles.container}>
-      {/* 1. Cinematic Slide Banner for 3 Featured Manga */}
+      {/* 1. Cinematic Full-bleed Hero Slide Banner */}
       <HomeHeroSlider items={schedules} />
 
-      {/* 2. Single Unified Section for 15 New Releases (3 rows x 5 columns) */}
-      <HomeNewReleasesGrid schedules={schedules} loading={loading} />
+      {/* 2. Asymmetric 2-Column Grid Layout: 1 Wide Main Column + 1 Narrow Sidebar */}
+      <div className={styles.twoColLayout}>
+        {/* Left Wide Column: New Releases + Real Comments + Tier List */}
+        <div className={styles.mainCol}>
+          <HomeNewReleasesGrid schedules={schedules} loading={loading} />
+          <HomeMangaComments />
+          <HomeMangaTierList />
+        </div>
 
-      {/* 3. Monthly Release Calendar Matrix */}
+        {/* Right Narrow Column: Top 5 Watchlist + Custom Community Ranking + Reader Reviews */}
+        <aside className={styles.sideCol} aria-label="Bảng tin cộng đồng & Xếp hạng">
+          <HomeTopWatchlist items={schedules} />
+          <HomeCustomRanking />
+          <HomeReaderReviews />
+        </aside>
+      </div>
+
+      {/* 3. 2-Row Infinite Horizontal Scrolling Genre Marquee (Standalone Full-width) */}
+      <GenreMarqueeSlider />
+
+      {/* 4. Monthly Release Calendar Matrix (Standalone Full-width) */}
       <section className={styles.calendarSection} aria-label="Bản đồ lịch phát hành tháng">
         <div className={styles.sectionHeaderRow}>
           <div>
@@ -84,13 +99,7 @@ export default function ScheduleHomePage() {
         />
       </section>
 
-      {/* 4. Community Reader & Buyer Reviews */}
-      <HomeReaderReviews />
-
-      {/* 5. Quick Genre Exploration */}
-      <GenrePillsBar onSelectGenre={handleSelectGenre} />
-
-      {/* 6. Reader Vault CTA (Crisp Light Theme) */}
+      {/* 5. Reader Vault CTA (Crisp Light Theme) */}
       <HomeVaultCta />
     </main>
   );

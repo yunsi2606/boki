@@ -1,0 +1,117 @@
+.sectionContainer {
+  margin-bottom: 40px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 16px;
+}
+
+.kicker {
+  font-family: var(--font-family-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: var(--color-primary-600);
+  margin-bottom: 2px;
+}
+
+.title {
+  font-family: var(--font-family-display);
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--color-neutral-900);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.marqueeWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  padding: 4px 0;
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
+.marqueeRow {
+  display: flex;
+  width: max-content;
+  gap: 12px;
+}
+
+.trackLeft {
+  animation: scrollLeft 38s linear infinite;
+}
+
+.trackRight {
+  animation: scrollRight 38s linear infinite;
+}
+
+.marqueeWrapper:hover .trackLeft,
+.marqueeWrapper:hover .trackRight {
+  animation-play-state: paused;
+}
+
+@keyframes scrollLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scrollRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.genrePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  white-space: nowrap;
+}
+
+.genrePill:hover {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(238, 77, 45, 0.15);
+}
+
+.genreName {
+  font-family: var(--font-family-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+}
+
+.genrePill:hover .genreName {
+  color: var(--color-primary-600);
+}
+
+.genreCount {
+  font-family: var(--font-family-display);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+  border-radius: var(--radius-full);
+}
+
+.genrePill:hover .genreCount {
+  background: var(--color-primary-100);
+  color: var(--color-primary-600);
+}
