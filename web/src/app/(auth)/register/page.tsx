@@ -5,12 +5,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/authService';
-import { auth as firebaseAuth, isFirebaseConfigured } from '@/lib/firebase';
-import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Card from '@/components/ui/Card';
-import type { ApiError } from '@/types';
+import type { ApiError, AuthResponse } from '@/types';
 import styles from '../auth.module.css';
 
 export default function RegisterPage() {
@@ -24,41 +22,90 @@ export default function RegisterPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleRedirectAfterAuth = (response: AuthResponse) => {
+    login(response);
+    const storedReturnUrl =
+      typeof window !== 'undefined'
+        ? sessionStorage.getItem('boki_login_return_url')
+        : null;
+    if (storedReturnUrl) {
+      sessionStorage.removeItem('boki_login_return_url');
+      if (
+        storedReturnUrl.startsWith('http://') ||
+        storedReturnUrl.startsWith('https://')
+      ) {
+        try {
+          const targetUrl = new URL(storedReturnUrl);
+          const token = response.token || response.accessToken;
+          if (token) {
+            targetUrl.searchParams.set('sso_token', token);
+          }
+          if (response.user) {
+            targetUrl.searchParams.set(
+              'sso_user',
+              encodeURIComponent(JSON.stringify(response.user))
+            );
+          }
+          window.location.href = targetUrl.toString();
+          return;
+        } catch {
+          window.location.href = storedReturnUrl;
+          return;
+        }
+      }
+      router.push(storedReturnUrl);
+      return;
+    }
+    router.push('/');
+  };
+
   const handleOAuthRegister = async (provider: 'google' | 'facebook') => {
     setError('');
 
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const facebookClientId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    const fbAppId =
+      process.env.NEXT_PUBLIC_FACEBOOK_APP_ID ||
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
-    // Determine if we should run in mock bypass mode
-    const isMock = !googleClientId || googleClientId === 'your-google-client-id';
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const ret = searchParams.get('returnUrl');
+      if (ret) sessionStorage.setItem('boki_login_return_url', ret);
+    }
+
+    const isMock =
+      provider === 'google'
+        ? !googleClientId || googleClientId === 'your-google-client-id'
+        : !fbAppId || fbAppId === 'your-facebook-app-id';
 
     if (isMock) {
       setIsLoading(true);
-      const mockToken = provider === 'google' ? 'mock-google-token' : 'mock-facebook-token';
+      const mockToken =
+        provider === 'google' ? 'mock-google-token' : 'mock-facebook-token';
       try {
-        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulating latency
+        await new Promise((resolve) => setTimeout(resolve, 600));
         const response = await authService.loginOAuth(provider, mockToken);
-        login(response);
-        router.push('/');
+        handleRedirectAfterAuth(response);
       } catch (err: any) {
         console.error(`${provider} mock registration failed:`, err);
-        setError(err.message || `${provider} mock registration failed. Please try again.`);
+        setError(err.message || `${provider} mock registration failed.`);
       } finally {
         setIsLoading(false);
       }
       return;
     }
 
-    // Redirect to provider consent page to request authorization code
     const redirectUri = window.location.origin + '/login';
     let authUrl = '';
 
     if (provider === 'google') {
-      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20email%20profile&state=google`;
+      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=code&scope=openid%20email%20profile&state=google&prompt=select_account`;
     } else {
-      const fbAppId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '';
-      authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email,public_profile&state=facebook`;
+      authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=code&scope=email,public_profile&state=facebook`;
     }
 
     window.location.href = authUrl;
@@ -83,8 +130,7 @@ export default function RegisterPage() {
 
     try {
       const response = await authService.register({ email, password, displayName });
-      login(response);
-      router.push('/');
+      handleRedirectAfterAuth(response);
     } catch (err) {
       const apiError = err as ApiError;
       if (apiError.details) {

@@ -90,37 +90,49 @@ export default function LoginPage() {
     setError('');
 
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const facebookClientId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID; // Or fallback to client app id
+    const fbAppId =
+      process.env.NEXT_PUBLIC_FACEBOOK_APP_ID ||
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
-    // Determine if we should run in mock bypass mode
-    const isMock = !googleClientId || googleClientId === 'your-google-client-id';
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const ret = searchParams.get('returnUrl');
+      if (ret) sessionStorage.setItem('boki_login_return_url', ret);
+    }
+
+    const isMock =
+      provider === 'google'
+        ? !googleClientId || googleClientId === 'your-google-client-id'
+        : !fbAppId || fbAppId === 'your-facebook-app-id';
 
     if (isMock) {
       setIsLoading(true);
-      // Mock login token for local development bypass
-      const mockToken = provider === 'google' ? 'mock-google-token' : 'mock-facebook-token';
+      const mockToken =
+        provider === 'google' ? 'mock-google-token' : 'mock-facebook-token';
       try {
-        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulating latency
+        await new Promise((resolve) => setTimeout(resolve, 600));
         const response = await authService.loginOAuth(provider, mockToken);
         handleRedirectAfterLogin(response);
       } catch (err: any) {
         console.error(`${provider} mock login failed:`, err);
-        setError(err.message || `${provider} mock login failed. Please try again.`);
+        setError(err.message || `${provider} mock login failed.`);
       } finally {
         setIsLoading(false);
       }
       return;
     }
 
-    // Redirect to provider consent page to request authorization code
     const redirectUri = window.location.origin + '/login';
     let authUrl = '';
 
     if (provider === 'google') {
-      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20email%20profile&state=google`;
+      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=code&scope=openid%20email%20profile&state=google&prompt=select_account`;
     } else {
-      const fbAppId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || ''; // using project id or app id
-      authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email,public_profile&state=facebook`;
+      authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=code&scope=email,public_profile&state=facebook`;
     }
 
     window.location.href = authUrl;

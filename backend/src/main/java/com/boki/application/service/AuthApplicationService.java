@@ -39,11 +39,7 @@ import java.util.UUID;
 @Service
 public class AuthApplicationService
         implements RegisterUserUseCase, LoginUserUseCase, VerifyPhoneUseCase, GetCurrentUserUseCase,
-                   RefreshTokenUseCase,
-                   com.boki.application.port.in.LoginOAuthUseCase, com.boki.application.port.in.VerifyEmailUseCase,
-                   com.boki.application.port.in.UpdateUserProfileUseCase,
-                   com.boki.application.port.in.ForgotPasswordUseCase,
-                   com.boki.application.port.in.ResetPasswordUseCase {
+                   RefreshTokenUseCase, com.boki.application.port.in.LoginOAuthUseCase {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
@@ -218,10 +214,26 @@ public class AuthApplicationService
         User user;
         if (existingUser.isPresent()) {
             user = existingUser.get();
+            boolean needSave = false;
+            if (userInfo.avatarUrl() != null && (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank())) {
+                user.updateProfileDetails(user.getDisplayName(), userInfo.avatarUrl(), user.getPhoneNumber());
+                needSave = true;
+            }
+            if (userInfo.displayName() != null && (user.getDisplayName() == null || user.getDisplayName().startsWith("Mock") || user.getDisplayName().endsWith("User"))) {
+                user.updateProfileDetails(userInfo.displayName(), user.getAvatarUrl(), user.getPhoneNumber());
+                needSave = true;
+            }
+            if (needSave) {
+                user = userRepository.save(user);
+            }
         } else {
             java.util.Optional<User> userByEmail = userRepository.findByEmail(email);
             if (userByEmail.isPresent()) {
                 user = userByEmail.get();
+                if (userInfo.avatarUrl() != null && (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank())) {
+                    user.updateProfileDetails(user.getDisplayName(), userInfo.avatarUrl(), user.getPhoneNumber());
+                    user = userRepository.save(user);
+                }
             } else {
                 user = User.fromOAuth(email, userInfo.displayName(), userInfo.avatarUrl());
                 user = userRepository.save(user);
@@ -242,73 +254,5 @@ public class AuthApplicationService
         String refreshToken = issueRefreshToken(user);
 
         return AuthResponse.of(accessToken, refreshToken, UserDtoMapper.toResponse(user));
-    }
-
-    @Override
-    @Transactional
-    public void verifyEmail(com.boki.application.dto.request.VerifyEmailRequest request) {
-        if (!tokenService.validateToken(request.token())) {
-            throw new BusinessRuleException("Invalid or expired email verification token");
-        }
-
-        String emailFromToken = tokenService.extractEmail(request.token());
-        if (!emailFromToken.equalsIgnoreCase(request.email())) {
-            throw new BusinessRuleException("Token does not match the provided email address");
-        }
-
-        User user = userRepository.findByEmail(Email.of(request.email()))
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.email()));
-
-        user.verifyEmail();
-        userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public UserResponse updateProfile(UUID userId, com.boki.application.dto.request.UpdateProfileRequest request) {
-        User user = userRepository.findById(UserId.of(userId))
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-
-        user.updateProfile(request.displayName(), request.avatarUrl());
-        User savedUser = userRepository.save(user);
-        return UserDtoMapper.toResponse(savedUser);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void forgotPassword(String email) {
-        userRepository.findByEmail(Email.of(email)).ifPresent(user -> {
-            String resetToken = tokenService.generateToken(
-                    user.getId().value(),
-                    user.getEmail().value(),
-                    user.getRole().name(),
-                    user.getPhoneVerified()
-            );
-            emailService.sendPasswordResetEmail(user.getEmail().value(), resetToken);
-        });
-    }
-
-    @Override
-    @Transactional
-    public void resetPassword(com.boki.application.dto.request.ResetPasswordRequest request) {
-        if (!tokenService.validateToken(request.token())) {
-            throw new BusinessRuleException("Invalid or expired password reset token");
-        }
-
-        String emailFromToken = tokenService.extractEmail(request.token());
-        if (!emailFromToken.equalsIgnoreCase(request.email())) {
-            throw new BusinessRuleException("Token does not match the provided email address");
-        }
-
-        User user = userRepository.findByEmail(Email.of(request.email()))
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.email()));
-
-        if (user.getPasswordHash() == null) {
-            throw new BusinessRuleException("This account uses OAuth login and does not have a password");
-        }
-
-        String newHash = passwordEncoder.encode(request.newPassword());
-        user.changePassword(newHash);
-        userRepository.save(user);
     }
 }
