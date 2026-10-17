@@ -1,45 +1,97 @@
 .sliderContainer {
   position: relative;
-  background: radial-gradient(circle at 75% 50%, rgba(238, 77, 45, 0.05) 0%, rgba(255, 152, 0, 0.03) 35%, #ffffff 75%);
+  background: #ffffff;
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--radius-xl);
-  padding: 38px 44px 28px;
   margin-bottom: 40px;
-  box-shadow: 0 10px 32px -12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 32px -12px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
-@media (max-width: 820px) { .sliderContainer { padding: 24px 20px 20px; } }
-.sliderViewport { overflow: hidden; width: 100%; }
+
+.sliderViewport { overflow: hidden; width: 100%; border-radius: var(--radius-xl); }
+
 .sliderTrack {
   display: flex;
   width: 100%;
   transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
-.slideContent {
+
+.slideItem {
+  position: relative;
   flex: 0 0 100%;
   width: 100%;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 40px;
+  min-height: 400px;
+  display: flex;
   align-items: center;
-  min-height: 340px;
-  opacity: 0.35;
-  transform: scale(0.98);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  overflow: hidden;
+  box-sizing: border-box;
 }
-.activeSlide { opacity: 1; transform: scale(1); }
+
+/* Full-bleed Background Cover */
+.backdropWrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  background: var(--color-neutral-100);
+}
+
+.backdropImg {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 62%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  filter: saturate(1.1) contrast(1.02);
+}
+
+.placeholderBackdrop {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 80% 50%, rgba(238, 77, 45, 0.1), #ffffff);
+}
+
+.backdropOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.98) 45%, rgba(255, 255, 255, 0.72) 65%, rgba(255, 255, 255, 0.15) 88%, rgba(255, 255, 255, 0.02) 100%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 30%);
+}
+
 @media (max-width: 820px) {
-  .slideContent { grid-template-columns: 1fr; gap: 24px; text-align: center; }
+  .backdropImg { width: 100%; opacity: 0.28; filter: blur(3px) saturate(1.2); }
+  .backdropOverlay {
+    background: linear-gradient(0deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 60%, rgba(255, 255, 255, 0.7) 100%);
+  }
 }
-.infoCol { min-width: 0; display: flex; flex-direction: column; }
-@media (max-width: 820px) { .infoCol { align-items: center; } }
+
+/* Foreground Editorial Content */
+.slideContent {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  padding: 48px 52px 36px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 820px) {
+  .slideContent { padding: 32px 24px 28px; max-width: 100%; text-align: left; }
+}
+
+.badgeRow { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+
 .kickerBadge {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  align-self: flex-start;
   padding: 5px 12px;
   background: #fff0ed;
   border: 1px solid rgba(238, 77, 45, 0.25);
@@ -49,37 +101,53 @@
   font-weight: 800;
   color: var(--color-primary-600);
   letter-spacing: 0.8px;
-  margin-bottom: 12px;
 }
-@media (max-width: 820px) { .kickerBadge { align-self: center; } }
+
 .dotIndicator { width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary-500); }
+
+.volBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(17, 24, 39, 0.88);
+  color: #ffffff;
+  font-family: var(--font-family-display);
+  font-size: 11px;
+  font-weight: 900;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+}
+
 .slideTitle {
   font-family: var(--font-family-display);
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 900;
   color: var(--color-neutral-900);
   margin: 0 0 12px 0;
   line-height: 1.25;
   letter-spacing: -0.02em;
 }
+
 @media (max-width: 600px) { .slideTitle { font-size: 24px; } }
+
 .metaRow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 14px; }
-@media (max-width: 820px) { .metaRow { justify-content: center; } }
 .publisherBadge { font-family: var(--font-family-display); font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: var(--radius-sm); background: var(--color-neutral-200); color: var(--color-neutral-800); }
 .metaText { font-size: 13px; font-weight: 600; color: var(--color-neutral-600); }
+
 .description {
   font-size: 14.5px;
   line-height: 1.6;
   color: var(--color-neutral-700);
-  margin: 0 0 22px 0;
+  margin: 0 0 24px 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   max-width: 580px;
 }
+
 .actionRow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-@media (max-width: 820px) { .actionRow { justify-content: center; } }
+
 .primaryBtn {
   display: inline-flex;
   align-items: center;
@@ -100,12 +168,14 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(238, 77, 45, 0.45);
 }
+
 .pricePill { font-size: 12px; font-weight: 800; padding: 2px 8px; background: rgba(255, 255, 255, 0.2); border-radius: var(--radius-full); }
+
 .secondaryBtn {
   display: inline-flex;
   align-items: center;
   padding: 12px 20px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--color-neutral-300);
   color: var(--color-neutral-800);
   border-radius: var(--radius-full);
@@ -113,78 +183,30 @@
   font-size: 13.5px;
   font-weight: 700;
   text-decoration: none;
+  backdrop-filter: blur(4px);
   transition: all 0.15s ease;
 }
-.secondaryBtn:hover { border-color: var(--color-neutral-400); background: var(--color-neutral-100); }
+.secondaryBtn:hover { border-color: var(--color-neutral-400); background: #ffffff; }
 
-/* --- 3D Physical Book Showcase --- */
-.visualCol { display: flex; justify-content: center; align-items: center; }
-.bookPerspectiveLink { display: block; text-decoration: none; perspective: 1100px; }
-.book3DStage { position: relative; display: flex; flex-direction: column; align-items: center; }
-.book3DObject {
-  position: relative;
-  width: 200px;
-  aspect-ratio: 2 / 3;
-  transform: rotateY(-13deg) rotateX(3deg);
-  transform-style: preserve-3d;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  border-radius: 4px 8px 8px 4px;
-  box-shadow: 1px 1px 0 #fff, 2px 2px 0 #f0ece1, 3px 3px 0 #fff, 4px 4px 0 #e5e0d4, 5px 5px 0 #dbd5c7, 6px 6px 0 #d0c9b9, 14px 16px 28px -4px rgba(0, 0, 0, 0.22), 0 4px 14px rgba(238, 77, 45, 0.16);
-}
-@media (max-width: 600px) { .book3DObject { width: 160px; } }
-.bookPerspectiveLink:hover .book3DObject {
-  transform: rotateY(-5deg) rotateX(1deg) translateY(-8px);
-  box-shadow: 1px 1px 0 #fff, 2px 2px 0 #f0ece1, 3px 3px 0 #fff, 4px 4px 0 #e5e0d4, 6px 6px 0 #dbd5c7, 8px 8px 0 #d0c9b9, 18px 24px 34px -4px rgba(0, 0, 0, 0.26), 0 8px 20px rgba(238, 77, 45, 0.25);
-}
-.bookCoverSurface { position: relative; width: 100%; height: 100%; border-radius: 4px 8px 8px 4px; overflow: hidden; background: var(--color-neutral-100); }
-.coverImg { width: 100%; height: 100%; object-fit: cover; display: block; }
-.bookSpineLight {
-  position: absolute;
-  top: 0; left: 0; bottom: 0; width: 24px;
-  z-index: 3;
-  pointer-events: none;
-  background: linear-gradient(to right, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.12) 20%, rgba(255,255,255,0.28) 45%, rgba(0,0,0,0.18) 60%, transparent 100%);
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-}
-.volumeRibbon {
-  position: absolute;
-  top: 10px; right: 10px;
-  z-index: 4;
-  padding: 4px 10px;
-  background: rgba(17, 24, 39, 0.9);
-  color: #ffffff;
-  font-family: var(--font-family-display);
-  font-size: 11px;
-  font-weight: 900;
-  border-radius: var(--radius-full);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-.groundShadow {
-  width: 82%;
-  height: 14px;
-  margin-top: 12px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0) 72%);
-  border-radius: 50%;
-  filter: blur(3px);
-  transform: rotateY(-13deg);
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-.bookPerspectiveLink:hover .groundShadow { opacity: 0.65; transform: rotateY(-5deg) scale(0.95); }
-.placeholderCover { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--color-neutral-500); font-size: 14px; font-family: var(--font-family-display); }
+/* Navigation Controls Bar */
 .controlsRow {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 18px;
-  margin-top: 18px;
-  border-top: 1px solid var(--color-neutral-200);
+  padding: 14px 44px 20px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(233, 236, 239, 0.8);
 }
+
+@media (max-width: 820px) { .controlsRow { padding: 12px 20px 16px; } }
+
 .dotsTrack { display: flex; align-items: center; gap: 8px; }
 .dotBtn { width: 10px; height: 10px; border-radius: 50%; background: var(--color-neutral-300); border: none; cursor: pointer; transition: all 0.2s ease; padding: 0; }
 .activeDot { width: 24px; border-radius: var(--radius-full); background: var(--color-primary-500); }
+
 .arrowsGroup { display: flex; align-items: center; gap: 8px; }
 .arrowBtn {
   display: flex;
@@ -198,4 +220,8 @@
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.arrowBtn:hover { background: var(--color-neutral-100); border-color: var(--color-primary-500); color: var(--color-primary-500); }
+.arrowBtn:hover {
+  background: var(--color-neutral-100);
+  border-color: var(--color-primary-500);
+  color: var(--color-primary-500);
+}

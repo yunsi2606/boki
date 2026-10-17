@@ -60,14 +60,30 @@ export function HomeHeroSlider({ items }: Props) {
             return (
               <div
                 key={item.id || idx}
-                className={`${styles.slideContent} ${isActive ? styles.activeSlide : ''}`}
+                className={`${styles.slideItem} ${isActive ? styles.activeSlide : ''}`}
                 aria-hidden={!isActive}
               >
-                {/* Left Column: Editorial Information */}
-                <div className={styles.infoCol}>
-                  <div className={styles.kickerBadge}>
-                    <span className={styles.dotIndicator} />
-                    <span>TÁC PHẨM TIÊU ĐIỂM</span>
+                {/* Full-bleed Background Cover Layer */}
+                <div className={styles.backdropWrap}>
+                  {cover ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={cover} alt="" aria-hidden="true" className={styles.backdropImg} />
+                  ) : (
+                    <div className={styles.placeholderBackdrop} />
+                  )}
+                  <div className={styles.backdropOverlay} />
+                </div>
+
+                {/* Foreground Editorial Content */}
+                <div className={styles.slideContent}>
+                  <div className={styles.badgeRow}>
+                    <div className={styles.kickerBadge}>
+                      <span className={styles.dotIndicator} />
+                      <span>TÁC PHẨM TIÊU ĐIỂM</span>
+                    </div>
+                    {item.volumeNumber && (
+                      <span className={styles.volBadge}>TẬP {item.volumeNumber}</span>
+                    )}
                   </div>
 
                   <h1 className={styles.slideTitle} title={item.title}>
@@ -104,40 +120,13 @@ export function HomeHeroSlider({ items }: Props) {
                     )}
                   </div>
                 </div>
-
-                {/* Right Column: 3D Physical Book Showcase */}
-                <div className={styles.visualCol}>
-                  <Link href={`/tap-truyen/${targetSlug}`} className={styles.bookPerspectiveLink}>
-                    <div className={styles.book3DStage}>
-                      <div className={styles.book3DObject}>
-                        {/* Book Spine Overlay (Left curved shadow) */}
-                        <div className={styles.bookSpineLight} />
-                        {/* Front Cover Artwork Surface */}
-                        <div className={styles.bookCoverSurface}>
-                          {cover ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={cover} alt={item.title} className={styles.coverImg} />
-                          ) : (
-                            <div className={styles.placeholderCover}>Bìa sách</div>
-                          )}
-                        </div>
-                        {/* Volume Bookmark Ribbon */}
-                        {item.volumeNumber && (
-                          <div className={styles.volumeRibbon}>TẬP {item.volumeNumber}</div>
-                        )}
-                      </div>
-                      {/* Realistic Elliptical Ground Shadow */}
-                      <div className={styles.groundShadow} />
-                    </div>
-                  </Link>
-                </div>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Navigation Controls */}
+      {/* Navigation Controls Bar */}
       {slides.length > 1 && (
         <div className={styles.controlsRow}>
           <div className={styles.dotsTrack}>
