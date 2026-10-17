@@ -74,8 +74,11 @@ export function HomeHeroSlider({ items }: Props) {
                   <div className={styles.backdropOverlay} />
                 </div>
 
-                {/* Foreground Editorial Content */}
-                <div className={styles.slideContent}>
+                {/* Foreground Editorial Content with Fresh Key for Re-triggering Spring Animation */}
+                <div
+                  key={isActive ? `active-${idx}` : `idle-${idx}`}
+                  className={styles.slideContent}
+                >
                   <div className={styles.badgeRow}>
                     <div className={styles.kickerBadge}>
                       <span className={styles.dotIndicator} />
