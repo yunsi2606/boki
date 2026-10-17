@@ -7,10 +7,8 @@ import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import { HomeHeroSlider } from '@/components/features/home/HomeHeroSlider';
 import { HomeNewReleasesGrid } from '@/components/features/home/HomeNewReleasesGrid';
-import { HomeMangaComments } from '@/components/features/home/HomeMangaComments';
-import { HomeMangaTierList } from '@/components/features/home/HomeMangaTierList';
-import { HomeTopWatchlist } from '@/components/features/home/HomeTopWatchlist';
-import { HomeCustomRanking } from '@/components/features/home/HomeCustomRanking';
+import { HomePopularitySection } from '@/components/features/home/HomePopularitySection';
+import { HomeCommunityTierList } from '@/components/features/home/HomeCommunityTierList';
 import { HomeReaderReviews } from '@/components/features/home/HomeReaderReviews';
 import { GenreMarqueeSlider } from '@/components/features/home/GenreMarqueeSlider';
 import { ScheduleCalendarMatrix } from '@/components/features/schedule/ScheduleCalendarMatrix';
@@ -52,25 +50,23 @@ export default function ScheduleHomePage() {
 
       {/* 2. Asymmetric 2-Column Grid Layout: 1 Wide Main Column + 1 Narrow Sidebar */}
       <div className={styles.twoColLayout}>
-        {/* Left Wide Column: New Releases + Real Comments + Tier List */}
+        {/* Left Wide Column: New Releases + Unified Popularity + Real Community Tier List */}
         <div className={styles.mainCol}>
           <HomeNewReleasesGrid schedules={schedules} loading={loading} />
-          <HomeMangaComments />
-          <HomeMangaTierList />
+          <HomePopularitySection schedules={schedules} />
+          <HomeCommunityTierList />
         </div>
 
-        {/* Right Narrow Column: Top 5 Watchlist + Custom Community Ranking + Reader Reviews */}
-        <aside className={styles.sideCol} aria-label="Bảng tin cộng đồng & Xếp hạng">
-          <HomeTopWatchlist items={schedules} />
-          <HomeCustomRanking />
+        {/* Right Narrow Column: Verified Reader Reviews */}
+        <aside className={styles.sideCol} aria-label="Cảm nhận độc giả">
           <HomeReaderReviews />
         </aside>
       </div>
 
-      {/* 3. 2-Row Infinite Horizontal Scrolling Genre Marquee (Standalone Full-width) */}
+      {/* 3. 2-Row Infinite Thematic Genre Marquee */}
       <GenreMarqueeSlider />
 
-      {/* 4. Monthly Release Calendar Matrix (Standalone Full-width) */}
+      {/* 4. Monthly Release Calendar Matrix */}
       <section className={styles.calendarSection} aria-label="Bản đồ lịch phát hành tháng">
         <div className={styles.sectionHeaderRow}>
           <div>
@@ -99,7 +95,7 @@ export default function ScheduleHomePage() {
         />
       </section>
 
-      {/* 5. Reader Vault CTA (Crisp Light Theme) */}
+      {/* 5. Reader Vault CTA */}
       <HomeVaultCta />
     </main>
   );

@@ -7,30 +7,101 @@ export interface MangaComment {
   content: string;
   createdAt: string;
   likes: number;
+  isVerifiedBuyer?: boolean;
 }
 
-export interface TierManga {
-  id: string;
+export interface MangaTierEntry {
   title: string;
   coverUrl: string;
-  rank: 'S' | 'A' | 'B' | 'C';
+  slug: string;
 }
 
-export interface CustomRankItem {
+export interface UserTierList {
   id: string;
-  rank: number;
   title: string;
-  votes: number;
-  coverUrl: string;
-  seriesSlug: string;
+  authorName: string;
+  authorAvatarColor: string;
+  isPublic: boolean;
+  likes: number;
+  createdAt: string;
+  tiers: {
+    S: MangaTierEntry[];
+    A: MangaTierEntry[];
+    B: MangaTierEntry[];
+    C: MangaTierEntry[];
+  };
 }
 
-export interface CustomRankTopic {
-  id: string;
-  topicTitle: string;
-  badge: string;
-  items: CustomRankItem[];
-}
+const INITIAL_PUBLIC_TIER_LISTS: UserTierList[] = [
+  {
+    id: 'tier-1',
+    title: 'Top Shounen Đỉnh Nhất Thập Kỷ',
+    authorName: 'Minh Quân',
+    authorAvatarColor: '#EE4D2D',
+    isPublic: true,
+    likes: 248,
+    createdAt: 'Hôm qua',
+    tiers: {
+      S: [
+        { title: 'Ao Ashi', coverUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200', slug: 'ao-ashi' },
+        { title: 'Sakamoto Days', coverUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200', slug: 'sakamoto-days' },
+      ],
+      A: [
+        { title: 'Chainsaw Man', coverUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200', slug: 'chainsaw-man' },
+        { title: 'Jujutsu Kaisen', coverUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=200', slug: 'jujutsu-kaisen' },
+      ],
+      B: [
+        { title: 'Blue Lock', coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=200', slug: 'blue-lock' },
+      ],
+      C: [
+        { title: 'Tokyo Revengers', coverUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=200', slug: 'tokyo-revengers' },
+      ],
+    },
+  },
+  {
+    id: 'tier-2',
+    title: 'Manga Thư Giãn & Chữa Lành 2026',
+    authorName: 'Hải Yến',
+    authorAvatarColor: '#0CA678',
+    isPublic: true,
+    likes: 195,
+    createdAt: '3 ngày trước',
+    tiers: {
+      S: [
+        { title: 'Frieren - Pháp sư tiễn táng', coverUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200', slug: 'frieren' },
+      ],
+      A: [
+        { title: 'Chung một mái nhà', coverUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=200', slug: 'chung-mot-mai-nha' },
+        { title: 'Dược sư tự sự', coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=200', slug: 'duoc-su-tu-su' },
+      ],
+      B: [
+        { title: 'Skip and Loafer', coverUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200', slug: 'skip-and-loafer' },
+      ],
+      C: [],
+    },
+  },
+  {
+    id: 'tier-3',
+    title: 'Top Manga Hành Động Nét Vẽ Đẹp Nhất',
+    authorName: 'Bảo Long',
+    authorAvatarColor: '#4263EB',
+    isPublic: true,
+    likes: 142,
+    createdAt: '5 ngày trước',
+    tiers: {
+      S: [
+        { title: 'Sakamoto Days', coverUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200', slug: 'sakamoto-days' },
+      ],
+      A: [
+        { title: 'One Punch Man', coverUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=200', slug: 'one-punch-man' },
+      ],
+      B: [
+        { title: 'Kaiju No. 8', coverUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200', slug: 'kaiju-no-8' },
+      ],
+      C: [],
+    },
+  },
+];
 
 const INITIAL_COMMENTS: MangaComment[] = [
   {
@@ -42,6 +113,7 @@ const INITIAL_COMMENTS: MangaComment[] = [
     content: 'Tập 7 này trận đấu kịch tính nghẹt thở từng pha chuyền bóng! Kim Đồng in giấy xốp nhẹ, gáy phẳng đọc rất êm tay.',
     createdAt: '15 phút trước',
     likes: 12,
+    isVerifiedBuyer: true,
   },
   {
     id: 'c2',
@@ -49,62 +121,22 @@ const INITIAL_COMMENTS: MangaComment[] = [
     bookSlug: 'sakamoto-days-tap-25',
     authorName: 'Hải Đăng',
     authorAvatarColor: '#FF9800',
-    content: 'Phân cảnh hành động vẽ đỉnh cao không góc chết. Ai săn được bản giới hạn kèm standee acrylic nhớ khoe nhé!',
+    content: 'Phân cảnh hành động vẽ đỉnh cao không góc chết. Set quà tặng kèm standee acrylic rất chất lượng.',
     createdAt: '45 phút trước',
     likes: 8,
-  },
-  {
-    id: 'c3',
-    bookTitle: 'Chung một mái nhà - Tập 7',
-    bookSlug: 'chung-mot-mai-nha-tap-7',
-    authorName: 'Bảo Trâm',
-    authorAvatarColor: '#2B8A3E',
-    content: 'Bản dịch Wings Books vẫn mượt mà hóm hỉnh. Set 2 bookmark bế hình in sắc nét đáng tiền mua sưu tầm.',
-    createdAt: '2 giờ trước',
-    likes: 19,
-  },
-];
-
-const INITIAL_TIERS: TierManga[] = [
-  { id: 't1', title: 'Ao Ashi', coverUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300', rank: 'S' },
-  { id: 't2', title: 'Sakamoto Days', coverUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300', rank: 'S' },
-  { id: 't3', title: 'Frieren', coverUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=300', rank: 'A' },
-  { id: 't4', title: 'Chung Một Mái Nhà', coverUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=300', rank: 'A' },
-  { id: 't5', title: 'Dược Sư Tự Sự', coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300', rank: 'B' },
-];
-
-const INITIAL_RANKINGS: CustomRankTopic[] = [
-  {
-    id: 'top-sports',
-    topicTitle: 'Top Manga Thể Thao Đỉnh Nhất',
-    badge: 'HOT THÁNG NÀY',
-    items: [
-      { id: 'r1', rank: 1, title: 'Ao Ashi - Tân binh sân cỏ', votes: 1420, coverUrl: '', seriesSlug: 'ao-ashi' },
-      { id: 'r2', rank: 2, title: 'Blue Lock - Tập 15', votes: 1180, coverUrl: '', seriesSlug: 'blue-lock' },
-      { id: 'r3', rank: 3, title: 'Haikyuu!! - Chàng khổng lồ tí hon', votes: 940, coverUrl: '', seriesSlug: 'haikyuu' },
-    ],
-  },
-  {
-    id: 'top-action',
-    topicTitle: 'Top Hành Động Mãn Nhãn',
-    badge: 'CỘNG ĐỒNG VOTE',
-    items: [
-      { id: 'r4', rank: 1, title: 'Sakamoto Days - Tập 25', votes: 1650, coverUrl: '', seriesSlug: 'sakamoto-days' },
-      { id: 'r5', rank: 2, title: 'Chainsaw Man - Tập 14', votes: 1390, coverUrl: '', seriesSlug: 'chainsaw-man' },
-      { id: 'r6', rank: 3, title: 'Jujutsu Kaisen - Tập 26', votes: 1210, coverUrl: '', seriesSlug: 'jujutsu-kaisen' },
-    ],
+    isVerifiedBuyer: true,
   },
 ];
 
 export const communityService = {
-  getComments(): MangaComment[] {
+  getComments(slug?: string): MangaComment[] {
     if (typeof window === 'undefined') return INITIAL_COMMENTS;
     const raw = localStorage.getItem('boki_manga_comments');
-    if (!raw) {
-      localStorage.setItem('boki_manga_comments', JSON.stringify(INITIAL_COMMENTS));
-      return INITIAL_COMMENTS;
+    const all = raw ? JSON.parse(raw) : INITIAL_COMMENTS;
+    if (slug) {
+      return all.filter((c: MangaComment) => c.bookSlug === slug);
     }
-    try { return JSON.parse(raw); } catch { return INITIAL_COMMENTS; }
+    return all;
   },
 
   addComment(comment: Omit<MangaComment, 'id' | 'createdAt' | 'likes'>): MangaComment {
@@ -122,55 +154,38 @@ export const communityService = {
     return newComment;
   },
 
-  getTierList(): { tiers: TierManga[]; isPublic: boolean } {
-    if (typeof window === 'undefined') return { tiers: INITIAL_TIERS, isPublic: true };
-    const rawTiers = localStorage.getItem('boki_tier_list');
-    const rawPub = localStorage.getItem('boki_tier_public');
-    const tiers = rawTiers ? JSON.parse(rawTiers) : INITIAL_TIERS;
-    const isPublic = rawPub ? JSON.parse(rawPub) : true;
-    return { tiers, isPublic };
+  getPublicTierLists(): UserTierList[] {
+    if (typeof window === 'undefined') return INITIAL_PUBLIC_TIER_LISTS;
+    const raw = localStorage.getItem('boki_user_tier_lists');
+    let lists: UserTierList[] = raw ? JSON.parse(raw) : INITIAL_PUBLIC_TIER_LISTS;
+    // Filter only public tier lists and sort by likes descending (popularity ranking)
+    return lists.filter((item) => item.isPublic).sort((a, b) => b.likes - a.likes);
   },
 
-  updateTierVisibility(isPublic: boolean) {
+  createTierList(data: Omit<UserTierList, 'id' | 'likes' | 'createdAt'>): UserTierList {
+    const lists = this.getPublicTierLists();
+    const newList: UserTierList = {
+      ...data,
+      id: 'tier-' + Date.now(),
+      likes: 1,
+      createdAt: 'Vừa tạo',
+    };
+    const updated = [newList, ...lists];
     if (typeof window !== 'undefined') {
-      localStorage.setItem('boki_tier_public', JSON.stringify(isPublic));
+      localStorage.setItem('boki_user_tier_lists', JSON.stringify(updated));
     }
+    return newList;
   },
 
-  updateMangaRank(id: string, newRank: 'S' | 'A' | 'B' | 'C') {
-    const { tiers } = this.getTierList();
-    const updated = tiers.map((t) => (t.id === id ? { ...t, rank: newRank } : t));
+  likeTierList(id: string): UserTierList[] {
+    const raw = localStorage.getItem('boki_user_tier_lists');
+    const lists: UserTierList[] = raw ? JSON.parse(raw) : INITIAL_PUBLIC_TIER_LISTS;
+    const updated = lists.map((item) =>
+      item.id === id ? { ...item, likes: item.likes + 1 } : item
+    );
     if (typeof window !== 'undefined') {
-      localStorage.setItem('boki_tier_list', JSON.stringify(updated));
+      localStorage.setItem('boki_user_tier_lists', JSON.stringify(updated));
     }
-    return updated;
-  },
-
-  getCustomRankings(): CustomRankTopic[] {
-    if (typeof window === 'undefined') return INITIAL_RANKINGS;
-    const raw = localStorage.getItem('boki_custom_rankings');
-    if (!raw) {
-      localStorage.setItem('boki_custom_rankings', JSON.stringify(INITIAL_RANKINGS));
-      return INITIAL_RANKINGS;
-    }
-    try { return JSON.parse(raw); } catch { return INITIAL_RANKINGS; }
-  },
-
-  voteItem(topicId: string, itemId: string): CustomRankTopic[] {
-    const topics = this.getCustomRankings();
-    const updated = topics.map((t) => {
-      if (t.id !== topicId) return t;
-      return {
-        ...t,
-        items: t.items
-          .map((i) => (i.id === itemId ? { ...i, votes: i.votes + 1 } : i))
-          .sort((a, b) => b.votes - a.votes)
-          .map((item, idx) => ({ ...item, rank: idx + 1 })),
-      };
-    });
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('boki_custom_rankings', JSON.stringify(updated));
-    }
-    return updated;
+    return updated.filter((item) => item.isPublic).sort((a, b) => b.likes - a.likes);
   },
 };

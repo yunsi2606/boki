@@ -1,9 +1,9 @@
 /* =============================================
  * Boki Schedule Design Tokens - Light Crisp Aesthetic
- * Enhanced with Geometric Rounded Display Typography (Lexend)
+ * Standardized on Plus Jakarta Sans
  * ============================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   --color-primary-50: rgba(238, 77, 45, 0.04);
@@ -43,18 +43,18 @@
   --color-neutral-800: #212529;
   --color-neutral-900: #111827;
 
-  /* Modern Rounded Geometric Radius */
+  /* Modern Geometric Radius */
   --radius-xs: 6px;
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* Display & Body Typography */
-  --font-family-display: 'Lexend', 'Plus Jakarta Sans', -apple-system, sans-serif;
+  /* Standardized Typography: Plus Jakarta Sans */
+  --font-family-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  --container-max: 1420px;
+  --container-max: 1380px;
   --header-height: 68px;
 }

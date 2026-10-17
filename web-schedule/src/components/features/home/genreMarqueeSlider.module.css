@@ -7,26 +7,39 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   gap: 16px;
 }
 
 .kicker {
-  font-family: var(--font-family-display);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 1.2px;
   color: var(--color-primary-600);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .title {
-  font-family: var(--font-family-display);
   font-size: 22px;
   font-weight: 900;
   color: var(--color-neutral-900);
   margin: 0;
   letter-spacing: -0.02em;
+}
+
+.viewAllLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-neutral-600);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.viewAllLink:hover {
+  color: var(--color-primary-500);
 }
 
 .marqueeWrapper {
@@ -36,8 +49,8 @@
   position: relative;
   overflow: hidden;
   padding: 4px 0;
-  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
 }
 
 .marqueeRow {
@@ -47,11 +60,11 @@
 }
 
 .trackLeft {
-  animation: scrollLeft 38s linear infinite;
+  animation: scrollLeft 40s linear infinite;
 }
 
 .trackRight {
-  animation: scrollRight 38s linear infinite;
+  animation: scrollRight 40s linear infinite;
 }
 
 .marqueeWrapper:hover .trackLeft,
@@ -73,45 +86,121 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 18px;
-  background: #ffffff;
-  border: 1px solid var(--color-neutral-300);
+  padding: 8px 16px;
   border-radius: var(--radius-full);
   text-decoration: none;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
   white-space: nowrap;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .genrePill:hover {
-  border-color: var(--color-primary-500);
-  background: var(--color-primary-50);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(238, 77, 45, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.pillDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.8;
 }
 
 .genreName {
-  font-family: var(--font-family-display);
   font-size: 13px;
-  font-weight: 800;
-  color: var(--color-neutral-900);
-}
-
-.genrePill:hover .genreName {
-  color: var(--color-primary-600);
+  font-weight: 700;
 }
 
 .genreCount {
-  font-family: var(--font-family-display);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   padding: 2px 7px;
-  background: var(--color-neutral-200);
-  color: var(--color-neutral-700);
   border-radius: var(--radius-full);
 }
 
-.genrePill:hover .genreCount {
-  background: var(--color-primary-100);
-  color: var(--color-primary-600);
+/* Theme variations for rich variety */
+.pill_action {
+  background: #FFF5F2;
+  border-color: #FFD0C7;
+  color: #D83A1B;
 }
+.pill_action .genreCount { background: rgba(216, 58, 27, 0.12); color: #B8280D; }
+
+.pill_fantasy {
+  background: #F8F0FC;
+  border-color: #E5C2F8;
+  color: #862E9C;
+}
+.pill_fantasy .genreCount { background: rgba(134, 46, 156, 0.12); color: #69227B; }
+
+.pill_romance {
+  background: #FFF0F6;
+  border-color: #FCC2D7;
+  color: #D6336C;
+}
+.pill_romance .genreCount { background: rgba(214, 51, 108, 0.12); color: #A61E4D; }
+
+.pill_comedy {
+  background: #FFF9DB;
+  border-color: #FFE066;
+  color: #D97706;
+}
+.pill_comedy .genreCount { background: rgba(217, 119, 6, 0.14); color: #B45309; }
+
+.pill_sports {
+  background: #E6FCF5;
+  border-color: #96F2D7;
+  color: #0CA678;
+}
+.pill_sports .genreCount { background: rgba(12, 166, 120, 0.14); color: #099268; }
+
+.pill_scifi {
+  background: #E7F5FF;
+  border-color: #A5D8FF;
+  color: #1971C2;
+}
+.pill_scifi .genreCount { background: rgba(25, 113, 194, 0.12); color: #1864AB; }
+
+.pill_mystery {
+  background: #EDF2FF;
+  border-color: #BAC8FF;
+  color: #4263EB;
+}
+.pill_mystery .genreCount { background: rgba(66, 99, 235, 0.12); color: #364FC7; }
+
+.pill_slice {
+  background: #EBFBEE;
+  border-color: #B2F2BB;
+  color: #2F9E44;
+}
+.pill_slice .genreCount { background: rgba(47, 158, 68, 0.12); color: #237032; }
+
+.pill_adventure {
+  background: #FFF4E6;
+  border-color: #FFD8A8;
+  color: #E8590C;
+}
+.pill_adventure .genreCount { background: rgba(232, 89, 12, 0.12); color: #D9480F; }
+
+.pill_drama {
+  background: #FFF5F5;
+  border-color: #FFC9C9;
+  color: #C92A2A;
+}
+.pill_drama .genreCount { background: rgba(201, 42, 42, 0.12); color: #A61E1E; }
+
+.pill_supernatural {
+  background: #F3F0FF;
+  border-color: #D0BFFF;
+  color: #6741D9;
+}
+.pill_supernatural .genreCount { background: rgba(103, 65, 217, 0.12); color: #5C35C2; }
+
+.pill_seinen {
+  background: #F8F9FA;
+  border-color: #CED4DA;
+  color: #495057;
+}
+.pill_seinen .genreCount { background: rgba(73, 80, 87, 0.12); color: #343A40; }

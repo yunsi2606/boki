@@ -11,6 +11,7 @@ import { SeriesSidebarBox } from '@/components/features/schedule/SeriesSidebarBo
 import { VolumeVaultAction } from '@/components/features/schedule/VolumeVaultAction';
 import { VolumeStoreLinks } from '@/components/features/schedule/VolumeStoreLinks';
 import { VolumeChangelogTimeline } from '@/components/features/schedule/VolumeChangelogTimeline';
+import { VolumeDiscussionSection } from '@/components/features/schedule/VolumeDiscussionSection';
 import styles from './tapTruyen.module.css';
 
 interface Props {
@@ -139,6 +140,9 @@ export default function TapTruyenDetailPage({ params }: Props) {
               <VolumeChangelogTimeline changelogs={schedule.changelogs} />
             </>
           )}
+
+          {/* Volume Discussions & Verified Reviews */}
+          <VolumeDiscussionSection bookTitle={schedule.title} bookSlug={decodedSlug} />
         </div>
 
         {/* Sidebar Column */}
