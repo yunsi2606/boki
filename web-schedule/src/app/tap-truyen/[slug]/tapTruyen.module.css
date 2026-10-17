@@ -48,15 +48,19 @@
 .sidebarCol {
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 88px;
 }
 
 .sectionHeader {
-  font-size: 16px;
-  font-weight: 700;
+  font-family: var(--font-family-display);
+  font-size: 17px;
+  font-weight: 800;
   color: var(--color-neutral-900);
-  margin: 28px 0 14px;
+  margin: 32px 0 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--color-neutral-300);
+  letter-spacing: -0.01em;
 }
 
 .loadingBox,

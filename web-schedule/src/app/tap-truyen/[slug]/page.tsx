@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem, ReleaseScheduleEditionItem } from '@/types/schedule';
 import { VolumeCoverflowSlider } from '@/components/features/schedule/VolumeCoverflowSlider';
+import { VolumeSynopsisBox } from '@/components/features/schedule/VolumeSynopsisBox';
 import { VolumeEditionsList } from '@/components/features/schedule/VolumeEditionsList';
 import { SeriesSidebarBox } from '@/components/features/schedule/SeriesSidebarBox';
 import { VolumeVaultAction } from '@/components/features/schedule/VolumeVaultAction';
@@ -103,10 +104,26 @@ export default function TapTruyenDetailPage({ params }: Props) {
       <div className={styles.detailGrid}>
         {/* Main Column */}
         <div className={styles.mainCol}>
+          {/* Editorial Story Synopsis */}
+          <VolumeSynopsisBox
+            title={schedule.title}
+            seriesName={schedule.seriesName}
+            volumeNumber={schedule.volumeNumber}
+            description={schedule.description}
+            author={schedule.author}
+            publisher={schedule.publisher}
+          />
+
+          {/* Content-rich Product Catalog */}
           <VolumeEditionsList
             editions={editions}
             selectedEditionIdx={activeEditionIdx}
             onSelectEdition={setActiveEditionIdx}
+            bookTitle={schedule.title}
+            publisher={schedule.publisher}
+            author={schedule.author}
+            scheduleReleaseDate={schedule.releaseDate}
+            scheduleCoverUrl={schedule.coverUrl}
           />
 
           <h3 className={styles.sectionHeader}>Nơi mua chính hãng & Sàn thương mại</h3>

@@ -31,23 +31,30 @@ export function VolumeVaultAction({ scheduleId, editionId, initialStatus }: Prop
   };
 
   return (
-    <div className={styles.vaultActionBox}>
-      <button
-        type="button"
-        className={`${styles.vaultBtn} ${styles.vaultBtnOwned}`}
-        onClick={() => handleUpdate('OWNED')}
-        disabled={saving}
-      >
-        {status === 'OWNED' ? 'Đã trong tủ sách' : 'Đánh dấu đã sở hữu'}
-      </button>
-      <button
-        type="button"
-        className={`${styles.vaultBtn} ${styles.vaultBtnWishlist}`}
-        onClick={() => handleUpdate('WISHLIST')}
-        disabled={saving}
-      >
-        {status === 'WISHLIST' ? 'Đã thêm Wishlist' : 'Thêm vào Wishlist'}
-      </button>
+    <div className={styles.vaultContainer}>
+      <div className={styles.vaultHeader}>
+        <div className={styles.kicker}>BỘ SƯU TẬP CỦA BẠN</div>
+        <p className={styles.subtitle}>Lưu trữ và theo dõi tiến độ sưu tầm tập truyện</p>
+      </div>
+
+      <div className={styles.btnRow}>
+        <button
+          type="button"
+          className={`${styles.vaultBtn} ${styles.vaultBtnOwned}`}
+          onClick={() => handleUpdate('OWNED')}
+          disabled={saving}
+        >
+          {status === 'OWNED' ? 'Đã trong tủ sách cá nhân' : 'Đánh dấu đã sở hữu'}
+        </button>
+        <button
+          type="button"
+          className={`${styles.vaultBtn} ${styles.vaultBtnWishlist}`}
+          onClick={() => handleUpdate('WISHLIST')}
+          disabled={saving}
+        >
+          {status === 'WISHLIST' ? 'Đã thêm vào Wishlist' : 'Thêm vào danh sách ước (Wishlist)'}
+        </button>
+      </div>
     </div>
   );
 }

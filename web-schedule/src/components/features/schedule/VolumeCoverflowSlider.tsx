@@ -72,6 +72,13 @@ export function VolumeCoverflowSlider({
       </div>
 
       <div className={styles.stageContainer}>
+        {/* Cinematic Background Volume Watermark */}
+        <div className={styles.volumeWatermark} aria-hidden="true">
+          {currentVol.volumeNumber
+            ? String(currentVol.volumeNumber).padStart(2, '0')
+            : '01'}
+        </div>
+
         {/* Previous Volumes */}
         {prevVol && (
           <Link

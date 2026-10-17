@@ -1,20 +1,29 @@
-.container {
-  margin-top: 20px;
-  margin-bottom: 24px;
-}
+.container { margin: 10px 0 28px; }
 
 .sectionHeader {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.kicker {
+  display: block;
+  font-family: var(--font-family-display);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary-500);
+  margin-bottom: 2px;
 }
 
 .title {
   font-family: var(--font-family-display);
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--color-neutral-900);
+  margin: 0;
 }
 
 .editionCount {
@@ -23,7 +32,7 @@
   font-weight: 800;
   color: var(--color-neutral-600);
   background: var(--color-neutral-200);
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: var(--radius-full);
 }
 
@@ -33,18 +42,15 @@
   overflow-x: auto;
   padding-bottom: 8px;
   scrollbar-width: none;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
-
-.tabsRow::-webkit-scrollbar {
-  display: none;
-}
+.tabsRow::-webkit-scrollbar { display: none; }
 
 .tabBtn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 9px 18px;
   background: #ffffff;
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--radius-full);
@@ -56,152 +62,168 @@
   white-space: nowrap;
   transition: all 0.15s ease;
 }
-
-.tabBtn:hover {
-  border-color: var(--color-neutral-400);
-  background: var(--color-neutral-50);
-}
-
+.tabBtn:hover { border-color: var(--color-neutral-400); background: var(--color-neutral-50); }
 .activeTab {
   background: var(--color-primary-500);
   border-color: var(--color-primary-500);
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.3);
 }
-
-.activeTab:hover {
-  background: var(--color-primary-600);
-  border-color: var(--color-primary-600);
-}
-
+.activeTab:hover { background: var(--color-primary-600); border-color: var(--color-primary-600); }
 .specialTab:not(.activeTab) {
   border-color: var(--color-secondary-300);
   background: var(--color-secondary-50);
   color: var(--color-secondary-700);
 }
+.tabPrice { font-size: 11px; font-weight: 800; opacity: 0.95; }
 
-.tabPrice {
-  font-size: 11px;
-  font-weight: 800;
-  opacity: 0.9;
-}
-
-.detailBox {
+.catalogCard {
   background: #ffffff;
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--radius-lg);
-  padding: 20px;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+.specialCard {
+  border-color: rgba(255, 152, 0, 0.4);
+  background: linear-gradient(180deg, #ffffff 0%, #fffdfa 100%);
 }
 
-.specialDetailBox {
-  border-color: var(--color-secondary-300);
-  background: #fffcf8;
+.catalogGrid {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 680px) {
+  .catalogGrid { grid-template-columns: 1fr; gap: 18px; }
 }
 
-.detailHeader {
+.coverCol { width: 100%; }
+
+.coverFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+.coverImg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.placeholderCover {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-neutral-500);
+  font-size: 13px;
+  font-family: var(--font-family-display);
+}
+
+.badgeStandard,
+.badgeSpecial {
+  position: absolute;
+  bottom: 8px; left: 8px; right: 8px;
+  text-align: center;
+  font-family: var(--font-family-display);
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 4px 6px;
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(4px);
+}
+.badgeStandard { background: rgba(17, 24, 39, 0.85); }
+.badgeSpecial {
+  background: rgba(238, 77, 45, 0.92);
+  box-shadow: 0 2px 6px rgba(238, 77, 45, 0.4);
+}
+
+.infoCol { min-width: 0; }
+.infoHeader {
+  margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--color-neutral-200);
 }
-
-.nameAndBadge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.editionName {
+.editionHeading {
   font-family: var(--font-family-display);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--color-neutral-900);
+  margin: 0 0 8px 0;
 }
-
-.badgeStandard {
+.priceRow { display: flex; align-items: center; gap: 10px; }
+.priceValue {
   font-family: var(--font-family-display);
-  font-size: 10.5px;
-  font-weight: 800;
-  padding: 3px 9px;
-  background: var(--color-neutral-200);
-  color: var(--color-neutral-700);
-  border-radius: var(--radius-full);
-}
-
-.badgeSpecial {
-  font-family: var(--font-family-display);
-  font-size: 10.5px;
-  font-weight: 800;
-  padding: 3px 9px;
-  background: var(--color-secondary-100);
-  color: var(--color-secondary-700);
-  border-radius: var(--radius-full);
-}
-
-.priceTag {
-  font-family: var(--font-family-display);
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 900;
   color: var(--color-primary-600);
 }
-
-.giftsRow {
-  font-size: 13px;
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
-
-.giftsLabel {
+.typeTag {
   font-family: var(--font-family-display);
+  font-size: 11px;
   font-weight: 800;
-  color: var(--color-neutral-800);
-  display: block;
-  margin-bottom: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
 }
 
-.giftsContent {
-  color: var(--color-neutral-700);
+.specGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+  margin-bottom: 18px;
   background: var(--color-neutral-50);
-  padding: 10px 14px;
+  padding: 14px 16px;
   border-radius: var(--radius-md);
-  border-left: 3px solid var(--color-secondary-400);
+  border: 1px solid var(--color-neutral-200);
 }
+@media (max-width: 500px) { .specGrid { grid-template-columns: 1fr; } }
 
-.noGifts {
-  color: var(--color-neutral-500);
-  font-style: italic;
+.specItem { display: flex; flex-direction: column; gap: 2px; }
+.specLabel { font-size: 11.5px; font-weight: 600; color: var(--color-neutral-500); }
+.specVal { font-size: 13.5px; font-weight: 700; color: var(--color-neutral-800); }
+.specValStatus { font-size: 13.5px; font-weight: 800; color: var(--color-secondary-600); }
+
+.giftsBox {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  background: #fffbf2;
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-md);
 }
-
-.linkedStoreBox {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 14px;
-  border-top: 1px dashed var(--color-neutral-300);
-}
-
-.linkedText {
-  font-size: 13px;
-  color: var(--color-neutral-700);
-}
-
-.bokiBuyBtn {
+.giftsTitle {
   font-family: var(--font-family-display);
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-secondary-700);
+  display: block;
+  margin-bottom: 4px;
+}
+.giftsText { font-size: 13.5px; line-height: 1.5; color: var(--color-neutral-800); font-weight: 500; }
+
+.buyActionRow { padding-top: 14px; border-top: 1px dashed var(--color-neutral-300); }
+.primaryBuyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-size: 14px;
   font-weight: 800;
   color: #ffffff;
   background: var(--color-primary-500);
-  padding: 9px 18px;
+  padding: 11px 22px;
   border-radius: var(--radius-full);
   text-decoration: none;
-  transition: all 0.15s ease;
-  box-shadow: 0 2px 8px rgba(238, 77, 45, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(238, 77, 45, 0.35);
 }
-
-.bokiBuyBtn:hover {
+.primaryBuyBtn:hover {
   background: var(--color-primary-600);
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(238, 77, 45, 0.45);
 }

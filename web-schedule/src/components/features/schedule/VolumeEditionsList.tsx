@@ -8,12 +8,22 @@ interface Props {
   editions: ReleaseScheduleEditionItem[];
   selectedEditionIdx: number;
   onSelectEdition: (index: number) => void;
+  bookTitle: string;
+  publisher: string;
+  author?: string;
+  scheduleReleaseDate: string;
+  scheduleCoverUrl?: string;
 }
 
 export function VolumeEditionsList({
   editions,
   selectedEditionIdx,
   onSelectEdition,
+  bookTitle,
+  publisher,
+  author,
+  scheduleReleaseDate,
+  scheduleCoverUrl,
 }: Props) {
   if (!editions || editions.length === 0) return null;
 
@@ -21,15 +31,29 @@ export function VolumeEditionsList({
   const price = currentEdition.linkedBook?.price || currentEdition.estimatedPrice;
   const isSpecial =
     currentEdition.editionType === 'SPECIAL' || currentEdition.editionType === 'LIMITED';
+  const coverUrl = currentEdition.coverUrl || scheduleCoverUrl;
+  const releaseDateStr =
+    currentEdition.effectiveReleaseDate || currentEdition.releaseDate || scheduleReleaseDate;
+
+  const formattedDate = releaseDateStr
+    ? new Date(releaseDateStr).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    : 'Đang cập nhật';
 
   return (
-    <div className={styles.container}>
+    <section className={styles.container}>
       <div className={styles.sectionHeader}>
-        <h3 className={styles.title}>Phiên bản phát hành</h3>
+        <div>
+          <span className={styles.kicker}>Thông tin sách & Phiên bản</span>
+          <h2 className={styles.title}>Phiên bản phát hành</h2>
+        </div>
         <span className={styles.editionCount}>{editions.length} phiên bản</span>
       </div>
 
-      {/* Edition Switcher Tabs */}
+      {/* Switcher Tabs */}
       {editions.length > 1 && (
         <div className={styles.tabsRow}>
           {editions.map((ed, idx) => {
@@ -45,7 +69,7 @@ export function VolumeEditionsList({
                 }`}
                 onClick={() => onSelectEdition(idx)}
               >
-                <span>{ed.editionName}</span>
+                <span className={styles.tabName}>{ed.editionName}</span>
                 {ed.estimatedPrice && (
                   <span className={styles.tabPrice}>
                     {new Intl.NumberFormat('vi-VN', {
@@ -60,53 +84,98 @@ export function VolumeEditionsList({
         </div>
       )}
 
-      {/* Selected Edition Details Box */}
-      <div className={`${styles.detailBox} ${isSpecial ? styles.specialDetailBox : ''}`}>
-        <div className={styles.detailHeader}>
-          <div className={styles.nameAndBadge}>
-            <h4 className={styles.editionName}>{currentEdition.editionName}</h4>
-            <span className={isSpecial ? styles.badgeSpecial : styles.badgeStandard}>
-              {currentEdition.editionType}
-            </span>
+      {/* Content-rich Product Catalog Card */}
+      <div className={`${styles.catalogCard} ${isSpecial ? styles.specialCard : ''}`}>
+        <div className={styles.catalogGrid}>
+          {/* Left: Edition Cover Visual */}
+          <div className={styles.coverCol}>
+            <div className={styles.coverFrame}>
+              {coverUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={coverUrl} alt={currentEdition.editionName} className={styles.coverImg} />
+              ) : (
+                <div className={styles.placeholderCover}>Bìa phiên bản</div>
+              )}
+              <span className={isSpecial ? styles.badgeSpecial : styles.badgeStandard}>
+                {currentEdition.editionName}
+              </span>
+            </div>
           </div>
-          <div className={styles.priceTag}>
-            {price
-              ? new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                }).format(price)
-              : 'Đang cập nhật giá'}
+
+          {/* Right: Rich Metadata Table */}
+          <div className={styles.infoCol}>
+            <div className={styles.infoHeader}>
+              <h3 className={styles.editionHeading}>
+                {bookTitle} — {currentEdition.editionName}
+              </h3>
+              <div className={styles.priceRow}>
+                <span className={styles.priceValue}>
+                  {price
+                    ? new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND',
+                      }).format(price)
+                    : 'Đang cập nhật giá'}
+                </span>
+                {currentEdition.editionType && (
+                  <span className={styles.typeTag}>{currentEdition.editionType}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Book Spec Data Grid */}
+            <div className={styles.specGrid}>
+              <div className={styles.specItem}>
+                <span className={styles.specLabel}>Nhà xuất bản:</span>
+                <span className={styles.specVal}>{publisher}</span>
+              </div>
+              <div className={styles.specItem}>
+                <span className={styles.specLabel}>Biên soạn / Tác giả:</span>
+                <span className={styles.specVal}>{author || 'Đang cập nhật'}</span>
+              </div>
+              <div className={styles.specItem}>
+                <span className={styles.specLabel}>Ngày phát hành:</span>
+                <span className={styles.specVal}>{formattedDate}</span>
+              </div>
+              <div className={styles.specItem}>
+                <span className={styles.specLabel}>Trạng thái:</span>
+                <span className={styles.specValStatus}>
+                  {currentEdition.status === 'RELEASED' ? 'Đã phát hành' : 'Lịch dự kiến'}
+                </span>
+              </div>
+            </div>
+
+            {/* Gifts & Goodies Section */}
+            <div className={styles.giftsBox}>
+              <span className={styles.giftsTitle}>Phụ kiện & Quà tặng kèm:</span>
+              <div className={styles.giftsText}>
+                {currentEdition.gifts && currentEdition.gifts.trim().length > 0
+                  ? currentEdition.gifts
+                  : 'Bản phổ thông, không kèm phụ kiện rời theo thông báo NXB.'}
+              </div>
+            </div>
+
+            {/* Direct Purchase Link */}
+            {currentEdition.linkedBook && (
+              <div className={styles.buyActionRow}>
+                <Link
+                  href={`https://boki.nhatcuong.io.vn/books/${currentEdition.linkedBook.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.primaryBuyBtn}
+                >
+                  Mua chính hãng trên Boki Store (
+                  {new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                  }).format(currentEdition.linkedBook.price)}
+                  )
+                </Link>
+              </div>
+            )}
           </div>
         </div>
-
-        {currentEdition.gifts ? (
-          <div className={styles.giftsRow}>
-            <span className={styles.giftsLabel}>Phụ kiện & Quà tặng kèm:</span>
-            <div className={styles.giftsContent}>{currentEdition.gifts}</div>
-          </div>
-        ) : (
-          <div className={styles.giftsRow}>
-            <span className={styles.giftsLabel}>Phụ kiện:</span>
-            <span className={styles.noGifts}>Bản tiêu chuẩn, không kèm quà tặng rời.</span>
-          </div>
-        )}
-
-        {currentEdition.linkedBook && (
-          <div className={styles.linkedStoreBox}>
-            <div className={styles.linkedText}>
-              Đã mở bán chính thức trên sàn <strong>Boki Store</strong>:
-            </div>
-            <Link
-              href={`https://boki.nhatcuong.io.vn/books/${currentEdition.linkedBook.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.bokiBuyBtn}
-            >
-              Xem & Mua trên Boki Store ({new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(currentEdition.linkedBook.price)})
-            </Link>
-          </div>
-        )}
       </div>
-    </div>
+    </section>
   );
 }
