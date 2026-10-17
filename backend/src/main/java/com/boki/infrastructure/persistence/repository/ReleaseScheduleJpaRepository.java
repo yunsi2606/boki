@@ -38,10 +38,8 @@ public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseSched
     @Query("SELECT DISTINCT r FROM ReleaseScheduleJpaEntity r " +
            "LEFT JOIN FETCH r.editions e " +
            "LEFT JOIN FETCH e.book " +
-           "LEFT JOIN FETCH r.storeLinks " +
-           "LEFT JOIN FETCH r.changelogs " +
            "WHERE r.slug = :slug")
-    Optional<ReleaseScheduleJpaEntity> findBySlugWithDetails(@Param("slug") String slug);
+    Optional<ReleaseScheduleJpaEntity> findBySlugWithEditions(@Param("slug") String slug);
 
     @Query("SELECT DISTINCT r FROM ReleaseScheduleJpaEntity r " +
            "LEFT JOIN FETCH r.editions e " +

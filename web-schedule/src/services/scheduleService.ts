@@ -19,15 +19,15 @@ export const scheduleService = {
   },
 
   async getScheduleDetail(id: string): Promise<ReleaseScheduleItem> {
-    return scheduleApiFetch<ReleaseScheduleItem>(`/release-schedules/${id}`);
+    return scheduleApiFetch<ReleaseScheduleItem>(`/release-schedules/${encodeURIComponent(id)}`);
   },
 
   async getScheduleBySlug(slug: string): Promise<ReleaseScheduleItem> {
-    return scheduleApiFetch<ReleaseScheduleItem>(`/release-schedules/slug/${slug}`);
+    return scheduleApiFetch<ReleaseScheduleItem>(`/release-schedules/slug/${encodeURIComponent(slug)}`);
   },
 
   async getSeriesVolumes(seriesSlug: string): Promise<ReleaseScheduleItem[]> {
-    return scheduleApiFetch<ReleaseScheduleItem[]>(`/release-schedules/series/${seriesSlug}`);
+    return scheduleApiFetch<ReleaseScheduleItem[]>(`/release-schedules/series/${encodeURIComponent(seriesSlug)}`);
   },
 
   async getSeriesSummaries(): Promise<Array<{ seriesSlug: string; seriesName: string; totalVolumes: number; latestReleaseDate: string; sampleCover: string }>> {

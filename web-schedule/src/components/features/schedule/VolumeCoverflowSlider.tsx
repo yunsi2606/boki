@@ -40,19 +40,26 @@ export function VolumeCoverflowSlider({
     fetchSeries();
   }, [seriesSlug]);
 
-  if (loading || volumes.length <= 1) {
-    return null;
-  }
+  const displayVolumes =
+    volumes.length > 0
+      ? volumes
+      : [
+          {
+            id: currentScheduleId,
+            slug: currentVolumeSlug,
+            title: currentTitle,
+          } as ReleaseScheduleItem,
+        ];
 
-  const currentIndex = volumes.findIndex(
+  const currentIndex = displayVolumes.findIndex(
     (v) => v.id === currentScheduleId || (currentVolumeSlug && v.slug === currentVolumeSlug)
   );
   const activeIdx = currentIndex >= 0 ? currentIndex : 0;
 
   // Show window of volumes around activeIdx (e.g. up to 2 before and 2 after)
-  const prevVol = activeIdx > 0 ? volumes[activeIdx - 1] : null;
-  const nextVol = activeIdx < volumes.length - 1 ? volumes[activeIdx + 1] : null;
-  const currentVol = volumes[activeIdx];
+  const prevVol = activeIdx > 0 ? displayVolumes[activeIdx - 1] : null;
+  const nextVol = activeIdx < displayVolumes.length - 1 ? displayVolumes[activeIdx + 1] : null;
+  const currentVol = displayVolumes[activeIdx];
 
   const getCover = (vol: ReleaseScheduleItem) =>
     vol.coverUrl || vol.editions?.[0]?.coverUrl;
@@ -127,20 +134,22 @@ export function VolumeCoverflowSlider({
       </div>
 
       {/* Quick Vol Nav Bar */}
-      <div className={styles.volumePillsTrack}>
-        {volumes.map((v, i) => {
-          const isActive = i === activeIdx;
-          return (
-            <Link
-              key={v.id}
-              href={`/tap-truyen/${v.slug || v.id}`}
-              className={`${styles.volPill} ${isActive ? styles.activeVolPill : ''}`}
-            >
-              {v.volumeNumber ? `Tập ${v.volumeNumber}` : `Tập ${i + 1}`}
-            </Link>
-          );
-        })}
-      </div>
+      {volumes.length > 1 && (
+        <div className={styles.volumePillsTrack}>
+          {volumes.map((v, i) => {
+            const isActive = i === activeIdx;
+            return (
+              <Link
+                key={v.id}
+                href={`/tap-truyen/${v.slug || v.id}`}
+                className={`${styles.volPill} ${isActive ? styles.activeVolPill : ''}`}
+              >
+                {v.volumeNumber ? `Tập ${v.volumeNumber}` : `Tập ${i + 1}`}
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

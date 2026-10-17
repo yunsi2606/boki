@@ -18,6 +18,7 @@ interface Props {
 
 export default function TapTruyenDetailPage({ params }: Props) {
   const { slug } = use(params);
+  const decodedSlug = decodeURIComponent(slug);
   const [schedule, setSchedule] = useState<ReleaseScheduleItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeEditionIdx, setActiveEditionIdx] = useState(0);
@@ -29,9 +30,9 @@ export default function TapTruyenDetailPage({ params }: Props) {
         setActiveEditionIdx(0);
         let data: ReleaseScheduleItem | null = null;
         try {
-          data = await scheduleService.getScheduleBySlug(slug);
+          data = await scheduleService.getScheduleBySlug(decodedSlug);
         } catch {
-          data = await scheduleService.getScheduleDetail(slug).catch(() => null);
+          data = await scheduleService.getScheduleDetail(decodedSlug).catch(() => null);
         }
         setSchedule(data);
       } catch (err) {
@@ -41,7 +42,7 @@ export default function TapTruyenDetailPage({ params }: Props) {
       }
     }
     loadData();
-  }, [slug]);
+  }, [decodedSlug]);
 
   if (loading) {
     return (

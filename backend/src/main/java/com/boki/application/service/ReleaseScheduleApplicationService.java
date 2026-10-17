@@ -34,6 +34,7 @@ public class ReleaseScheduleApplicationService {
     private final ReleaseScheduleJpaRepository releaseScheduleJpaRepository;
     private final BookJpaRepository bookJpaRepository;
     private final ReleaseScheduleMapper releaseScheduleMapper;
+    private final ReleaseScheduleSyncService syncService;
 
     @Transactional(readOnly = true)
     public List<ReleaseScheduleDto> getSchedules(Integer month, Integer year, String publisher, Boolean hasBook) {
@@ -89,9 +90,34 @@ public class ReleaseScheduleApplicationService {
 
     @Transactional(readOnly = true)
     public ReleaseScheduleDto getScheduleBySlug(String slug) {
-        ReleaseScheduleJpaEntity entity = releaseScheduleJpaRepository.findBySlugWithDetails(slug)
-                .orElseThrow(() -> new ResourceNotFoundException("ReleaseSchedule", "slug", slug));
+        if (slug == null || slug.isBlank()) {
+            throw new ResourceNotFoundException("ReleaseSchedule", "slug", slug);
+        }
+        String trimmed = slug.trim();
+        ReleaseScheduleJpaEntity entity = releaseScheduleJpaRepository.findBySlugWithEditions(trimmed)
+                .orElseGet(() -> {
+                    try {
+                        return releaseScheduleJpaRepository.findByIdWithEditions(UUID.fromString(trimmed)).orElse(null);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                });
+        if (entity == null) {
+            throw new ResourceNotFoundException("ReleaseSchedule", "slug", trimmed);
+        }
         return releaseScheduleMapper.toDto(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public ReleaseScheduleDto getScheduleByIdOrSlug(String idOrSlug) {
+        if (idOrSlug == null || idOrSlug.isBlank()) {
+            throw new ResourceNotFoundException("ReleaseSchedule", "idOrSlug", idOrSlug);
+        }
+        try {
+            return getScheduleById(UUID.fromString(idOrSlug.trim()));
+        } catch (IllegalArgumentException e) {
+            return getScheduleBySlug(idOrSlug.trim());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -116,26 +142,22 @@ public class ReleaseScheduleApplicationService {
     }
 
     @Transactional
-    public ReleaseScheduleDto createSchedule(CreateReleaseScheduleRequest request) {
+    public ReleaseScheduleDto createSchedule(CreateReleaseScheduleRequest req) {
         ReleaseScheduleJpaEntity schedule = ReleaseScheduleJpaEntity.builder()
-                .title(request.getTitle().trim())
-                .originalTitle(request.getOriginalTitle() != null ? request.getOriginalTitle().trim() : null)
-                .publisher(request.getPublisher().trim())
-                .author(request.getAuthor() != null ? request.getAuthor().trim() : null)
-                .releaseDate(request.getReleaseDate())
-                .preOrderDate(request.getPreOrderDate())
-                .coverUrl(request.getCoverUrl() != null && !request.getCoverUrl().isBlank() ? request.getCoverUrl().trim() : null)
-                .description(request.getDescription())
-                .status(request.getStatus() != null ? request.getStatus() : ReleaseScheduleStatus.SCHEDULED)
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
-                .build();
+                .title(req.getTitle().trim())
+                .originalTitle(req.getOriginalTitle() != null ? req.getOriginalTitle().trim() : null)
+                .publisher(req.getPublisher().trim())
+                .author(req.getAuthor() != null ? req.getAuthor().trim() : null)
+                .releaseDate(req.getReleaseDate()).preOrderDate(req.getPreOrderDate())
+                .coverUrl(req.getCoverUrl() != null && !req.getCoverUrl().isBlank() ? req.getCoverUrl().trim() : null)
+                .description(req.getDescription())
+                .status(req.getStatus() != null ? req.getStatus() : ReleaseScheduleStatus.SCHEDULED)
+                .createdAt(OffsetDateTime.now()).updatedAt(OffsetDateTime.now()).build();
 
         List<ReleaseScheduleEditionJpaEntity> editions = new ArrayList<>();
-        if (request.getEditions() != null && !request.getEditions().isEmpty()) {
-            for (int i = 0; i < request.getEditions().size(); i++) {
-                ReleaseScheduleEditionRequest edReq = request.getEditions().get(i);
-                editions.add(buildEditionEntity(edReq, schedule, i));
+        if (req.getEditions() != null && !req.getEditions().isEmpty()) {
+            for (int i = 0; i < req.getEditions().size(); i++) {
+                editions.add(buildEditionEntity(req.getEditions().get(i), schedule, i));
             }
         } else {
             editions.add(ReleaseScheduleEditionJpaEntity.builder()
@@ -147,6 +169,7 @@ public class ReleaseScheduleApplicationService {
                     .build());
         }
         schedule.setEditions(editions);
+        syncService.normalizeScheduleFields(schedule);
 
         ReleaseScheduleJpaEntity saved = releaseScheduleJpaRepository.save(schedule);
         return getScheduleById(saved.getId());
@@ -166,6 +189,7 @@ public class ReleaseScheduleApplicationService {
         if (request.getCoverUrl() != null) entity.setCoverUrl(request.getCoverUrl().trim());
         if (request.getDescription() != null) entity.setDescription(request.getDescription());
         if (request.getStatus() != null) entity.setStatus(request.getStatus());
+        syncService.normalizeScheduleFields(entity);
 
         if (request.getEditions() != null) {
             entity.getEditions().clear();
@@ -217,9 +241,7 @@ public class ReleaseScheduleApplicationService {
 
     @Transactional
     public void deleteSchedule(UUID id) {
-        if (!releaseScheduleJpaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("ReleaseSchedule", "id", id);
-        }
+        if (!releaseScheduleJpaRepository.existsById(id)) throw new ResourceNotFoundException("ReleaseSchedule", "id", id);
         releaseScheduleJpaRepository.deleteById(id);
     }
 }

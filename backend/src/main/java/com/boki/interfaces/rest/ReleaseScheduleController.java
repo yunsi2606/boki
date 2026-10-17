@@ -32,9 +32,9 @@ public class ReleaseScheduleController {
         return ResponseEntity.ok(scheduleService.getSchedules(month, year, publisher, hasBook));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ReleaseScheduleDto> getScheduleById(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok(scheduleService.getScheduleById(id));
+    @GetMapping("/{idOrSlug}")
+    public ResponseEntity<ReleaseScheduleDto> getScheduleByIdOrSlug(@PathVariable("idOrSlug") String idOrSlug) {
+        return ResponseEntity.ok(scheduleService.getScheduleByIdOrSlug(idOrSlug));
     }
 
     @GetMapping("/publishers")
@@ -44,7 +44,7 @@ public class ReleaseScheduleController {
 
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ReleaseScheduleDto> getScheduleBySlug(@PathVariable("slug") String slug) {
-        return ResponseEntity.ok(scheduleService.getScheduleBySlug(slug));
+        return ResponseEntity.ok(scheduleService.getScheduleByIdOrSlug(slug));
     }
 
     @GetMapping("/series/{seriesSlug}")

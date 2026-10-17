@@ -21,9 +21,35 @@ public class ReleaseScheduleSyncService {
     private final ReleaseScheduleJpaRepository releaseScheduleRepo;
 
     private static final Pattern VOLUME_PATTERN = Pattern.compile(
-            "^(.*?)(?:\\s*-\\s*|\\s+)(?:tập|vol\\.?|volume|quyển)\\s*(\\d+)(?:\\s*\\((.*?)\\))?.*$",
+            "^(.*?)(?:\\s*-\\s*|\\s+|\\s*[\\(\\[])(?:tập|vol\\.?|volume|quyển)\\s*(\\d+).*$",
             Pattern.CASE_INSENSITIVE
     );
+
+    public void normalizeScheduleFields(ReleaseScheduleJpaEntity s) {
+        String title = s.getTitle();
+        if (title == null || title.isBlank()) return;
+
+        Matcher matcher = VOLUME_PATTERN.matcher(title.trim());
+        if (matcher.find()) {
+            String seriesName = matcher.group(1).trim();
+            int volumeNumber = Integer.parseInt(matcher.group(2));
+            String seriesSlug = SlugUtils.slugify(seriesName);
+            String slug = seriesSlug + "-tap-" + volumeNumber;
+
+            s.setSeriesName(seriesName);
+            s.setSeriesSlug(seriesSlug);
+            s.setVolumeNumber(volumeNumber);
+            s.setSlug(slug);
+        } else {
+            String seriesName = title.contains(" - ") ? title.split(" - ")[0].trim() : title.trim();
+            String seriesSlug = SlugUtils.slugify(seriesName);
+            s.setSeriesName(seriesName);
+            s.setSeriesSlug(seriesSlug);
+            if (s.getSlug() == null || s.getSlug().isBlank() || s.getSlug().startsWith("tap-")) {
+                s.setSlug(SlugUtils.slugify(title));
+            }
+        }
+    }
 
     @Transactional
     public Map<String, Object> syncAndNormalizeSeries() {
@@ -34,26 +60,7 @@ public class ReleaseScheduleSyncService {
             String title = s.getTitle();
             if (title == null || title.isBlank()) continue;
 
-            Matcher matcher = VOLUME_PATTERN.matcher(title.trim());
-            if (matcher.find()) {
-                String seriesName = matcher.group(1).trim();
-                int volumeNumber = Integer.parseInt(matcher.group(2));
-                String seriesSlug = SlugUtils.slugify(seriesName);
-                String slug = seriesSlug + "-tap-" + volumeNumber;
-
-                s.setSeriesName(seriesName);
-                s.setSeriesSlug(seriesSlug);
-                s.setVolumeNumber(volumeNumber);
-                s.setSlug(slug);
-            } else {
-                String seriesName = title.contains(" - ") ? title.split(" - ")[0].trim() : title.trim();
-                String seriesSlug = SlugUtils.slugify(seriesName);
-                s.setSeriesName(seriesName);
-                s.setSeriesSlug(seriesSlug);
-                if (s.getSlug() == null || s.getSlug().isBlank()) {
-                    s.setSlug(SlugUtils.slugify(title));
-                }
-            }
+            normalizeScheduleFields(s);
 
             // Ensure editions exist
             if (s.getEditions() == null || s.getEditions().isEmpty()) {
