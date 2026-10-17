@@ -127,44 +127,20 @@
 
 .loginBtn {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--color-primary-50);
-  border: 1px solid var(--color-primary-200);
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--color-primary-600);
-  text-decoration: none;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  align-items: center; gap: 6px; padding: 6px 14px;
+  background: var(--color-primary-50); border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-full); font-size: 12px; font-weight: 700;
+  color: var(--color-primary-600); text-decoration: none; transition: all 0.2s ease; white-space: nowrap;
 }
-
-.loginBtn:hover {
-  background: var(--color-primary-500);
-  border-color: var(--color-primary-500);
-  color: #ffffff;
-}
+.loginBtn:hover { background: var(--color-primary-500); border-color: var(--color-primary-500); color: #ffffff; }
 
 .userMenuContainer { position: relative; }
-
 .userTriggerBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 8px 3px 4px;
-  background: var(--color-neutral-100);
-  border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px 3px 4px;
+  background: var(--color-neutral-100); border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-full); cursor: pointer; transition: all 0.2s ease;
 }
-
-.userTriggerBtn:hover {
-  border-color: var(--color-primary-300);
-  background: var(--color-primary-50);
-}
+.userTriggerBtn:hover { border-color: var(--color-primary-300); background: var(--color-primary-50); }
 
 .avatarCircle {
   width: 26px;

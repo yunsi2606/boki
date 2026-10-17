@@ -50,15 +50,15 @@ export default function ScheduleHomePage() {
 
       {/* 2. Asymmetric 2-Column Grid Layout: 1 Wide Main Column + 1 Narrow Sidebar */}
       <div className={styles.twoColLayout}>
-        {/* Left Wide Column: New Releases + Unified Popularity + Real Community Tier List */}
+        {/* Left Wide Column: New Releases Grid */}
         <div className={styles.mainCol}>
           <HomeNewReleasesGrid schedules={schedules} loading={loading} />
-          <HomePopularitySection schedules={schedules} />
-          <HomeCommunityTierList />
         </div>
 
-        {/* Right Narrow Column: Verified Reader Reviews */}
-        <aside className={styles.sideCol} aria-label="Cảm nhận độc giả">
+        {/* Right Narrow Column: Popularity + Top Manga Tier List + Reader Reviews */}
+        <aside className={styles.sideCol} aria-label="Tuyển chọn và phổ biến">
+          <HomePopularitySection schedules={schedules} loading={loading} />
+          <HomeCommunityTierList />
           <HomeReaderReviews />
         </aside>
       </div>
