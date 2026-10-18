@@ -23,6 +23,8 @@ public class MangaTierListSummaryDto {
     @Builder.Default
     private List<String> topCovers = new ArrayList<>();
     private int likesCount;
+    private int viewsCount;
+    private boolean isLiked;
     private boolean isPublic;
     private OffsetDateTime createdAt;
     private String timeAgo;

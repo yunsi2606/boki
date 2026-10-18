@@ -21,7 +21,10 @@ public class MangaTierListDetailDto {
     private String authorAvatarUrl;
     private int totalItems;
     private int likesCount;
+    private int viewsCount;
+    private boolean isLiked;
     private boolean isPublic;
+    private String tiersConfig;
     private OffsetDateTime createdAt;
     @Builder.Default
     private List<MangaTierListItemDto> items = new ArrayList<>();

@@ -20,6 +20,12 @@ public interface MangaTierListJpaRepository extends JpaRepository<MangaTierListJ
 
     @Query("SELECT t FROM MangaTierListJpaEntity t " +
            "LEFT JOIN FETCH t.user u " +
+           "WHERE t.isPublic = true " +
+           "ORDER BY t.createdAt DESC")
+    List<MangaTierListJpaEntity> findAllPublic(Pageable pageable);
+
+    @Query("SELECT t FROM MangaTierListJpaEntity t " +
+           "LEFT JOIN FETCH t.user u " +
            "WHERE t.userId = :userId " +
            "ORDER BY t.createdAt DESC")
     List<MangaTierListJpaEntity> findByUserId(@Param("userId") UUID userId);

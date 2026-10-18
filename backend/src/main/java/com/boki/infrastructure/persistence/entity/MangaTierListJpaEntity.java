@@ -35,6 +35,9 @@ public class MangaTierListJpaEntity {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "tiers_config", columnDefinition = "TEXT")
+    private String tiersConfig;
+
     @Column(name = "is_public", nullable = false)
     @Builder.Default
     private Boolean isPublic = true;

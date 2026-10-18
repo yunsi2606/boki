@@ -22,6 +22,11 @@ public class CreateMangaTierListRequest {
     @Builder.Default
     private Boolean isPublic = true;
 
+    private String tiersConfig;
+
     @Builder.Default
     private List<UUID> scheduleIds = new ArrayList<>();
+
+    @Builder.Default
+    private List<TierListItemInputDto> rankedItems = new ArrayList<>();
 }

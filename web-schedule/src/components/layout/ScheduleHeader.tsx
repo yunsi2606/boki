@@ -18,6 +18,7 @@ export function ScheduleHeader() {
   const isSchedule = pathname.startsWith('/lich-phat-hanh');
   const isSeries = pathname.startsWith('/bo-truyen');
   const isVault = pathname.startsWith('/tu-sach');
+  const isTierList = pathname.startsWith('/tier-list');
   const isChangelog = pathname.startsWith('/lich-su-thay-doi');
 
   useEffect(() => {
@@ -67,6 +68,9 @@ export function ScheduleHeader() {
             </Link>
             <Link href="/tu-sach" className={`${styles.navLink} ${isVault ? styles.navLinkActive : ''}`}>
               Tủ sách
+            </Link>
+            <Link href="/tier-list" className={`${styles.navLink} ${isTierList ? styles.navLinkActive : ''}`}>
+              Tier List
             </Link>
             <Link href="/lich-su-thay-doi" className={`${styles.navLink} ${isChangelog ? styles.navLinkActive : ''}`}>
               Lịch sử thay đổi

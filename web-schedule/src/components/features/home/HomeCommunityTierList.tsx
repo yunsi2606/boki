@@ -15,7 +15,7 @@ export function HomeCommunityTierList() {
     async function loadData() {
       try {
         setLoading(true);
-        const data = await mangaTierListService.getTopPublicTierLists(6);
+        const data = await mangaTierListService.getTopPublicTierLists(4);
         if (mounted) {
           setTierLists(data);
         }
@@ -56,7 +56,10 @@ export function HomeCommunityTierList() {
             <line x1="3" y1="18" x2="3.01" y2="18" />
           </svg>
         </div>
-        <h2 className={styles.headerTitle}>Danh sách tuyển chọn</h2>
+        <h2 className={styles.headerTitle}>Top 4 Manga Tier List</h2>
+        <Link href="/tier-list" className={styles.headerLink}>
+          Xem tất cả
+        </Link>
       </div>
 
       {/* List items */}
@@ -77,7 +80,7 @@ export function HomeCommunityTierList() {
           tierLists.map((item) => (
             <Link
               key={item.id}
-              href={`/tu-sach?tab=tier-list&id=${item.id}`}
+              href={`/tier-list/${item.id}`}
               className={styles.itemRow}
             >
               {/* 3-slice circular avatar */}
@@ -122,6 +125,13 @@ export function HomeCommunityTierList() {
             </Link>
           ))
         )}
+      </div>
+
+      {/* Footer CTA */}
+      <div className={styles.widgetFooter}>
+        <Link href="/tier-list/create" className={styles.createCta}>
+          <span>+ Tạo Tier List của bạn</span>
+        </Link>
       </div>
     </section>
   );

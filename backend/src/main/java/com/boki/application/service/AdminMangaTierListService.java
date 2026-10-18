@@ -97,7 +97,7 @@ public class AdminMangaTierListService {
             itemRepo.saveAll(items);
         }
 
-        return clientTierListService.getTierListDetail(saved.getId());
+        return clientTierListService.getTierListDetail(saved.getId(), null);
     }
 
     @Transactional
@@ -134,7 +134,7 @@ public class AdminMangaTierListService {
             itemRepo.saveAll(items);
         }
 
-        return clientTierListService.getTierListDetail(id);
+        return clientTierListService.getTierListDetail(id, null);
     }
 
     @Transactional
