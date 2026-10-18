@@ -26,20 +26,6 @@ export function ScheduleBookCard({ schedule, highlightDate }: Props) {
     fullDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
-  // Calculate price range across editions
-  const prices = editions
-    .map((e) => e.linkedBook?.price || e.estimatedPrice)
-    .filter((p): p is number => typeof p === 'number' && p > 0);
-
-  let priceText = 'Đang cập nhật';
-  if (prices.length > 0) {
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    const fmt = (n: number) =>
-      new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
-    priceText = minPrice === maxPrice ? fmt(minPrice) : `${fmt(minPrice)} - ${fmt(maxPrice)}`;
-  }
-
   const specialEdition = editions.find(
     (e) => e.editionType === 'SPECIAL' || e.editionType === 'LIMITED' || e.editionType === 'BOXSET'
   );
@@ -95,7 +81,7 @@ export function ScheduleBookCard({ schedule, highlightDate }: Props) {
 
         {/* Interactive Hover Overlay Panel */}
         <div className={styles.hoverOverlay}>
-          <div className={styles.hoverTopContent}>
+          <div className={styles.hoverBody}>
             <p className={styles.hoverSynopsis}>{synopsis}</p>
             {fullDate && (
               <div className={styles.hoverDateRow}>
@@ -108,15 +94,14 @@ export function ScheduleBookCard({ schedule, highlightDate }: Props) {
                 <span>{fullDate}</span>
               </div>
             )}
-          </div>
-
-          <div className={styles.hoverActionRow}>
-            <span className={styles.hoverCtaBtn}>CHI TIẾT</span>
-            <span className={styles.hoverBookmarkIcon} title="Xem chi tiết tập truyện">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
-            </span>
+            <div className={styles.hoverActionRow}>
+              <span className={styles.hoverCtaBtn}>CHI TIẾT</span>
+              <span className={styles.hoverBookmarkIcon} title="Xem chi tiết tập truyện">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -125,16 +110,6 @@ export function ScheduleBookCard({ schedule, highlightDate }: Props) {
         <h3 className={styles.title} title={schedule.title}>
           {schedule.title}
         </h3>
-
-        <div className={styles.metaRow}>
-          <span className={styles.price}>{priceText}</span>
-          <span className={styles.actionPrompt}>
-            Xem tập
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </span>
-        </div>
       </div>
     </Link>
   );
