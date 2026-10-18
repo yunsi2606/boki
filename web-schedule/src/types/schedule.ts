@@ -75,6 +75,10 @@ export interface ReleaseScheduleItem {
   editions: ReleaseScheduleEditionItem[];
   storeLinks?: ReleaseStoreLinkItem[];
   changelogs?: ReleaseChangelogItem[];
+  viewsCount?: number;
+  likesCount?: number;
+  rating?: number;
+  reviewsCount?: number;
   createdAt?: string;
   updatedAt?: string;
 }

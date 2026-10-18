@@ -80,6 +80,10 @@ public class ReleaseScheduleMapper {
                 .editions(editionDtos)
                 .storeLinks(storeLinkDtos)
                 .changelogs(changelogDtos)
+                .viewsCount(entity.getViewsCount())
+                .likesCount(entity.getLikesCount())
+                .rating(entity.getRating())
+                .reviewsCount(entity.getReviewsCount())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

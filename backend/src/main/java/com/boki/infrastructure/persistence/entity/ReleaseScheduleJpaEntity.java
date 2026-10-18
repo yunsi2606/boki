@@ -4,6 +4,7 @@ import com.boki.domain.model.schedule.ReleaseScheduleStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -84,6 +85,22 @@ public class ReleaseScheduleJpaEntity {
     @OrderBy("createdAt DESC")
     @Builder.Default
     private List<ReleaseChangelogJpaEntity> changelogs = new ArrayList<>();
+
+    @Column(name = "views_count", nullable = false)
+    @Builder.Default
+    private int viewsCount = 0;
+
+    @Column(name = "likes_count", nullable = false)
+    @Builder.Default
+    private int likesCount = 0;
+
+    @Column(nullable = false, precision = 3, scale = 2)
+    @Builder.Default
+    private BigDecimal rating = BigDecimal.valueOf(5.0);
+
+    @Column(name = "reviews_count", nullable = false)
+    @Builder.Default
+    private int reviewsCount = 0;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default

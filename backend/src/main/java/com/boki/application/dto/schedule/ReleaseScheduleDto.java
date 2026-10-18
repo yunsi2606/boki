@@ -43,6 +43,18 @@ public class ReleaseScheduleDto {
     @Builder.Default
     private List<ReleaseChangelogDto> changelogs = new ArrayList<>();
 
+    @Builder.Default
+    private int viewsCount = 0;
+
+    @Builder.Default
+    private int likesCount = 0;
+
+    @Builder.Default
+    private BigDecimal rating = BigDecimal.valueOf(5.0);
+
+    @Builder.Default
+    private int reviewsCount = 0;
+
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
