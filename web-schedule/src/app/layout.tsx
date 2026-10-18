@@ -9,6 +9,23 @@ export const metadata: Metadata = {
   title: 'Boki - Lịch Phát Hành Manga & Light Novel',
   description:
     'Nền tảng tra cứu lịch phát hành truyện tranh manga, comic, light novel toàn quốc. So sánh giá Shopee, TikTok Shop, Boki Store và quản lý tủ sách cá nhân.',
+  openGraph: {
+    type: 'website',
+    locale: 'vi_VN',
+    url: '/',
+    siteName: 'Boki Schedule',
+    title: 'Boki - Lịch Phát Hành Manga & Light Novel',
+    description:
+      'Nền tảng tra cứu lịch phát hành truyện tranh manga, comic, light novel toàn quốc. So sánh giá Shopee, TikTok Shop, Boki Store và quản lý tủ sách cá nhân.',
+    images: [
+      {
+        url: '/brand/logo.png',
+        width: 800,
+        height: 600,
+        alt: 'Boki — Lịch Phát Hành Manga & Light Novel',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
