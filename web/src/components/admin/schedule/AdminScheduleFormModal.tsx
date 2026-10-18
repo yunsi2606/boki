@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import type { CreateSchedulePayload } from '@/services/scheduleService';
 import { useScheduleFormState } from '@/hooks/useScheduleFormState';
@@ -7,6 +8,7 @@ import ImageUploadInput from '@/components/ui/ImageUploadInput';
 import ScheduleMetadataFields from './ScheduleMetadataFields';
 import ScheduleDynamicSpecsSection from './ScheduleDynamicSpecsSection';
 import ScheduleEditionsSection from './ScheduleEditionsSection';
+import AdminScheduleSmartFillModal from './AdminScheduleSmartFillModal';
 import styles from './adminScheduleFormModal.module.css';
 
 interface AdminScheduleFormModalProps {
@@ -49,8 +51,11 @@ export default function AdminScheduleFormModal({
     handleUpdateEdition,
     handleUpdateSingleEdition,
     handleRemoveEdition,
+    handleApplySmartFill,
     handleSubmit,
   } = useScheduleFormState(initialItem, isOpen, onSubmit, onClose);
+
+  const [isSmartFillOpen, setIsSmartFillOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -72,7 +77,16 @@ export default function AdminScheduleFormModal({
         </div>
 
         <form onSubmit={handleSubmit} className={styles.formBody}>
-          <div className={styles.sectionHeader}>1. Thông tin đầu sách / tập truyện</div>
+          <div className={styles.sectionHeaderRow}>
+            <div className={styles.sectionHeader}>1. Thông tin đầu sách / tập truyện</div>
+            <button
+              type="button"
+              className={styles.smartFillBtn}
+              onClick={() => setIsSmartFillOpen(true)}
+            >
+              Điền từ văn bản
+            </button>
+          </div>
 
           <div className={styles.formRow}>
             <div className={styles.formGroup} style={{ flex: 2 }}>
@@ -215,6 +229,12 @@ export default function AdminScheduleFormModal({
           </div>
         </form>
       </div>
+
+      <AdminScheduleSmartFillModal
+        isOpen={isSmartFillOpen}
+        onClose={() => setIsSmartFillOpen(false)}
+        onApply={handleApplySmartFill}
+      />
     </div>
   );
 }

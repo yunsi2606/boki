@@ -5,6 +5,7 @@ import com.boki.application.dto.schedule.OcrScheduleScanResponse;
 import com.boki.application.dto.schedule.ReleaseScheduleDto;
 import com.boki.application.service.ReleaseScheduleApplicationService;
 import com.boki.application.service.ScheduleOcrService;
+import com.boki.application.service.ScheduleTextParsingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/release-schedules")
@@ -23,6 +25,7 @@ import java.util.List;
 public class AdminScheduleOcrController {
 
     private final ScheduleOcrService scheduleOcrService;
+    private final ScheduleTextParsingService scheduleTextParsingService;
     private final ReleaseScheduleApplicationService scheduleService;
 
     @PostMapping(value = "/ocr-scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -41,6 +44,17 @@ public class AdminScheduleOcrController {
                 image.getBytes(), mimeType, publisher, apiKey);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/parse-text")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
+    public ResponseEntity<Map<String, Object>> parseScheduleText(
+            @RequestBody Map<String, String> payload
+    ) {
+        String text = payload.get("text");
+        String apiKey = payload.get("apiKey");
+        Map<String, Object> result = scheduleTextParsingService.parseScheduleText(text, apiKey);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/batch")

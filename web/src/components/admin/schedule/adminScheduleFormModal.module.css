@@ -217,6 +217,27 @@
   background: #D83A1B;
 }
 
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.smartFillBtn {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C2410C;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.smartFillBtn:hover {
+  background: #FFEDD5;
+}
+
 @media (max-width: 600px) {
   .formRow {
     flex-direction: column;

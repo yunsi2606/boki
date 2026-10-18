@@ -103,6 +103,13 @@ export const scheduleService = {
     return api.upload<OcrScheduleScanResponse>('/release-schedules/ocr-scan', formData);
   },
 
+  parseScheduleText: async (
+    text: string,
+    apiKey?: string
+  ): Promise<any> => {
+    return api.post<any>('/release-schedules/parse-text', { text, apiKey });
+  },
+
   updateSchedule: async (id: string, payload: UpdateSchedulePayload): Promise<ReleaseScheduleItem> => {
     return api.put<ReleaseScheduleItem>(`/release-schedules/${id}`, payload);
   },
