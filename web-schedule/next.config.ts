@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '**.supabase.co' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/lich-phat-hanh/slug/:slug*',
+        destination: '/tap-truyen/:slug*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

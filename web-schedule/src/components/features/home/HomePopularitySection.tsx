@@ -76,9 +76,7 @@ export function HomePopularitySection({ schedules = [], loading = false }: Props
               item.coverUrl ||
               item.editions?.[0]?.coverUrl ||
               'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300';
-            const detailUrl = item.slug
-              ? `/lich-phat-hanh/slug/${encodeURIComponent(item.slug)}`
-              : `/lich-phat-hanh#item-${item.id}`;
+            const detailUrl = `/tap-truyen/${encodeURIComponent(item.slug || item.id)}`;
 
             return (
               <Link
