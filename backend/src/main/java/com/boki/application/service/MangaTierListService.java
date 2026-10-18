@@ -207,7 +207,7 @@ public class MangaTierListService {
                     .map(i -> i.getSchedule() != null ? i.getSchedule().getCoverUrl() : null)
                     .filter(Objects::nonNull)
                     .filter(c -> !c.isBlank())
-                    .limit(3)
+                    .limit(4)
                     .toList();
 
             String author = t.getUser() != null ? t.getUser().getDisplayName() : "Độc giả";

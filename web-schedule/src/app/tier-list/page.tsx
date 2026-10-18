@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { mangaTierListService } from '@/services/mangaTierListService';
@@ -8,121 +8,174 @@ import type { MangaTierListSummary } from '@/types/tierList';
 import { TierListCard } from '@/components/features/tierlist/TierListCard';
 import styles from './tierListHome.module.css';
 
+const PAGE_SIZE = 12;
+
 export default function TierListCommunityPage() {
   const { isAuthenticated } = useAuth();
-  const [topFour, setTopFour] = useState<MangaTierListSummary[]>([]);
-  const [allLists, setAllLists] = useState<MangaTierListSummary[]>([]);
+  const [publicLists, setPublicLists] = useState<MangaTierListSummary[]>([]);
   const [myLists, setMyLists] = useState<MangaTierListSummary[]>([]);
   const [activeTab, setActiveTab] = useState<'PUBLIC' | 'MY'>('PUBLIC');
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Initial load
   useEffect(() => {
-    async function loadData() {
-      setLoading(true);
+    let isMounted = true;
+    async function loadInitial() {
+      setInitialLoading(true);
       try {
-        const [top4, fullPublic] = await Promise.all([
-          mangaTierListService.getTopPublicTierLists(4),
-          mangaTierListService.getAllPublic(0, 30),
+        const [firstBatch, my] = await Promise.all([
+          mangaTierListService.getAllPublic(0, PAGE_SIZE),
+          isAuthenticated ? mangaTierListService.getMyTierLists() : Promise.resolve([]),
         ]);
-        setTopFour(top4);
-        setAllLists(fullPublic);
-
-        if (isAuthenticated) {
-          const my = await mangaTierListService.getMyTierLists();
+        if (isMounted) {
+          setPublicLists(firstBatch);
+          setHasMore(firstBatch.length >= PAGE_SIZE);
+          setPage(0);
           setMyLists(my);
         }
       } catch (err) {
-        console.error('Failed to load community tier lists:', err);
+        console.error('Failed to load initial tier lists:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) setInitialLoading(false);
       }
     }
-    loadData();
+    loadInitial();
+    return () => {
+      isMounted = false;
+    };
   }, [isAuthenticated]);
 
-  const displayedLists = activeTab === 'PUBLIC' ? allLists : myLists;
+  // Load next page
+  const loadNextPage = useCallback(async () => {
+    if (isLoadingMore || !hasMore || activeTab !== 'PUBLIC') return;
+    setIsLoadingMore(true);
+    const nextPage = page + 1;
+    try {
+      const more = await mangaTierListService.getAllPublic(nextPage, PAGE_SIZE);
+      setPublicLists((prev) => [...prev, ...more]);
+      setPage(nextPage);
+      setHasMore(more.length >= PAGE_SIZE);
+    } catch (err) {
+      console.error('Failed to load more tier lists:', err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [page, hasMore, isLoadingMore, activeTab]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const currentSentinel = sentinelRef.current;
+    if (!currentSentinel || !hasMore || activeTab !== 'PUBLIC') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadNextPage();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    observer.observe(currentSentinel);
+    return () => observer.disconnect();
+  }, [loadNextPage, hasMore, activeTab]);
+
+  const displayedLists = activeTab === 'PUBLIC' ? publicLists : myLists;
 
   return (
     <main className={styles.container}>
-      {/* Hero Header Banner */}
-      <section className={styles.heroSection}>
-        <div className={styles.heroContent}>
+      {/* Compact Header Banner */}
+      <section className={styles.headerBanner}>
+        <div className={styles.headerInfo}>
           <div className={styles.kicker}>CỘNG ĐỒNG BOKI</div>
           <h1 className={styles.title}>Manga Tier List Tuyển Chọn</h1>
           <p className={styles.subtitle}>
             Xếp hạng các tác phẩm manga theo thang S, A, B, C, D, E, F. Khám phá đánh giá từ cộng đồng hoặc tự sáng tạo bảng xếp hạng của bạn!
           </p>
-          <div className={styles.heroActions}>
-            <Link href="/tier-list/create" className={styles.createBtn}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span>Tạo Tier List Của Bạn</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Top 4 Public Lists Spotlight */}
-      <section className={styles.topSection} aria-label="Top 4 bảng xếp hạng cộng đồng">
-        <div className={styles.sectionHeaderRow}>
-          <div>
-            <h2 className={styles.sectionTitle}>Top 4 Bảng Xếp Hạng Nổi Bật Nhất</h2>
-            <p className={styles.sectionSubtitle}>Dựa trên lượt yêu thích và tương tác thực tế từ độc giả</p>
-          </div>
         </div>
 
-        {loading ? (
-          <div className={styles.grid}>
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className={styles.skeletonCard} />
-            ))}
-          </div>
-        ) : (
-          <div className={styles.grid}>
-            {topFour.map((it, idx) => (
-              <TierListCard key={it.id} item={it} rankBadge={idx + 1} />
-            ))}
-          </div>
-        )}
+        <Link href="/tier-list/create" className={styles.createBtn}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>Tạo Tier List Mới</span>
+        </Link>
       </section>
 
-      {/* All Lists Section with Tabs */}
-      <section className={styles.allSection} aria-label="Khám phá tất cả bảng xếp hạng">
-        <div className={styles.tabsRow}>
+      {/* Tabs */}
+      <div className={styles.tabsRow}>
+        <button
+          type="button"
+          className={`${styles.tabBtn} ${activeTab === 'PUBLIC' ? styles.tabBtnActive : ''}`}
+          onClick={() => setActiveTab('PUBLIC')}
+        >
+          Tất cả bảng công khai ({publicLists.length})
+        </button>
+        {isAuthenticated && (
           <button
             type="button"
-            className={`${styles.tabBtn} ${activeTab === 'PUBLIC' ? styles.tabBtnActive : ''}`}
-            onClick={() => setActiveTab('PUBLIC')}
+            className={`${styles.tabBtn} ${activeTab === 'MY' ? styles.tabBtnActive : ''}`}
+            onClick={() => setActiveTab('MY')}
           >
-            Tất cả bảng công khai ({allLists.length})
+            Bảng của tôi ({myLists.length})
           </button>
-          {isAuthenticated && (
-            <button
-              type="button"
-              className={`${styles.tabBtn} ${activeTab === 'MY' ? styles.tabBtnActive : ''}`}
-              onClick={() => setActiveTab('MY')}
-            >
-              Bảng của tôi ({myLists.length})
-            </button>
-          )}
-        </div>
+        )}
+      </div>
 
+      {/* 3-Column Card Grid */}
+      {initialLoading ? (
         <div className={styles.grid}>
-          {displayedLists.length === 0 ? (
-            <div className={styles.emptyState}>
-              <p>Chưa có bảng xếp hạng nào trong danh mục này.</p>
-              <Link href="/tier-list/create" className={styles.inlineCreateLink}>
-                Hãy là người đầu tiên tạo bảng xếp hạng ngay!
-              </Link>
-            </div>
-          ) : (
-            displayedLists.map((it) => (
-              <TierListCard key={it.id} item={it} />
-            ))
-          )}
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className={styles.skeletonCard} />
+          ))}
         </div>
-      </section>
+      ) : displayedLists.length === 0 ? (
+        <div className={styles.emptyState}>
+          <p>Chưa có bảng xếp hạng nào trong danh mục này.</p>
+          <Link href="/tier-list/create" className={styles.inlineCreateLink}>
+            Hãy là người đầu tiên tạo bảng xếp hạng ngay!
+          </Link>
+        </div>
+      ) : (
+        <>
+          <div className={styles.grid}>
+            {displayedLists.map((item) => (
+              <TierListCard key={item.id} item={item} />
+            ))}
+
+            {/* Skeleton loading cards when fetching more */}
+            {isLoadingMore && (
+              <>
+                <div className={styles.skeletonCard} />
+                <div className={styles.skeletonCard} />
+                <div className={styles.skeletonCard} />
+              </>
+            )}
+          </div>
+
+          {/* Sentinel for infinite scroll */}
+          {activeTab === 'PUBLIC' && <div ref={sentinelRef} className={styles.sentinel} />}
+
+          {/* Loading indicator animation */}
+          {isLoadingMore && (
+            <div className={styles.loadingMoreNotice}>
+              <div className={styles.loadingSpinner} />
+              <span>Đang tải thêm bảng xếp hạng...</span>
+            </div>
+          )}
+
+          {/* End of list text */}
+          {!hasMore && activeTab === 'PUBLIC' && displayedLists.length > 0 && (
+            <div className={styles.endNotice}>Bạn đã xem hết các bảng xếp hạng cộng đồng</div>
+          )}
+        </>
+      )}
     </main>
   );
 }
