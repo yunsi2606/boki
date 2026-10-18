@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { usePhoneVerification } from '@/hooks/usePhoneVerification';
 import styles from './PhoneVerificationModal.module.css';
 
 export default function PhoneVerificationModal() {
+  const pathname = usePathname();
   const {
     user,
     logout,
@@ -29,7 +31,8 @@ export default function PhoneVerificationModal() {
     resetToPhoneStep,
   } = usePhoneVerification();
 
-  if (!user || user.phoneVerified) {
+  const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/register');
+  if (!user || user.phoneVerified || isAuthPage) {
     return null;
   }
 
