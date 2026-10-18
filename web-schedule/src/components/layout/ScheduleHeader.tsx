@@ -120,14 +120,14 @@ export function ScheduleHeader() {
                     <div className={styles.dropdownEmail}>{user.email}</div>
                   </div>
                   <div className={styles.dropdownDivider} />
-                  <a href={`${storeUrl}/account`} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
+                  <a href={`${storeUrl}/profile`} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                     <span>Tài khoản Boki Store</span>
                   </a>
-                  <a href={`${storeUrl}/account/orders`} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
+                  <a href={`${storeUrl}/orders/history`} target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                       <line x1="3" y1="6" x2="21" y2="6"></line>

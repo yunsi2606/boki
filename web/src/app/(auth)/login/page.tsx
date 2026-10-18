@@ -28,7 +28,8 @@ export default function LoginPage() {
     let returnUrl: string | null = null;
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
-      returnUrl = searchParams.get('returnUrl');
+      returnUrl = searchParams.get('returnUrl') || sessionStorage.getItem('boki_login_return_url');
+      sessionStorage.removeItem('boki_login_return_url');
     }
 
     if (returnUrl) {
