@@ -61,7 +61,11 @@ export default function AdminScheduleFormModal({
           <div>
             <span className={styles.headerSubtitle}>Quản lý thông tin xuất bản</span>
             <h3 className={styles.headerTitle}>
-              {initialItem ? 'Chỉnh Sửa Tập Truyện & Phiên Bản' : 'Thêm Mục Lịch Phát Hành Mới'}
+              {initialItem?.id
+                ? 'Chỉnh Sửa Tập Truyện & Phiên Bản'
+                : initialItem
+                ? 'Thêm Tập Mới Cho Bộ Truyện'
+                : 'Thêm Mục Lịch Phát Hành Mới'}
             </h3>
           </div>
           <button type="button" className={styles.closeBtn} onClick={onClose}>✕</button>
@@ -200,7 +204,13 @@ export default function AdminScheduleFormModal({
           <div className={styles.actionsFooter}>
             <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={submitting}>Hủy</button>
             <button type="submit" className={styles.submitBtn} disabled={submitting}>
-              {submitting ? 'Đang lưu...' : (initialItem ? 'Lưu thay đổi' : 'Hoàn tất & Thêm lịch')}
+              {submitting
+                ? 'Đang lưu...'
+                : initialItem?.id
+                ? 'Lưu thay đổi'
+                : initialItem
+                ? 'Hoàn tất & Thêm tập mới'
+                : 'Hoàn tất & Thêm lịch'}
             </button>
           </div>
         </form>

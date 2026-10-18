@@ -8,6 +8,7 @@ import AdminScheduleTable from '@/components/admin/schedule/AdminScheduleTable';
 import AdminScheduleFormModal from '@/components/admin/schedule/AdminScheduleFormModal';
 import AdminScheduleOcrModal from '@/components/admin/schedule/AdminScheduleOcrModal';
 import DeleteScheduleModal from '@/components/admin/schedule/DeleteScheduleModal';
+import { createNextVolumeItem } from '@/components/admin/schedule/scheduleCloneHelper';
 import styles from './adminSchedule.module.css';
 
 export default function AdminSchedulePage() {
@@ -58,6 +59,11 @@ export default function AdminSchedulePage() {
     setIsModalOpen(true);
   };
 
+  const handleOpenAddNextVolume = (item: ReleaseScheduleItem) => {
+    setEditingItem(createNextVolumeItem(item));
+    setIsModalOpen(true);
+  };
+
   const handleRequestDelete = (item: ReleaseScheduleItem) => {
     setDeletingItem(item);
   };
@@ -95,7 +101,7 @@ export default function AdminSchedulePage() {
   };
 
   const handleSubmitForm = async (payload: CreateSchedulePayload) => {
-    if (editingItem) {
+    if (editingItem?.id) {
       await scheduleService.updateSchedule(editingItem.id, payload);
     } else {
       await scheduleService.createSchedule(payload);
@@ -199,6 +205,7 @@ export default function AdminSchedulePage() {
           items={filteredItems}
           onEdit={handleOpenEdit}
           onDelete={handleRequestDelete}
+          onAddNextVolume={handleOpenAddNextVolume}
         />
       )}
 

@@ -8,12 +8,14 @@ interface AdminScheduleTableProps {
   items: ReleaseScheduleItem[];
   onEdit: (item: ReleaseScheduleItem) => void;
   onDelete: (item: ReleaseScheduleItem) => void;
+  onAddNextVolume: (item: ReleaseScheduleItem) => void;
 }
 
 export default function AdminScheduleTable({
   items,
   onEdit,
   onDelete,
+  onAddNextVolume,
 }: AdminScheduleTableProps) {
   const formatDate = (dateStr?: string | null) => {
     if (!dateStr) return '—';
@@ -132,6 +134,14 @@ export default function AdminScheduleTable({
                 </td>
                 <td style={{ textAlign: 'right' }}>
                   <div className={styles.actionsRow}>
+                    <button
+                      type="button"
+                      className={styles.cloneBtn}
+                      onClick={() => onAddNextVolume(item)}
+                      title="Lấy thông tin tác phẩm này để tạo tập tiếp theo"
+                    >
+                      Thêm tập
+                    </button>
                     <button
                       type="button"
                       className={styles.editBtn}

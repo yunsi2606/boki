@@ -196,13 +196,21 @@
   gap: 6px;
 }
 
-.editBtn, .deleteBtn {
+.editBtn, .deleteBtn, .cloneBtn {
   padding: 5px 12px;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition-fast);
+}
+.cloneBtn {
+  border: 1px solid #FED7AA;
+  background: #FFF7ED;
+  color: #C2410C;
+}
+.cloneBtn:hover {
+  background: #FFEDD5;
 }
 .editBtn {
   border: 1px solid #DEE2E6;
@@ -212,7 +220,6 @@
 .editBtn:hover {
   background: #F1F3F5;
 }
-
 .deleteBtn {
   border: 1px solid #FCA5A5;
   background: #FEF2F2;
