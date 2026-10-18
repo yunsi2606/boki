@@ -11,14 +11,14 @@
 }
 
 .tierBadge {
-  width: 84px;
+  width: 90px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  padding: 8px 4px;
+  padding: 8px 6px;
   text-align: center;
   cursor: pointer;
   position: relative;
@@ -31,11 +31,13 @@
 }
 
 .tierName {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.15;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   word-break: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
 }
 
 .editHint {

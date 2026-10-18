@@ -34,7 +34,7 @@ public class MangaTierListItemJpaEntity {
     @JoinColumn(name = "schedule_id", insertable = false, updatable = false)
     private ReleaseScheduleJpaEntity schedule;
 
-    @Column(name = "tier_rank", length = 20, nullable = false)
+    @Column(name = "tier_rank", length = 100, nullable = false)
     @Builder.Default
     private String tierRank = "S";
 

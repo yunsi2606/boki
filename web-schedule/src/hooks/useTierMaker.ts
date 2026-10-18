@@ -87,9 +87,21 @@ export function useTierMaker(initialId?: string) {
   }, []);
 
   const updateTier = useCallback((tierId: string, newName: string, newColor: string) => {
-    setTiers((prev) =>
-      prev.map((t) => (t.id === tierId ? { ...t, name: newName.trim(), color: newColor } : t))
-    );
+    setTiers((prev) => {
+      const oldTier = prev.find((t) => t.id === tierId);
+      const oldName = oldTier?.name;
+      if (oldName && oldName !== newName) {
+        setAssigned((prevAssigned) => {
+          if (!prevAssigned[oldName]) return prevAssigned;
+          const clone = { ...prevAssigned };
+          const items = clone[oldName] || [];
+          delete clone[oldName];
+          clone[newName] = items.map((it) => ({ ...it, tierRank: newName }));
+          return clone;
+        });
+      }
+      return prev.map((t) => (t.id === tierId ? { ...t, name: newName, color: newColor } : t));
+    });
   }, []);
 
   const removeTier = useCallback((tierName: string) => {
@@ -104,27 +116,6 @@ export function useTierMaker(initialId?: string) {
   const resetTiers = useCallback(() => {
     setTiers(DEFAULT_TIERS);
     setAssigned({});
-  }, []);
-
-  const assignItemToTier = useCallback((manga: ReleaseScheduleItem, targetTier: string) => {
-    setAssigned((prev) => {
-      const next = { ...prev };
-      // Remove from any existing tier first
-      Object.keys(next).forEach((rank) => {
-        next[rank] = (next[rank] || []).filter((it) => it.scheduleId !== manga.id);
-      });
-      if (!next[targetTier]) next[targetTier] = [];
-      next[targetTier].push({
-        id: `ti-${Date.now()}-${manga.id}`,
-        scheduleId: manga.id,
-        title: manga.title,
-        coverUrl: manga.coverUrl,
-        publisher: manga.publisher,
-        tierRank: targetTier,
-        sortOrder: next[targetTier].length + 1,
-      });
-      return next;
-    });
   }, []);
 
   const removeItemFromTier = useCallback((tierName: string, scheduleId: string) => {
@@ -185,10 +176,12 @@ export function useTierMaker(initialId?: string) {
     setSaving(true);
     setError(null);
     try {
+      const cleanTiers = tiers.map((t) => ({ ...t, name: t.name.trim() || 'Tier' }));
       const rankedItems: { scheduleId: string; tierRank: string; sortOrder: number }[] = [];
       Object.entries(assigned).forEach(([rank, items]) => {
+        const cleanRank = rank.trim() || 'Tier';
         items.forEach((it, idx) => {
-          rankedItems.push({ scheduleId: it.scheduleId, tierRank: rank, sortOrder: idx + 1 });
+          rankedItems.push({ scheduleId: it.scheduleId, tierRank: cleanRank, sortOrder: idx + 1 });
         });
       });
 
@@ -196,7 +189,7 @@ export function useTierMaker(initialId?: string) {
         title: title.trim(),
         description: description.trim(),
         isPublic,
-        tiersConfig: JSON.stringify(tiers),
+        tiersConfig: JSON.stringify(cleanTiers),
         rankedItems,
       };
 
@@ -230,7 +223,7 @@ export function useTierMaker(initialId?: string) {
     loading, saving, error,
     draggedItem,
     addTier, updateTier, removeTier, resetTiers,
-    assignItemToTier, removeItemFromTier,
+    removeItemFromTier,
     handleDragStart, handleDropOnTier, handleSave,
   };
 }
