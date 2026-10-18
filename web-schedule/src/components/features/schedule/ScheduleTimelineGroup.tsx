@@ -1,7 +1,7 @@
 'use client';
 
 import type { ScheduleTimelineGroup as GroupType } from '@/types/schedule';
-import { ScheduleBookCard } from './ScheduleBookCard';
+import { TimelineScheduleCard } from './TimelineScheduleCard';
 import styles from './scheduleTimelineGroup.module.css';
 
 interface Props {
@@ -44,7 +44,7 @@ export function ScheduleTimelineGroup({ group }: Props) {
       <div className={styles.booksContainer}>
         <div className={styles.bookGrid}>
           {group.items.map((item, idx) => (
-            <ScheduleBookCard
+            <TimelineScheduleCard
               key={`${item.schedule.id}-${idx}`}
               schedule={item.schedule}
               highlightDate={item.eventDate}
