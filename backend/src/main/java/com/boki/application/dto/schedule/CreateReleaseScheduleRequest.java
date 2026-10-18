@@ -24,6 +24,13 @@ public class CreateReleaseScheduleRequest {
     @NotBlank(message = "Nhà xuất bản không được để trống")
     private String publisher;
     private String author;
+    private String artist;
+    private String imprint;
+    private String genres;
+    private String format;
+    private String seriesStatus;
+    private String ageRating;
+    private String specs;
     @NotNull(message = "Ngày phát hành không được để trống")
     private LocalDate releaseDate;
     private LocalDate preOrderDate;

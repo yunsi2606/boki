@@ -67,6 +67,13 @@ public class ReleaseScheduleMapper {
                 .originalTitle(entity.getOriginalTitle())
                 .publisher(entity.getPublisher())
                 .author(entity.getAuthor())
+                .artist(entity.getArtist())
+                .imprint(entity.getImprint())
+                .genres(entity.getGenres())
+                .format(entity.getFormat())
+                .seriesStatus(entity.getSeriesStatus())
+                .ageRating(entity.getAgeRating())
+                .specs(entity.getSpecs())
                 .releaseDate(entity.getReleaseDate())
                 .preOrderDate(entity.getPreOrderDate())
                 .coverUrl(entity.getCoverUrl())
@@ -130,6 +137,26 @@ public class ReleaseScheduleMapper {
                 .sortOrder(edition.getSortOrder())
                 .createdAt(edition.getCreatedAt())
                 .updatedAt(edition.getUpdatedAt())
+                .build();
+    }
+
+    public ReleaseScheduleEditionJpaEntity toEditionEntity(
+            com.boki.application.dto.schedule.ReleaseScheduleEditionRequest req,
+            ReleaseScheduleJpaEntity parent, int sortOrder) {
+        return ReleaseScheduleEditionJpaEntity.builder()
+                .schedule(parent)
+                .editionName(req.getEditionName().trim())
+                .editionType(req.getEditionType() != null ? req.getEditionType() : com.boki.domain.model.schedule.ReleaseEditionType.STANDARD)
+                .releaseDate(req.getReleaseDate())
+                .preOrderDate(req.getPreOrderDate())
+                .estimatedPrice(req.getEstimatedPrice())
+                .gifts(req.getGifts())
+                .coverUrl(req.getCoverUrl())
+                .status(req.getStatus() != null ? req.getStatus() : com.boki.domain.model.schedule.ReleaseScheduleStatus.SCHEDULED)
+                .bookId(req.getBookId())
+                .sortOrder(req.getSortOrder() != null ? req.getSortOrder() : sortOrder)
+                .createdAt(java.time.OffsetDateTime.now())
+                .updatedAt(java.time.OffsetDateTime.now())
                 .build();
     }
 }

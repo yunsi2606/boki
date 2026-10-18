@@ -27,6 +27,13 @@ export interface CreateSchedulePayload {
   originalTitle?: string;
   publisher: string;
   author?: string;
+  artist?: string;
+  imprint?: string;
+  genres?: string;
+  format?: 'MANGA' | 'LIGHT_NOVEL' | 'COMIC' | 'ARTBOOK' | string;
+  seriesStatus?: 'ONGOING' | 'COMPLETED' | 'HIATUS' | string;
+  ageRating?: string;
+  specs?: string;
   releaseDate: string;
   preOrderDate?: string;
   coverUrl?: string;

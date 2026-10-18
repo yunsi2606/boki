@@ -47,7 +47,8 @@ public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseSched
            "ORDER BY r.volumeNumber ASC NULLS LAST, r.releaseDate ASC")
     List<ReleaseScheduleJpaEntity> findBySeriesSlugOrderByVolumeNumberAsc(@Param("seriesSlug") String seriesSlug);
 
-    @Query("SELECT DISTINCT r.seriesName, r.seriesSlug, r.publisher, r.author, COUNT(r), MAX(r.coverUrl) " +
+    @Query("SELECT r.seriesName, r.seriesSlug, r.publisher, r.author, COUNT(r), MAX(r.coverUrl), " +
+           "MAX(r.format), MAX(r.genres), MAX(r.seriesStatus) " +
            "FROM ReleaseScheduleJpaEntity r " +
            "WHERE r.seriesSlug IS NOT NULL " +
            "GROUP BY r.seriesName, r.seriesSlug, r.publisher, r.author " +

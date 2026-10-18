@@ -1,6 +1,21 @@
 import { scheduleApiFetch } from './api';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 
+export interface SeriesSummaryItem {
+  seriesSlug: string;
+  seriesName: string;
+  publisher?: string;
+  author?: string;
+  volumeCount?: number;
+  totalVolumes?: number;
+  coverUrl?: string;
+  sampleCover?: string;
+  format?: string;
+  genres?: string;
+  seriesStatus?: string;
+  latestReleaseDate?: string;
+}
+
 export const scheduleService = {
   async getSchedules(params?: {
     month?: number;
@@ -30,8 +45,8 @@ export const scheduleService = {
     return scheduleApiFetch<ReleaseScheduleItem[]>(`/release-schedules/series/${encodeURIComponent(seriesSlug)}`);
   },
 
-  async getSeriesSummaries(): Promise<Array<{ seriesSlug: string; seriesName: string; totalVolumes: number; latestReleaseDate: string; sampleCover: string }>> {
-    return scheduleApiFetch(`/release-schedules/series`);
+  async getSeriesSummaries(): Promise<SeriesSummaryItem[]> {
+    return scheduleApiFetch<SeriesSummaryItem[]>(`/release-schedules/series`);
   },
 
   async getPublishers(): Promise<string[]> {

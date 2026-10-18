@@ -19,6 +19,13 @@ public class UpdateReleaseScheduleRequest {
     private String originalTitle;
     private String publisher;
     private String author;
+    private String artist;
+    private String imprint;
+    private String genres;
+    private String format;
+    private String seriesStatus;
+    private String ageRating;
+    private String specs;
     private LocalDate releaseDate;
     private LocalDate preOrderDate;
     private String coverUrl;

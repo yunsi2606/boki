@@ -6,6 +6,7 @@ import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem, ReleaseScheduleEditionItem } from '@/types/schedule';
 import { VolumeCoverflowSlider } from '@/components/features/schedule/VolumeCoverflowSlider';
 import { VolumeSynopsisBox } from '@/components/features/schedule/VolumeSynopsisBox';
+import { VolumePublicationSpecs } from '@/components/features/schedule/VolumePublicationSpecs';
 import { VolumeEditionsList } from '@/components/features/schedule/VolumeEditionsList';
 import { SeriesSidebarBox } from '@/components/features/schedule/SeriesSidebarBox';
 import { VolumeVaultAction } from '@/components/features/schedule/VolumeVaultAction';
@@ -114,6 +115,8 @@ export default function TapTruyenDetailPage({ params }: Props) {
             author={schedule.author}
             publisher={schedule.publisher}
           />
+
+          <VolumePublicationSpecs schedule={schedule} />
 
           {/* Content-rich Product Catalog */}
           <VolumeEditionsList

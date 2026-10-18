@@ -1,0 +1,87 @@
+/* Schedule Metadata Fields Styles - Strict < 250 lines */
+
+.sectionHeader {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #E9ECEF;
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #343A40;
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  font-size: 13px;
+  color: #212529;
+  outline: none;
+  background: #FFFFFF;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: #EE4D2D;
+}
+
+.presetsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.presetChip {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #DEE2E6;
+  background: #F8F9FA;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.presetChip:hover {
+  background: #FFF5F7;
+  border-color: #EE4D2D;
+  color: #EE4D2D;
+}
+
+.activeChip {
+  background: #EE4D2D;
+  border-color: #EE4D2D;
+  color: #FFFFFF;
+}
+
+.activeChip:hover {
+  background: #D83A1B;
+  color: #FFFFFF;
+}
+
+@media (max-width: 600px) {
+  .formRow {
+    flex-direction: column;
+  }
+}

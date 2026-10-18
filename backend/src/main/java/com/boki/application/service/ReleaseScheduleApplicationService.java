@@ -136,7 +136,12 @@ public class ReleaseScheduleApplicationService {
             map.put("publisher", row[2]);
             map.put("author", row[3]);
             map.put("volumeCount", row[4]);
+            map.put("totalVolumes", row[4]);
             map.put("coverUrl", row[5]);
+            map.put("sampleCover", row[5]);
+            map.put("format", row.length > 6 && row[6] != null ? row[6] : "MANGA");
+            map.put("genres", row.length > 7 && row[7] != null ? row[7] : "");
+            map.put("seriesStatus", row.length > 8 && row[8] != null ? row[8] : "ONGOING");
             return map;
         }).collect(Collectors.toList());
     }
@@ -148,6 +153,13 @@ public class ReleaseScheduleApplicationService {
                 .originalTitle(req.getOriginalTitle() != null ? req.getOriginalTitle().trim() : null)
                 .publisher(req.getPublisher().trim())
                 .author(req.getAuthor() != null ? req.getAuthor().trim() : null)
+                .artist(req.getArtist() != null ? req.getArtist().trim() : null)
+                .imprint(req.getImprint() != null ? req.getImprint().trim() : null)
+                .genres(req.getGenres() != null ? req.getGenres().trim() : null)
+                .format(req.getFormat() != null ? req.getFormat().trim() : "MANGA")
+                .seriesStatus(req.getSeriesStatus() != null ? req.getSeriesStatus().trim() : "ONGOING")
+                .ageRating(req.getAgeRating() != null ? req.getAgeRating().trim() : "13+")
+                .specs(req.getSpecs() != null ? req.getSpecs().trim() : null)
                 .releaseDate(req.getReleaseDate()).preOrderDate(req.getPreOrderDate())
                 .coverUrl(req.getCoverUrl() != null && !req.getCoverUrl().isBlank() ? req.getCoverUrl().trim() : null)
                 .description(req.getDescription())
@@ -157,16 +169,12 @@ public class ReleaseScheduleApplicationService {
         List<ReleaseScheduleEditionJpaEntity> editions = new ArrayList<>();
         if (req.getEditions() != null && !req.getEditions().isEmpty()) {
             for (int i = 0; i < req.getEditions().size(); i++) {
-                editions.add(buildEditionEntity(req.getEditions().get(i), schedule, i));
+                editions.add(releaseScheduleMapper.toEditionEntity(req.getEditions().get(i), schedule, i));
             }
         } else {
             editions.add(ReleaseScheduleEditionJpaEntity.builder()
-                    .schedule(schedule)
-                    .editionName("Bản Phổ Thông")
-                    .editionType(ReleaseEditionType.STANDARD)
-                    .coverUrl(schedule.getCoverUrl())
-                    .sortOrder(0)
-                    .build());
+                    .schedule(schedule).editionName("Bản Phổ Thông")
+                    .editionType(ReleaseEditionType.STANDARD).coverUrl(schedule.getCoverUrl()).sortOrder(0).build());
         }
         schedule.setEditions(editions);
         syncService.normalizeScheduleFields(schedule);
@@ -184,6 +192,13 @@ public class ReleaseScheduleApplicationService {
         if (request.getOriginalTitle() != null) entity.setOriginalTitle(request.getOriginalTitle().trim());
         if (request.getPublisher() != null) entity.setPublisher(request.getPublisher().trim());
         if (request.getAuthor() != null) entity.setAuthor(request.getAuthor().trim());
+        if (request.getArtist() != null) entity.setArtist(request.getArtist().trim());
+        if (request.getImprint() != null) entity.setImprint(request.getImprint().trim());
+        if (request.getGenres() != null) entity.setGenres(request.getGenres().trim());
+        if (request.getFormat() != null) entity.setFormat(request.getFormat().trim());
+        if (request.getSeriesStatus() != null) entity.setSeriesStatus(request.getSeriesStatus().trim());
+        if (request.getAgeRating() != null) entity.setAgeRating(request.getAgeRating().trim());
+        if (request.getSpecs() != null) entity.setSpecs(request.getSpecs().trim());
         if (request.getReleaseDate() != null) entity.setReleaseDate(request.getReleaseDate());
         if (request.getPreOrderDate() != null) entity.setPreOrderDate(request.getPreOrderDate());
         if (request.getCoverUrl() != null) entity.setCoverUrl(request.getCoverUrl().trim());
@@ -194,37 +209,13 @@ public class ReleaseScheduleApplicationService {
         if (request.getEditions() != null) {
             entity.getEditions().clear();
             for (int i = 0; i < request.getEditions().size(); i++) {
-                entity.getEditions().add(buildEditionEntity(request.getEditions().get(i), entity, i));
+                entity.getEditions().add(releaseScheduleMapper.toEditionEntity(request.getEditions().get(i), entity, i));
             }
         }
 
         entity.setUpdatedAt(OffsetDateTime.now());
         ReleaseScheduleJpaEntity saved = releaseScheduleJpaRepository.save(entity);
         return getScheduleById(saved.getId());
-    }
-
-    private ReleaseScheduleEditionJpaEntity buildEditionEntity(
-            ReleaseScheduleEditionRequest req, ReleaseScheduleJpaEntity parent, int sortOrder) {
-        if (req.getBookId() != null) {
-            bookJpaRepository.findById(req.getBookId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Book", "id", req.getBookId()));
-        }
-
-        return ReleaseScheduleEditionJpaEntity.builder()
-                .schedule(parent)
-                .editionName(req.getEditionName().trim())
-                .editionType(req.getEditionType() != null ? req.getEditionType() : ReleaseEditionType.STANDARD)
-                .releaseDate(req.getReleaseDate())
-                .preOrderDate(req.getPreOrderDate())
-                .estimatedPrice(req.getEstimatedPrice())
-                .gifts(req.getGifts())
-                .coverUrl(req.getCoverUrl())
-                .status(req.getStatus() != null ? req.getStatus() : ReleaseScheduleStatus.SCHEDULED)
-                .bookId(req.getBookId())
-                .sortOrder(req.getSortOrder() != null ? req.getSortOrder() : sortOrder)
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
-                .build();
     }
 
     @Transactional

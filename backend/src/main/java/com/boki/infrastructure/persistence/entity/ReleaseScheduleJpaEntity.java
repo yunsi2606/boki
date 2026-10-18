@@ -37,6 +37,30 @@ public class ReleaseScheduleJpaEntity {
     @Column(name = "author", length = 255)
     private String author;
 
+    @Column(name = "artist", length = 255)
+    private String artist;
+
+    @Column(name = "imprint", length = 100)
+    private String imprint;
+
+    @Column(name = "genres", length = 500)
+    private String genres;
+
+    @Column(name = "format", length = 50)
+    @Builder.Default
+    private String format = "MANGA";
+
+    @Column(name = "series_status", length = 50)
+    @Builder.Default
+    private String seriesStatus = "ONGOING";
+
+    @Column(name = "age_rating", length = 50)
+    @Builder.Default
+    private String ageRating = "13+";
+
+    @Column(name = "specs", columnDefinition = "TEXT")
+    private String specs;
+
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 

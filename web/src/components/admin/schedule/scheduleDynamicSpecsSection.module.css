@@ -1,0 +1,105 @@
+/* Schedule Dynamic Specs Section Styles - Strict < 250 lines */
+
+.specsSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #E9ECEF;
+  margin-top: 6px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sectionSubtitle {
+  font-size: 11px;
+  color: #6C757D;
+  margin: 2px 0 0 0;
+}
+
+.addSpecBtn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px dashed #EE4D2D;
+  background: #FFF5F7;
+  color: #EE4D2D;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addSpecBtn:hover {
+  background: #EE4D2D;
+  color: #FFFFFF;
+}
+
+.specsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.specRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.specKeyInput {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  font-size: 13px;
+  color: #212529;
+  background: #FFFFFF;
+  outline: none;
+}
+
+.specValueInput {
+  flex: 2;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #CED4DA;
+  font-size: 13px;
+  color: #212529;
+  background: #FFFFFF;
+  outline: none;
+}
+
+.specKeyInput:focus,
+.specValueInput:focus {
+  border-color: #EE4D2D;
+}
+
+.removeSpecBtn {
+  background: #F8F9FA;
+  border: 1px solid #E9ECEF;
+  color: #868E96;
+  font-size: 13px;
+  padding: 8px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.removeSpecBtn:hover {
+  background: #FFE3E3;
+  color: #E03131;
+  border-color: #FFA8A8;
+}
+
+.emptySpecsNotice {
+  font-size: 12px;
+  color: #868E96;
+  font-style: italic;
+  padding: 8px 0;
+}

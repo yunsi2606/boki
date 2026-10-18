@@ -12,6 +12,13 @@ export function useScheduleFormState(
   const [originalTitle, setOriginalTitle] = useState('');
   const [publisher, setPublisher] = useState('Kim Đồng');
   const [author, setAuthor] = useState('');
+  const [artist, setArtist] = useState('');
+  const [imprint, setImprint] = useState('');
+  const [genres, setGenres] = useState('Shonen, Hành động');
+  const [format, setFormat] = useState('MANGA');
+  const [seriesStatus, setSeriesStatus] = useState('ONGOING');
+  const [ageRating, setAgeRating] = useState('13+');
+  const [specsList, setSpecsList] = useState<Array<{ key: string; value: string }>>([]);
   const [releaseDate, setReleaseDate] = useState('');
   const [preOrderDate, setPreOrderDate] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
@@ -25,10 +32,27 @@ export function useScheduleFormState(
       setOriginalTitle(initialItem.originalTitle || '');
       setPublisher(initialItem.publisher || 'Kim Đồng');
       setAuthor(initialItem.author || '');
+      setArtist(initialItem.artist || '');
+      setImprint(initialItem.imprint || '');
+      setGenres(initialItem.genres || 'Shonen, Hành động');
+      setFormat(initialItem.format || 'MANGA');
+      setSeriesStatus(initialItem.seriesStatus || 'ONGOING');
+      setAgeRating(initialItem.ageRating || '13+');
       setReleaseDate(initialItem.releaseDate || '');
       setPreOrderDate(initialItem.preOrderDate || '');
       setCoverUrl(initialItem.coverUrl || '');
       setDescription(initialItem.description || '');
+
+      try {
+        if (initialItem.specs) {
+          const parsed = JSON.parse(initialItem.specs);
+          setSpecsList(Object.entries(parsed).map(([k, v]) => ({ key: k, value: String(v) })));
+        } else {
+          setSpecsList([]);
+        }
+      } catch {
+        setSpecsList([]);
+      }
 
       if (initialItem.editions && initialItem.editions.length > 0) {
         setEditions(
@@ -62,6 +86,17 @@ export function useScheduleFormState(
       setOriginalTitle('');
       setPublisher('Kim Đồng');
       setAuthor('');
+      setArtist('');
+      setImprint('');
+      setGenres('Shonen, Hành động');
+      setFormat('MANGA');
+      setSeriesStatus('ONGOING');
+      setAgeRating('13+');
+      setSpecsList([
+        { key: 'Khổ sách', value: '11.3 x 17.6 cm' },
+        { key: 'Số trang', value: '192' },
+        { key: 'Loại bìa', value: 'Bìa mềm có Jacket' },
+      ]);
       setReleaseDate(today);
       setPreOrderDate('');
       setCoverUrl('');
@@ -77,6 +112,20 @@ export function useScheduleFormState(
       ]);
     }
   }, [initialItem, isOpen]);
+
+  const handleAddSpec = () => {
+    setSpecsList([...specsList, { key: '', value: '' }]);
+  };
+
+  const handleUpdateSpec = (idx: number, key: string, value: string) => {
+    const list = [...specsList];
+    list[idx] = { key, value };
+    setSpecsList(list);
+  };
+
+  const handleRemoveSpec = (idx: number) => {
+    setSpecsList(specsList.filter((_, i) => i !== idx));
+  };
 
   const handleAddEdition = () => {
     setEditions([
@@ -114,11 +163,23 @@ export function useScheduleFormState(
 
     try {
       setSubmitting(true);
+      const validSpecs: Record<string, string> = {};
+      specsList.forEach(({ key, value }) => {
+        if (key.trim()) validSpecs[key.trim()] = value.trim();
+      });
+
       await onSubmit({
         title: title.trim(),
         originalTitle: originalTitle.trim() || undefined,
         publisher: publisher.trim(),
         author: author.trim() || undefined,
+        artist: artist.trim() || undefined,
+        imprint: imprint.trim() || undefined,
+        genres: genres.trim() || undefined,
+        format,
+        seriesStatus,
+        ageRating,
+        specs: Object.keys(validSpecs).length > 0 ? JSON.stringify(validSpecs) : undefined,
         releaseDate,
         preOrderDate: preOrderDate.trim() || undefined,
         coverUrl: coverUrl.trim() || undefined,
@@ -136,6 +197,16 @@ export function useScheduleFormState(
     originalTitle, setOriginalTitle,
     publisher, setPublisher,
     author, setAuthor,
+    artist, setArtist,
+    imprint, setImprint,
+    genres, setGenres,
+    format, setFormat,
+    seriesStatus, setSeriesStatus,
+    ageRating, setAgeRating,
+    specsList,
+    handleAddSpec,
+    handleUpdateSpec,
+    handleRemoveSpec,
     releaseDate, setReleaseDate,
     preOrderDate, setPreOrderDate,
     coverUrl, setCoverUrl,

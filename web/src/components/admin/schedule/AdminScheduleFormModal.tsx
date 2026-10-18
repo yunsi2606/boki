@@ -4,8 +4,9 @@ import type { ReleaseScheduleItem } from '@/types/schedule';
 import type { CreateSchedulePayload } from '@/services/scheduleService';
 import { useScheduleFormState } from '@/hooks/useScheduleFormState';
 import ImageUploadInput from '@/components/ui/ImageUploadInput';
-import SingleEditionFields from './SingleEditionFields';
-import EditionFormItem from './EditionFormItem';
+import ScheduleMetadataFields from './ScheduleMetadataFields';
+import ScheduleDynamicSpecsSection from './ScheduleDynamicSpecsSection';
+import ScheduleEditionsSection from './ScheduleEditionsSection';
 import styles from './adminScheduleFormModal.module.css';
 
 interface AdminScheduleFormModalProps {
@@ -28,6 +29,16 @@ export default function AdminScheduleFormModal({
     originalTitle, setOriginalTitle,
     publisher, setPublisher,
     author, setAuthor,
+    artist, setArtist,
+    imprint, setImprint,
+    genres, setGenres,
+    format, setFormat,
+    seriesStatus, setSeriesStatus,
+    ageRating, setAgeRating,
+    specsList,
+    handleAddSpec,
+    handleUpdateSpec,
+    handleRemoveSpec,
     releaseDate, setReleaseDate,
     preOrderDate, setPreOrderDate,
     coverUrl, setCoverUrl,
@@ -154,42 +165,37 @@ export default function AdminScheduleFormModal({
             />
           </div>
 
-          {editions.length <= 1 ? (
-            <SingleEditionFields
-              edition={editions[0] || { editionName: 'Bản Phổ Thông', editionType: 'STANDARD' }}
-              onChange={handleUpdateSingleEdition}
-              onEnableMultipleEditions={handleAddEdition}
-            />
-          ) : (
-            <>
-              <div className={styles.editionsSectionHeader}>
-                <div>
-                  <span className={styles.sectionHeader}>2. Các phiên bản phát hành ({editions.length})</span>
-                  <p className={styles.sectionSub}>
-                    Mỗi phiên bản có quà tặng, giá bìa và liên kết sản phẩm trên sàn Boki riêng.
-                  </p>
-                </div>
-                <button type="button" className={styles.addEditionBtn} onClick={handleAddEdition}>
-                  + Thêm phiên bản
-                </button>
-              </div>
+          <ScheduleMetadataFields
+            artist={artist}
+            setArtist={setArtist}
+            imprint={imprint}
+            setImprint={setImprint}
+            genres={genres}
+            setGenres={setGenres}
+            format={format}
+            setFormat={setFormat}
+            seriesStatus={seriesStatus}
+            setSeriesStatus={setSeriesStatus}
+            ageRating={ageRating}
+            setAgeRating={setAgeRating}
+          />
 
-              <div className={styles.editionsList}>
-                {editions.map((ed, idx) => (
-                  <EditionFormItem
-                    key={ed.id || idx}
-                    index={idx}
-                    edition={ed}
-                    parentReleaseDate={releaseDate}
-                    parentPreOrderDate={preOrderDate}
-                    onChange={(updated) => handleUpdateEdition(idx, updated)}
-                    onRemove={() => handleRemoveEdition(idx)}
-                    canRemove={true}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+          <ScheduleDynamicSpecsSection
+            specsList={specsList}
+            onAddSpec={handleAddSpec}
+            onUpdateSpec={handleUpdateSpec}
+            onRemoveSpec={handleRemoveSpec}
+          />
+
+          <ScheduleEditionsSection
+            editions={editions}
+            releaseDate={releaseDate}
+            preOrderDate={preOrderDate}
+            onAddEdition={handleAddEdition}
+            onUpdateEdition={handleUpdateEdition}
+            onUpdateSingleEdition={handleUpdateSingleEdition}
+            onRemoveEdition={handleRemoveEdition}
+          />
 
           <div className={styles.actionsFooter}>
             <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={submitting}>Hủy</button>

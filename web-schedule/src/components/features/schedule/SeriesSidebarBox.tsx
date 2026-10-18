@@ -39,12 +39,32 @@ export function SeriesSidebarBox({
 
         <div className={styles.metaRow}>
           <span className={styles.metaLabel}>Tác giả:</span>
-          <span className={styles.metaVal}>{author || 'Đang cập nhật'}</span>
+          {author ? (
+            <Link
+              href={`/bo-truyen?author=${encodeURIComponent(author)}`}
+              className={styles.metaLink}
+              title={`Xem tác phẩm của ${author}`}
+            >
+              {author}
+            </Link>
+          ) : (
+            <span className={styles.metaVal}>Đang cập nhật</span>
+          )}
         </div>
 
         <div className={styles.metaRow}>
           <span className={styles.metaLabel}>NXB:</span>
-          <span className={styles.metaVal}>{publisher || 'Đang cập nhật'}</span>
+          {publisher ? (
+            <Link
+              href={`/bo-truyen?publisher=${encodeURIComponent(publisher)}`}
+              className={styles.metaLink}
+              title={`Xem tác phẩm của ${publisher}`}
+            >
+              {publisher}
+            </Link>
+          ) : (
+            <span className={styles.metaVal}>Đang cập nhật</span>
+          )}
         </div>
 
         {totalVolumes !== undefined && totalVolumes > 0 && (
