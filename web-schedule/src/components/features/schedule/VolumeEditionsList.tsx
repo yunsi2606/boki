@@ -46,11 +46,10 @@ export function VolumeEditionsList({
   return (
     <section className={styles.container}>
       <div className={styles.sectionHeader}>
-        <div>
-          <span className={styles.kicker}>Thông tin sách & Phiên bản</span>
-          <h2 className={styles.title}>Phiên bản phát hành</h2>
-        </div>
-        <span className={styles.editionCount}>{editions.length} phiên bản</span>
+        <h2 className={styles.title}>Phiên bản phát hành</h2>
+        {editions.length > 1 && (
+          <span className={styles.editionCount}>{editions.length} phiên bản</span>
+        )}
       </div>
 
       {/* Switcher Tabs */}
@@ -96,9 +95,11 @@ export function VolumeEditionsList({
               ) : (
                 <div className={styles.placeholderCover}>Bìa phiên bản</div>
               )}
-              <span className={isSpecial ? styles.badgeSpecial : styles.badgeStandard}>
-                {currentEdition.editionName}
-              </span>
+              {(isSpecial || editions.length > 1) && (
+                <span className={isSpecial ? styles.badgeSpecial : styles.badgeStandard}>
+                  {currentEdition.editionName}
+                </span>
+              )}
             </div>
           </div>
 
@@ -106,7 +107,9 @@ export function VolumeEditionsList({
           <div className={styles.infoCol}>
             <div className={styles.infoHeader}>
               <h3 className={styles.editionHeading}>
-                {bookTitle} — {currentEdition.editionName}
+                {editions.length > 1 || isSpecial
+                  ? `${bookTitle} — ${currentEdition.editionName}`
+                  : bookTitle}
               </h3>
               <div className={styles.priceRow}>
                 <span className={styles.priceValue}>
@@ -117,9 +120,6 @@ export function VolumeEditionsList({
                       }).format(price)
                     : 'Đang cập nhật giá'}
                 </span>
-                {currentEdition.editionType && (
-                  <span className={styles.typeTag}>{currentEdition.editionType}</span>
-                )}
               </div>
             </div>
 

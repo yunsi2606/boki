@@ -10,21 +10,31 @@ interface Props {
 }
 
 export function VolumePublicationSpecs({ schedule }: Props) {
-  // Parse dynamic specs if present
+  // Parse dynamic specs if present (matching Book Entity attributes)
   let dynamicSpecs: Array<{ key: string; value: string }> = [];
   if (schedule.specs) {
     try {
       const parsed = JSON.parse(schedule.specs);
       if (parsed && typeof parsed === 'object') {
-        dynamicSpecs = Object.entries(parsed).map(([key, value]) => ({
-          key,
-          value: String(value),
-        }));
+        dynamicSpecs = Object.entries(parsed)
+          .filter(([_, v]) => v !== undefined && v !== null && String(v).trim() !== '')
+          .map(([key, value]) => ({
+            key,
+            value: String(value),
+          }));
       }
     } catch {
-      // ignore JSON parse errors
+      // ignore parse errors
     }
   }
+
+  // Parse multi-author list separated by comma, slash, or ampersand
+  const authorList = schedule.author
+    ? schedule.author
+        .split(/[,/&]/)
+        .map((a) => a.trim())
+        .filter(Boolean)
+    : [];
 
   // Parse genres list
   const genresList = schedule.genres
@@ -47,16 +57,13 @@ export function VolumePublicationSpecs({ schedule }: Props) {
     schedule.seriesStatus === 'COMPLETED' ? 'Đã hoàn thành' : 'Đang phát hành';
 
   return (
-    <section className={styles.container} aria-label="Thông số xuất bản chi tiết">
+    <section className={styles.container} aria-label="Thông tin xuất bản">
       <div className={styles.header}>
-        <div>
-          <span className={styles.kicker}>Hệ sinh thái bản quyền</span>
-          <h2 className={styles.title}>Thông tin tác phẩm & Bản quyền xuất bản</h2>
-        </div>
+        <h2 className={styles.title}>Thông tin xuất bản</h2>
       </div>
 
       <div className={styles.specsGrid}>
-        {/* Publisher */}
+        {/* Nhà xuất bản */}
         <div className={styles.specRow}>
           <span className={styles.label}>Nhà xuất bản:</span>
           <span className={styles.value}>
@@ -70,28 +77,41 @@ export function VolumePublicationSpecs({ schedule }: Props) {
           </span>
         </div>
 
-        {/* Author */}
+        {/* Công ty phát hành */}
+        {schedule.imprint && (
+          <div className={styles.specRow}>
+            <span className={styles.label}>Công ty phát hành:</span>
+            <span className={styles.value}>{schedule.imprint}</span>
+          </div>
+        )}
+
+        {/* Tác giả (hỗ trợ nhiều tác giả tách link riêng) */}
         <div className={styles.specRow}>
-          <span className={styles.label}>Tác giả / Kịch bản:</span>
+          <span className={styles.label}>Tác giả:</span>
           <span className={styles.value}>
-            {schedule.author ? (
-              <Link
-                href={`/bo-truyen?author=${encodeURIComponent(schedule.author)}`}
-                className={styles.interactiveLink}
-                title={`Xem tác phẩm của ${schedule.author}`}
-              >
-                {schedule.author} ↗
-              </Link>
+            {authorList.length > 0 ? (
+              authorList.map((authorName, idx) => (
+                <React.Fragment key={authorName}>
+                  <Link
+                    href={`/bo-truyen?author=${encodeURIComponent(authorName)}`}
+                    className={styles.interactiveLink}
+                    title={`Xem tác phẩm của ${authorName}`}
+                  >
+                    {authorName} ↗
+                  </Link>
+                  {idx < authorList.length - 1 && ', '}
+                </React.Fragment>
+              ))
             ) : (
               'Chưa cập nhật'
             )}
           </span>
         </div>
 
-        {/* Artist / Illustrator */}
+        {/* Họa sĩ */}
         {schedule.artist && (
           <div className={styles.specRow}>
-            <span className={styles.label}>Họa sĩ / Minh họa:</span>
+            <span className={styles.label}>Họa sĩ:</span>
             <span className={styles.value}>
               <Link
                 href={`/bo-truyen?author=${encodeURIComponent(schedule.artist)}`}
@@ -104,17 +124,9 @@ export function VolumePublicationSpecs({ schedule }: Props) {
           </div>
         )}
 
-        {/* Imprint */}
-        {schedule.imprint && (
-          <div className={styles.specRow}>
-            <span className={styles.label}>Nhãn phát hành (Imprint):</span>
-            <span className={styles.value}>{schedule.imprint}</span>
-          </div>
-        )}
-
-        {/* Format */}
+        {/* Định dạng */}
         <div className={styles.specRow}>
-          <span className={styles.label}>Định dạng xuất bản:</span>
+          <span className={styles.label}>Định dạng:</span>
           <span className={styles.value}>
             <Link
               href={`/bo-truyen?format=${encodeURIComponent(schedule.format || 'MANGA')}`}
@@ -126,9 +138,9 @@ export function VolumePublicationSpecs({ schedule }: Props) {
           </span>
         </div>
 
-        {/* Series Status */}
+        {/* Tình trạng */}
         <div className={styles.specRow}>
-          <span className={styles.label}>Tình trạng tác phẩm:</span>
+          <span className={styles.label}>Tình trạng:</span>
           <span className={styles.value}>
             <Link
               href={`/bo-truyen?status=${encodeURIComponent(schedule.seriesStatus || 'ONGOING')}`}
@@ -139,27 +151,35 @@ export function VolumePublicationSpecs({ schedule }: Props) {
           </span>
         </div>
 
-        {/* Age Rating */}
+        {/* Độ tuổi */}
         <div className={styles.specRow}>
-          <span className={styles.label}>Độ tuổi khuyến nghị:</span>
+          <span className={styles.label}>Độ tuổi:</span>
           <span className={styles.value}>
             <span className={styles.badgePill}>{schedule.ageRating || '13+'}</span>
           </span>
         </div>
 
-        {/* Original Title */}
+        {/* Tên gốc */}
         {schedule.originalTitle && (
           <div className={styles.specRow}>
             <span className={styles.label}>Tên gốc:</span>
             <span className={styles.value}>{schedule.originalTitle}</span>
           </div>
         )}
+
+        {/* Các thuộc tính động (Khổ sách, Số trang, Dịch giả, Ngôn ngữ, Hình thức bìa...) */}
+        {dynamicSpecs.map((spec, idx) => (
+          <div key={idx} className={styles.specRow}>
+            <span className={styles.label}>{spec.key}:</span>
+            <span className={styles.value}>{spec.value}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Genres clickable list */}
+      {/* Thể loại */}
       {genresList.length > 0 && (
         <div className={styles.genresContainer}>
-          <div className={styles.genresLabel}>Thể loại liên quan (Bấm để xem danh sách):</div>
+          <div className={styles.genresLabel}>Thể loại:</div>
           <div className={styles.genresRow}>
             {genresList.map((genre) => (
               <Link
@@ -170,21 +190,6 @@ export function VolumePublicationSpecs({ schedule }: Props) {
               >
                 {genre}
               </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Dynamic Specs (Khổ sách, số trang, dịch giả, loại giấy...) */}
-      {dynamicSpecs.length > 0 && (
-        <div className={styles.dynamicSpecsBlock}>
-          <div className={styles.dynamicSpecsTitle}>Quy cách in ấn & Thông số kỹ thuật:</div>
-          <div className={styles.dynamicGrid}>
-            {dynamicSpecs.map((spec, idx) => (
-              <div key={idx} className={styles.dynamicItem}>
-                <span className={styles.dynamicKey}>{spec.key}</span>
-                <span className={styles.dynamicVal}>{spec.value}</span>
-              </div>
             ))}
           </div>
         </div>

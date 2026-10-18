@@ -27,8 +27,7 @@ export function VolumeSynopsisBox({
   return (
     <section className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.kicker}>Tóm tắt & Nội dung tác phẩm</div>
-        <h3 className={styles.heading}>Cốt truyện & Điểm nhấn tập {volumeNumber || ''}</h3>
+        <h3 className={styles.heading}>Tóm tắt nội dung</h3>
       </div>
 
       <div className={styles.body}>

@@ -60,7 +60,7 @@ export default function ScheduleMetadataFields({
 
       <div className={styles.formRow}>
         <div className={styles.formGroup} style={{ flex: 1 }}>
-          <label>Họa sĩ / Minh họa</label>
+          <label>Họa sĩ</label>
           <input
             type="text"
             value={artist}
@@ -69,7 +69,7 @@ export default function ScheduleMetadataFields({
           />
         </div>
         <div className={styles.formGroup} style={{ flex: 1 }}>
-          <label>Nhãn xuất bản (Imprint / Thương hiệu con)</label>
+          <label>Công ty phát hành</label>
           <input
             type="text"
             value={imprint}

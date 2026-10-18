@@ -13,17 +13,6 @@
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--color-neutral-200, #f1f3f5);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.kicker {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--color-primary-600, #ee4d2d);
-  letter-spacing: 0.5px;
 }
 
 .title {
@@ -31,7 +20,7 @@
   font-size: 18px;
   font-weight: 800;
   color: var(--color-neutral-900, #111827);
-  margin-top: 2px;
+  margin: 0;
 }
 
 .specsGrid {
@@ -70,7 +59,7 @@
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .interactiveLink:hover {
@@ -91,15 +80,16 @@
   margin-top: 14px;
   padding-top: 14px;
   border-top: 1px dashed var(--color-neutral-300, #e9ecef);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .genresLabel {
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--color-neutral-600, #495057);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
 .genresRow {
@@ -124,49 +114,6 @@
   background: var(--color-primary-600, #ee4d2d);
   color: #ffffff;
   border-color: var(--color-primary-600, #ee4d2d);
-}
-
-.dynamicSpecsBlock {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--color-neutral-200, #f1f3f5);
-}
-
-.dynamicSpecsTitle {
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--color-neutral-700, #343a40);
-  margin-bottom: 10px;
-  letter-spacing: 0.4px;
-}
-
-.dynamicGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 8px 12px;
-}
-
-.dynamicItem {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 10px;
-  background: #ffffff;
-  border: 1px solid var(--color-neutral-300, #e9ecef);
-  border-radius: var(--radius-sm, 6px);
-}
-
-.dynamicKey {
-  font-size: 11px;
-  color: var(--color-neutral-500, #868e96);
-  font-weight: 600;
-}
-
-.dynamicVal {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-neutral-900, #111827);
-  margin-top: 2px;
 }
 
 @media (max-width: 640px) {
