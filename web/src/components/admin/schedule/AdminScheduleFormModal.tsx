@@ -9,6 +9,7 @@ import ScheduleMetadataFields from './ScheduleMetadataFields';
 import ScheduleDynamicSpecsSection from './ScheduleDynamicSpecsSection';
 import ScheduleEditionsSection from './ScheduleEditionsSection';
 import AdminScheduleSmartFillModal from './AdminScheduleSmartFillModal';
+import ScheduleDuplicateAlert from './ScheduleDuplicateAlert';
 import styles from './adminScheduleFormModal.module.css';
 
 interface AdminScheduleFormModalProps {
@@ -98,6 +99,7 @@ export default function AdminScheduleFormModal({
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="VD: Chú Thuật Hồi Chiến - Tập 25"
               />
+              <ScheduleDuplicateAlert title={title} isEditing={Boolean(initialItem?.id)} />
             </div>
             <div className={styles.formGroup} style={{ flex: 1 }}>
               <label>Tên gốc</label>

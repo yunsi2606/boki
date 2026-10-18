@@ -88,33 +88,44 @@ export default function AdminScheduleOcrModal({
 
     try {
       setIsSaving(true);
-      const payloads: CreateSchedulePayload[] = selected.map((item) => ({
-        title: item.title.trim(),
-        originalTitle: item.originalTitle?.trim() || undefined,
-        publisher: item.publisher || scanResult?.detectedPublisher || 'NXB Kim Đồng',
-        author: item.author?.trim() || undefined,
-        releaseDate: item.releaseDate,
-        coverUrl: item.coverUrl || undefined,
-        description: item.description || undefined,
-        status: 'SCHEDULED',
-        editions: [
-          {
-            editionName: item.editionName || 'Bản thường',
-            editionType: item.editionType || 'STANDARD',
-            releaseDate: item.releaseDate,
-            estimatedPrice: item.estimatedPrice,
-            gifts: item.gifts || undefined,
-            coverUrl: item.coverUrl || undefined,
-            status: 'SCHEDULED',
-            bookId: item.matchedBookId || null,
-          },
-        ],
-      }));
+      const groupedMap = new Map<string, CreateSchedulePayload>();
 
+      for (const item of selected) {
+        const key = item.computedSlug || item.title.trim().toLowerCase();
+        const editionPayload = {
+          editionName: item.editionName || 'Bản thường',
+          editionType: item.editionType || 'STANDARD',
+          releaseDate: item.releaseDate,
+          estimatedPrice: item.estimatedPrice,
+          gifts: item.gifts || undefined,
+          coverUrl: item.coverUrl || undefined,
+          status: 'SCHEDULED' as const,
+          bookId: item.matchedBookId || null,
+        };
+
+        if (groupedMap.has(key)) {
+          groupedMap.get(key)!.editions?.push(editionPayload);
+        } else {
+          groupedMap.set(key, {
+            title: item.title.trim(),
+            originalTitle: item.originalTitle?.trim() || undefined,
+            publisher: item.publisher || scanResult?.detectedPublisher || 'NXB Kim Đồng',
+            author: item.author?.trim() || undefined,
+            releaseDate: item.releaseDate,
+            coverUrl: item.coverUrl || undefined,
+            description: item.description || undefined,
+            status: 'SCHEDULED',
+            editions: [editionPayload],
+          });
+        }
+      }
+
+      const payloads: CreateSchedulePayload[] = Array.from(groupedMap.values());
       await scheduleService.batchCreateSchedules(payloads);
-      alert(`Đã nhập thành công ${payloads.length} mục lịch phát hành vào hệ thống!`);
+      alert(`Đã nhập thành công ${payloads.length} đầu sách (${selected.length} phiên bản) vào hệ thống!`);
       onSuccess();
       onClose();
+
     } catch (err: unknown) {
       console.error('Batch save error:', err);
       const msg = err instanceof Error ? err.message : 'Lỗi khi lưu danh sách mục lịch.';

@@ -13,7 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +27,7 @@ public class ScheduleSeriesMatchingService {
 
     private final ReleaseScheduleJpaRepository releaseScheduleRepository;
     private final BookJpaRepository bookRepository;
+    private final ReleaseScheduleSyncService syncService;
 
     private static final Pattern VOLUME_PATTERN = Pattern.compile(
             "(?i)(?:-|\\s+)?(tập|vol|volume|box\\s*set|bản\\s*đặc\\s*biệt)\\s*[:#]?\\s*([\\d+\\-~]+(?:\\+[\\d]+)?)");
@@ -35,6 +39,9 @@ public class ScheduleSeriesMatchingService {
         String cleanTitle = item.getTitle() != null ? item.getTitle().trim() : "";
         String seriesName = extractSeriesName(cleanTitle);
         item.setSeriesTitle(seriesName);
+
+        String slug = syncService.computeScheduleSlug(cleanTitle);
+        item.setComputedSlug(slug);
 
         if (item.getPublisher() == null || item.getPublisher().isBlank()) {
             item.setPublisher(publisher);
@@ -156,6 +163,34 @@ public class ScheduleSeriesMatchingService {
         return false;
     }
 
+    public void detectBatchDuplicatesAndConflicts(List<OcrParsedBookItemDto> items) {
+        if (items == null || items.isEmpty()) return;
+
+        Set<String> seenSlugs = new HashSet<>();
+        for (OcrParsedBookItemDto item : items) {
+            String slug = item.getComputedSlug();
+            if (slug == null || slug.isBlank()) continue;
+
+            Optional<ReleaseScheduleJpaEntity> existingInDb = releaseScheduleRepository.findBySlugWithEditions(slug);
+            if (existingInDb.isPresent()) {
+                item.setMatchStatus(OcrMatchStatus.ALREADY_EXISTS);
+                item.setMatchMessage("Đã tồn tại trong hệ thống (Slug: " + slug + ")");
+                item.setExistingScheduleId(existingInDb.get().getId());
+                item.setSelected(false);
+                seenSlugs.add(slug);
+                continue;
+            }
+
+            if (seenSlugs.contains(slug)) {
+                item.setMatchStatus(OcrMatchStatus.BATCH_DUPLICATE);
+                item.setMatchMessage("Trùng tập trong đợt quét (" + item.getEditionName() + ") - Sẽ tự động gộp phiên bản");
+                item.setSelected(true);
+            } else {
+                seenSlugs.add(slug);
+            }
+        }
+    }
+
     private String normalizeForCompare(String s) {
         if (s == null) return "";
         return s.toLowerCase()
@@ -163,3 +198,4 @@ public class ScheduleSeriesMatchingService {
                 .trim();
     }
 }
+

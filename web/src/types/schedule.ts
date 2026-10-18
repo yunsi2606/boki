@@ -105,7 +105,12 @@ export interface ScheduleTimelineGroup {
   items: ScheduleTimelineItem[];
 }
 
-export type OcrMatchStatus = 'EXACT_MATCH' | 'SIMILAR_MATCH' | 'NEW_SERIES';
+export type OcrMatchStatus =
+  | 'EXACT_MATCH'
+  | 'SIMILAR_MATCH'
+  | 'NEW_SERIES'
+  | 'ALREADY_EXISTS'
+  | 'BATCH_DUPLICATE';
 
 export interface OcrParsedBookItem {
   tempId: string;
@@ -126,6 +131,8 @@ export interface OcrParsedBookItem {
   matchStatus: OcrMatchStatus;
   matchMessage: string;
   matchedBookId?: string;
+  computedSlug?: string;
+  existingScheduleId?: string;
   selected: boolean;
 }
 

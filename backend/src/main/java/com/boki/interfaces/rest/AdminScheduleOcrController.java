@@ -4,6 +4,7 @@ import com.boki.application.dto.schedule.BatchCreateScheduleRequest;
 import com.boki.application.dto.schedule.OcrScheduleScanResponse;
 import com.boki.application.dto.schedule.ReleaseScheduleDto;
 import com.boki.application.service.ReleaseScheduleApplicationService;
+import com.boki.application.service.ReleaseScheduleBatchService;
 import com.boki.application.service.ScheduleOcrService;
 import com.boki.application.service.ScheduleTextParsingService;
 import jakarta.validation.Valid;
@@ -26,7 +27,7 @@ public class AdminScheduleOcrController {
 
     private final ScheduleOcrService scheduleOcrService;
     private final ScheduleTextParsingService scheduleTextParsingService;
-    private final ReleaseScheduleApplicationService scheduleService;
+    private final ReleaseScheduleBatchService batchService;
 
     @PostMapping(value = "/ocr-scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
@@ -57,12 +58,17 @@ public class AdminScheduleOcrController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/check-duplicate")
+    public ResponseEntity<Map<String, Object>> checkDuplicate(@RequestParam("title") String title) {
+        return ResponseEntity.ok(batchService.checkDuplicate(title));
+    }
+
     @PostMapping("/batch")
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public ResponseEntity<List<ReleaseScheduleDto>> batchCreateSchedules(
             @Valid @RequestBody BatchCreateScheduleRequest request
     ) {
-        List<ReleaseScheduleDto> created = scheduleService.batchCreateSchedules(request);
+        List<ReleaseScheduleDto> created = batchService.batchCreateSchedules(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }

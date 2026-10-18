@@ -35,6 +35,7 @@ public class ReleaseScheduleApplicationService {
     private final BookJpaRepository bookJpaRepository;
     private final ReleaseScheduleMapper releaseScheduleMapper;
     private final ReleaseScheduleSyncService syncService;
+    private final ReleaseScheduleBatchService batchService;
 
     @Transactional(readOnly = true)
     public List<ReleaseScheduleDto> getSchedules(Integer month, Integer year, String publisher, Boolean hasBook) {
@@ -220,15 +221,9 @@ public class ReleaseScheduleApplicationService {
 
     @Transactional
     public List<ReleaseScheduleDto> batchCreateSchedules(BatchCreateScheduleRequest request) {
-        if (request == null || request.getItems() == null || request.getItems().isEmpty()) {
-            return List.of();
-        }
-        List<ReleaseScheduleDto> results = new ArrayList<>();
-        for (CreateReleaseScheduleRequest item : request.getItems()) {
-            results.add(createSchedule(item));
-        }
-        return results;
+        return batchService.batchCreateSchedules(request);
     }
+
 
     @Transactional
     public void deleteSchedule(UUID id) {

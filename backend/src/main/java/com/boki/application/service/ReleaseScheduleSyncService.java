@@ -25,6 +25,20 @@ public class ReleaseScheduleSyncService {
             Pattern.CASE_INSENSITIVE
     );
 
+    public String computeScheduleSlug(String title) {
+        if (title == null || title.isBlank()) return "";
+        Matcher matcher = VOLUME_PATTERN.matcher(title.trim());
+        if (matcher.find()) {
+            String seriesName = matcher.group(1).trim();
+            int volumeNumber = Integer.parseInt(matcher.group(2));
+            String seriesSlug = SlugUtils.slugify(seriesName);
+            return seriesSlug + "-tap-" + volumeNumber;
+        } else {
+            String seriesName = title.contains(" - ") ? title.split(" - ")[0].trim() : title.trim();
+            return SlugUtils.slugify(seriesName);
+        }
+    }
+
     public void normalizeScheduleFields(ReleaseScheduleJpaEntity s) {
         String title = s.getTitle();
         if (title == null || title.isBlank()) return;

@@ -17,9 +17,15 @@ export default function OcrStagingTable({
   onSelectAll,
 }: OcrStagingTableProps) {
   const selectedCount = items.filter((i) => i.selected).length;
+  const alreadyExistsCount = items.filter((i) => i.matchStatus === 'ALREADY_EXISTS').length;
+  const batchDuplicateCount = items.filter((i) => i.matchStatus === 'BATCH_DUPLICATE').length;
 
   const getBadgeClass = (status: string) => {
     switch (status) {
+      case 'ALREADY_EXISTS':
+        return styles.badgeWarning;
+      case 'BATCH_DUPLICATE':
+        return styles.badgeDuplicate;
       case 'EXACT_MATCH':
         return styles.badgeExact;
       case 'SIMILAR_MATCH':
@@ -31,6 +37,10 @@ export default function OcrStagingTable({
 
   const getBadgeLabel = (status: string) => {
     switch (status) {
+      case 'ALREADY_EXISTS':
+        return 'Đã có trong hệ thống';
+      case 'BATCH_DUPLICATE':
+        return 'Trùng trong đợt quét';
       case 'EXACT_MATCH':
         return 'Khớp chính xác';
       case 'SIMILAR_MATCH':
@@ -45,6 +55,16 @@ export default function OcrStagingTable({
       <div className={styles.actionBar}>
         <div className={styles.actionStats}>
           Đã chọn: <strong>{selectedCount}</strong> / {items.length} cuốn
+          {alreadyExistsCount > 0 && (
+            <span className={styles.warningNote}>
+              ({alreadyExistsCount} mục đã có trong DB)
+            </span>
+          )}
+          {batchDuplicateCount > 0 && (
+            <span className={styles.warningNote}>
+              ({batchDuplicateCount} mục trùng tập - sẽ tự gộp)
+            </span>
+          )}
         </div>
         <div className={styles.actionButtons}>
           <button
@@ -63,6 +83,7 @@ export default function OcrStagingTable({
           </button>
         </div>
       </div>
+
 
       <div className={styles.tableWrapper}>
         <table className={styles.stagingTable}>

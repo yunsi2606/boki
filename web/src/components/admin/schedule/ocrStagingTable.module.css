@@ -144,6 +144,25 @@
   border: 1px solid #D8B4FE;
 }
 
+.badgeWarning {
+  background: #FFF3E0;
+  color: #D97706;
+  border: 1px solid #FCD34D;
+}
+
+.badgeDuplicate {
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+}
+
+.warningNote {
+  font-size: 12px;
+  color: #D97706;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
 .matchDesc {
   display: block;
   font-size: 11px;
@@ -154,3 +173,4 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+

@@ -121,5 +121,19 @@ export const scheduleService = {
   syncSeries: async (): Promise<{ status: string; totalSynced: number; message: string }> => {
     return api.post<{ status: string; totalSynced: number; message: string }>('/release-schedules/admin/sync-series');
   },
+
+  checkDuplicate: async (
+    title: string
+  ): Promise<{
+    slug: string;
+    exists: boolean;
+    existingId?: string;
+    existingTitle?: string;
+    releaseDate?: string;
+    editionsCount?: number;
+  }> => {
+    return api.get(`/release-schedules/check-duplicate?title=${encodeURIComponent(title)}`);
+  },
 };
+
 

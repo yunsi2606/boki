@@ -54,4 +54,7 @@ public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseSched
            "GROUP BY r.seriesName, r.seriesSlug, r.publisher, r.author " +
            "ORDER BY r.seriesName ASC")
     List<Object[]> findDistinctSeriesSummaries();
+
+    boolean existsBySlug(String slug);
 }
+

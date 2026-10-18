@@ -184,6 +184,7 @@ public class ScheduleOcrService {
             }
         }
 
+        matchingService.detectBatchDuplicatesAndConflicts(items);
         items.sort(Comparator.comparing(OcrParsedBookItemDto::getReleaseDate).thenComparing(OcrParsedBookItemDto::getTitle));
 
         return OcrScheduleScanResponse.builder()

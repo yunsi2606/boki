@@ -3,5 +3,8 @@ package com.boki.application.dto.schedule;
 public enum OcrMatchStatus {
     EXACT_MATCH,
     SIMILAR_MATCH,
-    NEW_SERIES
+    NEW_SERIES,
+    ALREADY_EXISTS,
+    BATCH_DUPLICATE
 }
+

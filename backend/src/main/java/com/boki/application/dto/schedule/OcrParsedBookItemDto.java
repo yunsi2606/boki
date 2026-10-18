@@ -33,6 +33,8 @@ public class OcrParsedBookItemDto {
     private OcrMatchStatus matchStatus;
     private String matchMessage;
     private UUID matchedBookId;
+    private String computedSlug;
+    private UUID existingScheduleId;
     @Builder.Default
     private boolean selected = true;
 }
