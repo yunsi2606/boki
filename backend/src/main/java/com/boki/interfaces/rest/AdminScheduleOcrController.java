@@ -51,8 +51,8 @@ public class AdminScheduleOcrController {
     public ResponseEntity<Map<String, Object>> parseScheduleText(
             @RequestBody Map<String, String> payload
     ) {
-        String text = payload.get("text");
-        String apiKey = payload.get("apiKey");
+        String text = payload != null ? payload.get("text") : null;
+        String apiKey = payload != null ? payload.get("apiKey") : null;
         Map<String, Object> result = scheduleTextParsingService.parseScheduleText(text, apiKey);
         return ResponseEntity.ok(result);
     }

@@ -42,7 +42,7 @@ public class ScheduleTextParsingService {
         }
 
         try {
-            String rawJson = callGemini(text, activeKey);
+            String rawJson = callGeminiWithFallback(text, activeKey);
             return objectMapper.readValue(rawJson, new TypeReference<Map<String, Object>>() {});
         } catch (Exception e) {
             log.error("Failed to parse schedule text via Gemini AI: {}", e.getMessage(), e);
@@ -50,8 +50,29 @@ public class ScheduleTextParsingService {
         }
     }
 
-    private String callGemini(String userText, String apiKey) throws Exception {
-        String modelName = (geminiModel != null && !geminiModel.isBlank()) ? geminiModel.trim() : "gemini-3.8-flash";
+    private String callGeminiWithFallback(String userText, String apiKey) throws Exception {
+        List<String> candidates = new ArrayList<>();
+        if (geminiModel != null && !geminiModel.isBlank() && !geminiModel.contains("1.5")) {
+            candidates.add(geminiModel.trim());
+        }
+        if (!candidates.contains("gemini-3.8-flash")) candidates.add("gemini-3.8-flash");
+        if (!candidates.contains("gemini-flash-latest")) candidates.add("gemini-flash-latest");
+        if (!candidates.contains("gemini-1.5-flash")) candidates.add("gemini-1.5-flash");
+        if (!candidates.contains("gemini-2.0-flash")) candidates.add("gemini-2.0-flash");
+
+        Exception lastEx = null;
+        for (String modelName : candidates) {
+            try {
+                return executeGeminiCall(modelName, userText, apiKey);
+            } catch (Exception e) {
+                lastEx = e;
+                log.warn("Model {} failed for text parsing: {}, trying next candidate...", modelName, e.getMessage());
+            }
+        }
+        throw lastEx != null ? lastEx : new IllegalStateException("Không có model Gemini nào phản hồi");
+    }
+
+    private String executeGeminiCall(String modelName, String userText, String apiKey) {
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
                 modelName, apiKey);
 
@@ -96,12 +117,26 @@ public class ScheduleTextParsingService {
                     for (Object pObj : parts) {
                         Map<?, ?> part = (Map<?, ?>) pObj;
                         if (part.containsKey("text")) {
-                            return (String) part.get("text");
+                            return cleanJson((String) part.get("text"));
                         }
                     }
                 }
             }
         }
         throw new IllegalStateException("Không nhận được nội dung từ Gemini");
+    }
+
+    private String cleanJson(String raw) {
+        if (raw == null) return "{}";
+        String cleaned = raw.trim();
+        if (cleaned.startsWith("```json")) {
+            cleaned = cleaned.substring(7);
+        } else if (cleaned.startsWith("```")) {
+            cleaned = cleaned.substring(3);
+        }
+        if (cleaned.endsWith("```")) {
+            cleaned = cleaned.substring(0, cleaned.length() - 3);
+        }
+        return cleaned.trim();
     }
 }
