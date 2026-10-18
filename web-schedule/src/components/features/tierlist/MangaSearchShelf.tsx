@@ -10,44 +10,38 @@ interface MangaSearchShelfProps {
   shelfItems: ReleaseScheduleItem[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  availableTiers: string[];
   onDragStart: (item: ReleaseScheduleItem | TierRankedMangaItem, source: 'shelf') => void;
-  onAssignToTier: (item: ReleaseScheduleItem, tierName: string) => void;
 }
 
 export function MangaSearchShelf({
   shelfItems,
   searchQuery,
   setSearchQuery,
-  availableTiers,
   onDragStart,
-  onAssignToTier,
 }: MangaSearchShelfProps) {
+  const hasQuery = searchQuery.trim().length > 0;
+
   return (
-    <section className={styles.shelfContainer} aria-label="Kho truyện chờ xếp bậc">
-      {/* Search Header Bar */}
-      <div className={styles.searchHeader}>
+    <aside className={styles.sidebar} aria-label="Tìm kiếm truyện">
+      <div className={styles.sidebarHeader}>
+        <h3 className={styles.sidebarTitle}>Kho Truyện</h3>
+        <p className={styles.sidebarSubtitle}>Tìm truyện và kéo thả sang bậc xếp hạng</p>
+
+        {/* Search Input Box */}
         <div className={styles.searchBox}>
-          <svg
-            className={styles.searchIcon}
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
+          <svg className={styles.searchIcon} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="Tìm tên truyện để kéo thả vào bậc..."
+            placeholder="Tìm tên truyện..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            autoFocus
           />
-          {searchQuery && (
+          {hasQuery && (
             <button
               type="button"
               className={styles.clearBtn}
@@ -61,35 +55,42 @@ export function MangaSearchShelf({
             </button>
           )}
         </div>
-
-        <div className={styles.countBadge}>
-          {shelfItems.length} tác phẩm
-        </div>
       </div>
 
-      <div className={styles.guideText}>
-        <span>Gợi ý: Nhấp &amp; giữ ảnh bìa để kéo thả lên bậc xếp hạng, hoặc bấm nút chọn nhanh (S/A/B/C)</span>
-      </div>
-
-      {/* Scrollable manga list */}
-      <div className={styles.shelfList}>
-        {shelfItems.length === 0 ? (
+      {/* Results / Empty Search Guidance */}
+      <div className={styles.resultsArea}>
+        {!hasQuery ? (
+          <div className={styles.idleState}>
+            <div className={styles.idleIconBox}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <p className={styles.idleText}>Nhập tên truyện vào thanh tìm kiếm ở trên để bắt đầu thêm vào bảng xếp hạng</p>
+          </div>
+        ) : shelfItems.length === 0 ? (
           <div className={styles.noResults}>
-            Không tìm thấy truyện nào khớp với từ khóa &ldquo;{searchQuery}&rdquo;
+            Không tìm thấy truyện nào khớp với &ldquo;{searchQuery}&rdquo;
           </div>
         ) : (
-          shelfItems.map((manga) => (
-            <TierItemCard
-              key={manga.id}
-              item={manga}
-              source="shelf"
-              onDragStart={(item) => onDragStart(item, 'shelf')}
-              onAssignToTier={(tierName) => onAssignToTier(manga, tierName)}
-              availableTiers={availableTiers}
-            />
-          ))
+          <>
+            <div className={styles.resultCount}>
+              Tìm thấy {shelfItems.length} tác phẩm
+            </div>
+            <div className={styles.mangaGrid}>
+              {shelfItems.map((manga) => (
+                <TierItemCard
+                  key={manga.id}
+                  item={manga}
+                  source="shelf"
+                  onDragStart={(item) => onDragStart(item, 'shelf')}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
-    </section>
+    </aside>
   );
 }

@@ -1,8 +1,8 @@
 .row {
   display: flex;
-  min-height: 120px;
-  border-bottom: 1px solid var(--color-neutral-300);
-  background: var(--color-neutral-100);
+  min-height: 82px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #18181b;
   transition: background var(--transition-fast);
 }
 
@@ -11,38 +11,38 @@
 }
 
 .tierBadge {
-  width: 100px;
+  width: 84px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  padding: var(--space-2);
+  padding: 8px 4px;
   text-align: center;
   cursor: pointer;
   position: relative;
-  transition: opacity var(--transition-fast);
   user-select: none;
+  transition: filter var(--transition-fast);
 }
 
 .tierBadge:hover {
-  opacity: 0.92;
+  filter: brightness(1.1);
 }
 
 .tierName {
-  font-size: var(--font-size-2xl);
+  font-size: 22px;
   font-weight: 800;
   line-height: 1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   word-break: break-word;
 }
 
 .editHint {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
-  opacity: 0.7;
+  bottom: 4px;
+  right: 4px;
+  opacity: 0.6;
 }
 
 .dropZone {
@@ -50,44 +50,42 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-neutral-50);
-  min-height: 120px;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #18181b;
+  min-height: 82px;
   transition: background var(--transition-fast), outline var(--transition-fast);
 }
 
 .dropZoneActive {
-  background: rgba(238, 77, 45, 0.06);
+  background: rgba(238, 77, 45, 0.15);
   outline: 2px dashed var(--color-primary-500);
   outline-offset: -2px;
 }
 
 .emptySlot {
   width: 100%;
-  padding: var(--space-4) var(--space-2);
+  padding: 8px;
   text-align: center;
-  font-size: var(--font-size-xs);
-  color: var(--color-neutral-400);
+  font-size: 11px;
+  color: #52525b;
   font-weight: 500;
-  font-style: italic;
   user-select: none;
 }
 
 @media (max-width: 640px) {
   .row {
-    min-height: 105px;
+    min-height: 72px;
   }
   .tierBadge {
-    width: 65px;
-    padding: var(--space-1);
+    width: 60px;
   }
   .tierName {
-    font-size: var(--font-size-lg);
+    font-size: 18px;
   }
   .dropZone {
-    min-height: 105px;
-    padding: var(--space-1);
-    gap: var(--space-1);
+    min-height: 72px;
+    padding: 4px 6px;
+    gap: 4px;
   }
 }

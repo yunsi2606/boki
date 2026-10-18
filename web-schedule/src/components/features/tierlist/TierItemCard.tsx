@@ -10,8 +10,6 @@ interface TierItemCardProps {
   source: 'shelf' | string;
   onDragStart: (item: TierRankedMangaItem | ReleaseScheduleItem, source: 'shelf' | string) => void;
   onRemove?: (scheduleId: string) => void;
-  onAssignToTier?: (tierName: string) => void;
-  availableTiers?: string[];
 }
 
 export function TierItemCard({
@@ -19,8 +17,6 @@ export function TierItemCard({
   source,
   onDragStart,
   onRemove,
-  onAssignToTier,
-  availableTiers,
 }: TierItemCardProps) {
   const scheduleId = 'scheduleId' in item ? item.scheduleId : item.id;
   const coverUrl = item.coverUrl || '/brand/logo.png';
@@ -50,10 +46,10 @@ export function TierItemCard({
               e.stopPropagation();
               onRemove(scheduleId);
             }}
-            title="Xóa khỏi bậc này"
+            title="Xóa khỏi bậc"
             aria-label="Xóa"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -62,21 +58,6 @@ export function TierItemCard({
       </div>
 
       <div className={styles.titleText}>{item.title}</div>
-
-      {source === 'shelf' && onAssignToTier && availableTiers && (
-        <div className={styles.quickAssignBar}>
-          {availableTiers.slice(0, 4).map((t) => (
-            <button
-              key={t}
-              type="button"
-              className={styles.quickAssignBtn}
-              onClick={() => onAssignToTier(t)}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

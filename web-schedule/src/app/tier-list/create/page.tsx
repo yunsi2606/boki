@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { useTierMaker } from '@/hooks/useTierMaker';
 import { TierListBoard } from '@/components/features/tierlist/TierListBoard';
 import { MangaSearchShelf } from '@/components/features/tierlist/MangaSearchShelf';
@@ -22,67 +21,67 @@ export default function CreateTierListPage() {
     searchQuery, setSearchQuery,
     saving, error,
     addTier, updateTier, removeTier, resetTiers,
-    assignItemToTier, removeItemFromTier,
     handleDragStart, handleDropOnTier, handleSave,
   } = useTierMaker();
 
-  const tierNames = tiers.map((t) => t.name);
+  const totalAssigned = Object.values(assigned).reduce((acc, list) => acc + list.length, 0);
 
   return (
-    <main className={styles.container}>
-      {/* Breadcrumb */}
-      <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-        <Link href="/">Trang chủ</Link>
-        <span className={styles.separator}>/</span>
-        <Link href="/tier-list">Manga Tier List</Link>
-        <span className={styles.separator}>/</span>
-        <span className={styles.current}>Tạo bảng xếp hạng mới</span>
-      </nav>
-
-      {/* Page Header */}
-      <div className={styles.headerRow}>
-        <div>
-          <h1 className={styles.pageTitle}>Studio Tạo Manga Tier List</h1>
-          <p className={styles.pageSubtitle}>
-            Tự do sắp xếp các bộ truyện theo thang bậc từ S đến F hoặc tùy biến thang điểm của riêng bạn.
-          </p>
+    <div className={styles.pageWrapper}>
+      <main className={styles.mainContainer}>
+        {/* Title & Description Header */}
+        <div className={styles.headerArea}>
+          {error && <div className={styles.errorAlert}>{error}</div>}
+          <input
+            type="text"
+            className={styles.titleInput}
+            placeholder="Nhập tên bảng xếp hạng của bạn..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            className={styles.descInput}
+            placeholder="Thêm mô tả ngắn hoặc tiêu chí đánh giá (tùy chọn)..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </div>
-      </div>
 
-      {/* Action Bar (Title, Visibility, Save, Custom Tiers) */}
+        {/* 2-Column Split Studio: Left = Tier Board, Right = Fixed Search & Manga List */}
+        <div className={styles.studioLayout}>
+          <div className={styles.boardColumn}>
+            <TierListBoard
+              tiers={tiers}
+              assigned={assigned}
+              isEditable={true}
+              onDragStart={handleDragStart}
+              onDropOnTier={handleDropOnTier}
+              onEditTierTrigger={() => setCustomModalOpen(true)}
+            />
+          </div>
+
+          <div className={styles.shelfColumn}>
+            <MangaSearchShelf
+              shelfItems={shelfPool}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onDragStart={handleDragStart}
+            />
+          </div>
+        </div>
+      </main>
+
+      {/* Fixed Bottom Action Bar */}
       <TierListActionsBar
-        title={title}
-        setTitle={setTitle}
-        description={description}
-        setDescription={setDescription}
         isPublic={isPublic}
         setIsPublic={setIsPublic}
         saving={saving}
-        error={error}
+        totalAssigned={totalAssigned}
         onOpenCustomModal={() => setCustomModalOpen(true)}
         onReset={resetTiers}
         onSave={handleSave}
-      />
-
-      {/* The Visual Tier List Board */}
-      <TierListBoard
-        tiers={tiers}
-        assigned={assigned}
-        isEditable={true}
-        onDragStart={handleDragStart}
-        onDropOnTier={handleDropOnTier}
-        onRemoveItem={removeItemFromTier}
-        onEditTierTrigger={() => setCustomModalOpen(true)}
-      />
-
-      {/* Shelf of Manga Available to Drag / Search */}
-      <MangaSearchShelf
-        shelfItems={shelfPool}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        availableTiers={tierNames}
-        onDragStart={handleDragStart}
-        onAssignToTier={assignItemToTier}
       />
 
       {/* Tier Customization Modal */}
@@ -95,6 +94,6 @@ export default function CreateTierListPage() {
         onRemoveTier={removeTier}
         onResetTiers={resetTiers}
       />
-    </main>
+    </div>
   );
 }

@@ -215,9 +215,9 @@ export function useTierMaker(initialId?: string) {
     }
   };
 
-  const filteredShelf = shelfPool.filter((m) =>
-    searchQuery.trim() ? m.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) : true
-  );
+  const filteredShelf = searchQuery.trim()
+    ? shelfPool.filter((m) => m.title.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+    : [];
 
   return {
     title, setTitle,

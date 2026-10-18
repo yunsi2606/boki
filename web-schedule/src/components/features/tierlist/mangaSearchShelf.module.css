@@ -1,43 +1,58 @@
-.shelfContainer {
-  margin-top: var(--space-6);
-  padding: var(--space-4);
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
   background: var(--color-neutral-100);
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 84px;
+  height: calc(100vh - 170px);
+  overflow: hidden;
 }
 
-.searchHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-2);
+.sidebarHeader {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-neutral-200);
+  background: var(--color-neutral-50);
+}
+
+.sidebarTitle {
+  font-size: var(--font-size-base);
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin-bottom: 2px;
+}
+
+.sidebarSubtitle {
+  font-size: 11px;
+  color: var(--color-neutral-500);
+  margin-bottom: 12px;
 }
 
 .searchBox {
   position: relative;
-  flex: 1;
-  max-width: 480px;
   display: flex;
   align-items: center;
 }
 
 .searchIcon {
   position: absolute;
-  left: 12px;
+  left: 10px;
   color: var(--color-neutral-400);
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
-  padding: 10px 36px 10px 36px;
+  padding: 8px 30px 8px 32px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-neutral-300);
-  background: var(--color-neutral-50);
+  background: #ffffff;
   font-family: inherit;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--color-neutral-800);
   outline: none;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
@@ -46,14 +61,13 @@
 .searchInput:focus {
   border-color: var(--color-primary-500);
   box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.12);
-  background: #ffffff;
 }
 
 .clearBtn {
   position: absolute;
-  right: 10px;
-  width: 20px;
-  height: 20px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,49 +82,68 @@
   background: var(--color-neutral-300);
 }
 
-.countBadge {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  color: var(--color-neutral-600);
-  background: var(--color-neutral-200);
-  padding: 6px 12px;
-  border-radius: 9999px;
-  white-space: nowrap;
-}
-
-.guideText {
-  font-size: var(--font-size-xs);
-  color: var(--color-neutral-500);
-  margin-bottom: var(--space-3);
-}
-
-.shelfList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  max-height: 280px;
+.resultsArea {
+  flex: 1;
   overflow-y: auto;
-  padding: var(--space-2) var(--space-1);
+  padding: 12px;
   scrollbar-width: thin;
 }
 
-.noResults {
-  width: 100%;
-  padding: var(--space-6) var(--space-4);
-  text-align: center;
+.resultCount {
+  font-size: 11px;
+  font-weight: 700;
   color: var(--color-neutral-500);
-  font-size: var(--font-size-sm);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-@media (max-width: 640px) {
-  .shelfContainer {
-    padding: var(--space-3);
-  }
-  .searchHeader {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .searchBox {
-    max-width: 100%;
+.mangaGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.idleState {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--color-neutral-400);
+}
+
+.idleIconBox {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-neutral-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: var(--color-neutral-500);
+}
+
+.idleText {
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  max-width: 200px;
+}
+
+.noResults {
+  text-align: center;
+  padding: 32px 12px;
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+    position: static;
+    height: 380px;
   }
 }
