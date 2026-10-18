@@ -58,8 +58,8 @@
 
 .booksGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-  gap: 18px 14px;
+  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+  gap: 20px 16px;
   margin-bottom: 24px;
 }
 
