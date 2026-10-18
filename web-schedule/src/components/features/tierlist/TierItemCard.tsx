@@ -38,6 +38,11 @@ export function TierItemCard({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={coverUrl} alt={item.title} className={styles.coverImg} loading="lazy" />
 
+        {/* Hover Title Tooltip Overlay */}
+        <div className={styles.hoverTooltip}>
+          <span>{item.title}</span>
+        </div>
+
         {onRemove && (
           <button
             type="button"
@@ -56,8 +61,6 @@ export function TierItemCard({
           </button>
         )}
       </div>
-
-      <div className={styles.titleText}>{item.title}</div>
     </div>
   );
 }
