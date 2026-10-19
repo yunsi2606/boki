@@ -6,6 +6,7 @@ import { scheduleService } from '@/services/scheduleService';
 import type { SeriesSummaryItem } from '@/services/scheduleService';
 import { SeriesCard } from '@/components/features/series/SeriesCard';
 import { SeriesFilterToolbar } from '@/components/features/series/SeriesFilterToolbar';
+import { BookCardSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
 import styles from './boTruyenList.module.css';
 
 function SeriesListContent() {
@@ -25,7 +26,6 @@ function SeriesListContent() {
   const [selectedFormat, setSelectedFormat] = useState(initialFormat);
   const [authorFilter, setAuthorFilter] = useState(initialAuthor);
 
-  // Sync state if query params change
   useEffect(() => {
     setSelectedPublisher(searchParams.get('publisher') || 'ALL');
     setSelectedGenre(searchParams.get('genre') || 'ALL');
@@ -54,6 +54,10 @@ function SeriesListContent() {
       if (s.publisher && s.publisher.trim()) set.add(s.publisher.trim());
     });
     return Array.from(set).sort();
+  }, [seriesList]);
+
+  const totalVolumesCount = useMemo(() => {
+    return seriesList.reduce((acc, s) => acc + (s.totalVolumes || s.volumeCount || 1), 0);
   }, [seriesList]);
 
   const handleClearAll = () => {
@@ -90,32 +94,78 @@ function SeriesListContent() {
       return matchSearch && matchPublisher && matchFormat && matchGenre && matchAuthor;
     });
 
-    if (sortBy === 'VOLUMES') {
-      list = [...list].sort(
-        (a, b) => (b.totalVolumes || b.volumeCount || 0) - (a.totalVolumes || a.volumeCount || 0)
-      );
-    } else if (sortBy === 'NAME') {
-      list = [...list].sort((a, b) => a.seriesName.localeCompare(b.seriesName));
-    }
+    // Prioritize series with actual covers first, then sort by selected criteria
+    list = [...list].sort((a, b) => {
+      const hasCoverA = Boolean(a.coverUrl || a.sampleCover);
+      const hasCoverB = Boolean(b.coverUrl || b.sampleCover);
+      if (hasCoverA !== hasCoverB) {
+        return hasCoverB ? 1 : -1;
+      }
+
+      if (sortBy === 'VOLUMES') {
+        return (b.totalVolumes || b.volumeCount || 0) - (a.totalVolumes || a.volumeCount || 0);
+      } else if (sortBy === 'NAME') {
+        return a.seriesName.localeCompare(b.seriesName);
+      } else {
+        if (a.latestReleaseDate && b.latestReleaseDate) {
+          return b.latestReleaseDate.localeCompare(a.latestReleaseDate);
+        }
+        return a.seriesName.localeCompare(b.seriesName);
+      }
+    });
+
     return list;
   }, [seriesList, search, sortBy, selectedPublisher, selectedFormat, selectedGenre, authorFilter]);
 
   return (
     <main className={styles.container}>
       <div className={styles.heroSection}>
-        <h1 className={styles.title}>Tác phẩm bản quyền</h1>
-        <p className={styles.subtitle}>
-          Khám phá và tra cứu thông tin chi tiết các tựa manga, light novel bản quyền tại Việt Nam.
-        </p>
+        <div className={styles.heroMain}>
+          <h1 className={styles.title}>Tác phẩm bản quyền</h1>
+          <p className={styles.subtitle}>
+            Khám phá và tra cứu thông tin chi tiết các tựa manga, light novel bản quyền tại Việt Nam.
+          </p>
 
-        <div className={styles.searchBar}>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Nhập tên bộ truyện hoặc tác giả cần tìm..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <div className={styles.searchBar}>
+            <svg
+              className={styles.searchIcon}
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Nhập tên bộ truyện hoặc tác giả cần tìm..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.heroStats} aria-label="Thống kê tác phẩm">
+          <div className={styles.statItem}>
+            <span className={styles.statValue}>{seriesList.length > 0 ? `${seriesList.length}+` : '--'}</span>
+            <span className={styles.statLabel}>Bộ truyện bản quyền</span>
+          </div>
+          <div className={styles.statDivider} />
+          <div className={styles.statItem}>
+            <span className={styles.statValue}>{totalVolumesCount > 0 ? `${totalVolumesCount}+` : '--'}</span>
+            <span className={styles.statLabel}>Tập đã lên lịch</span>
+          </div>
+          <div className={styles.statDivider} />
+          <div className={styles.statItem}>
+            <span className={styles.statValue}>{availablePublishers.length > 0 ? `${availablePublishers.length}` : '5+'}</span>
+            <span className={styles.statLabel}>Nhà xuất bản</span>
+          </div>
         </div>
       </div>
 
@@ -162,7 +212,11 @@ function SeriesListContent() {
       </div>
 
       {loading ? (
-        <div className={styles.emptyBox}>Đang tải danh sách tác phẩm...</div>
+        <div className={styles.grid} aria-label="Đang tải danh sách tác phẩm" aria-busy="true">
+          {Array.from({ length: 12 }).map((_, idx) => (
+            <BookCardSkeleton key={idx} />
+          ))}
+        </div>
       ) : filteredList.length === 0 ? (
         <div className={styles.emptyBox}>Không tìm thấy tác phẩm nào phù hợp với bộ lọc.</div>
       ) : (

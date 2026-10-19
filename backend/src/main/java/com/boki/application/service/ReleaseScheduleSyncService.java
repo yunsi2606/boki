@@ -25,16 +25,29 @@ public class ReleaseScheduleSyncService {
             Pattern.CASE_INSENSITIVE
     );
 
+    private static final Pattern EDITION_SUFFIX_PATTERN = Pattern.compile(
+            "(?:\\s*-\\s*|\\s+)(?:bản\\s+(?:đặc\\s+biệt|giới\\s+hạn|phổ\\s+thông|kỷ\\s+niệm|sưu\\s+tầm|boxset|combo|nâng\\s+cấp|2\\s*in\\s*1|3\\s*in\\s*1).*|[\\(\\[]bản\\s+(?:đặc\\s+biệt|giới\\s+hạn|phổ\\s+thông|kỷ\\s+niệm|sưu\\s+tầm|boxset|combo|nâng\\s+cấp|2\\s*in\\s*1|3\\s*in\\s*1).*?[\\)\\]])$",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    public String cleanSeriesName(String name) {
+        if (name == null || name.isBlank()) return "";
+        String cleaned = EDITION_SUFFIX_PATTERN.matcher(name.trim()).replaceAll("").trim();
+        return cleaned.isEmpty() ? name.trim() : cleaned;
+    }
+
     public String computeScheduleSlug(String title) {
         if (title == null || title.isBlank()) return "";
         Matcher matcher = VOLUME_PATTERN.matcher(title.trim());
         if (matcher.find()) {
-            String seriesName = matcher.group(1).trim();
+            String rawSeriesName = matcher.group(1).trim();
+            String seriesName = cleanSeriesName(rawSeriesName);
             int volumeNumber = Integer.parseInt(matcher.group(2));
             String seriesSlug = SlugUtils.slugify(seriesName);
             return seriesSlug + "-tap-" + volumeNumber;
         } else {
-            String seriesName = title.contains(" - ") ? title.split(" - ")[0].trim() : title.trim();
+            String rawSeriesName = title.contains(" - ") ? title.split(" - ")[0].trim() : title.trim();
+            String seriesName = cleanSeriesName(rawSeriesName);
             return SlugUtils.slugify(seriesName);
         }
     }
@@ -45,17 +58,21 @@ public class ReleaseScheduleSyncService {
 
         Matcher matcher = VOLUME_PATTERN.matcher(title.trim());
         if (matcher.find()) {
-            String seriesName = matcher.group(1).trim();
+            String rawSeriesName = matcher.group(1).trim();
+            String seriesName = cleanSeriesName(rawSeriesName);
             int volumeNumber = Integer.parseInt(matcher.group(2));
             String seriesSlug = SlugUtils.slugify(seriesName);
-            String slug = seriesSlug + "-tap-" + volumeNumber;
 
             s.setSeriesName(seriesName);
             s.setSeriesSlug(seriesSlug);
             s.setVolumeNumber(volumeNumber);
-            s.setSlug(slug);
+            if (s.getSlug() == null || s.getSlug().isBlank() || s.getSlug().startsWith("tap-")) {
+                String slug = seriesSlug + "-tap-" + volumeNumber;
+                s.setSlug(slug);
+            }
         } else {
-            String seriesName = title.contains(" - ") ? title.split(" - ")[0].trim() : title.trim();
+            String rawSeriesName = title.contains(" - ") ? title.split(" - ")[0].trim() : title.trim();
+            String seriesName = cleanSeriesName(rawSeriesName);
             String seriesSlug = SlugUtils.slugify(seriesName);
             s.setSeriesName(seriesName);
             s.setSeriesSlug(seriesSlug);
@@ -103,5 +120,14 @@ public class ReleaseScheduleSyncService {
         result.put("message", "Đã chuẩn hóa và đồng bộ " + updatedCount + " tập truyện theo Series thành công.");
         log.info("[ReleaseScheduleSyncService] Synced and normalized {} release schedules into series.", updatedCount);
         return result;
+    }
+
+    @org.springframework.context.event.EventListener(org.springframework.boot.context.event.ApplicationReadyEvent.class)
+    public void onApplicationReady() {
+        try {
+            syncAndNormalizeSeries();
+        } catch (Exception e) {
+            log.warn("[ReleaseScheduleSyncService] Auto-sync on startup failed: {}", e.getMessage());
+        }
     }
 }
