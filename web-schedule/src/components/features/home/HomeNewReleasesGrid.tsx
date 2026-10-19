@@ -1,9 +1,14 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import { ScheduleBookCard } from '@/components/features/schedule/ScheduleBookCard';
 import { HomeGridSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
+import {
+  getFilteredAndRankedSchedules,
+  type HomeScheduleFilterTab,
+} from './scheduleRankingHelper';
 import styles from './homeNewReleasesGrid.module.css';
 
 interface Props {
@@ -11,9 +16,19 @@ interface Props {
   loading?: boolean;
 }
 
+const TABS_CONFIG: Array<{ id: HomeScheduleFilterTab; label: string }> = [
+  { id: 'SMART', label: 'Đề xuất thông minh' },
+  { id: 'UPCOMING', label: 'Sắp ra mắt' },
+  { id: 'RECENTLY_ADDED', label: 'Vừa lên lịch' },
+  { id: 'SPECIAL', label: 'Bản đặc biệt' },
+];
+
 export function HomeNewReleasesGrid({ schedules, loading }: Props) {
-  // Take exactly 15 newest release items (3 rows x 5 columns)
-  const newReleases = schedules && schedules.length > 0 ? schedules.slice(0, 15) : [];
+  const [activeTab, setActiveTab] = useState<HomeScheduleFilterTab>('SMART');
+
+  const rankedItems = useMemo(() => {
+    return getFilteredAndRankedSchedules(schedules, activeTab, 15);
+  }, [schedules, activeTab]);
 
   return (
     <section className={styles.sectionContainer} aria-label="Truyện mới phát hành">
@@ -24,6 +39,21 @@ export function HomeNewReleasesGrid({ schedules, loading }: Props) {
           <p className={styles.sectionSubtitle}>
             Tổng hợp 15 ấn bản truyện tranh & light novel nổi bật nhất vừa lên lịch phát hành
           </p>
+
+          <div className={styles.filterTabsRow} role="tablist" aria-label="Bộ lọc truyện mới">
+            {TABS_CONFIG.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                className={`${styles.filterTabBtn} ${activeTab === tab.id ? styles.filterTabBtnActive : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Link href="/lich-phat-hanh" className={styles.viewAllLink}>
@@ -36,11 +66,11 @@ export function HomeNewReleasesGrid({ schedules, loading }: Props) {
 
       {loading ? (
         <HomeGridSkeleton count={15} />
-      ) : newReleases.length === 0 ? (
-        <div className={styles.emptyBox}>Chưa có dữ liệu truyện mới.</div>
+      ) : rankedItems.length === 0 ? (
+        <div className={styles.emptyBox}>Chưa có dữ liệu truyện cho mục này.</div>
       ) : (
         <div className={styles.booksGrid}>
-          {newReleases.map((schedule) => (
+          {rankedItems.map((schedule) => (
             <ScheduleBookCard key={schedule.id} schedule={schedule} />
           ))}
         </div>
