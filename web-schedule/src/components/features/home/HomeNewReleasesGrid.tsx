@@ -1,34 +1,62 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { ReleaseScheduleItem } from '@/types/schedule';
+import { scheduleService } from '@/services/scheduleService';
 import { ScheduleBookCard } from '@/components/features/schedule/ScheduleBookCard';
 import { HomeGridSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
-import {
-  getFilteredAndRankedSchedules,
-  type HomeScheduleFilterTab,
-} from './scheduleRankingHelper';
 import styles from './homeNewReleasesGrid.module.css';
 
+type FeaturedTab = 'SMART' | 'UPCOMING' | 'RECENTLY_ADDED' | 'SPECIAL';
+
 interface Props {
-  schedules: ReleaseScheduleItem[];
-  loading?: boolean;
+  totalCount?: number;
+  schedules?: ReleaseScheduleItem[];
 }
 
-const TABS_CONFIG: Array<{ id: HomeScheduleFilterTab; label: string }> = [
+const TABS_CONFIG: Array<{ id: FeaturedTab; label: string }> = [
   { id: 'SMART', label: 'Đề xuất thông minh' },
   { id: 'UPCOMING', label: 'Sắp ra mắt' },
   { id: 'RECENTLY_ADDED', label: 'Vừa lên lịch' },
   { id: 'SPECIAL', label: 'Bản đặc biệt' },
 ];
 
-export function HomeNewReleasesGrid({ schedules, loading }: Props) {
-  const [activeTab, setActiveTab] = useState<HomeScheduleFilterTab>('SMART');
+export function HomeNewReleasesGrid({ totalCount, schedules }: Props) {
+  const [activeTab, setActiveTab] = useState<FeaturedTab>('SMART');
+  const [items, setItems] = useState<ReleaseScheduleItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const rankedItems = useMemo(() => {
-    return getFilteredAndRankedSchedules(schedules, activeTab, 15);
-  }, [schedules, activeTab]);
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function fetchFeatured() {
+      try {
+        setLoading(true);
+        const data = await scheduleService.getFeaturedSchedules(activeTab, 15);
+        if (!isCancelled) {
+          setItems(data || []);
+        }
+      } catch (err) {
+        console.error('Failed to load featured schedules', err);
+        if (!isCancelled) {
+          setItems([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchFeatured();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeTab]);
+
+  const countDisplay = totalCount ?? schedules?.length ?? 0;
 
   return (
     <section className={styles.sectionContainer} aria-label="Truyện mới phát hành">
@@ -66,11 +94,11 @@ export function HomeNewReleasesGrid({ schedules, loading }: Props) {
 
       {loading ? (
         <HomeGridSkeleton count={15} />
-      ) : rankedItems.length === 0 ? (
+      ) : items.length === 0 ? (
         <div className={styles.emptyBox}>Chưa có dữ liệu truyện cho mục này.</div>
       ) : (
         <div className={styles.booksGrid}>
-          {rankedItems.map((schedule) => (
+          {items.map((schedule) => (
             <ScheduleBookCard key={schedule.id} schedule={schedule} />
           ))}
         </div>
@@ -79,7 +107,7 @@ export function HomeNewReleasesGrid({ schedules, loading }: Props) {
       {/* Bottom Navigation CTA */}
       <div className={styles.bottomCtaRow}>
         <Link href="/lich-phat-hanh" className={styles.bottomCtaBtn}>
-          Khám phá toàn bộ {schedules.length > 0 ? `${schedules.length}+` : ''} lịch phát hành tháng này
+          Khám phá toàn bộ {countDisplay > 0 ? `${countDisplay}+` : ''} lịch phát hành tháng này
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />

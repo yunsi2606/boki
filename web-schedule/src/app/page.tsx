@@ -52,7 +52,7 @@ export default function ScheduleHomePage() {
       <div className={styles.twoColLayout}>
         {/* Left Wide Column: New Releases Grid */}
         <div className={styles.mainCol}>
-          <HomeNewReleasesGrid schedules={schedules} loading={loading} />
+          <HomeNewReleasesGrid totalCount={schedules.length} />
         </div>
 
         {/* Right Narrow Column: Popularity + Top Manga Tier List + Reader Reviews */}

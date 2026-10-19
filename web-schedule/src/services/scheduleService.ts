@@ -52,4 +52,10 @@ export const scheduleService = {
   async getPublishers(): Promise<string[]> {
     return scheduleApiFetch<string[]>('/release-schedules/publishers');
   },
+
+  async getFeaturedSchedules(mode = 'SMART', limit = 15): Promise<ReleaseScheduleItem[]> {
+    return scheduleApiFetch<ReleaseScheduleItem[]>(
+      `/release-schedules/featured?mode=${encodeURIComponent(mode)}&limit=${limit}`
+    );
+  },
 };

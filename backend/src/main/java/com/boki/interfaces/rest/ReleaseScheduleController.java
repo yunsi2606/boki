@@ -4,6 +4,7 @@ import com.boki.application.dto.schedule.CreateReleaseScheduleRequest;
 import com.boki.application.dto.schedule.ReleaseScheduleDto;
 import com.boki.application.dto.schedule.UpdateReleaseScheduleRequest;
 import com.boki.application.service.ReleaseScheduleApplicationService;
+import com.boki.application.service.ReleaseScheduleRankingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,15 @@ public class ReleaseScheduleController {
 
     private final ReleaseScheduleApplicationService scheduleService;
     private final com.boki.application.service.ReleaseScheduleSyncService syncService;
+    private final ReleaseScheduleRankingService rankingService;
+
+    @GetMapping("/featured")
+    public ResponseEntity<List<ReleaseScheduleDto>> getFeaturedSchedules(
+            @RequestParam(name = "mode", defaultValue = "SMART") String mode,
+            @RequestParam(name = "limit", defaultValue = "15") Integer limit
+    ) {
+        return ResponseEntity.ok(rankingService.getFeaturedSchedules(mode, limit));
+    }
 
     @GetMapping
     public ResponseEntity<List<ReleaseScheduleDto>> getSchedules(
