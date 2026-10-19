@@ -52,7 +52,7 @@ export function VolumeVaultAction({ scheduleId, editionId, initialStatus }: Prop
           onClick={() => handleUpdate('WISHLIST')}
           disabled={saving}
         >
-          {status === 'WISHLIST' ? 'Đã thêm vào Wishlist' : 'Thêm vào danh sách ước (Wishlist)'}
+          {status === 'WISHLIST' ? 'Đã thêm vào Wishlist' : 'Thêm vào Wishlist'}
         </button>
       </div>
     </div>

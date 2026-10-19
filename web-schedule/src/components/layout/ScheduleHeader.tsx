@@ -72,9 +72,6 @@ export function ScheduleHeader() {
             <Link href="/tier-list" className={`${styles.navLink} ${isTierList ? styles.navLinkActive : ''}`}>
               Tier List
             </Link>
-            <Link href="/lich-su-thay-doi" className={`${styles.navLink} ${isChangelog ? styles.navLinkActive : ''}`}>
-              Lịch sử thay đổi
-            </Link>
           </nav>
         </div>
 

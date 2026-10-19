@@ -42,3 +42,57 @@ export function TimelineGroupSkeleton({ count = 3 }: { count?: number }) {
     </div>
   );
 }
+
+export function VolumeDetailSkeleton() {
+  return (
+    <div className={styles.detailContainer} aria-label="Đang tải chi tiết tập truyện" aria-busy="true">
+      {/* Breadcrumb Shimmer */}
+      <div className={`${styles.detailBreadcrumbShimmer} ${styles.shimmerBox}`} />
+
+      {/* Coverflow Banner Slider Shimmer */}
+      <div className={`${styles.detailHeroSliderShimmer} ${styles.shimmerBox}`} />
+
+      {/* 2-Column Detail Grid */}
+      <div className={styles.detailGridSkeleton}>
+        {/* Main Column */}
+        <div className={styles.mainCol}>
+          {/* Synopsis Shimmer Card */}
+          <div className={styles.detailCardShimmer}>
+            <div className={`${styles.detailTitleShimmer} ${styles.shimmerBox}`} />
+            <div className={`${styles.detailLineShimmer} ${styles.shimmerBox}`} />
+            <div className={`${styles.detailLineShimmer} ${styles.shimmerBox}`} />
+            <div className={`${styles.detailLineShimmer} ${styles.detailLineShort} ${styles.shimmerBox}`} />
+          </div>
+
+          {/* Publication Specs Shimmer Card */}
+          <div className={styles.detailCardShimmer}>
+            <div className={`${styles.detailTitleShimmer} ${styles.shimmerBox}`} style={{ width: '40%' }} />
+            <div className={styles.detailSpecsGrid}>
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className={`${styles.detailSpecCell} ${styles.shimmerBox}`} />
+              ))}
+            </div>
+          </div>
+
+          {/* Editions Shimmer Card */}
+          <div className={styles.detailCardShimmer}>
+            <div className={`${styles.detailTitleShimmer} ${styles.shimmerBox}`} style={{ width: '50%' }} />
+            <div className={`${styles.detailLineShimmer} ${styles.shimmerBox}`} />
+            <div className={`${styles.detailLineShimmer} ${styles.shimmerBox}`} />
+          </div>
+        </div>
+
+        {/* Sidebar Column */}
+        <div className={styles.sidebarCol}>
+          <div className={styles.sidebarCardShimmer}>
+            <div className={`${styles.sidebarCoverShimmer} ${styles.shimmerBox}`} />
+            <div className={`${styles.detailLineShimmer} ${styles.shimmerBox}`} style={{ width: '70%' }} />
+            <div className={`${styles.detailLineShimmer} ${styles.shimmerBox}`} style={{ width: '50%' }} />
+            <div className={`${styles.sidebarBtnShimmer} ${styles.shimmerBox}`} />
+            <div className={`${styles.sidebarBtnShimmer} ${styles.shimmerBox}`} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

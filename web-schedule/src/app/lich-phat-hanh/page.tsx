@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { scheduleService } from '@/services/scheduleService';
-import type { ReleaseScheduleItem, ScheduleTimelineGroup as GroupType } from '@/types/schedule';
+import type { ReleaseScheduleItem } from '@/types/schedule';
 import { ScheduleFilterBar } from '@/components/features/schedule/ScheduleFilterBar';
 import { ScheduleCalendarMatrix } from '@/components/features/schedule/ScheduleCalendarMatrix';
 import { ScheduleTimelineGroup } from '@/components/features/schedule/ScheduleTimelineGroup';
 import { FloatingScheduleNav } from '@/components/features/schedule/FloatingScheduleNav';
 import { TimelineGroupSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { buildTimelineGroups } from '@/components/features/schedule/scheduleTimelineHelper';
 import styles from './lichPhatHanh.module.css';
 
 export default function FullSchedulePage() {
@@ -16,13 +18,15 @@ export default function FullSchedulePage() {
   const [selectedPublisher, setSelectedPublisher] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-  const [visibleCount, setVisibleCount] = useState<number>(12);
+  const [visibleCount, setVisibleCount] = useState<number>(10);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const now = new Date();
   const [currentYear, setCurrentYear] = useState<number>(now.getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(now.getMonth() + 1);
   const [viewMode, setViewMode] = useState<'TIMELINE' | 'CALENDAR'>('TIMELINE');
   const hasAutoScrolled = useRef<boolean>(false);
+  const loadTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     async function initData() {
@@ -44,8 +48,9 @@ export default function FullSchedulePage() {
   }, []);
 
   const handlePrevMonth = () => {
-    setVisibleCount(12);
-    hasAutoScrolled.current = true; // don't auto scroll when switching months
+    setVisibleCount(10);
+    setIsLoadingMore(false);
+    hasAutoScrolled.current = true;
     if (currentMonth === 1) {
       setCurrentMonth(12);
       setCurrentYear((y) => y - 1);
@@ -55,7 +60,8 @@ export default function FullSchedulePage() {
   };
 
   const handleNextMonth = () => {
-    setVisibleCount(12);
+    setVisibleCount(10);
+    setIsLoadingMore(false);
     hasAutoScrolled.current = true;
     if (currentMonth === 12) {
       setCurrentMonth(1);
@@ -70,14 +76,10 @@ export default function FullSchedulePage() {
     setCurrentYear(today.getFullYear());
     setCurrentMonth(today.getMonth() + 1);
     setVisibleCount(999);
-    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
-      today.getDate()
-    ).padStart(2, '0')}`;
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     setTimeout(() => {
       const el = document.getElementById(`date-${dateStr}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
   };
 
@@ -86,71 +88,44 @@ export default function FullSchedulePage() {
     setVisibleCount(999);
     setTimeout(() => {
       const el = document.getElementById(`date-${dateStr}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 150);
   };
 
-  // Filter strictly by the selected month & year, and sort ASCENDING (day 1 -> end of month)
   const timelineGroups = useMemo(() => {
-    const monthPrefix = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
-    const query = searchQuery.trim().toLowerCase();
-
-    const filtered = schedules.filter((s) => {
-      if (!s.releaseDate || !s.releaseDate.startsWith(monthPrefix)) return false;
-      if (selectedPublisher !== 'ALL' && s.publisher !== selectedPublisher) return false;
-      if (query && !s.title.toLowerCase().includes(query) && !s.author?.toLowerCase().includes(query)) {
-        return false;
-      }
-      return true;
-    });
-
-    const map = new Map<string, GroupType>();
-    filtered.forEach((schedule) => {
-      const dateKey = schedule.releaseDate;
-      if (!map.has(dateKey)) {
-        map.set(dateKey, {
-          dateKey,
-          dateLabel: `Ngày phát hành: ${dateKey}`,
-          items: [],
-        });
-      }
-      map.get(dateKey)!.items.push({
-        schedule,
-        eventType: 'RELEASE',
-        targetEditionIdx: 0,
-        eventDate: dateKey,
-      });
-    });
-
-    // Ascending sort: day 1 to last day of the month
-    return Array.from(map.values()).sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+    return buildTimelineGroups(schedules, currentYear, currentMonth, selectedPublisher, searchQuery);
   }, [schedules, currentYear, currentMonth, selectedPublisher, searchQuery]);
 
-  // Auto-scroll to today if viewing current month on initial load
+  const handleLoadMore = useCallback(() => {
+    if (isLoadingMore || loading || visibleCount >= timelineGroups.length) return;
+    setIsLoadingMore(true);
+    if (loadTimerRef.current) clearTimeout(loadTimerRef.current);
+    loadTimerRef.current = setTimeout(() => {
+      setVisibleCount((prev) => prev + 6);
+      setIsLoadingMore(false);
+    }, 450);
+  }, [isLoadingMore, loading, visibleCount, timelineGroups.length]);
+
+  const sentinelRef = useIntersectionObserver({
+    onIntersect: handleLoadMore,
+    enabled: viewMode === 'TIMELINE' && !loading && visibleCount < timelineGroups.length,
+    rootMargin: '60px',
+  });
+
   useEffect(() => {
     if (loading || hasAutoScrolled.current || timelineGroups.length === 0) return;
     const isThisMonth = currentYear === now.getFullYear() && currentMonth === now.getMonth() + 1;
     if (!isThisMonth) return;
 
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-      now.getDate()
-    ).padStart(2, '0')}`;
-
-    // Find today or the closest upcoming date
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const targetIdx = timelineGroups.findIndex((g) => g.dateKey >= todayStr);
     if (targetIdx !== -1) {
-      if (targetIdx >= visibleCount) {
-        setVisibleCount(targetIdx + 6);
-      }
+      if (targetIdx >= visibleCount) setVisibleCount(targetIdx + 6);
       hasAutoScrolled.current = true;
       const targetKey = timelineGroups[targetIdx].dateKey;
       setTimeout(() => {
         const el = document.getElementById(`date-${targetKey}`);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 250);
     }
   }, [loading, timelineGroups, currentYear, currentMonth, visibleCount, now]);
@@ -214,16 +189,17 @@ export default function FullSchedulePage() {
             <ScheduleTimelineGroup key={group.dateKey} group={group} />
           ))}
 
-          {/* Lazy load more button */}
+          {/* Infinite Scroll Sentinel with visible shimmer animation */}
           {visibleCount < timelineGroups.length && (
-            <div style={{ textAlign: 'center', margin: '24px 0 40px' }}>
-              <button
-                type="button"
-                onClick={() => setVisibleCount((prev) => prev + 10)}
-                className={styles.viewModeToggle}
-              >
-                Tải thêm ngày phát hành ({timelineGroups.length - visibleCount} ngày còn lại)
-              </button>
+            <div ref={sentinelRef} className={styles.sentinelBox}>
+              {isLoadingMore && <TimelineGroupSkeleton count={1} />}
+            </div>
+          )}
+
+          {/* End of list notice */}
+          {!loading && timelineGroups.length > 0 && visibleCount >= timelineGroups.length && (
+            <div className={styles.endNotice}>
+              Đã hiển thị toàn bộ {timelineGroups.reduce((acc, g) => acc + g.items.length, 0)} ấn bản phát hành trong tháng {String(currentMonth).padStart(2, '0')}/{currentYear}
             </div>
           )}
         </>

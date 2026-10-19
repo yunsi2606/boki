@@ -13,6 +13,7 @@ import { VolumeVaultAction } from '@/components/features/schedule/VolumeVaultAct
 import { VolumeStoreLinks } from '@/components/features/schedule/VolumeStoreLinks';
 import { VolumeChangelogTimeline } from '@/components/features/schedule/VolumeChangelogTimeline';
 import { VolumeDiscussionSection } from '@/components/features/schedule/VolumeDiscussionSection';
+import { VolumeDetailSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
 import styles from './tapTruyen.module.css';
 
 interface Props {
@@ -48,11 +49,7 @@ export default function TapTruyenDetailPage({ params }: Props) {
   }, [decodedSlug]);
 
   if (loading) {
-    return (
-      <main className={styles.container}>
-        <div className={styles.loadingBox}>Đang tải thông tin tập truyện...</div>
-      </main>
-    );
+    return <VolumeDetailSkeleton />;
   }
 
   if (!schedule) {
