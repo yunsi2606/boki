@@ -8,22 +8,12 @@ import { ScheduleBookCard } from '@/components/features/schedule/ScheduleBookCar
 import { HomeGridSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
 import styles from './homeNewReleasesGrid.module.css';
 
-type FeaturedTab = 'SMART' | 'UPCOMING' | 'RECENTLY_ADDED' | 'SPECIAL';
-
 interface Props {
   totalCount?: number;
   schedules?: ReleaseScheduleItem[];
 }
 
-const TABS_CONFIG: Array<{ id: FeaturedTab; label: string }> = [
-  { id: 'SMART', label: 'Đề xuất thông minh' },
-  { id: 'UPCOMING', label: 'Sắp ra mắt' },
-  { id: 'RECENTLY_ADDED', label: 'Vừa lên lịch' },
-  { id: 'SPECIAL', label: 'Bản đặc biệt' },
-];
-
 export function HomeNewReleasesGrid({ totalCount, schedules }: Props) {
-  const [activeTab, setActiveTab] = useState<FeaturedTab>('SMART');
   const [items, setItems] = useState<ReleaseScheduleItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -33,7 +23,7 @@ export function HomeNewReleasesGrid({ totalCount, schedules }: Props) {
     async function fetchFeatured() {
       try {
         setLoading(true);
-        const data = await scheduleService.getFeaturedSchedules(activeTab, 15);
+        const data = await scheduleService.getFeaturedSchedules('SMART', 15);
         if (!isCancelled) {
           setItems(data || []);
         }
@@ -54,7 +44,7 @@ export function HomeNewReleasesGrid({ totalCount, schedules }: Props) {
     return () => {
       isCancelled = true;
     };
-  }, [activeTab]);
+  }, []);
 
   const countDisplay = totalCount ?? schedules?.length ?? 0;
 
@@ -67,21 +57,6 @@ export function HomeNewReleasesGrid({ totalCount, schedules }: Props) {
           <p className={styles.sectionSubtitle}>
             Tổng hợp 15 ấn bản truyện tranh & light novel nổi bật nhất vừa lên lịch phát hành
           </p>
-
-          <div className={styles.filterTabsRow} role="tablist" aria-label="Bộ lọc truyện mới">
-            {TABS_CONFIG.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === tab.id}
-                className={`${styles.filterTabBtn} ${activeTab === tab.id ? styles.filterTabBtnActive : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
         </div>
 
         <Link href="/lich-phat-hanh" className={styles.viewAllLink}>
