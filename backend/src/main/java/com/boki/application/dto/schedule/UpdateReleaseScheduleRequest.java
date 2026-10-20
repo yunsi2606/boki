@@ -34,4 +34,7 @@ public class UpdateReleaseScheduleRequest {
 
     @Valid
     private List<ReleaseScheduleEditionRequest> editions;
+
+    @Valid
+    private List<ReleaseStoreLinkRequest> storeLinks;
 }

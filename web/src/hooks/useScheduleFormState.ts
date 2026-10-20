@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import type { ReleaseScheduleItem } from '@/types/schedule';
+import type { ReleaseScheduleItem, ReleaseStoreLinkItem } from '@/types/schedule';
 import type { CreateSchedulePayload, CreateEditionPayload } from '@/services/scheduleService';
 import type { ParsedScheduleData } from '@/utils/scheduleTextParserTypes';
 import {
   DEFAULT_SCHEDULE_FORM,
   mergeSpecsList,
   convertParsedEditions,
+  toSafeString,
 } from '@/utils/scheduleFormDefaults';
 
 export function useScheduleFormState(
@@ -30,6 +31,7 @@ export function useScheduleFormState(
   const [coverUrl, setCoverUrl] = useState('');
   const [description, setDescription] = useState('');
   const [editions, setEditions] = useState<CreateEditionPayload[]>([]);
+  const [storeLinks, setStoreLinks] = useState<ReleaseStoreLinkItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -78,6 +80,7 @@ export function useScheduleFormState(
       } else {
         setEditions([...DEFAULT_SCHEDULE_FORM.defaultEditions]);
       }
+      setStoreLinks(initialItem.storeLinks ? [...initialItem.storeLinks] : []);
     } else {
       const today = new Date().toISOString().slice(0, 10);
       setTitle('');
@@ -96,14 +99,9 @@ export function useScheduleFormState(
       setCoverUrl('');
       setDescription('');
       setEditions([...DEFAULT_SCHEDULE_FORM.defaultEditions]);
+      setStoreLinks([]);
     }
   }, [initialItem, isOpen]);
-
-function toSafeString(val: unknown): string {
-  if (val == null) return '';
-  if (Array.isArray(val)) return val.map((v) => String(v).trim()).filter(Boolean).join(', ');
-  return typeof val === 'string' ? val.trim() : String(val).trim();
-}
 
   const handleApplySmartFill = (data: ParsedScheduleData) => {
     const t = toSafeString(data.title); if (t) setTitle(t);
@@ -162,6 +160,16 @@ function toSafeString(val: unknown): string {
   };
   const handleRemoveEdition = (idx: number) => setEditions(editions.filter((_, i) => i !== idx));
 
+  const handleAddStoreLink = () =>
+    setStoreLinks([...storeLinks, { platform: 'SHOPEE', productUrl: '' }]);
+  const handleRemoveStoreLink = (idx: number) =>
+    setStoreLinks(storeLinks.filter((_, i) => i !== idx));
+  const handleUpdateStoreLink = (idx: number, updated: ReleaseStoreLinkItem) => {
+    const list = [...storeLinks];
+    list[idx] = updated;
+    setStoreLinks(list);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !publisher.trim() || !releaseDate) return;
@@ -190,6 +198,7 @@ function toSafeString(val: unknown): string {
         coverUrl: coverUrl.trim() || undefined,
         description: description.trim() || undefined,
         editions,
+        storeLinks: storeLinks.filter((s) => s.productUrl && s.productUrl.trim().length > 0),
       });
       onClose();
     } finally {
@@ -217,6 +226,10 @@ function toSafeString(val: unknown): string {
     coverUrl, setCoverUrl,
     description, setDescription,
     editions,
+    storeLinks,
+    handleAddStoreLink,
+    handleRemoveStoreLink,
+    handleUpdateStoreLink,
     submitting,
     handleAddEdition,
     handleUpdateEdition,

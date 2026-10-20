@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { OcrScheduleScanResponse, ReleaseScheduleItem } from '@/types/schedule';
+import type { OcrScheduleScanResponse, ReleaseScheduleItem, ReleaseStoreLinkItem } from '@/types/schedule';
 
 export interface GetSchedulesParams {
   month?: number;
@@ -40,6 +40,7 @@ export interface CreateSchedulePayload {
   description?: string;
   status?: 'SCHEDULED' | 'RELEASED' | 'DELAYED' | 'CANCELLED';
   editions?: CreateEditionPayload[];
+  storeLinks?: ReleaseStoreLinkItem[];
 }
 
 export interface UpdateSchedulePayload extends Partial<CreateSchedulePayload> {}
@@ -133,6 +134,23 @@ export const scheduleService = {
     editionsCount?: number;
   }> => {
     return api.get(`/release-schedules/check-duplicate?title=${encodeURIComponent(title)}`);
+  },
+
+  checkShopeePrice: async (
+    url: string
+  ): Promise<{
+    success: boolean;
+    shopId?: number;
+    itemId?: number;
+    productName?: string;
+    storeName?: string;
+    price?: number;
+    priceBeforeDiscount?: number;
+    historicalSold?: number;
+    productUrl?: string;
+    message?: string;
+  }> => {
+    return api.get(`/release-schedules/check-shopee-price?url=${encodeURIComponent(url)}`);
   },
 };
 

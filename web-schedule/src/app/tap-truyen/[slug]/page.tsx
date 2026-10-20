@@ -10,7 +10,6 @@ import { VolumePublicationSpecs } from '@/components/features/schedule/VolumePub
 import { VolumeEditionsList } from '@/components/features/schedule/VolumeEditionsList';
 import { SeriesSidebarBox } from '@/components/features/schedule/SeriesSidebarBox';
 import { VolumeVaultAction } from '@/components/features/schedule/VolumeVaultAction';
-import { VolumeStoreLinks } from '@/components/features/schedule/VolumeStoreLinks';
 import { VolumeChangelogTimeline } from '@/components/features/schedule/VolumeChangelogTimeline';
 import { VolumeDiscussionSection } from '@/components/features/schedule/VolumeDiscussionSection';
 import { VolumeDetailSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
@@ -115,7 +114,7 @@ export default function TapTruyenDetailPage({ params }: Props) {
 
           <VolumePublicationSpecs schedule={schedule} />
 
-          {/* Content-rich Product Catalog */}
+          {/* Content-rich Product Catalog with Integrated Store/Affiliate Links */}
           <VolumeEditionsList
             editions={editions}
             selectedEditionIdx={activeEditionIdx}
@@ -125,12 +124,6 @@ export default function TapTruyenDetailPage({ params }: Props) {
             author={schedule.author}
             scheduleReleaseDate={schedule.releaseDate}
             scheduleCoverUrl={schedule.coverUrl}
-          />
-
-          <h3 className={styles.sectionHeader}>Nơi mua chính hãng & Sàn thương mại</h3>
-          <VolumeStoreLinks
-            bookTitle={schedule.title}
-            linkedBook={currentEdition.linkedBook}
             storeLinks={schedule.storeLinks}
           />
 

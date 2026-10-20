@@ -23,6 +23,7 @@ public class ReleaseScheduleController {
     private final ReleaseScheduleApplicationService scheduleService;
     private final com.boki.application.service.ReleaseScheduleSyncService syncService;
     private final ReleaseScheduleRankingService rankingService;
+    private final com.boki.application.service.ShopeePriceService shopeePriceService;
 
     @GetMapping("/featured")
     public ResponseEntity<List<ReleaseScheduleDto>> getFeaturedSchedules(
@@ -96,5 +97,13 @@ public class ReleaseScheduleController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public ResponseEntity<java.util.Map<String, Object>> syncSeries() {
         return ResponseEntity.ok(syncService.syncAndNormalizeSeries());
+    }
+
+    @GetMapping("/check-shopee-price")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
+    public ResponseEntity<com.boki.application.dto.schedule.ShopeePriceResponse> checkShopeePrice(
+            @RequestParam("url") String url
+    ) {
+        return ResponseEntity.ok(shopeePriceService.checkPrice(url));
     }
 }

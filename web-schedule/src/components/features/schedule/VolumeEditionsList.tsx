@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import type { ReleaseScheduleEditionItem } from '@/types/schedule';
+import type { ReleaseScheduleEditionItem, ReleaseStoreLinkItem } from '@/types/schedule';
+import { VolumeStoreLinks } from './VolumeStoreLinks';
 import styles from './volumeEditionsList.module.css';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
   author?: string;
   scheduleReleaseDate: string;
   scheduleCoverUrl?: string;
+  storeLinks?: ReleaseStoreLinkItem[];
 }
 
 export function VolumeEditionsList({
@@ -24,6 +26,7 @@ export function VolumeEditionsList({
   author,
   scheduleReleaseDate,
   scheduleCoverUrl,
+  storeLinks,
 }: Props) {
   if (!editions || editions.length === 0) return null;
 
@@ -42,6 +45,10 @@ export function VolumeEditionsList({
         year: 'numeric',
       })
     : 'Đang cập nhật';
+
+  const editionStoreLinks = storeLinks?.filter(
+    (s) => !s.editionId || s.editionId === currentEdition.id
+  ) || storeLinks;
 
   return (
     <section className={styles.container}>
@@ -155,24 +162,13 @@ export function VolumeEditionsList({
               </div>
             </div>
 
-            {/* Direct Purchase Link */}
-            {currentEdition.linkedBook && (
-              <div className={styles.buyActionRow}>
-                <Link
-                  href={`https://boki.nhatcuong.io.vn/books/${currentEdition.linkedBook.slug}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.primaryBuyBtn}
-                >
-                  Mua chính hãng trên Boki Store (
-                  {new Intl.NumberFormat('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND',
-                  }).format(currentEdition.linkedBook.price)}
-                  )
-                </Link>
-              </div>
-            )}
+            {/* Compact Merchant & Affiliate Dock */}
+            <VolumeStoreLinks
+              bookTitle={bookTitle}
+              basePrice={price}
+              linkedBook={currentEdition.linkedBook}
+              storeLinks={editionStoreLinks}
+            />
           </div>
         </div>
       </div>

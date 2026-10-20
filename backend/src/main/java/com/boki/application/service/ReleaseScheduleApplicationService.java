@@ -36,6 +36,7 @@ public class ReleaseScheduleApplicationService {
     private final ReleaseScheduleMapper releaseScheduleMapper;
     private final ReleaseScheduleSyncService syncService;
     private final ReleaseScheduleBatchService batchService;
+    private final ReleaseStoreLinkService storeLinkService;
 
     @Transactional(readOnly = true)
     public List<ReleaseScheduleDto> getSchedules(Integer month, Integer year, String publisher, Boolean hasBook) {
@@ -178,6 +179,7 @@ public class ReleaseScheduleApplicationService {
                     .editionType(ReleaseEditionType.STANDARD).coverUrl(schedule.getCoverUrl()).sortOrder(0).build());
         }
         schedule.setEditions(editions);
+        storeLinkService.mapAndSetStoreLinks(schedule, req.getStoreLinks());
         syncService.normalizeScheduleFields(schedule);
 
         ReleaseScheduleJpaEntity saved = releaseScheduleJpaRepository.save(schedule);
@@ -212,6 +214,9 @@ public class ReleaseScheduleApplicationService {
             for (int i = 0; i < request.getEditions().size(); i++) {
                 entity.getEditions().add(releaseScheduleMapper.toEditionEntity(request.getEditions().get(i), entity, i));
             }
+        }
+        if (request.getStoreLinks() != null) {
+            storeLinkService.mapAndSetStoreLinks(entity, request.getStoreLinks());
         }
 
         entity.setUpdatedAt(OffsetDateTime.now());

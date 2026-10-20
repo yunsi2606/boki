@@ -147,9 +147,9 @@ export default function TapTruyenDetailPage({ params }: Props) {
             </div>
           )}
 
-          <h3 className={styles.sectionHeader}>Nơi mua sách chính hãng & Sàn thương mại</h3>
           <VolumeStoreLinks
             bookTitle={schedule.title}
+            basePrice={price}
             linkedBook={currentEdition.linkedBook}
             storeLinks={schedule.storeLinks}
           />

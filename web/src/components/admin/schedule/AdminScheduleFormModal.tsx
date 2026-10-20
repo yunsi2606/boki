@@ -8,6 +8,7 @@ import ImageUploadInput from '@/components/ui/ImageUploadInput';
 import ScheduleMetadataFields from './ScheduleMetadataFields';
 import ScheduleDynamicSpecsSection from './ScheduleDynamicSpecsSection';
 import ScheduleEditionsSection from './ScheduleEditionsSection';
+import { ScheduleStoreLinksSection } from './ScheduleStoreLinksSection';
 import AdminScheduleSmartFillModal from './AdminScheduleSmartFillModal';
 import ScheduleDuplicateAlert from './ScheduleDuplicateAlert';
 import styles from './adminScheduleFormModal.module.css';
@@ -27,34 +28,18 @@ export default function AdminScheduleFormModal({
   onClose,
   onSubmit,
 }: AdminScheduleFormModalProps) {
+  const formState = useScheduleFormState(initialItem, isOpen, onSubmit, onClose);
   const {
-    title, setTitle,
-    originalTitle, setOriginalTitle,
-    publisher, setPublisher,
-    author, setAuthor,
-    artist, setArtist,
-    imprint, setImprint,
-    genres, setGenres,
-    format, setFormat,
-    seriesStatus, setSeriesStatus,
-    ageRating, setAgeRating,
-    specsList,
-    handleAddSpec,
-    handleUpdateSpec,
-    handleRemoveSpec,
-    releaseDate, setReleaseDate,
-    preOrderDate, setPreOrderDate,
-    coverUrl, setCoverUrl,
-    description, setDescription,
-    editions,
-    submitting,
-    handleAddEdition,
-    handleUpdateEdition,
-    handleUpdateSingleEdition,
-    handleRemoveEdition,
-    handleApplySmartFill,
-    handleSubmit,
-  } = useScheduleFormState(initialItem, isOpen, onSubmit, onClose);
+    title, setTitle, originalTitle, setOriginalTitle, publisher, setPublisher,
+    author, setAuthor, artist, setArtist, imprint, setImprint, genres, setGenres,
+    format, setFormat, seriesStatus, setSeriesStatus, ageRating, setAgeRating,
+    specsList, handleAddSpec, handleUpdateSpec, handleRemoveSpec,
+    releaseDate, setReleaseDate, preOrderDate, setPreOrderDate, coverUrl, setCoverUrl,
+    description, setDescription, editions, submitting,
+    handleAddEdition, handleUpdateEdition, handleUpdateSingleEdition, handleRemoveEdition,
+    storeLinks, handleAddStoreLink, handleRemoveStoreLink, handleUpdateStoreLink,
+    handleApplySmartFill, handleSubmit,
+  } = formState;
 
   const [isSmartFillOpen, setIsSmartFillOpen] = useState(false);
 
@@ -215,6 +200,13 @@ export default function AdminScheduleFormModal({
             onUpdateEdition={handleUpdateEdition}
             onUpdateSingleEdition={handleUpdateSingleEdition}
             onRemoveEdition={handleRemoveEdition}
+          />
+
+          <ScheduleStoreLinksSection
+            storeLinks={storeLinks}
+            onAddLink={handleAddStoreLink}
+            onRemoveLink={handleRemoveStoreLink}
+            onUpdateLink={handleUpdateStoreLink}
           />
 
           <div className={styles.actionsFooter}>

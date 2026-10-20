@@ -41,4 +41,8 @@ public class CreateReleaseScheduleRequest {
     @Valid
     @Builder.Default
     private List<ReleaseScheduleEditionRequest> editions = new ArrayList<>();
+
+    @Valid
+    @Builder.Default
+    private List<ReleaseStoreLinkRequest> storeLinks = new ArrayList<>();
 }

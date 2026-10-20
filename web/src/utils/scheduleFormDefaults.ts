@@ -53,3 +53,10 @@ export function convertParsedEditions(
     sortOrder: idx,
   }));
 }
+
+export function toSafeString(val: unknown): string {
+  if (val == null) return '';
+  if (Array.isArray(val)) return val.map((v) => String(v).trim()).filter(Boolean).join(', ');
+  return typeof val === 'string' ? val.trim() : String(val).trim();
+}
+
