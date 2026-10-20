@@ -7,6 +7,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +27,8 @@ import java.util.Set;
 @Component
 public class PhoneVerificationFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(PhoneVerificationFilter.class);
+
     private static final Set<String> ALLOWED_PATHS = Set.of(
             "/api/auth/verify-phone",
             "/api/auth/resend-otp",
@@ -36,7 +40,9 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
             "/api/auth/verify-email",
             "/api/users/profile",
             "/api/users/profile/summary",
-            "/api/users/profile/address"
+            "/api/users/profile/address",
+            "/api/manga-tier-lists",
+            "/api/release-schedules"
     );
 
 
@@ -58,7 +64,7 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
 
         // Skip check for allowed paths
-        if (isAllowedPath(path) || isPublicBookGetRequest(method, path)) {
+        if (isAllowedPath(path) || isPublicGetRequest(method, path)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -72,6 +78,7 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
         // Check phone verification status
         var user = userRepository.findById(UserId.of(principal.userId()));
         if (user.isPresent() && !user.get().isPhoneVerified()) {
+            log.warn("[PhoneVerificationFilter] User {} blocked on {} {} - phone not verified", principal.userId(), method, path);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             var errorBody = Map.of(
@@ -88,10 +95,15 @@ public class PhoneVerificationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean isPublicBookGetRequest(String method, String path) {
-        return "GET".equalsIgnoreCase(method) && 
-               path.startsWith("/api/books") && 
-               !path.startsWith("/api/books/seller");
+    private boolean isPublicGetRequest(String method, String path) {
+        if (!"GET".equalsIgnoreCase(method)) return false;
+        if (path.startsWith("/api/admin") || path.startsWith("/api/books/seller") || path.startsWith("/api/orders/my")) {
+            return false;
+        }
+        return path.startsWith("/api/books") || path.startsWith("/api/categories") ||
+               path.startsWith("/api/release-schedules") || path.startsWith("/api/manga-tier-lists") ||
+               path.startsWith("/api/combos") || path.startsWith("/api/blogs") ||
+               path.startsWith("/api/flash-sales") || path.startsWith("/api/vouchers");
     }
 
     private boolean isAllowedPath(String path) {

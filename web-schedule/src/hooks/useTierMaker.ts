@@ -79,6 +79,22 @@ export function useTierMaker(initialId?: string) {
     loadExisting();
   }, [initialId]);
 
+  // Restore draft if returning from login
+  useEffect(() => {
+    if (initialId || typeof window === 'undefined') return;
+    const raw = sessionStorage.getItem('boki_pending_tierlist');
+    if (!raw) return;
+    try {
+      const d = JSON.parse(raw);
+      if (d.title) setTitle(d.title);
+      if (d.description) setDescription(d.description);
+      if (typeof d.isPublic === 'boolean') setIsPublic(d.isPublic);
+      if (Array.isArray(d.tiers) && d.tiers.length > 0) setTiers(d.tiers);
+      if (d.assigned) setAssigned(d.assigned);
+      sessionStorage.removeItem('boki_pending_tierlist');
+    } catch {}
+  }, [initialId]);
+
   const addTier = useCallback((name: string, color: string) => {
     setTiers((prev) => [
       ...prev,
@@ -133,25 +149,18 @@ export function useTierMaker(initialId?: string) {
     if (!draggedItem) return;
     const { item, source } = draggedItem;
     const schedId = 'scheduleId' in item ? item.scheduleId : item.id;
-    const itemTitle = item.title;
-    const itemCover = item.coverUrl;
-    const itemPublisher = item.publisher;
 
     setAssigned((prev) => {
       const next = { ...prev };
-      if (source !== 'shelf') {
-        next[source] = (next[source] || []).filter((it) => it.scheduleId !== schedId);
-      }
-      Object.keys(next).forEach((k) => {
-        next[k] = (next[k] || []).filter((it) => it.scheduleId !== schedId);
-      });
+      if (source !== 'shelf') next[source] = (next[source] || []).filter((it) => it.scheduleId !== schedId);
+      Object.keys(next).forEach((k) => { next[k] = (next[k] || []).filter((it) => it.scheduleId !== schedId); });
       if (!next[targetTierName]) next[targetTierName] = [];
       next[targetTierName].push({
         id: `item-${Date.now()}-${schedId}`,
         scheduleId: schedId,
-        title: itemTitle,
-        coverUrl: itemCover,
-        publisher: itemPublisher,
+        title: item.title,
+        coverUrl: item.coverUrl,
+        publisher: item.publisher,
         tierRank: targetTierName,
         sortOrder: next[targetTierName].length + 1,
       });
@@ -202,7 +211,15 @@ export function useTierMaker(initialId?: string) {
       }
     } catch (err: any) {
       console.error('Failed to save tier list:', err);
-      setError(err.message || 'Không thể lưu bảng xếp hạng. Vui lòng thử lại.');
+      const msg = err.message || '';
+      if (msg.includes('hết hạn') || msg.includes('đăng nhập') || msg.includes('UNAUTHORIZED')) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('boki_pending_tierlist', JSON.stringify({ title, description, isPublic, tiers, assigned }));
+        }
+        redirectToLogin(window.location.href);
+        return;
+      }
+      setError(msg || 'Không thể lưu bảng xếp hạng. Vui lòng thử lại.');
     } finally {
       setSaving(false);
     }

@@ -1,12 +1,18 @@
 import { ScheduleUser } from '@/types/auth';
 
 const TOKEN_KEY = 'boki_auth_token';
+const REFRESH_TOKEN_KEY = 'boki_refresh_token';
 const USER_KEY = 'boki_user';
 
 export const authService = {
   getStoredToken(): string | null {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem(TOKEN_KEY);
+  },
+
+  getStoredRefreshToken(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
   },
 
   getStoredUser(): ScheduleUser | null {
@@ -63,10 +69,14 @@ export const authService = {
     if (typeof window === 'undefined') return false;
     const url = new URL(window.location.href);
     const ssoToken = url.searchParams.get('sso_token');
+    const ssoRefreshToken = url.searchParams.get('sso_refresh_token');
     const ssoUserRaw = url.searchParams.get('sso_user');
 
     if (ssoToken) {
       localStorage.setItem(TOKEN_KEY, ssoToken);
+      if (ssoRefreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, ssoRefreshToken);
+      }
       if (ssoUserRaw) {
         try {
           const decoded = decodeURIComponent(ssoUserRaw);
@@ -76,6 +86,7 @@ export const authService = {
         }
       }
       url.searchParams.delete('sso_token');
+      url.searchParams.delete('sso_refresh_token');
       url.searchParams.delete('sso_user');
       window.history.replaceState(
         {},
@@ -91,6 +102,7 @@ export const authService = {
   logout() {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     window.dispatchEvent(new Event('boki_auth_change'));
   },

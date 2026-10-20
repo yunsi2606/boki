@@ -51,6 +51,9 @@ export default function RegisterPage() {
         try {
           const targetUrl = new URL(returnUrl);
           if (token) targetUrl.searchParams.set('sso_token', token);
+          if (response.refreshToken) {
+            targetUrl.searchParams.set('sso_refresh_token', response.refreshToken);
+          }
           if (response.user) {
             targetUrl.searchParams.set('sso_user', encodeURIComponent(JSON.stringify(response.user)));
           }

@@ -49,6 +49,9 @@ export default function LoginPage() {
         try {
           const targetUrl = new URL(returnUrl);
           if (token) targetUrl.searchParams.set('sso_token', token);
+          if (authData.refreshToken) {
+            targetUrl.searchParams.set('sso_refresh_token', authData.refreshToken);
+          }
           if (authData.user) {
             targetUrl.searchParams.set('sso_user', encodeURIComponent(JSON.stringify(authData.user)));
           }
