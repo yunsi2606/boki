@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import Link from 'next/link';
 import type { ReleaseScheduleEditionItem, ReleaseStoreLinkItem } from '@/types/schedule';
 import { VolumeStoreLinks } from './VolumeStoreLinks';
@@ -28,9 +29,21 @@ export function VolumeEditionsList({
   scheduleCoverUrl,
   storeLinks,
 }: Props) {
-  if (!editions || editions.length === 0) return null;
+  const displayEditions = useMemo(() => {
+    if (!editions || editions.length === 0) return [];
+    const map = new Map<string, ReleaseScheduleEditionItem>();
+    for (const ed of editions) {
+      const key = `${(ed.editionName || '').trim().toLowerCase()}_${ed.editionType || 'STANDARD'}`;
+      if (!map.has(key) || (ed.bookId && !map.get(key)?.bookId)) {
+        map.set(key, ed);
+      }
+    }
+    return Array.from(map.values());
+  }, [editions]);
 
-  const currentEdition = editions[selectedEditionIdx] || editions[0];
+  if (displayEditions.length === 0) return null;
+
+  const currentEdition = displayEditions[selectedEditionIdx] || displayEditions[0];
   const price = currentEdition.linkedBook?.price || currentEdition.estimatedPrice;
   const isSpecial =
     currentEdition.editionType === 'SPECIAL' || currentEdition.editionType === 'LIMITED';
@@ -54,15 +67,15 @@ export function VolumeEditionsList({
     <section className={styles.container}>
       <div className={styles.sectionHeader}>
         <h2 className={styles.title}>Phiên bản phát hành</h2>
-        {editions.length > 1 && (
-          <span className={styles.editionCount}>{editions.length} phiên bản</span>
+        {displayEditions.length > 1 && (
+          <span className={styles.editionCount}>{displayEditions.length} phiên bản</span>
         )}
       </div>
 
       {/* Switcher Tabs */}
-      {editions.length > 1 && (
+      {displayEditions.length > 1 && (
         <div className={styles.tabsRow}>
-          {editions.map((ed, idx) => {
+          {displayEditions.map((ed, idx) => {
             const isTabActive = idx === selectedEditionIdx;
             const isTabSpecial = ed.editionType === 'SPECIAL' || ed.editionType === 'LIMITED';
 

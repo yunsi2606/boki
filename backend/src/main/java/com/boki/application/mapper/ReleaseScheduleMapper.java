@@ -21,9 +21,18 @@ public class ReleaseScheduleMapper {
 
         List<ReleaseScheduleEditionDto> editionDtos = new ArrayList<>();
         if (entity.getEditions() != null) {
-            editionDtos = entity.getEditions().stream()
-                    .map(e -> toEditionDto(e, entity))
-                    .collect(Collectors.toList());
+            java.util.Map<String, ReleaseScheduleEditionDto> uniqueEditions = new java.util.LinkedHashMap<>();
+            for (ReleaseScheduleEditionJpaEntity e : entity.getEditions()) {
+                String key = (e.getEditionName() != null ? e.getEditionName().trim().toLowerCase() : "")
+                        + "_" + (e.getEditionType() != null ? e.getEditionType().name() : "STANDARD");
+                ReleaseScheduleEditionDto dto = toEditionDto(e, entity);
+                if (!uniqueEditions.containsKey(key)) {
+                    uniqueEditions.put(key, dto);
+                } else if (dto.getBookId() != null && uniqueEditions.get(key).getBookId() == null) {
+                    uniqueEditions.put(key, dto);
+                }
+            }
+            editionDtos = new ArrayList<>(uniqueEditions.values());
         }
 
         List<com.boki.application.dto.schedule.ReleaseStoreLinkDto> storeLinkDtos = new ArrayList<>();
@@ -144,6 +153,7 @@ public class ReleaseScheduleMapper {
             com.boki.application.dto.schedule.ReleaseScheduleEditionRequest req,
             ReleaseScheduleJpaEntity parent, int sortOrder) {
         return ReleaseScheduleEditionJpaEntity.builder()
+                .id(req.getId())
                 .schedule(parent)
                 .editionName(req.getEditionName().trim())
                 .editionType(req.getEditionType() != null ? req.getEditionType() : com.boki.domain.model.schedule.ReleaseEditionType.STANDARD)

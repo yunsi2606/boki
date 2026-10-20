@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 public class ReleaseScheduleSyncService {
 
     private final ReleaseScheduleJpaRepository releaseScheduleRepo;
+    private final ScheduleEditionSyncService editionSyncService;
 
     private static final Pattern VOLUME_PATTERN = Pattern.compile(
             "^(.*?)(?:\\s*-\\s*|\\s+|\\s*[\\(\\[])(?:tập|vol\\.?|volume|quyển)\\s*(\\d+).*$",
@@ -109,6 +110,9 @@ public class ReleaseScheduleSyncService {
                 }
                 s.getEditions().add(defaultEdition);
             }
+
+            // Deduplicate editions if any duplicate rows exist
+            editionSyncService.deduplicateEditions(s);
 
             releaseScheduleRepo.save(s);
             updatedCount++;

@@ -37,6 +37,7 @@ public class ReleaseScheduleApplicationService {
     private final ReleaseScheduleSyncService syncService;
     private final ReleaseScheduleBatchService batchService;
     private final ReleaseStoreLinkService storeLinkService;
+    private final ScheduleEditionSyncService editionSyncService;
 
     @Transactional(readOnly = true)
     public List<ReleaseScheduleDto> getSchedules(Integer month, Integer year, String publisher, Boolean hasBook) {
@@ -210,10 +211,7 @@ public class ReleaseScheduleApplicationService {
         syncService.normalizeScheduleFields(entity);
 
         if (request.getEditions() != null) {
-            entity.getEditions().clear();
-            for (int i = 0; i < request.getEditions().size(); i++) {
-                entity.getEditions().add(releaseScheduleMapper.toEditionEntity(request.getEditions().get(i), entity, i));
-            }
+            editionSyncService.syncEditions(entity, request.getEditions());
         }
         if (request.getStoreLinks() != null) {
             storeLinkService.mapAndSetStoreLinks(entity, request.getStoreLinks());
