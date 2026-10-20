@@ -79,6 +79,11 @@ public class ScheduleEditionSyncService {
         // Retain exactly synced items
         schedule.getEditions().clear();
         schedule.getEditions().addAll(retained);
+
+        // If single edition, keep coverUrl synchronized with parent schedule cover
+        if (schedule.getEditions().size() == 1 && schedule.getCoverUrl() != null) {
+            schedule.getEditions().get(0).setCoverUrl(schedule.getCoverUrl());
+        }
     }
 
     public boolean deduplicateEditions(ReleaseScheduleJpaEntity schedule) {
@@ -101,6 +106,10 @@ public class ScheduleEditionSyncService {
                     toRemove.add(ed);
                 }
             }
+        }
+
+        if (schedule.getEditions() != null && schedule.getEditions().size() == 1 && schedule.getCoverUrl() != null) {
+            schedule.getEditions().get(0).setCoverUrl(schedule.getCoverUrl());
         }
 
         if (toRemove.isEmpty()) return false;

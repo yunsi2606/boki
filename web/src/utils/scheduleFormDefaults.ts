@@ -10,7 +10,7 @@ export const DEFAULT_SCHEDULE_FORM = {
   specsList: [
     { key: 'Khổ sách', value: '11.3 x 17.6 cm' },
     { key: 'Số trang', value: '192' },
-    { key: 'Loại bìa', value: 'Bìa mềm có Jacket' },
+    { key: 'Loại bìa', value: 'Bìa mềm' },
   ],
   defaultEditions: [
     {

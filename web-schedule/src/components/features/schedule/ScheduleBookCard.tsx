@@ -13,7 +13,7 @@ interface Props {
 export function ScheduleBookCard({ schedule, highlightDate }: Props) {
   const editions = schedule.editions && schedule.editions.length > 0 ? schedule.editions : [];
   const primaryEdition = editions[0];
-  const cover = primaryEdition?.coverUrl || schedule.coverUrl;
+  const cover = schedule.coverUrl || primaryEdition?.coverUrl;
   const targetSlug = schedule.slug || schedule.id;
   const rawDate = highlightDate || primaryEdition?.releaseDate || schedule.releaseDate;
 
