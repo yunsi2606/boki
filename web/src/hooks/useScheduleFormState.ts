@@ -99,20 +99,26 @@ export function useScheduleFormState(
     }
   }, [initialItem, isOpen]);
 
+function toSafeString(val: unknown): string {
+  if (val == null) return '';
+  if (Array.isArray(val)) return val.map((v) => String(v).trim()).filter(Boolean).join(', ');
+  return typeof val === 'string' ? val.trim() : String(val).trim();
+}
+
   const handleApplySmartFill = (data: ParsedScheduleData) => {
-    if (data.title?.trim()) setTitle(data.title.trim());
-    if (data.originalTitle?.trim()) setOriginalTitle(data.originalTitle.trim());
-    if (data.publisher?.trim()) setPublisher(data.publisher.trim());
-    if (data.author?.trim()) setAuthor(data.author.trim());
-    if (data.artist?.trim()) setArtist(data.artist.trim());
-    if (data.imprint?.trim()) setImprint(data.imprint.trim());
-    if (data.genres?.trim()) setGenres(data.genres.trim());
-    if (data.format?.trim()) setFormat(data.format.trim());
-    if (data.seriesStatus?.trim()) setSeriesStatus(data.seriesStatus.trim());
-    if (data.ageRating?.trim()) setAgeRating(data.ageRating.trim());
-    if (data.releaseDate?.trim()) setReleaseDate(data.releaseDate.trim());
-    if (data.preOrderDate?.trim()) setPreOrderDate(data.preOrderDate.trim());
-    if (data.description?.trim()) setDescription(data.description.trim());
+    const t = toSafeString(data.title); if (t) setTitle(t);
+    const ot = toSafeString(data.originalTitle); if (ot) setOriginalTitle(ot);
+    const pub = toSafeString(data.publisher); if (pub) setPublisher(pub);
+    const auth = toSafeString(data.author); if (auth) setAuthor(auth);
+    const art = toSafeString(data.artist); if (art) setArtist(art);
+    const imp = toSafeString(data.imprint); if (imp) setImprint(imp);
+    const gen = toSafeString(data.genres); if (gen) setGenres(gen);
+    const fmt = toSafeString(data.format); if (fmt) setFormat(fmt);
+    const stat = toSafeString(data.seriesStatus); if (stat) setSeriesStatus(stat);
+    const age = toSafeString(data.ageRating); if (age) setAgeRating(age);
+    const rel = toSafeString(data.releaseDate); if (rel) setReleaseDate(rel);
+    const pre = toSafeString(data.preOrderDate); if (pre) setPreOrderDate(pre);
+    const desc = toSafeString(data.description); if (desc) setDescription(desc);
 
     if (data.specs) {
       setSpecsList((prev) => mergeSpecsList(prev, data.specs));

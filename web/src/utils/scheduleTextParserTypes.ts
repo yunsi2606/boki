@@ -9,10 +9,10 @@ export interface ParsedScheduleData {
   title?: string;
   originalTitle?: string;
   publisher?: string;
-  author?: string;
-  artist?: string;
+  author?: string | string[];
+  artist?: string | string[];
   imprint?: string;
-  genres?: string;
+  genres?: string | string[];
   format?: string;
   seriesStatus?: string;
   ageRating?: string;

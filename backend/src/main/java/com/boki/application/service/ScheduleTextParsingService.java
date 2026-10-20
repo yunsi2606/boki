@@ -85,7 +85,7 @@ public class ScheduleTextParsingService {
                 + "- author: tác giả (nếu có)\n"
                 + "- artist: họa sĩ (nếu có)\n"
                 + "- imprint: nhãn/đơn vị phát hành (nếu có)\n"
-                + "- genres: thể loại\n"
+                + "- genres: chuỗi các thể loại cách nhau bởi dấu phẩy nếu có\n"
                 + "- format: MANGA hoặc LIGHT_NOVEL hoặc COMIC hoặc ARTBOOK\n"
                 + "- releaseDate: ngày phát hành định dạng YYYY-MM-DD\n"
                 + "- preOrderDate: ngày đặt trước YYYY-MM-DD (nếu có)\n"
