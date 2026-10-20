@@ -28,7 +28,7 @@ public class ReleaseStoreLinkService {
 
             ReleaseStoreLinkJpaEntity entity = ReleaseStoreLinkJpaEntity.builder()
                     .id(req.getId())
-                    .scheduleId(schedule.getId())
+                    .schedule(schedule)
                     .editionId(req.getEditionId())
                     .platform(normalizePlatform(req.getPlatform()))
                     .storeName(req.getStoreName() != null && !req.getStoreName().isBlank() ? req.getStoreName().trim() : null)

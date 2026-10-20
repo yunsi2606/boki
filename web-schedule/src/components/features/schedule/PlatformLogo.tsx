@@ -22,7 +22,7 @@ export function PlatformLogo({ platform, size = 20, className }: Props) {
   };
 
   const key = getPlatformKey();
-  const imgSrc = `/logos/platforms/${key}.svg`;
+  const imgSrc = `/logos/platforms/${key}.png`;
 
   if (!imgFailed) {
     return (

@@ -27,6 +27,7 @@ public class AdminScheduleOcrController {
 
     private final ScheduleOcrService scheduleOcrService;
     private final ScheduleTextParsingService scheduleTextParsingService;
+    private final com.boki.application.service.ScheduleBatchTextParsingService batchTextParsingService;
     private final ReleaseScheduleBatchService batchService;
 
     @PostMapping(value = "/ocr-scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -56,6 +57,14 @@ public class AdminScheduleOcrController {
         String apiKey = payload != null ? payload.get("apiKey") : null;
         Map<String, Object> result = scheduleTextParsingService.parseScheduleText(text, apiKey);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/parse-batch-text")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
+    public ResponseEntity<OcrScheduleScanResponse> parseScheduleBatchText(
+            @Valid @RequestBody com.boki.application.dto.schedule.BatchParseTextRequest request
+    ) {
+        return ResponseEntity.ok(batchTextParsingService.parseBatchText(request));
     }
 
     @GetMapping("/check-duplicate")

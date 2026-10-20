@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.configRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-neutral-800, #1f2937);
+}
+
+.select, .input {
+  padding: 8px 12px;
+  font-size: 13.5px;
+  border: 1px solid var(--color-neutral-300, #d1d5db);
+  border-radius: var(--radius-sm, 6px);
+  background: #ffffff;
+  color: var(--color-neutral-800, #1f2937);
+  outline: none;
+}
+
+.select:focus, .input:focus {
+  border-color: var(--color-primary-500, #ee4d2d);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 220px;
+  padding: 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  border: 1px solid var(--color-neutral-300, #d1d5db);
+  border-radius: var(--radius-md, 8px);
+  background: #ffffff;
+  color: var(--color-neutral-800, #1f2937);
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary-500, #ee4d2d);
+  box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.1);
+}
+
+.hintBox {
+  font-size: 12px;
+  color: var(--color-neutral-600, #4b5563);
+  background: var(--color-neutral-100, #f3f4f6);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm, 6px);
+  border-left: 3px solid var(--color-primary-500, #ee4d2d);
+  line-height: 1.4;
+}
+
+.apiKeyRow {
+  margin-top: 4px;
+}

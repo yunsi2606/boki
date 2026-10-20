@@ -21,8 +21,13 @@ public class ReleaseStoreLinkJpaEntity {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Column(name = "schedule_id", nullable = false)
-    private UUID scheduleId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private ReleaseScheduleJpaEntity schedule;
+
+    public UUID getScheduleId() {
+        return schedule != null ? schedule.getId() : null;
+    }
 
     @Column(name = "edition_id")
     private UUID editionId;

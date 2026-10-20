@@ -98,8 +98,7 @@ public class ReleaseScheduleJpaEntity {
     @Builder.Default
     private List<ReleaseScheduleEditionJpaEntity> editions = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("sortOrder ASC")
     @Builder.Default
     private List<ReleaseStoreLinkJpaEntity> storeLinks = new ArrayList<>();

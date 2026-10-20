@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import type { OcrParsedBookItem, OcrScheduleScanResponse } from '@/types/schedule';
 import { scheduleService } from '@/services/scheduleService';
-import type { CreateSchedulePayload } from '@/services/scheduleService';
 import OcrUploadStep from './OcrUploadStep';
+import ScheduleBatchTextInputStep from './ScheduleBatchTextInputStep';
 import OcrStagingTable from './OcrStagingTable';
+import { groupStagingItemsToPayloads } from './batchScheduleGroupingHelper';
 import styles from './adminScheduleOcrModal.module.css';
 
 interface AdminScheduleOcrModalProps {
@@ -22,9 +23,14 @@ export default function AdminScheduleOcrModal({
   onSuccess,
 }: AdminScheduleOcrModalProps) {
   const [step, setStep] = useState<'UPLOAD' | 'REVIEW'>('UPLOAD');
+  const [inputMode, setInputMode] = useState<'IMAGE' | 'TEXT'>('IMAGE');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedPublisher, setSelectedPublisher] = useState<string>('ALL');
+  const [plainText, setPlainText] = useState('');
+  const [textPublisher, setTextPublisher] = useState('IPM');
+  const [textMonth, setTextMonth] = useState(new Date().getMonth() + 1);
+  const [textYear, setTextYear] = useState(new Date().getFullYear());
   const [geminiApiKey, setGeminiApiKey] = useState<string>('');
   const [isScanning, setIsScanning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -49,9 +55,7 @@ export default function AdminScheduleOcrModal({
     if (!selectedFile) return;
     try {
       setIsScanning(true);
-      if (geminiApiKey.trim()) {
-        localStorage.setItem('boki_gemini_api_key', geminiApiKey.trim());
-      }
+      if (geminiApiKey.trim()) localStorage.setItem('boki_gemini_api_key', geminiApiKey.trim());
       const res = await scheduleService.scanScheduleImage(
         selectedFile,
         selectedPublisher,
@@ -62,8 +66,30 @@ export default function AdminScheduleOcrModal({
       setStep('REVIEW');
     } catch (err: unknown) {
       console.error('Scan error:', err);
-      const msg = err instanceof Error ? err.message : 'Không thể quét ảnh lịch. Vui lòng kiểm tra lại ảnh hoặc API Key.';
-      alert(msg);
+      alert(err instanceof Error ? err.message : 'Không thể quét ảnh lịch.');
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  const handleStartTextParse = async () => {
+    if (!plainText.trim()) return;
+    try {
+      setIsScanning(true);
+      if (geminiApiKey.trim()) localStorage.setItem('boki_gemini_api_key', geminiApiKey.trim());
+      const res = await scheduleService.parseScheduleBatchText({
+        text: plainText,
+        publisher: textPublisher,
+        month: textMonth,
+        year: textYear,
+        apiKey: geminiApiKey.trim() || undefined,
+      });
+      setScanResult(res);
+      setStagingItems(res.items || []);
+      setStep('REVIEW');
+    } catch (err: unknown) {
+      console.error('Text parse error:', err);
+      alert(err instanceof Error ? err.message : 'Lỗi phân tích văn bản lịch.');
     } finally {
       setIsScanning(false);
     }
@@ -88,48 +114,14 @@ export default function AdminScheduleOcrModal({
 
     try {
       setIsSaving(true);
-      const groupedMap = new Map<string, CreateSchedulePayload>();
-
-      for (const item of selected) {
-        const key = item.computedSlug || item.title.trim().toLowerCase();
-        const editionPayload = {
-          editionName: item.editionName || 'Bản thường',
-          editionType: item.editionType || 'STANDARD',
-          releaseDate: item.releaseDate,
-          estimatedPrice: item.estimatedPrice,
-          gifts: item.gifts || undefined,
-          coverUrl: item.coverUrl || undefined,
-          status: 'SCHEDULED' as const,
-          bookId: item.matchedBookId || null,
-        };
-
-        if (groupedMap.has(key)) {
-          groupedMap.get(key)!.editions?.push(editionPayload);
-        } else {
-          groupedMap.set(key, {
-            title: item.title.trim(),
-            originalTitle: item.originalTitle?.trim() || undefined,
-            publisher: item.publisher || scanResult?.detectedPublisher || 'NXB Kim Đồng',
-            author: item.author?.trim() || undefined,
-            releaseDate: item.releaseDate,
-            coverUrl: item.coverUrl || undefined,
-            description: item.description || undefined,
-            status: 'SCHEDULED',
-            editions: [editionPayload],
-          });
-        }
-      }
-
-      const payloads: CreateSchedulePayload[] = Array.from(groupedMap.values());
+      const payloads = groupStagingItemsToPayloads(selected, scanResult);
       await scheduleService.batchCreateSchedules(payloads);
       alert(`Đã nhập thành công ${payloads.length} đầu sách (${selected.length} phiên bản) vào hệ thống!`);
       onSuccess();
       onClose();
-
     } catch (err: unknown) {
       console.error('Batch save error:', err);
-      const msg = err instanceof Error ? err.message : 'Lỗi khi lưu danh sách mục lịch.';
-      alert(msg);
+      alert(err instanceof Error ? err.message : 'Lỗi khi lưu danh sách mục lịch.');
     } finally {
       setIsSaving(false);
     }
@@ -140,9 +132,9 @@ export default function AdminScheduleOcrModal({
       <div className={styles.modal}>
         <div className={styles.header}>
           <div>
-            <h2 className={styles.headerTitle}>Quét Ảnh Lịch Phát Hành (AI Vision)</h2>
+            <h2 className={styles.headerTitle}>Nhập Lịch Phát Hành Hàng Loạt (AI)</h2>
             <p className={styles.headerDesc}>
-              Tự động nhận diện mọi bố cục (Kim Đồng, Trẻ, IPM...), trích xuất ngày, giá và chống lẫn lộn.
+              Hỗ trợ quét ảnh lịch (OCR Vision) hoặc dán đoạn văn bản (Plain Text từ IPM, Trẻ, Nhã Nam...).
             </p>
           </div>
           <button type="button" className={styles.closeBtn} onClick={onClose}>
@@ -150,23 +142,58 @@ export default function AdminScheduleOcrModal({
           </button>
         </div>
 
+        {step === 'UPLOAD' && (
+          <div className={styles.tabBar}>
+            <button
+              type="button"
+              className={`${styles.tabBtn} ${inputMode === 'IMAGE' ? styles.tabBtnActive : ''}`}
+              onClick={() => setInputMode('IMAGE')}
+            >
+              Quét bằng Ảnh (OCR)
+            </button>
+            <button
+              type="button"
+              className={`${styles.tabBtn} ${inputMode === 'TEXT' ? styles.tabBtnActive : ''}`}
+              onClick={() => setInputMode('TEXT')}
+            >
+              Dán đoạn văn bản (Plain Text)
+            </button>
+          </div>
+        )}
+
         <div className={styles.body}>
           {isScanning ? (
             <div className={styles.loadingBox}>
               <div className={styles.spinner} />
-              <p>AI đang phân tích ảnh và đối soát với cơ sở dữ liệu...</p>
+              <p>AI đang phân tích và đối soát với cơ sở dữ liệu Boki...</p>
             </div>
           ) : step === 'UPLOAD' ? (
-            <OcrUploadStep
-              selectedFile={selectedFile}
-              previewUrl={previewUrl}
-              publishers={publishers}
-              selectedPublisher={selectedPublisher}
-              geminiApiKey={geminiApiKey}
-              onFileChange={handleFileChange}
-              onPublisherChange={setSelectedPublisher}
-              onApiKeyChange={setGeminiApiKey}
-            />
+            inputMode === 'IMAGE' ? (
+              <OcrUploadStep
+                selectedFile={selectedFile}
+                previewUrl={previewUrl}
+                publishers={publishers}
+                selectedPublisher={selectedPublisher}
+                geminiApiKey={geminiApiKey}
+                onFileChange={handleFileChange}
+                onPublisherChange={setSelectedPublisher}
+                onApiKeyChange={setGeminiApiKey}
+              />
+            ) : (
+              <ScheduleBatchTextInputStep
+                text={plainText}
+                onTextChange={setPlainText}
+                publishers={publishers}
+                selectedPublisher={textPublisher}
+                onPublisherChange={setTextPublisher}
+                month={textMonth}
+                onMonthChange={setTextMonth}
+                year={textYear}
+                onYearChange={setTextYear}
+                geminiApiKey={geminiApiKey}
+                onApiKeyChange={setGeminiApiKey}
+              />
+            )
           ) : (
             <div>
               <div className={styles.scanBanner}>
@@ -196,21 +223,32 @@ export default function AdminScheduleOcrModal({
               className={styles.cancelBtn}
               onClick={() => setStep('UPLOAD')}
             >
-              Quét lại ảnh khác
+              Quay lại nhập khác
             </button>
           )}
           <button type="button" className={styles.cancelBtn} onClick={onClose}>
             Hủy bỏ
           </button>
           {step === 'UPLOAD' ? (
-            <button
-              type="button"
-              className={styles.primaryBtn}
-              disabled={!selectedFile || isScanning}
-              onClick={handleStartScan}
-            >
-              Bắt đầu phân tích ảnh
-            </button>
+            inputMode === 'IMAGE' ? (
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                disabled={!selectedFile || isScanning}
+                onClick={handleStartScan}
+              >
+                Bắt đầu phân tích ảnh
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                disabled={!plainText.trim() || isScanning}
+                onClick={handleStartTextParse}
+              >
+                Bắt đầu phân tích văn bản
+              </button>
+            )
           ) : (
             <button
               type="button"

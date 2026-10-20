@@ -111,6 +111,16 @@ export const scheduleService = {
     return api.post<any>('/release-schedules/parse-text', { text, apiKey });
   },
 
+  parseScheduleBatchText: async (payload: {
+    text: string;
+    publisher?: string;
+    month?: number;
+    year?: number;
+    apiKey?: string;
+  }): Promise<OcrScheduleScanResponse> => {
+    return api.post<OcrScheduleScanResponse>('/release-schedules/parse-batch-text', payload);
+  },
+
   updateSchedule: async (id: string, payload: UpdateSchedulePayload): Promise<ReleaseScheduleItem> => {
     return api.put<ReleaseScheduleItem>(`/release-schedules/${id}`, payload);
   },
