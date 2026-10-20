@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTierMaker } from '@/hooks/useTierMaker';
 import { TierListBoard } from '@/components/features/tierlist/TierListBoard';
 import { MangaSearchShelf } from '@/components/features/tierlist/MangaSearchShelf';
@@ -8,7 +9,9 @@ import { TierListActionsBar } from '@/components/features/tierlist/TierListActio
 import { TierCustomModal } from '@/components/features/tierlist/TierCustomModal';
 import styles from './tierListCreate.module.css';
 
-export default function CreateTierListPage() {
+function TierListStudio() {
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit') || undefined;
   const [customModalOpen, setCustomModalOpen] = useState(false);
 
   const {
@@ -22,7 +25,7 @@ export default function CreateTierListPage() {
     saving, error,
     addTier, updateTier, removeTier, resetTiers,
     handleDragStart, handleDropOnTier, handleSave,
-  } = useTierMaker();
+  } = useTierMaker(editId);
 
   const totalAssigned = Object.values(assigned).reduce((acc, list) => acc + list.length, 0);
 
@@ -95,5 +98,13 @@ export default function CreateTierListPage() {
         onResetTiers={resetTiers}
       />
     </div>
+  );
+}
+
+export default function CreateTierListPage() {
+  return (
+    <Suspense fallback={<div className={styles.pageWrapper}><div className={styles.mainContainer}>Đang tải studio...</div></div>}>
+      <TierListStudio />
+    </Suspense>
   );
 }

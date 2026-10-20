@@ -56,7 +56,7 @@ export function useTierMaker(initialId?: string) {
         if (data) {
           setTitle(data.title);
           setDescription(data.description || '');
-          setIsPublic(data.isPublic);
+          setIsPublic(data.isPublic ?? (data as any).public ?? true);
           if (data.tiersConfig) {
             try {
               const parsed = JSON.parse(data.tiersConfig);

@@ -28,6 +28,7 @@ export interface MangaTierListSummary {
   viewsCount: number;
   isLiked?: boolean;
   isPublic: boolean;
+  public?: boolean;
   createdAt: string;
   timeAgo: string;
 }
@@ -39,11 +40,14 @@ export interface MangaTierListDetail {
   authorHandle: string;
   authorDisplayName: string;
   authorAvatarUrl?: string;
+  authorId?: string;
+  isOwner?: boolean;
   totalItems: number;
   likesCount: number;
   viewsCount: number;
   isLiked?: boolean;
   isPublic: boolean;
+  public?: boolean;
   tiersConfig?: string;
   createdAt: string;
   items: TierRankedMangaItem[];

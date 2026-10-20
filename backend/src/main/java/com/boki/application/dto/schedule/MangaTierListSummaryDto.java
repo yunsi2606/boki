@@ -1,5 +1,6 @@
 package com.boki.application.dto.schedule;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -24,7 +25,9 @@ public class MangaTierListSummaryDto {
     private List<String> topCovers = new ArrayList<>();
     private int likesCount;
     private int viewsCount;
+    @JsonProperty("isLiked")
     private boolean isLiked;
+    @JsonProperty("isPublic")
     private boolean isPublic;
     private OffsetDateTime createdAt;
     private String timeAgo;

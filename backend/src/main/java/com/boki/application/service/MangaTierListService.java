@@ -55,6 +55,7 @@ public class MangaTierListService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh sách tuyển chọn: " + id));
 
         boolean isLiked = currentUserId != null && likeRepo.existsByUserIdAndTierListId(currentUserId, id);
+        boolean isOwner = currentUserId != null && currentUserId.equals(t.getUserId());
         String authorName = t.getUser() != null ? t.getUser().getDisplayName() : "Độc giả";
 
         List<MangaTierListItemDto> itemDtos = t.getItems().stream().map(i -> MangaTierListItemDto.builder()
@@ -75,11 +76,13 @@ public class MangaTierListService {
                 .authorHandle(authorName.startsWith("@") ? authorName : "@" + authorName)
                 .authorDisplayName(authorName)
                 .authorAvatarUrl(t.getUser() != null ? t.getUser().getAvatarUrl() : null)
+                .authorId(t.getUserId())
+                .isOwner(isOwner)
                 .totalItems(itemDtos.size())
                 .likesCount(t.getLikesCount())
                 .viewsCount(t.getViewsCount())
                 .isLiked(isLiked)
-                .isPublic(t.getIsPublic())
+                .isPublic(t.getIsPublic() != null ? t.getIsPublic() : true)
                 .tiersConfig(t.getTiersConfig())
                 .createdAt(t.getCreatedAt())
                 .items(itemDtos)

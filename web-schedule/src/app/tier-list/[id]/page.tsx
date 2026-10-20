@@ -111,7 +111,29 @@ export default function TierListDetailPage() {
     assigned[it.tierRank].push(it);
   });
 
-  const isOwner = user?.displayName === detail.authorDisplayName;
+  const isPublicVal = detail.isPublic ?? (detail as any).public ?? true;
+  const isOwner = !!(detail.isOwner || (user && (user.id === detail.authorId || user.displayName === detail.authorDisplayName)));
+
+  const handleToggleVisibility = async () => {
+    if (!isOwner) return;
+    const newPublic = !isPublicVal;
+    try {
+      const updated = await mangaTierListService.updateTierList(id, {
+        title: detail.title,
+        description: detail.description,
+        isPublic: newPublic,
+        tiersConfig: detail.tiersConfig,
+        rankedItems: detail.items.map((it) => ({
+          scheduleId: it.scheduleId,
+          tierRank: it.tierRank,
+          sortOrder: it.sortOrder,
+        })),
+      });
+      setDetail(updated);
+    } catch (err: any) {
+      alert(err.message || 'Không thể đổi trạng thái hiển thị');
+    }
+  };
 
   return (
     <main className={styles.container}>
@@ -129,9 +151,20 @@ export default function TierListDetailPage() {
         <div className={styles.headerMain}>
           <div className={styles.titleRow}>
             <h1 className={styles.title}>{detail.title}</h1>
-            <span className={styles.visibilityBadge}>
-              {detail.isPublic ? 'Công khai' : 'Riêng tư'}
-            </span>
+            {isOwner ? (
+              <button
+                type="button"
+                className={`${styles.visibilityToggleBtn} ${isPublicVal ? styles.visibilityPublic : styles.visibilityPrivate}`}
+                onClick={handleToggleVisibility}
+                title="Nhấn để đổi Công khai / Riêng tư"
+              >
+                {isPublicVal ? 'Công khai' : 'Riêng tư'} (Đổi)
+              </button>
+            ) : (
+              <span className={`${styles.visibilityBadge} ${isPublicVal ? styles.visibilityPublic : styles.visibilityPrivate}`}>
+                {isPublicVal ? 'Công khai' : 'Riêng tư'}
+              </span>
+            )}
           </div>
 
           {detail.description && (
@@ -153,7 +186,7 @@ export default function TierListDetailPage() {
           </div>
         </div>
 
-        {/* Action Buttons: Like, Share, Edit */}
+        {/* Action Buttons: Like, Share, Edit, Delete */}
         <div className={styles.actions}>
           <button
             type="button"
@@ -174,6 +207,16 @@ export default function TierListDetailPage() {
             </svg>
             <span>{copySuccess ? 'Đã sao chép link' : 'Chia sẻ'}</span>
           </button>
+
+          {isOwner && (
+            <Link href={`/tier-list/create?edit=${detail.id}`} className={styles.editBtn} title="Xếp lại các bậc và tác phẩm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              <span>Xếp lại tier</span>
+            </Link>
+          )}
 
           {isOwner && (
             <button type="button" className={styles.deleteBtn} onClick={handleDelete} title="Xóa bảng này">
