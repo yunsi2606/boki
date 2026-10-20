@@ -26,6 +26,11 @@ export const metadata: Metadata = {
       },
     ],
   },
+  icons: {
+    icon: '/brand/logo.png',
+    shortcut: '/brand/logo.png',
+    apple: '/brand/logo.png',
+  },
 };
 
 export default function RootLayout({
@@ -36,6 +41,8 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <head>
+        <link rel="icon" href="/brand/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/brand/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
