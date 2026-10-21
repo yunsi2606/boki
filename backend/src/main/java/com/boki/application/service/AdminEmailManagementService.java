@@ -151,16 +151,35 @@ public class AdminEmailManagementService {
 
     public void testConnection(SmtpConfigDto dto) throws Exception {
         if (dto.getPassword() != null && dto.getPassword().contains("***")) {
-            smtpConfigRepo.findActiveConfig().ifPresent(c -> dto.setPassword(c.getPassword()));
+            String dbPass = smtpConfigRepo.findActiveConfig()
+                    .map(EmailSmtpConfigJpaEntity::getPassword)
+                    .orElse(null);
+            if (dbPass == null || dbPass.isBlank()) {
+                throw new IllegalArgumentException("Chưa có mật khẩu được lưu trong cơ sở dữ liệu. Vui lòng nhập App Password và bấm 'Lưu cấu hình' trước khi kiểm tra.");
+            }
+            dto.setPassword(dbPass);
         } else if (dto.getPassword() != null) {
             dto.setPassword(dto.getPassword().replaceAll("\\s+", ""));
         }
+
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Mật khẩu / App Password không được để trống!");
+        }
+
+        if (dto.getUsername() == null || dto.getUsername().isBlank()) {
+            throw new IllegalArgumentException("Tài khoản / Username không được để trống!");
+        }
+
         if (dto.getAuthEnabled() == null) {
             dto.setAuthEnabled(true);
         }
         if (dto.getStarttlsEnabled() == null) {
             dto.setStarttlsEnabled(true);
         }
+
+        log.info("[SMTP TEST] User='{}', Host='{}:{}', passwordLength={}",
+                dto.getUsername(), dto.getHost(), dto.getPort(), dto.getPassword().length());
+
         smtpSender.testConnection(dto);
     }
 

@@ -16,6 +16,10 @@ export function EmailSmtpSettingsForm({ initialConfig, onSaved }: Props) {
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
+  React.useEffect(() => {
+    setConfig(initialConfig);
+  }, [initialConfig]);
+
   const handleChange = (field: keyof SmtpConfig, val: any) => {
     setConfig((prev) => ({ ...prev, [field]: val }));
   };

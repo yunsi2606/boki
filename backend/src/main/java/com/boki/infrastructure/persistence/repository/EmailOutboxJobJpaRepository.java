@@ -22,8 +22,8 @@ public interface EmailOutboxJobJpaRepository extends JpaRepository<EmailOutboxJo
     Optional<EmailOutboxJobJpaEntity> findByIdempotencyKey(String idempotencyKey);
 
     @Query("SELECT j FROM EmailOutboxJobJpaEntity j " +
-           "WHERE (:status IS NULL OR j.status = :status) " +
-           "AND (:emailType IS NULL OR j.emailType = :emailType) " +
+           "WHERE (CAST(:status AS String) IS NULL OR j.status = :status) " +
+           "AND (CAST(:emailType AS String) IS NULL OR j.emailType = :emailType) " +
            "ORDER BY j.createdAt DESC")
     Page<EmailOutboxJobJpaEntity> findFilteredJobs(
             @Param("status") String status,
