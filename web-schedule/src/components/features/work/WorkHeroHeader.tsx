@@ -72,9 +72,8 @@ export function WorkHeroHeader({
           {/* Status & Publisher Badges */}
           <div className={styles.badgeRow}>
             <span
-              className={`${styles.statusBadge} ${
-                isCompleted ? styles.statusCompleted : styles.statusOngoing
-              }`}
+              className={`${styles.statusBadge} ${isCompleted ? styles.statusCompleted : styles.statusOngoing
+                }`}
             >
               {statusLabel}
             </span>

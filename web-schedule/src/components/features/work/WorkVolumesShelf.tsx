@@ -138,9 +138,8 @@ export function WorkVolumesShelf({ seriesName, seriesSlug, volumes }: Props) {
                   </span>
 
                   <span
-                    className={`${styles.statusPill} ${
-                      isReleased ? styles.statusReleased : styles.statusScheduled
-                    }`}
+                    className={`${styles.statusPill} ${isReleased ? styles.statusReleased : styles.statusScheduled
+                      }`}
                   >
                     {isReleased ? 'Đã phát hành' : 'Lên lịch'}
                   </span>

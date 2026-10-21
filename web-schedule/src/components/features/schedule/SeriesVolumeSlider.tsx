@@ -49,7 +49,7 @@ export function SeriesVolumeSlider({
           <span className={styles.headerLabel}>Các tập trong bộ:</span>
           <span className={styles.seriesName}>{seriesName || 'Bộ truyện'}</span>
         </div>
-        <Link href={`/tac-pham/${seriesSlug}`} className={styles.viewAllLink}>
+        <Link href={`/bo-truyen/${seriesSlug}`} className={styles.viewAllLink}>
           Xem tất cả ({volumes.length} tập)
         </Link>
       </div>
