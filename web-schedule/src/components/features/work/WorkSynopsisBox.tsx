@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import styles from './workSynopsisBox.module.css';
 
@@ -26,6 +26,24 @@ export function WorkSynopsisBox({
   genres,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const dynamicSpecs = useMemo(() => {
+    if (!specs) return [];
+    try {
+      const parsed = JSON.parse(specs);
+      if (parsed && typeof parsed === 'object') {
+        return Object.entries(parsed)
+          .filter(([_, v]) => v !== undefined && v !== null && String(v).trim() !== '')
+          .map(([key, value]) => ({
+            key,
+            value: String(value),
+          }));
+      }
+    } catch {
+      return [{ key: 'Quy cách ấn bản', value: specs }];
+    }
+    return [{ key: 'Quy cách ấn bản', value: specs }];
+  }, [specs]);
 
   const genreList = genres
     ? genres
@@ -155,12 +173,12 @@ export function WorkSynopsisBox({
           </div>
         )}
 
-        {specs && (
-          <div className={styles.specItem}>
-            <span className={styles.specLabel}>Quy cách ấn bản</span>
-            <span className={styles.specValue}>{specs}</span>
+        {dynamicSpecs.map((item) => (
+          <div key={item.key} className={styles.specItem}>
+            <span className={styles.specLabel}>{item.key}</span>
+            <span className={styles.specValue}>{item.value}</span>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
