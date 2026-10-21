@@ -38,6 +38,7 @@ export default function AdminScheduleFormModal({
     description, setDescription, editions, submitting,
     handleAddEdition, handleUpdateEdition, handleUpdateSingleEdition, handleRemoveEdition,
     storeLinks, handleAddStoreLink, handleRemoveStoreLink, handleUpdateStoreLink,
+    handleReorderStoreLinks,
     handleApplySmartFill, handleSubmit,
   } = formState;
 
@@ -207,6 +208,7 @@ export default function AdminScheduleFormModal({
             onAddLink={handleAddStoreLink}
             onRemoveLink={handleRemoveStoreLink}
             onUpdateLink={handleUpdateStoreLink}
+            onReorderLinks={handleReorderStoreLinks}
           />
 
           <div className={styles.actionsFooter}>

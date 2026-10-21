@@ -54,15 +54,106 @@
   background: var(--color-neutral-50, #f9fafb);
   border: 1px solid var(--color-neutral-200, #e5e7eb);
   border-radius: var(--radius-md, 8px);
-  padding: 12px 14px;
+  padding: 10px 14px 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.linkCard:hover {
+  border-color: var(--color-neutral-300, #d1d5db);
+}
+
+.isDragging {
+  opacity: 0.4;
+  border-style: dashed;
+  border-color: var(--color-primary-400, #ff7a59);
+  transform: scale(0.99);
+}
+
+.isDragOver {
+  border-color: var(--color-primary-500, #ee4d2d);
+  box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.2);
+}
+
+.cardHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--color-neutral-200, #e5e7eb);
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragGripIcon {
+  color: var(--color-neutral-400, #9ca3af);
+  display: flex;
+  align-items: center;
+}
+
+.orderBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-neutral-700, #374151);
+  background: var(--color-neutral-200, #e5e7eb);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.2px;
+}
+
+.dragHint {
+  font-size: 11px;
+  color: var(--color-neutral-400, #9ca3af);
+  font-weight: 500;
+}
+
+.orderControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.orderBtn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-neutral-300, #d1d5db);
+  background: #ffffff;
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  color: var(--color-neutral-600, #4b5563);
+  transition: all 0.12s ease;
+  padding: 0;
+}
+
+.orderBtn:hover:not(:disabled) {
+  border-color: var(--color-primary-500, #ee4d2d);
+  color: var(--color-primary-600, #ee4d2d);
+  background: #fff5f2;
+}
+
+.orderBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .rowTop {
   display: grid;
-  grid-template-columns: 140px 1fr 40px;
+  grid-template-columns: 140px 1fr;
   gap: 10px;
   align-items: center;
 }

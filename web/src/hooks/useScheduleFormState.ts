@@ -169,6 +169,7 @@ export function useScheduleFormState(
     list[idx] = updated;
     setStoreLinks(list);
   };
+  const handleReorderStoreLinks = (reordered: ReleaseStoreLinkItem[]) => setStoreLinks(reordered);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,6 +231,7 @@ export function useScheduleFormState(
     handleAddStoreLink,
     handleRemoveStoreLink,
     handleUpdateStoreLink,
+    handleReorderStoreLinks,
     submitting,
     handleAddEdition,
     handleUpdateEdition,

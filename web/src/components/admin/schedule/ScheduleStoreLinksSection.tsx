@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import type { ReleaseStoreLinkItem } from '@/types/schedule';
 import { scheduleService } from '@/services/scheduleService';
+import { ScheduleStoreLinkCardItem } from './ScheduleStoreLinkCardItem';
 import styles from './scheduleStoreLinksSection.module.css';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
   onAddLink: () => void;
   onRemoveLink: (index: number) => void;
   onUpdateLink: (index: number, updated: ReleaseStoreLinkItem) => void;
+  onReorderLinks: (newLinks: ReleaseStoreLinkItem[]) => void;
 }
 
 export function ScheduleStoreLinksSection({
@@ -17,13 +19,54 @@ export function ScheduleStoreLinksSection({
   onAddLink,
   onRemoveLink,
   onUpdateLink,
+  onReorderLinks,
 }: Props) {
   const [checkingIdx, setCheckingIdx] = useState<number | null>(null);
   const [statusMap, setStatusMap] = useState<Record<number, { text: string; success: boolean }>>({});
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const moveLink = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= storeLinks.length || fromIndex === toIndex) return;
+    const updated = [...storeLinks];
+    const [moved] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, moved);
+    onReorderLinks(updated.map((link, idx) => ({ ...link, sortOrder: idx })));
+  };
+
+  const handleDragStart = (e: React.DragEvent, idx: number) => {
+    setDraggedIdx(idx);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverIdx !== idx) {
+      setDragOverIdx(idx);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIdx: number) => {
+    e.preventDefault();
+    if (draggedIdx !== null && draggedIdx !== dropIdx) {
+      moveLink(draggedIdx, dropIdx);
+    }
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
 
   const handleCheckPrice = async (idx: number, url: string) => {
     if (!url || !url.trim()) {
-      setStatusMap((prev) => ({ ...prev, [idx]: { text: 'Vui lòng nhập link trước khi check giá', success: false } }));
+      setStatusMap((prev) => ({
+        ...prev,
+        [idx]: { text: 'Vui lòng nhập link trước khi check giá', success: false },
+      }));
       return;
     }
 
@@ -69,10 +112,10 @@ export function ScheduleStoreLinksSection({
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.title}>
-          <span>Liên kết sàn thương mại & Affiliate</span>
+          <span>Liên kết sàn thương mại & Affiliate ({storeLinks.length})</span>
         </div>
         <button type="button" onClick={onAddLink} className={styles.addBtn}>
-          Thêm liên kết sàn
+          + Thêm liên kết sàn
         </button>
       </div>
 
@@ -82,97 +125,26 @@ export function ScheduleStoreLinksSection({
         </div>
       ) : (
         <div className={styles.linksList}>
-          {storeLinks.map((link, idx) => {
-            const isShopee = (link.platform || '').toUpperCase() === 'SHOPEE';
-            const status = statusMap[idx];
-
-            return (
-              <div key={idx} className={styles.linkCard}>
-                <div className={styles.rowTop}>
-                  <select
-                    className={styles.select}
-                    value={link.platform || 'SHOPEE'}
-                    onChange={(e) =>
-                      onUpdateLink(idx, {
-                        ...link,
-                        platform: e.target.value as ReleaseStoreLinkItem['platform'],
-                      })
-                    }
-                  >
-                    <option value="SHOPEE">Shopee</option>
-                    <option value="TIKTOK_SHOP">TikTok Shop</option>
-                    <option value="TIKI">Tiki</option>
-                    <option value="FAHASA">Fahasa</option>
-                    <option value="BOKI_STORE">Boki Store</option>
-                    <option value="OTHER">Đại lý / Sàn khác</option>
-                  </select>
-
-                  <input
-                    type="text"
-                    className={styles.input}
-                    placeholder="Tên gian hàng (VD: Kim Đồng Official, Gian hàng IPM...)"
-                    value={link.storeName || ''}
-                    onChange={(e) => onUpdateLink(idx, { ...link, storeName: e.target.value })}
-                  />
-
-                  <button
-                    type="button"
-                    className={styles.deleteBtn}
-                    onClick={() => onRemoveLink(idx)}
-                    title="Xóa liên kết này"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className={styles.rowBottom}>
-                  <input
-                    type="url"
-                    className={styles.input}
-                    placeholder="URL sản phẩm / Affiliate URL"
-                    value={link.productUrl || ''}
-                    onChange={(e) => onUpdateLink(idx, { ...link, productUrl: e.target.value })}
-                  />
-
-                  <input
-                    type="number"
-                    className={styles.input}
-                    placeholder="Giá thực tế (VND)"
-                    value={link.marketPrice ?? ''}
-                    onChange={(e) =>
-                      onUpdateLink(idx, {
-                        ...link,
-                        marketPrice: e.target.value ? Number(e.target.value) : undefined,
-                      })
-                    }
-                  />
-
-                  {isShopee && (
-                    <button
-                      type="button"
-                      className={styles.checkPriceBtn}
-                      disabled={checkingIdx === idx}
-                      onClick={() => handleCheckPrice(idx, link.productUrl)}
-                    >
-                      {checkingIdx === idx ? 'Đang check...' : 'Check giá Shopee'}
-                    </button>
-                  )}
-                </div>
-
-                {status && (
-                  <div
-                    className={`${styles.statusMessage} ${
-                      status.success ? styles.statusSuccess : styles.statusError
-                    }`}
-                  >
-                    {status.text}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {storeLinks.map((link, idx) => (
+            <ScheduleStoreLinkCardItem
+              key={link.id || idx}
+              index={idx}
+              totalCount={storeLinks.length}
+              link={link}
+              isChecking={checkingIdx === idx}
+              status={statusMap[idx]}
+              isDragging={draggedIdx === idx}
+              isDragOver={dragOverIdx === idx && draggedIdx !== idx}
+              onDragStart={(e) => handleDragStart(e, idx)}
+              onDragOver={(e) => handleDragOver(e, idx)}
+              onDragEnd={handleDragEnd}
+              onDrop={(e) => handleDrop(e, idx)}
+              onMove={moveLink}
+              onUpdate={(updated) => onUpdateLink(idx, updated)}
+              onRemove={() => onRemoveLink(idx)}
+              onCheckPrice={(url) => handleCheckPrice(idx, url)}
+            />
+          ))}
         </div>
       )}
     </div>
