@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { mangaCollectionService } from '@/services/mangaCollectionService';
 import type { UserMangaCollectionItem, CollectionSummaryStats } from '@/types/mangaCollection';
+import { EmailSubscriptionModal } from '@/components/features/notification/EmailSubscriptionModal';
 import styles from './tuSach.module.css';
 
 export default function UserVaultPage() {
@@ -11,6 +12,7 @@ export default function UserVaultPage() {
   const [stats, setStats] = useState<CollectionSummaryStats | null>(null);
   const [activeTab, setActiveTab] = useState<'ALL' | 'OWNED' | 'WISHLIST' | 'SEEKING'>('ALL');
   const [loading, setLoading] = useState(true);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   useEffect(() => {
     async function loadVault() {
@@ -38,9 +40,34 @@ export default function UserVaultPage() {
 
   return (
     <main className={styles.container}>
-      <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20, color: 'var(--color-neutral-900)' }}>
-        Tủ Sách Cá Nhân & Tiến Độ Sưu Tầm
-      </h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: 'var(--color-neutral-900)' }}>
+          Tủ Sách Cá Nhân & Tiến Độ Sưu Tầm
+        </h1>
+        <button
+          type="button"
+          onClick={() => setIsNotifOpen(true)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            background: '#ffffff',
+            border: '1px solid var(--color-neutral-300)',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 600,
+            color: 'var(--color-neutral-700)',
+            cursor: 'pointer',
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+          </svg>
+          <span>Nhận email thông báo tủ sách</span>
+        </button>
+      </div>
 
       {stats && (
         <div className={styles.statsBar}>
@@ -71,7 +98,7 @@ export default function UserVaultPage() {
           >
             {tab === 'ALL' && 'Tất cả'}
             {tab === 'OWNED' && 'Đã sở hữu'}
-            {tab === 'WISHLIST' && 'Muốn mua (Wishlist)'}
+            {tab === 'WISHLIST' && 'Muốn mua'}
             {tab === 'SEEKING' && 'Đang săn lùng'}
           </button>
         ))}
@@ -108,6 +135,12 @@ export default function UserVaultPage() {
           ))}
         </div>
       )}
+
+      <EmailSubscriptionModal
+        isOpen={isNotifOpen}
+        onClose={() => setIsNotifOpen(false)}
+        targetName="Tủ sách & Wishlist cá nhân"
+      />
     </main>
   );
 }

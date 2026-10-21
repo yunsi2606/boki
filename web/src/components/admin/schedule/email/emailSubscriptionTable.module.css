@@ -1,0 +1,74 @@
+.container {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.table th {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  font-weight: 700;
+  color: #495057;
+  border-bottom: 1px solid #e9ecef;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f3f5;
+  color: #343a40;
+}
+
+.table tr:hover td {
+  background: #fdfdfd;
+}
+
+.activeBadge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #ebfbee;
+  color: #2b8a3e;
+}
+
+.inactiveBadge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f3f5;
+  color: #868e96;
+}
+
+.typeBadge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #fff0f6;
+  color: #d6336c;
+}
+
+.emptyBox {
+  padding: 48px 16px;
+  text-align: center;
+  color: #868e96;
+}

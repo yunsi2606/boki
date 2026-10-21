@@ -1,0 +1,88 @@
+.pageContainer {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  max-width: 500px;
+  width: 100%;
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.iconBoxSuccess {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #e6fcf5;
+  color: #0ca678;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBoxError {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff5f5;
+  color: #fa5252;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.description {
+  font-size: 14px;
+  color: #495057;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.actionBtn {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ee4d2d;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.actionBtn:hover {
+  background: #d83a1b;
+}
+
+.secondaryLink {
+  font-size: 13px;
+  color: #868e96;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.secondaryLink:hover {
+  color: #111827;
+}

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { scheduleService } from '@/services/scheduleService';
-import type { CreateSchedulePayload } from '@/services/scheduleService';
+import Link from 'next/link';
+import { scheduleService, type CreateSchedulePayload } from '@/services/scheduleService';
 import type { ReleaseScheduleItem } from '@/types/schedule';
 import AdminScheduleTable from '@/components/admin/schedule/AdminScheduleTable';
 import AdminScheduleFormModal from '@/components/admin/schedule/AdminScheduleFormModal';
@@ -151,6 +151,13 @@ export default function AdminSchedulePage() {
           >
             {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ Series'}
           </button>
+          <Link
+            href="/admin/schedule/email"
+            className={styles.syncBtn}
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+          >
+            Email thông báo
+          </Link>
           <button
             type="button"
             className={styles.ocrBtn}

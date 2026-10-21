@@ -68,6 +68,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/release-schedules", "/api/release-schedules/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/manga-tier-lists", "/api/manga-tier-lists/**").permitAll()
+                        .requestMatchers("/api/schedule-email/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/categories", "/api/categories/**").hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/categories", "/api/categories/**").hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SELLER")

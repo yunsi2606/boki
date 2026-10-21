@@ -1,0 +1,51 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #868e96;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.pending {
+  color: #f59f00;
+}
+
+.sent {
+  color: #2b8a3e;
+}
+
+.failed {
+  color: #e03131;
+}
+
+.bounced {
+  color: #868e96;
+}
+
+.subscribers {
+  color: #ee4d2d;
+}
