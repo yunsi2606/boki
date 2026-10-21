@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
         destination: '/tap-truyen/:slug*',
         permanent: true,
       },
+      {
+        source: '/bo-truyen',
+        destination: '/tac-pham',
+        permanent: true,
+      },
+      {
+        source: '/bo-truyen/:slug*',
+        destination: '/tac-pham/:slug*',
+        permanent: true,
+      },
     ];
   },
 };

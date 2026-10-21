@@ -104,7 +104,7 @@ export function WorkSynopsisBox({
             {genreList.map((g) => (
               <Link
                 key={g}
-                href={`/bo-truyen?genre=${encodeURIComponent(g)}`}
+                href={`/tac-pham?genre=${encodeURIComponent(g)}`}
                 className={styles.genreTag}
                 title={`Khám phá các tác phẩm thể loại ${g}`}
               >
@@ -121,7 +121,7 @@ export function WorkSynopsisBox({
           <div className={styles.specItem}>
             <span className={styles.specLabel}>Tác giả (Story)</span>
             <Link
-              href={`/bo-truyen?author=${encodeURIComponent(author)}`}
+              href={`/tac-pham?author=${encodeURIComponent(author)}`}
               className={styles.specValueLink}
             >
               {author}
@@ -140,7 +140,7 @@ export function WorkSynopsisBox({
           <div className={styles.specItem}>
             <span className={styles.specLabel}>Nhà xuất bản</span>
             <Link
-              href={`/bo-truyen?publisher=${encodeURIComponent(publisher)}`}
+              href={`/tac-pham?publisher=${encodeURIComponent(publisher)}`}
               className={styles.specValueLink}
             >
               {publisher}

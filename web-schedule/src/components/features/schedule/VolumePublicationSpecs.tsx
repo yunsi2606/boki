@@ -68,7 +68,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
           <span className={styles.label}>Nhà xuất bản:</span>
           <span className={styles.value}>
             <Link
-              href={`/bo-truyen?publisher=${encodeURIComponent(schedule.publisher)}`}
+              href={`/tac-pham?publisher=${encodeURIComponent(schedule.publisher)}`}
               className={styles.interactiveLink}
               title={`Xem tất cả tác phẩm từ ${schedule.publisher}`}
             >
@@ -93,7 +93,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
               authorList.map((authorName, idx) => (
                 <React.Fragment key={authorName}>
                   <Link
-                    href={`/bo-truyen?author=${encodeURIComponent(authorName)}`}
+                    href={`/tac-pham?author=${encodeURIComponent(authorName)}`}
                     className={styles.interactiveLink}
                     title={`Xem tác phẩm của ${authorName}`}
                   >
@@ -114,7 +114,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
             <span className={styles.label}>Họa sĩ:</span>
             <span className={styles.value}>
               <Link
-                href={`/bo-truyen?author=${encodeURIComponent(schedule.artist)}`}
+                href={`/tac-pham?author=${encodeURIComponent(schedule.artist)}`}
                 className={styles.interactiveLink}
                 title={`Xem tác phẩm của ${schedule.artist}`}
               >
@@ -129,7 +129,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
           <span className={styles.label}>Định dạng:</span>
           <span className={styles.value}>
             <Link
-              href={`/bo-truyen?format=${encodeURIComponent(schedule.format || 'MANGA')}`}
+              href={`/tac-pham?format=${encodeURIComponent(schedule.format || 'MANGA')}`}
               className={styles.interactiveLink}
               title={`Xem các tác phẩm định dạng ${formatText}`}
             >
@@ -143,7 +143,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
           <span className={styles.label}>Tình trạng:</span>
           <span className={styles.value}>
             <Link
-              href={`/bo-truyen?status=${encodeURIComponent(schedule.seriesStatus || 'ONGOING')}`}
+              href={`/tac-pham?status=${encodeURIComponent(schedule.seriesStatus || 'ONGOING')}`}
               className={styles.interactiveLink}
             >
               {statusText} ↗
@@ -184,7 +184,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
             {genresList.map((genre) => (
               <Link
                 key={genre}
-                href={`/bo-truyen?genre=${encodeURIComponent(genre)}`}
+                href={`/tac-pham?genre=${encodeURIComponent(genre)}`}
                 className={styles.genreTag}
                 title={`Xem tác phẩm thể loại ${genre}`}
               >

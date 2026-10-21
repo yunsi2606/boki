@@ -55,7 +55,7 @@ export default function WorkDetailPage({ params }: Props) {
         <div className={styles.emptyState}>
           <h2>Không tìm thấy tác phẩm</h2>
           <p>Tác phẩm này chưa có lịch phát hành hoặc đã được cập nhật đường dẫn mới.</p>
-          <Link href="/bo-truyen" className={styles.backBtn}>
+          <Link href="/tac-pham" className={styles.backBtn}>
             Quay lại danh sách tác phẩm
           </Link>
         </div>
@@ -99,7 +99,7 @@ export default function WorkDetailPage({ params }: Props) {
           Trang chủ
         </Link>
         <span className={styles.breadcrumbDivider}>/</span>
-        <Link href="/bo-truyen" className={styles.breadcrumbLink}>
+        <Link href="/tac-pham" className={styles.breadcrumbLink}>
           Tác phẩm
         </Link>
         <span className={styles.breadcrumbDivider}>/</span>

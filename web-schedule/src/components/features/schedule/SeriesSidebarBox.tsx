@@ -41,7 +41,7 @@ export function SeriesSidebarBox({
           <span className={styles.metaLabel}>Tác giả:</span>
           {author ? (
             <Link
-              href={`/bo-truyen?author=${encodeURIComponent(author)}`}
+              href={`/tac-pham?author=${encodeURIComponent(author)}`}
               className={styles.metaLink}
               title={`Xem tác phẩm của ${author}`}
             >
@@ -56,7 +56,7 @@ export function SeriesSidebarBox({
           <span className={styles.metaLabel}>NXB:</span>
           {publisher ? (
             <Link
-              href={`/bo-truyen?publisher=${encodeURIComponent(publisher)}`}
+              href={`/tac-pham?publisher=${encodeURIComponent(publisher)}`}
               className={styles.metaLink}
               title={`Xem tác phẩm của ${publisher}`}
             >

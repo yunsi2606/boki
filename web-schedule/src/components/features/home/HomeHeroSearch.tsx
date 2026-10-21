@@ -16,7 +16,7 @@ export function HomeHeroSearch({ totalSchedules, totalSeries }: Props) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!keyword.trim()) return;
-    router.push(`/bo-truyen?search=${encodeURIComponent(keyword.trim())}`);
+    router.push(`/tac-pham?search=${encodeURIComponent(keyword.trim())}`);
   };
 
   return (

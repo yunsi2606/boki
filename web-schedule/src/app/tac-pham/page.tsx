@@ -1,0 +1,238 @@
+'use client';
+
+import { Suspense, useEffect, useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { scheduleService } from '@/services/scheduleService';
+import type { SeriesSummaryItem } from '@/services/scheduleService';
+import { SeriesCard } from '@/components/features/series/SeriesCard';
+import { SeriesFilterToolbar } from '@/components/features/series/SeriesFilterToolbar';
+import { BookCardSkeleton } from '@/components/features/schedule/ScheduleSkeleton';
+import styles from './tacPhamList.module.css';
+
+function TacPhamListContent() {
+  const searchParams = useSearchParams();
+  const initialPublisher = searchParams.get('publisher') || 'ALL';
+  const initialGenre = searchParams.get('genre') || 'ALL';
+  const initialFormat = searchParams.get('format') || 'ALL';
+  const initialAuthor = searchParams.get('author') || '';
+
+  const [seriesList, setSeriesList] = useState<SeriesSummaryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'NEWEST' | 'VOLUMES' | 'NAME'>('NEWEST');
+
+  const [selectedPublisher, setSelectedPublisher] = useState(initialPublisher);
+  const [selectedGenre, setSelectedGenre] = useState(initialGenre);
+  const [selectedFormat, setSelectedFormat] = useState(initialFormat);
+  const [authorFilter, setAuthorFilter] = useState(initialAuthor);
+
+  useEffect(() => {
+    setSelectedPublisher(searchParams.get('publisher') || 'ALL');
+    setSelectedGenre(searchParams.get('genre') || 'ALL');
+    setSelectedFormat(searchParams.get('format') || 'ALL');
+    setAuthorFilter(searchParams.get('author') || '');
+  }, [searchParams]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        const data = await scheduleService.getSeriesSummaries();
+        setSeriesList(data || []);
+      } catch (err) {
+        console.error('Failed to load series list', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const availablePublishers = useMemo(() => {
+    const pubSet = new Set<string>();
+    seriesList.forEach((s) => {
+      if (s.publisher) pubSet.add(s.publisher);
+    });
+    return Array.from(pubSet).sort();
+  }, [seriesList]);
+
+  const totalVolumesCount = useMemo(() => {
+    return seriesList.reduce((acc, curr) => acc + (curr.totalVolumes || curr.volumeCount || 1), 0);
+  }, [seriesList]);
+
+  const handleClearAll = () => {
+    setSelectedPublisher('ALL');
+    setSelectedGenre('ALL');
+    setSelectedFormat('ALL');
+    setAuthorFilter('');
+    setSearch('');
+  };
+
+  const filteredList = useMemo(() => {
+    let list = [...seriesList];
+
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      list = list.filter(
+        (s) =>
+          s.seriesName.toLowerCase().includes(q) ||
+          (s.author && s.author.toLowerCase().includes(q)) ||
+          (s.publisher && s.publisher.toLowerCase().includes(q))
+      );
+    }
+
+    if (selectedPublisher !== 'ALL') {
+      list = list.filter((s) => s.publisher === selectedPublisher);
+    }
+
+    if (selectedFormat !== 'ALL') {
+      list = list.filter((s) => (s.format || 'MANGA') === selectedFormat);
+    }
+
+    if (selectedGenre !== 'ALL') {
+      list = list.filter((s) => s.genres && s.genres.includes(selectedGenre));
+    }
+
+    if (authorFilter.trim()) {
+      const auth = authorFilter.toLowerCase().trim();
+      list = list.filter((s) => s.author && s.author.toLowerCase().includes(auth));
+    }
+
+    list.sort((a, b) => {
+      if (sortBy === 'VOLUMES') {
+        const vA = a.totalVolumes || a.volumeCount || 0;
+        const vB = b.totalVolumes || b.volumeCount || 0;
+        return vB - vA;
+      } else if (sortBy === 'NAME') {
+        return a.seriesName.localeCompare(b.seriesName, 'vi');
+      } else {
+        if (a.latestReleaseDate && b.latestReleaseDate) {
+          return b.latestReleaseDate.localeCompare(a.latestReleaseDate);
+        }
+        return a.seriesName.localeCompare(b.seriesName);
+      }
+    });
+
+    return list;
+  }, [seriesList, search, sortBy, selectedPublisher, selectedFormat, selectedGenre, authorFilter]);
+
+  return (
+    <main className={styles.container}>
+      <div className={styles.heroSection}>
+        <div className={styles.heroMain}>
+          <h1 className={styles.title}>Tác phẩm bản quyền</h1>
+          <p className={styles.subtitle}>
+            Khám phá và tra cứu thông tin chi tiết các tựa manga, light novel bản quyền tại Việt Nam.
+          </p>
+
+          <div className={styles.searchBar}>
+            <svg
+              className={styles.searchIcon}
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Tìm theo tên tác phẩm, tác giả hoặc nhà xuất bản..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.heroStats} aria-label="Thống kê tác phẩm">
+          <div className={styles.statItem}>
+            <span className={styles.statValue}>{seriesList.length > 0 ? `${seriesList.length}+` : '--'}</span>
+            <span className={styles.statLabel}>Bộ truyện bản quyền</span>
+          </div>
+          <div className={styles.statDivider} />
+          <div className={styles.statItem}>
+            <span className={styles.statValue}>{totalVolumesCount > 0 ? `${totalVolumesCount}+` : '--'}</span>
+            <span className={styles.statLabel}>Tập đã lên lịch</span>
+          </div>
+          <div className={styles.statDivider} />
+          <div className={styles.statItem}>
+            <span className={styles.statValue}>{availablePublishers.length > 0 ? `${availablePublishers.length}` : '5+'}</span>
+            <span className={styles.statLabel}>Nhà xuất bản</span>
+          </div>
+        </div>
+      </div>
+
+      <SeriesFilterToolbar
+        selectedPublisher={selectedPublisher}
+        onSelectPublisher={setSelectedPublisher}
+        selectedFormat={selectedFormat}
+        onSelectFormat={setSelectedFormat}
+        selectedGenre={selectedGenre}
+        onSelectGenre={setSelectedGenre}
+        authorFilter={authorFilter}
+        onClearAuthor={() => setAuthorFilter('')}
+        availablePublishers={availablePublishers}
+        onClearAll={handleClearAll}
+      />
+
+      <div className={styles.toolbarRow}>
+        <div className={styles.foundCount}>
+          Tìm thấy <strong>{filteredList.length}</strong> bộ truyện
+        </div>
+        <div className={styles.sortGroup}>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${sortBy === 'NEWEST' ? styles.activeSort : ''}`}
+            onClick={() => setSortBy('NEWEST')}
+          >
+            Mới cập nhật
+          </button>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${sortBy === 'VOLUMES' ? styles.activeSort : ''}`}
+            onClick={() => setSortBy('VOLUMES')}
+          >
+            Nhiều tập nhất
+          </button>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${sortBy === 'NAME' ? styles.activeSort : ''}`}
+            onClick={() => setSortBy('NAME')}
+          >
+            Tên A-Z
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className={styles.grid} aria-label="Đang tải danh sách tác phẩm" aria-busy="true">
+          {Array.from({ length: 12 }).map((_, idx) => (
+            <BookCardSkeleton key={idx} />
+          ))}
+        </div>
+      ) : filteredList.length === 0 ? (
+        <div className={styles.emptyBox}>Không tìm thấy tác phẩm nào phù hợp với bộ lọc.</div>
+      ) : (
+        <div className={styles.grid}>
+          {filteredList.map((item) => (
+            <SeriesCard key={item.seriesSlug} item={item} />
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}
+
+export default function TacPhamListPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '60px', textAlign: 'center' }}>Đang tải...</div>}>
+      <TacPhamListContent />
+    </Suspense>
+  );
+}

@@ -43,7 +43,7 @@ export function GenreMarqueeSlider() {
           <div className={styles.kicker}>DANH MỤC KHÁM PHÁ</div>
           <h2 className={styles.title}>Thể Loại Truyện Đa Dạng</h2>
         </div>
-        <Link href="/bo-truyen" className={styles.viewAllLink}>
+        <Link href="/tac-pham" className={styles.viewAllLink}>
           <span>Tất cả thể loại</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
@@ -57,7 +57,7 @@ export function GenreMarqueeSlider() {
           {row1Duplicated.map((g, idx) => (
             <Link
               key={`r1-${g.id}-${idx}`}
-              href={`/bo-truyen?genre=${encodeURIComponent(g.name)}`}
+              href={`/tac-pham?genre=${encodeURIComponent(g.name)}`}
               className={`${styles.genrePill} ${styles[`pill_${g.theme}`]}`}
             >
               <span className={styles.pillDot} />
@@ -72,7 +72,7 @@ export function GenreMarqueeSlider() {
           {row2Duplicated.map((g, idx) => (
             <Link
               key={`r2-${g.id}-${idx}`}
-              href={`/bo-truyen?genre=${encodeURIComponent(g.name)}`}
+              href={`/tac-pham?genre=${encodeURIComponent(g.name)}`}
               className={`${styles.genrePill} ${styles[`pill_${g.theme}`]}`}
             >
               <span className={styles.pillDot} />

@@ -23,7 +23,7 @@ export function WorkVolumesShelf({ seriesName, seriesSlug, volumes }: Props) {
   }, [volumes, sortOrder]);
 
   return (
-    <div className={styles.container}>
+    <div id="danh-sach-tap" className={styles.container}>
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
           <h2 className={styles.sectionTitle}>
@@ -77,11 +77,11 @@ export function WorkVolumesShelf({ seriesName, seriesSlug, volumes }: Props) {
           </button>
 
           <Link
-            href={`/bo-truyen/${seriesSlug}`}
+            href={`/lich-phat-hanh?q=${encodeURIComponent(seriesName)}`}
             className={styles.viewTimelineLink}
-            title="Xem danh sách tiến độ lịch phát hành dạng thẻ"
+            title="Tra cứu lịch phát hành trên lịch tháng"
           >
-            Lịch phát hành
+            Xem trên lịch
             <svg
               width="13"
               height="13"
@@ -101,7 +101,7 @@ export function WorkVolumesShelf({ seriesName, seriesSlug, volumes }: Props) {
       {/* Grid of volumes */}
       <div className={styles.volumesGrid}>
         {sortedVolumes.map((vol) => {
-          const detailUrl = vol.slug ? `/tap-truyen/${vol.slug}` : `/bo-truyen/${seriesSlug}`;
+          const detailUrl = vol.slug ? `/tap-truyen/${vol.slug}` : `/tac-pham/${seriesSlug}`;
           const isReleased = vol.status === 'RELEASED';
           const editionCount = vol.editions ? vol.editions.length : 1;
 

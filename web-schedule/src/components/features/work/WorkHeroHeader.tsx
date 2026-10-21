@@ -184,10 +184,10 @@ export function WorkHeroHeader({
               <span>Đánh giá bộ truyện</span>
             </button>
 
-            <Link
-              href={`/bo-truyen/${seriesSlug}`}
+            <a
+              href="#danh-sach-tap"
               className={styles.secondaryActionBtn}
-              title="Xem danh sách tiến độ lịch phát hành các tập"
+              title="Xem danh sách các tập đã lên lịch phát hành"
             >
               <svg
                 width="16"
@@ -199,13 +199,13 @@ export function WorkHeroHeader({
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
               </svg>
-              <span>Xem lịch phát hành tập</span>
-            </Link>
+              <span>Xem danh sách tập</span>
+            </a>
           </div>
         </div>
       </div>
