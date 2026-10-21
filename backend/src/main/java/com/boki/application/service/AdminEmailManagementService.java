@@ -132,19 +132,19 @@ public class AdminEmailManagementService {
         EmailSmtpConfigJpaEntity entity = smtpConfigRepo.findActiveConfig()
                 .orElse(EmailSmtpConfigJpaEntity.builder().build());
 
-        entity.setHost(dto.getHost());
-        entity.setPort(dto.getPort());
-        entity.setUsername(dto.getUsername());
+        entity.setHost(dto.getHost() != null ? dto.getHost().trim() : "smtp.gmail.com");
+        entity.setPort(dto.getPort() != null ? dto.getPort() : 587);
+        entity.setUsername(dto.getUsername() != null ? dto.getUsername().trim() : null);
         if (dto.getPassword() != null && !dto.getPassword().isBlank() && !dto.getPassword().contains("***")) {
-            entity.setPassword(dto.getPassword());
+            entity.setPassword(dto.getPassword().replaceAll("\\s+", ""));
         }
-        entity.setAuthEnabled(Boolean.TRUE.equals(dto.getAuthEnabled()));
-        entity.setStarttlsEnabled(Boolean.TRUE.equals(dto.getStarttlsEnabled()));
+        entity.setAuthEnabled(dto.getAuthEnabled() == null || Boolean.TRUE.equals(dto.getAuthEnabled()));
+        entity.setStarttlsEnabled(dto.getStarttlsEnabled() == null || Boolean.TRUE.equals(dto.getStarttlsEnabled()));
         entity.setFromName(dto.getFromName());
-        entity.setFromEmail(dto.getFromEmail());
-        entity.setReplyTo(dto.getReplyTo());
+        entity.setFromEmail(dto.getFromEmail() != null ? dto.getFromEmail().trim() : null);
+        entity.setReplyTo(dto.getReplyTo() != null ? dto.getReplyTo().trim() : null);
         entity.setMaxRatePerMinute(dto.getMaxRatePerMinute() != null ? dto.getMaxRatePerMinute() : 30);
-        entity.setIsEnabled(Boolean.TRUE.equals(dto.getIsEnabled()));
+        entity.setIsEnabled(dto.getIsEnabled() == null || Boolean.TRUE.equals(dto.getIsEnabled()));
         entity.setUpdatedAt(OffsetDateTime.now());
         smtpConfigRepo.save(entity);
     }
@@ -152,6 +152,14 @@ public class AdminEmailManagementService {
     public void testConnection(SmtpConfigDto dto) throws Exception {
         if (dto.getPassword() != null && dto.getPassword().contains("***")) {
             smtpConfigRepo.findActiveConfig().ifPresent(c -> dto.setPassword(c.getPassword()));
+        } else if (dto.getPassword() != null) {
+            dto.setPassword(dto.getPassword().replaceAll("\\s+", ""));
+        }
+        if (dto.getAuthEnabled() == null) {
+            dto.setAuthEnabled(true);
+        }
+        if (dto.getStarttlsEnabled() == null) {
+            dto.setStarttlsEnabled(true);
         }
         smtpSender.testConnection(dto);
     }

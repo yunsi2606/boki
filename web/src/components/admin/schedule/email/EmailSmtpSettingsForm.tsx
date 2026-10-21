@@ -85,6 +85,7 @@ export function EmailSmtpSettingsForm({ initialConfig, onSaved }: Props) {
                   value={config.username || ''}
                   onChange={(e) => handleChange('username', e.target.value)}
                   className={styles.input}
+                  placeholder="Email đầy đủ: yourname@gmail.com"
                 />
               </div>
 
@@ -95,8 +96,11 @@ export function EmailSmtpSettingsForm({ initialConfig, onSaved }: Props) {
                   value={config.password || ''}
                   onChange={(e) => handleChange('password', e.target.value)}
                   className={styles.input}
-                  placeholder="Để trống nếu không đổi"
+                  placeholder="16 chữ cái App Password (vd: abcd efgh ijkl mnop)"
                 />
+                <span style={{ fontSize: 11, color: '#868e96', marginTop: 2 }}>
+                  * Dán mật khẩu 16 ký tự, hệ thống tự bỏ khoảng trắng thừa.
+                </span>
               </div>
 
               <div className={styles.formGroup}>

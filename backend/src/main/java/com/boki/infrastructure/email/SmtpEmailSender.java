@@ -86,21 +86,37 @@ public class SmtpEmailSender {
             Boolean starttls
     ) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
-        sender.setHost(host);
-        sender.setPort(port != null ? port : 587);
+        String safeHost = host != null && !host.isBlank() ? host.trim() : "smtp.gmail.com";
+        int safePort = port != null ? port : 587;
+        sender.setHost(safeHost);
+        sender.setPort(safePort);
         sender.setDefaultEncoding(StandardCharsets.UTF_8.name());
 
         if (username != null && !username.isBlank()) {
-            sender.setUsername(username);
+            sender.setUsername(username.trim());
         }
         if (password != null && !password.isBlank()) {
-            sender.setPassword(password);
+            sender.setPassword(password.replaceAll("\\s+", ""));
         }
+
+        boolean isAuth = auth == null || Boolean.TRUE.equals(auth);
+        boolean isStarttls = starttls == null || Boolean.TRUE.equals(starttls);
 
         Properties props = sender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", String.valueOf(Boolean.TRUE.equals(auth)));
-        props.put("mail.smtp.starttls.enable", String.valueOf(Boolean.TRUE.equals(starttls)));
+        props.put("mail.smtp.auth", String.valueOf(isAuth));
+
+        if (safePort == 465) {
+            props.put("mail.smtp.ssl.enable", "true");
+            props.put("mail.smtp.socketFactory.port", "465");
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        } else {
+            props.put("mail.smtp.starttls.enable", String.valueOf(isStarttls));
+            props.put("mail.smtp.starttls.required", String.valueOf(isStarttls));
+        }
+
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
+        props.put("mail.smtp.ssl.trust", safeHost);
         props.put("mail.smtp.connectiontimeout", "7000");
         props.put("mail.smtp.timeout", "7000");
         props.put("mail.smtp.writetimeout", "7000");
