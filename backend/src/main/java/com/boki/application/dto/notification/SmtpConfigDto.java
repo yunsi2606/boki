@@ -20,7 +20,8 @@ public class SmtpConfigDto {
     private Integer port;
 
     private String username;
-    private String password; // Will be masked on get unless updated
+    private String password; // Will be empty on get unless updating
+    private Boolean passwordConfigured; // True if DB has a non-empty password
 
     private Boolean authEnabled;
     private Boolean starttlsEnabled;

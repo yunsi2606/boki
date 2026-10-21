@@ -27,6 +27,7 @@ export interface SmtpConfig {
   port: number;
   username?: string;
   password?: string;
+  passwordConfigured?: boolean;
   authEnabled?: boolean;
   starttlsEnabled?: boolean;
   fromName: string;

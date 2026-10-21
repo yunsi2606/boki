@@ -60,93 +60,59 @@ export function EmailSmtpSettingsForm({ initialConfig, onSaved }: Props) {
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>SMTP Host</label>
-                <input
-                  type="text"
-                  required
-                  value={config.host}
-                  onChange={(e) => handleChange('host', e.target.value)}
-                  className={styles.input}
-                  placeholder="smtp.gmail.com"
-                />
+                <input type="text" required value={config.host} onChange={(e) => handleChange('host', e.target.value)} className={styles.input} placeholder="smtp.gmail.com" />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Port</label>
-                <input
-                  type="number"
-                  required
-                  value={config.port}
-                  onChange={(e) => handleChange('port', Number(e.target.value))}
-                  className={styles.input}
-                  placeholder="587"
-                />
+                <input type="number" required value={config.port} onChange={(e) => handleChange('port', Number(e.target.value))} className={styles.input} placeholder="587" />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Username / Tài khoản</label>
-                <input
-                  type="text"
-                  value={config.username || ''}
-                  onChange={(e) => handleChange('username', e.target.value)}
-                  className={styles.input}
-                  placeholder="Email đầy đủ: yourname@gmail.com"
-                />
+                <input type="text" value={config.username || ''} onChange={(e) => handleChange('username', e.target.value)} className={styles.input} placeholder="Email đầy đủ: yourname@gmail.com" />
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>Mật khẩu / App Password</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className={styles.label}>Mật khẩu / App Password</label>
+                  {config.passwordConfigured && !config.password && (
+                    <span style={{ fontSize: 11, color: '#2b8a3e', fontWeight: 600 }}>Đã lưu mật khẩu</span>
+                  )}
+                </div>
                 <input
                   type="password"
                   value={config.password || ''}
                   onChange={(e) => handleChange('password', e.target.value)}
                   className={styles.input}
-                  placeholder="16 chữ cái App Password (vd: abcd efgh ijkl mnop)"
+                  placeholder={config.passwordConfigured ? '•••••••• (Đã cấu hình, chỉ nhập nếu muốn đổi)' : '16 chữ cái App Password (vd: abcd efgh ijkl mnop)'}
                 />
-                <span style={{ fontSize: 11, color: '#868e96', marginTop: 2 }}>
-                  * Dán mật khẩu 16 ký tự, hệ thống tự bỏ khoảng trắng thừa.
-                </span>
+                {(() => {
+                  const cleaned = (config.password || '').replace(/\s+/g, '');
+                  if (!cleaned) return <span style={{ fontSize: 11, color: '#868e96', marginTop: 2 }}>* Google App Password gồm đúng 16 chữ cái (có thể dán kèm khoảng trắng).</span>;
+                  if (cleaned.length === 16) return <span style={{ fontSize: 11, color: '#2b8a3e', fontWeight: 600, marginTop: 2 }}>Độ dài: 16/16 ký tự (Chuẩn Google App Password)</span>;
+                  return <span style={{ fontSize: 11, color: '#e03131', fontWeight: 600, marginTop: 2 }}>Độ dài: {cleaned.length}/16 ký tự (Cần đúng 16 chữ cái!)</span>;
+                })()}
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Tên người gửi (From Name)</label>
-                <input
-                  type="text"
-                  required
-                  value={config.fromName}
-                  onChange={(e) => handleChange('fromName', e.target.value)}
-                  className={styles.input}
-                />
+                <input type="text" required value={config.fromName} onChange={(e) => handleChange('fromName', e.target.value)} className={styles.input} />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Địa chỉ gửi (From Email)</label>
-                <input
-                  type="email"
-                  required
-                  value={config.fromEmail}
-                  onChange={(e) => handleChange('fromEmail', e.target.value)}
-                  className={styles.input}
-                />
+                <input type="email" required value={config.fromEmail} onChange={(e) => handleChange('fromEmail', e.target.value)} className={styles.input} />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Reply-To Email</label>
-                <input
-                  type="email"
-                  value={config.replyTo || ''}
-                  onChange={(e) => handleChange('replyTo', e.target.value)}
-                  className={styles.input}
-                />
+                <input type="email" value={config.replyTo || ''} onChange={(e) => handleChange('replyTo', e.target.value)} className={styles.input} />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>Tốc độ tối đa (email/phút)</label>
-                <input
-                  type="number"
-                  value={config.maxRatePerMinute || 30}
-                  onChange={(e) => handleChange('maxRatePerMinute', Number(e.target.value))}
-                  className={styles.input}
-                />
+                <input type="number" value={config.maxRatePerMinute || 30} onChange={(e) => handleChange('maxRatePerMinute', Number(e.target.value))} className={styles.input} />
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullWidth}`}>

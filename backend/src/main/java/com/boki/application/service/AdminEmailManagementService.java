@@ -120,11 +120,13 @@ public class AdminEmailManagementService {
     public SmtpConfigDto getSmtpConfig() {
         return smtpConfigRepo.findActiveConfig().map(c -> SmtpConfigDto.builder()
                 .host(c.getHost()).port(c.getPort()).username(c.getUsername())
-                .password(c.getPassword() != null && !c.getPassword().isBlank() ? "********" : "")
+                .password("")
+                .passwordConfigured(c.getPassword() != null && !c.getPassword().isBlank())
                 .authEnabled(c.getAuthEnabled()).starttlsEnabled(c.getStarttlsEnabled())
                 .fromName(c.getFromName()).fromEmail(c.getFromEmail()).replyTo(c.getReplyTo())
                 .maxRatePerMinute(c.getMaxRatePerMinute()).isEnabled(c.getIsEnabled()).build()
-        ).orElseGet(() -> SmtpConfigDto.builder().host("smtp.gmail.com").port(587).isEnabled(false).build());
+        ).orElseGet(() -> SmtpConfigDto.builder()
+                .host("smtp.gmail.com").port(587).isEnabled(false).password("").passwordConfigured(false).build());
     }
 
     @Transactional
@@ -135,7 +137,7 @@ public class AdminEmailManagementService {
         entity.setHost(dto.getHost() != null ? dto.getHost().trim() : "smtp.gmail.com");
         entity.setPort(dto.getPort() != null ? dto.getPort() : 587);
         entity.setUsername(dto.getUsername() != null ? dto.getUsername().trim() : null);
-        if (dto.getPassword() != null && !dto.getPassword().isBlank() && !dto.getPassword().contains("***")) {
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             entity.setPassword(dto.getPassword().replaceAll("\\s+", ""));
         }
         entity.setAuthEnabled(dto.getAuthEnabled() == null || Boolean.TRUE.equals(dto.getAuthEnabled()));
@@ -150,20 +152,16 @@ public class AdminEmailManagementService {
     }
 
     public void testConnection(SmtpConfigDto dto) throws Exception {
-        if (dto.getPassword() != null && dto.getPassword().contains("***")) {
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
             String dbPass = smtpConfigRepo.findActiveConfig()
                     .map(EmailSmtpConfigJpaEntity::getPassword)
                     .orElse(null);
             if (dbPass == null || dbPass.isBlank()) {
-                throw new IllegalArgumentException("Chưa có mật khẩu được lưu trong cơ sở dữ liệu. Vui lòng nhập App Password và bấm 'Lưu cấu hình' trước khi kiểm tra.");
+                throw new IllegalArgumentException("Chưa có mật khẩu được lưu trong cơ sở dữ liệu. Vui lòng nhập App Password (16 ký tự) vào ô mật khẩu.");
             }
             dto.setPassword(dbPass);
-        } else if (dto.getPassword() != null) {
+        } else {
             dto.setPassword(dto.getPassword().replaceAll("\\s+", ""));
-        }
-
-        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Mật khẩu / App Password không được để trống!");
         }
 
         if (dto.getUsername() == null || dto.getUsername().isBlank()) {
