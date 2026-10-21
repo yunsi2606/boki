@@ -16,7 +16,7 @@ export function SeriesCard({ item }: Props) {
   const statusLabel = item.seriesStatus === 'COMPLETED' ? 'Đã hoàn thành' : 'Đang ra';
 
   return (
-    <Link href={`/bo-truyen/${item.seriesSlug}`} className={styles.card}>
+    <Link href={`/tac-pham/${item.seriesSlug}`} className={styles.card}>
       <div className={styles.coverWrapper}>
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element

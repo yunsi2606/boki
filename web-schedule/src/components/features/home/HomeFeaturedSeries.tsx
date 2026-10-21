@@ -39,7 +39,7 @@ export function HomeFeaturedSeries({ series }: Props) {
         {displayList.map((item) => (
           <Link
             key={item.seriesSlug}
-            href={`/bo-truyen/${item.seriesSlug}`}
+            href={`/tac-pham/${item.seriesSlug}`}
             className={styles.card}
           >
             <div className={styles.coverWrapper}>

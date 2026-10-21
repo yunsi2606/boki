@@ -81,8 +81,8 @@ export default function TapTruyenDetailPage({ params }: Props) {
         <span className={styles.breadcrumbSeparator}>/</span>
         {seriesSlug && (
           <>
-            <Link href={`/bo-truyen/${seriesSlug}`} className={styles.breadcrumbLink}>
-              {schedule.seriesName || 'Bộ truyện'}
+            <Link href={`/tac-pham/${seriesSlug}`} className={styles.breadcrumbLink}>
+              {schedule.seriesName || 'Tác phẩm'}
             </Link>
             <span className={styles.breadcrumbSeparator}>/</span>
           </>

@@ -1,0 +1,244 @@
+.container {
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-neutral-300);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--space-5);
+}
+
+.titleIcon {
+  color: var(--color-secondary-500);
+}
+
+.summaryCard {
+  display: flex;
+  gap: var(--space-8);
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+  align-items: center;
+}
+
+.scoreBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 140px;
+}
+
+.bigScore {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.starRow {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.star {
+  color: var(--color-neutral-300);
+}
+
+.starActive {
+  color: var(--color-secondary-500);
+}
+
+.totalReviewsText {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
+
+.barsBlock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.barLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-neutral-600);
+  width: 44px;
+}
+
+.barTrack {
+  flex: 1;
+  height: 8px;
+  background: var(--color-neutral-200);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: var(--color-secondary-500);
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease;
+}
+
+.barCount {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+  width: 24px;
+  text-align: right;
+}
+
+.reviewForm {
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.formTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+}
+
+.starPicker {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.starPickerBtn {
+  cursor: pointer;
+  padding: 2px;
+  line-height: 0;
+}
+
+.pickerStar {
+  color: var(--color-neutral-300);
+  transition: color 0.15s ease;
+}
+
+.pickerStarActive {
+  color: var(--color-secondary-500);
+}
+
+.ratingNumber {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+  margin-left: 6px;
+}
+
+.formInputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.nameInput {
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--color-neutral-900);
+  outline: none;
+}
+
+.nameInput:focus {
+  border-color: var(--color-primary-500);
+}
+
+.contentTextarea {
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--color-neutral-900);
+  resize: vertical;
+  outline: none;
+}
+
+.contentTextarea:focus {
+  border-color: var(--color-primary-500);
+}
+
+.formFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submitBtn {
+  background: var(--color-primary-500);
+  color: var(--color-neutral-100);
+  padding: 9px 20px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-neutral-500);
+  font-size: 14px;
+  background: var(--color-neutral-50);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-neutral-300);
+}
+
+@media (max-width: 640px) {
+  .summaryCard {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+}

@@ -1,0 +1,283 @@
+.heroWrapper {
+  position: relative;
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-neutral-300);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+
+.backdropBlur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 180px;
+  overflow: hidden;
+  opacity: 0.15;
+  filter: blur(28px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.backdropImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.1);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--space-8);
+  padding: var(--space-8);
+}
+
+.posterColumn {
+  flex-shrink: 0;
+  width: 220px;
+}
+
+.posterFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-neutral-300);
+  background: var(--color-neutral-200);
+}
+
+.posterImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.posterFrame:hover .posterImg {
+  transform: scale(1.03);
+}
+
+.posterPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-neutral-500);
+  font-size: 14px;
+}
+
+.formatBadge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(4px);
+  color: var(--color-neutral-100);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.infoColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.statusBadge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.statusOngoing {
+  background: rgba(238, 77, 45, 0.1);
+  color: var(--color-primary-600);
+}
+
+.statusCompleted {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--color-success-600);
+}
+
+.publisherBadge {
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.ageBadge {
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--color-pink-100);
+  color: var(--color-pink-600);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.seriesTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  line-height: 1.25;
+  margin-bottom: var(--space-1);
+}
+
+.originalTitle {
+  font-size: 14px;
+  color: var(--color-neutral-500);
+  font-style: italic;
+  margin-bottom: var(--space-5);
+}
+
+.metricsBar {
+  display: flex;
+  align-items: center;
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5);
+  margin-bottom: var(--space-6);
+  width: fit-content;
+  gap: var(--space-5);
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metricValue {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+}
+
+.starIcon {
+  color: var(--color-secondary-500);
+}
+
+.metaIcon {
+  color: var(--color-neutral-500);
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
+
+.metricDivider {
+  width: 1px;
+  height: 28px;
+  background: var(--color-neutral-300);
+}
+
+.actionRow {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.primaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-primary-500);
+  color: var(--color-neutral-100);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.primaryActionBtn:hover {
+  background: var(--color-primary-600);
+}
+
+.primaryActionBtn:active {
+  transform: translateY(1px);
+}
+
+.secondaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+  border: 1px solid var(--color-neutral-300);
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.secondaryActionBtn:hover {
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-900);
+  border-color: var(--color-neutral-400);
+}
+
+@media (max-width: 768px) {
+  .heroContent {
+    flex-direction: column;
+    padding: var(--space-5);
+    gap: var(--space-5);
+  }
+
+  .posterColumn {
+    width: 150px;
+    margin: 0 auto;
+  }
+
+  .seriesTitle {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .originalTitle {
+    text-align: center;
+  }
+
+  .badgeRow {
+    justify-content: center;
+  }
+
+  .metricsBar {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .actionRow {
+    justify-content: center;
+  }
+}

@@ -54,10 +54,19 @@ export default function SeriesDetailPage({ params }: Props) {
       </nav>
 
       <div className={styles.seriesHeader}>
-        <h1 className={styles.seriesTitle}>{seriesName}</h1>
-        <p className={styles.seriesMeta}>
-          Hiện có <strong>{volumes.length}</strong> tập trong hệ thống lịch phát hành.
-        </p>
+        <div className={styles.headerInfo}>
+          <h1 className={styles.seriesTitle}>{seriesName}</h1>
+          <p className={styles.seriesMeta}>
+            Hiện có <strong>{volumes.length}</strong> tập trong hệ thống lịch phát hành.
+          </p>
+        </div>
+        <Link href={`/tac-pham/${slug}`} className={styles.workDetailBtn}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <span>Xem chi tiết tác phẩm & Đánh giá</span>
+        </Link>
       </div>
 
       <div className={styles.volumesGrid}>

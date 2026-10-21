@@ -117,7 +117,7 @@ export function HomeHeroSlider({ items }: Props) {
                     </Link>
 
                     {seriesSlug && (
-                      <Link href={`/bo-truyen/${seriesSlug}`} className={styles.secondaryBtn}>
+                      <Link href={`/tac-pham/${seriesSlug}`} className={styles.secondaryBtn}>
                         Khám phá bộ truyện
                       </Link>
                     )}
