@@ -6,8 +6,8 @@ import { giveawayService } from '@/services/giveawayService';
 import { GiveawayCampaignDetail, GiveawayEntry } from '@/types/giveaway';
 import { GiveawayHero } from '@/components/features/giveaway/GiveawayHero';
 import { GiveawayPrizeList } from '@/components/features/giveaway/GiveawayPrizeList';
-import { GiveawayEntryForm } from '@/components/features/giveaway/GiveawayEntryForm';
 import { GiveawayWinnersBoard } from '@/components/features/giveaway/GiveawayWinnersBoard';
+import { GiveawayEntryModal } from '@/components/features/giveaway/GiveawayEntryModal';
 import styles from './giveawayDetail.module.css';
 
 interface Props {
@@ -19,6 +19,7 @@ export default function GiveawayDetailPage({ params }: Props) {
   const [campaign, setCampaign] = useState<GiveawayCampaignDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadData = async () => {
     try {
@@ -38,7 +39,7 @@ export default function GiveawayDetailPage({ params }: Props) {
     loadData();
   }, [slug]);
 
-  const handleEntrySuccess = (entry: GiveawayEntry) => {
+  const handleEntrySuccess = (_entry: GiveawayEntry) => {
     if (campaign) {
       setCampaign({
         ...campaign,
@@ -47,16 +48,23 @@ export default function GiveawayDetailPage({ params }: Props) {
     }
   };
 
+  const formatDrawDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const drawDateFormatted = campaign ? formatDrawDate(campaign.drawDate || campaign.endDate) : '';
+
   return (
     <div className={styles.container}>
       <nav className={styles.breadcrumbs}>
-        <Link href="/" className={styles.breadcrumbLink}>
-          Trang chủ
-        </Link>
+        <Link href="/" className={styles.breadcrumbLink}>Trang chủ</Link>
         <span>/</span>
-        <Link href="/giveaway" className={styles.breadcrumbLink}>
-          Give Away
-        </Link>
+        <Link href="/giveaway" className={styles.breadcrumbLink}>Give Away</Link>
         <span>/</span>
         <span className={styles.breadcrumbActive}>{campaign ? campaign.title : slug}</span>
       </nav>
@@ -67,14 +75,17 @@ export default function GiveawayDetailPage({ params }: Props) {
         <div className={styles.errorBox}>
           <p>{errorMsg}</p>
           <Link href="/giveaway" style={{ color: 'var(--color-primary-500)', fontWeight: 700 }}>
-            ← Quay lại danh sách Give Away
+            Quay lại danh sách Give Away
           </Link>
         </div>
       )}
 
       {!loading && campaign && (
         <>
-          <GiveawayHero campaign={campaign} />
+          <GiveawayHero
+            campaign={campaign}
+            onOpenEntryModal={() => setIsModalOpen(true)}
+          />
 
           <GiveawayPrizeList
             prizes={campaign.prizes}
@@ -89,32 +100,13 @@ export default function GiveawayDetailPage({ params }: Props) {
             />
           )}
 
-          {campaign.status === 'OPEN' && (
-            <GiveawayEntryForm slug={campaign.slug} onEntrySuccess={handleEntrySuccess} />
-          )}
-
-          {campaign.status === 'UPCOMING' && (
-            <div className={styles.closedNotice}>
-              Sự kiện Give Away này sẽ chính thức mở nhận lượt tham gia vào lúc:{' '}
-              <strong>
-                {new Date(campaign.startDate).toLocaleString('vi-VN', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </strong>
-              . Hãy quay lại sau nhé!
-            </div>
-          )}
-
-          {campaign.status === 'CLOSED' && (
-            <div className={styles.closedNotice}>
-              Sự kiện Give Away này đã kết thúc nhận đăng ký và đang chờ công bố kết quả Xổ Số Miền Bắc.
-              Boki sẽ sớm cập nhật danh sách người chiến thắng tại đây!
-            </div>
-          )}
+          <GiveawayEntryModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            slug={campaign.slug}
+            drawDateFormatted={drawDateFormatted}
+            onEntrySuccess={handleEntrySuccess}
+          />
         </>
       )}
     </div>

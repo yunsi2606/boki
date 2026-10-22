@@ -85,6 +85,7 @@ export interface CreateGiveawayPayload {
   status?: string;
   startDate: string;
   endDate: string;
+  drawDate?: string;
   prizes: AdminGiveawayPrize[];
 }
 

@@ -40,6 +40,8 @@ public class CreateGiveawayCampaignRequest {
     @NotNull(message = "Thời gian kết thúc không được để trống")
     private OffsetDateTime endDate;
 
+    private OffsetDateTime drawDate;
+
     @NotEmpty(message = "Phải có ít nhất 1 giải thưởng")
     private List<GiveawayPrizeDto> prizes;
 }

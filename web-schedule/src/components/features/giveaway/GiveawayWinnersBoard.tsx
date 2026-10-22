@@ -33,7 +33,7 @@ export function GiveawayWinnersBoard({ winningNumber, drawDate, winners }: Props
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div id="winners-board" className={styles.wrapper}>
       <h2 className={styles.title}>Bảng Vinh Danh Người Chiến Thắng</h2>
 
       {winningNumber !== undefined && winningNumber !== null && (

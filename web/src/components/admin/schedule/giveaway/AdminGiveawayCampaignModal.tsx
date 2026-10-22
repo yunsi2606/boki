@@ -28,6 +28,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
   const [status, setStatus] = useState('OPEN');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [drawDate, setDrawDate] = useState('');
   const [prizes, setPrizes] = useState<AdminGiveawayPrize[]>([
     { prizeTier: 'FIRST', prizeName: 'Tập truyện bản Đặc Biệt', quantity: 1, displayOrder: 1 },
   ]);
@@ -50,6 +51,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
       setStatus(campaign.status || 'OPEN');
       setStartDate(campaign.startDate ? campaign.startDate.slice(0, 16) : '');
       setEndDate(campaign.endDate ? campaign.endDate.slice(0, 16) : '');
+      setDrawDate(campaign.drawDate ? campaign.drawDate.slice(0, 16) : (campaign.endDate ? campaign.endDate.slice(0, 16) : ''));
       if (campaign.prizes && campaign.prizes.length > 0) setPrizes(campaign.prizes);
     } else {
       setTitle('');
@@ -62,6 +64,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
       const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
       setStartDate(now.toISOString().slice(0, 16));
       setEndDate(nextWeek.toISOString().slice(0, 16));
+      setDrawDate(nextWeek.toISOString().slice(0, 16));
       setPrizes([
         { prizeTier: 'FIRST', prizeName: 'Tập truyện bản Đặc Biệt', quantity: 1, displayOrder: 1 },
         { prizeTier: 'SECOND', prizeName: 'Bộ quà tặng Standee/Postcard', quantity: 2, displayOrder: 2 },
@@ -110,6 +113,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
         status,
         startDate: new Date(startDate).toISOString(),
         endDate: new Date(endDate).toISOString(),
+        drawDate: drawDate ? new Date(drawDate).toISOString() : new Date(endDate).toISOString(),
         prizes,
       });
       onClose();
@@ -158,14 +162,6 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
                 className={styles.input} required />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Thời gian kết thúc *</label>
-              <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-                className={styles.input} required />
-            </div>
-          </div>
-
-          <div className={styles.grid2}>
-            <div className={styles.field}>
               <label className={styles.label}>Trạng thái sự kiện</label>
               <select value={status} onChange={(e) => setStatus(e.target.value)} className={styles.select}>
                 <option value="UPCOMING">Sắp diễn ra (UPCOMING)</option>
@@ -174,11 +170,25 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
                 <option value="DRAWN">Đã quay số (DRAWN)</option>
               </select>
             </div>
+          </div>
+
+          <div className={styles.grid2}>
             <div className={styles.field}>
-              <label className={styles.label}>Slug (Đường dẫn tùy chọn)</label>
-              <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)}
-                placeholder="Tự động sinh nếu để trống" className={styles.input} />
+              <label className={styles.label}>Thời gian đóng đăng ký *</label>
+              <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+                className={styles.input} required />
             </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Ngày mở thưởng XSMB (18:15) *</label>
+              <input type="datetime-local" value={drawDate} onChange={(e) => setDrawDate(e.target.value)}
+                className={styles.input} required />
+            </div>
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Slug tùy chọn (để trống sẽ tự sinh)</label>
+            <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)}
+              placeholder="VD: give-away-one-piece-108" className={styles.input} />
           </div>
 
           <div className={styles.field}>

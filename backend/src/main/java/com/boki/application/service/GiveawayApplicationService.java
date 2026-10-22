@@ -119,6 +119,7 @@ public class GiveawayApplicationService {
                 .status(request.getStatus() != null ? request.getStatus() : "OPEN")
                 .startDate(request.getStartDate() != null ? request.getStartDate() : OffsetDateTime.now())
                 .endDate(request.getEndDate())
+                .drawDate(request.getDrawDate() != null ? request.getDrawDate() : request.getEndDate())
                 .totalWinnersCount(0)
                 .createdAt(OffsetDateTime.now())
                 .updatedAt(OffsetDateTime.now())
@@ -135,9 +136,7 @@ public class GiveawayApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("GiveawayCampaign", "id", id));
 
         campaign.setTitle(request.getTitle().trim());
-        if (request.getSlug() != null && !request.getSlug().isBlank()) {
-            campaign.setSlug(SlugUtils.slugify(request.getSlug()));
-        }
+        if (request.getSlug() != null && !request.getSlug().isBlank()) campaign.setSlug(SlugUtils.slugify(request.getSlug()));
         campaign.setDescription(request.getDescription());
         campaign.setBannerUrl(request.getBannerUrl());
         campaign.setScheduleId(request.getScheduleId());
@@ -145,6 +144,7 @@ public class GiveawayApplicationService {
         if (request.getStatus() != null) campaign.setStatus(request.getStatus());
         campaign.setStartDate(request.getStartDate());
         campaign.setEndDate(request.getEndDate());
+        campaign.setDrawDate(request.getDrawDate() != null ? request.getDrawDate() : request.getEndDate());
         campaign.setUpdatedAt(OffsetDateTime.now());
 
         prizeRepository.deleteByCampaignId(id);

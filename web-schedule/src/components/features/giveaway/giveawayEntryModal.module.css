@@ -1,0 +1,234 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: var(--radius-lg, 16px);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-neutral-300);
+  overflow: hidden;
+}
+
+.header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-neutral-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin: 0;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--color-neutral-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.closeBtn:hover {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-900);
+}
+
+.body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rulesBanner {
+  background: var(--color-pink-50);
+  border: 1px solid var(--color-pink-100);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-neutral-800);
+}
+.rulesBannerHighlight {
+  font-weight: 700;
+  color: var(--color-primary-600);
+}
+
+.luckySection {
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.luckyLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+}
+
+.luckyInputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.luckyInput {
+  width: 120px;
+  height: 48px;
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 4px;
+  color: var(--color-primary-500);
+  background: #ffffff;
+  border: 2px solid var(--color-primary-500);
+  border-radius: 8px;
+  outline: none;
+}
+.luckyInput:focus {
+  box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.15);
+}
+
+.randomBtn {
+  height: 48px;
+  padding: 0 16px;
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-800);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.randomBtn:hover {
+  background: var(--color-neutral-300);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-neutral-800);
+}
+
+.input,
+.textarea {
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input {
+  height: 40px;
+}
+.input:focus,
+.textarea:focus {
+  border-color: var(--color-primary-500);
+}
+
+.textarea {
+  padding: 8px 12px;
+  min-height: 60px;
+  resize: vertical;
+}
+
+.submitBtn {
+  height: 44px;
+  background: var(--color-primary-500);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-primary-600);
+}
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorText {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.successBox {
+  text-align: center;
+  padding: 16px 8px;
+}
+
+.successTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #059669;
+  margin: 0 0 8px;
+}
+
+.successText {
+  font-size: 14px;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.numberDisplay {
+  display: inline-block;
+  padding: 10px 24px;
+  background: var(--color-primary-50);
+  border: 2px solid var(--color-primary-500);
+  border-radius: 12px;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-primary-500);
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
