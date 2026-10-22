@@ -68,7 +68,7 @@ export default function AdminGiveawayPrizeBuilder({
                 onChange={(e) => onUpdatePrize(index, 'prizeName', e.target.value)}
                 placeholder="Tên phần quà / sách tặng kèm..."
                 className={styles.input}
-                style={{ flex: 1 }}
+                style={{ flex: 1, minWidth: 0 }}
                 required
               />
 
@@ -106,7 +106,7 @@ export default function AdminGiveawayPrizeBuilder({
                 value={p.scheduleId || ''}
                 onChange={(e) => onUpdatePrize(index, 'scheduleId', e.target.value || undefined)}
                 className={styles.select}
-                style={{ flex: 1, fontSize: 13, height: 34 }}
+                style={{ flex: 1, minWidth: 0, fontSize: 13, height: 34 }}
               >
                 <option value="">-- Không gắn LPH (Quà tặng/Sách tự do) --</option>
                 {schedules.map((s) => (

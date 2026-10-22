@@ -44,8 +44,8 @@ export default function AdminGiveawayEntriesModal({ isOpen, onClose, campaign }:
   });
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2 className={styles.title}>Danh sách lượt tham gia</h2>
           <button type="button" onClick={onClose} className={styles.closeBtn}>✕</button>

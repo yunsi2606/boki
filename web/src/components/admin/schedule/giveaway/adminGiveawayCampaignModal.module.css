@@ -1,11 +1,12 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 16px;
 }
 
@@ -13,19 +14,22 @@
   background: #fff;
   border-radius: var(--radius-lg, 16px);
   width: 100%;
-  max-width: 680px;
+  max-width: 720px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-neutral-300);
+  overflow: hidden;
 }
 
 .header {
-  padding: 20px 24px;
+  padding: 18px 24px;
   border-bottom: 1px solid var(--color-neutral-300);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #fff;
 }
 
 .title {
@@ -42,26 +46,37 @@
   color: var(--color-neutral-500);
   cursor: pointer;
   padding: 4px;
+  line-height: 1;
+}
+
+.closeBtn:hover {
+  color: var(--color-neutral-900);
 }
 
 .body {
   padding: 20px 24px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+  width: 100%;
 }
 
 .grid2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
+  width: 100%;
+  min-width: 0;
 }
 
 .label {
@@ -78,6 +93,9 @@
   border-radius: var(--radius-md, 8px);
   font-size: 14px;
   outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .input:focus,
@@ -93,6 +111,13 @@
   outline: none;
   min-height: 70px;
   resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary-500);
 }
 
 .prizeSection {
@@ -100,6 +125,9 @@
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--radius-md, 10px);
   padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .prizeSectionHeader {
@@ -107,6 +135,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+  gap: 8px;
 }
 
 .prizeItemBox {
@@ -117,20 +146,27 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .prizeRowTop {
   display: flex;
   gap: 8px;
   align-items: center;
+  width: 100%;
+  min-width: 0;
 }
 
 .prizeRowBottom {
   display: flex;
   gap: 8px;
   align-items: center;
-  padding-top: 6px;
+  padding-top: 8px;
   border-top: 1px dashed var(--color-neutral-200);
+  width: 100%;
+  min-width: 0;
 }
 
 .flatPrizeBadge {
@@ -142,6 +178,7 @@
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .removePrizeBtn {
@@ -154,6 +191,11 @@
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.removePrizeBtn:hover {
+  background: #FCA5A5;
 }
 
 .addPrizeBtn {
@@ -165,6 +207,12 @@
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.addPrizeBtn:hover {
+  background: var(--color-primary-50);
 }
 
 .footer {
@@ -174,6 +222,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+  background: #fff;
 }
 
 .cancelBtn {
@@ -187,6 +236,10 @@
   cursor: pointer;
 }
 
+.cancelBtn:hover {
+  background: var(--color-neutral-300);
+}
+
 .saveBtn {
   padding: 10px 22px;
   background: var(--color-primary-500);
@@ -196,6 +249,10 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: var(--color-primary-600);
 }
 
 .saveBtn:disabled {

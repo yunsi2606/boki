@@ -50,9 +50,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
       setStatus(campaign.status || 'OPEN');
       setStartDate(campaign.startDate ? campaign.startDate.slice(0, 16) : '');
       setEndDate(campaign.endDate ? campaign.endDate.slice(0, 16) : '');
-      if (campaign.prizes && campaign.prizes.length > 0) {
-        setPrizes(campaign.prizes);
-      }
+      if (campaign.prizes && campaign.prizes.length > 0) setPrizes(campaign.prizes);
     } else {
       setTitle('');
       setSlug('');
@@ -130,8 +128,8 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2 className={styles.title}>
             {campaign ? 'Chỉnh sửa sự kiện Give Away' : 'Tạo sự kiện Give Away mới'}
@@ -142,30 +140,18 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
         <form onSubmit={handleSubmit} className={styles.body}>
           {errorMsg && <div className={styles.errorText}>{errorMsg}</div>}
 
-          <div className={styles.field}>
-            <label className={styles.label}>Tiêu đề sự kiện *</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="VD: Give Away One Piece Tập 108 Bản Giới Hạn"
-              className={styles.input}
-              required
-            />
-          </div>
-
           <div className={styles.grid2}>
             <div className={styles.field}>
-              <label className={styles.label}>Slug (Đường dẫn)</label>
+              <label className={styles.label}>Tiêu đề sự kiện *</label>
               <input
                 type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                placeholder="Tự động sinh nếu để trống"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="VD: Give Away One Piece Tập 108 Bản Giới Hạn"
                 className={styles.input}
+                required
               />
             </div>
-
             <div className={styles.field}>
               <label className={styles.label}>Loại cơ cấu giải</label>
               <select
@@ -191,7 +177,30 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
 
           <div className={styles.grid2}>
             <div className={styles.field}>
-              <label className={styles.label}>Trạng thái</label>
+              <label className={styles.label}>Thời gian bắt đầu *</label>
+              <input
+                type="datetime-local"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className={styles.input}
+                required
+              />
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Thời gian kết thúc *</label>
+              <input
+                type="datetime-local"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className={styles.input}
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.grid2}>
+            <div className={styles.field}>
+              <label className={styles.label}>Trạng thái sự kiện</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
@@ -203,28 +212,15 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
                 <option value="DRAWN">Đã quay số (DRAWN)</option>
               </select>
             </div>
-
-            <div className={styles.grid2}>
-              <div className={styles.field}>
-                <label className={styles.label}>Bắt đầu *</label>
-                <input
-                  type="datetime-local"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className={styles.input}
-                  required
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label}>Kết thúc *</label>
-                <input
-                  type="datetime-local"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className={styles.input}
-                  required
-                />
-              </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Slug (Đường dẫn tùy chọn)</label>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="Tự động sinh nếu để trống"
+                className={styles.input}
+              />
             </div>
           </div>
 

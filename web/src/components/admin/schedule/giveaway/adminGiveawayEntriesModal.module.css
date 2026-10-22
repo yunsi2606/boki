@@ -1,11 +1,12 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 16px;
 }
 
@@ -17,15 +18,18 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-neutral-300);
+  overflow: hidden;
 }
 
 .header {
-  padding: 20px 24px;
+  padding: 18px 24px;
   border-bottom: 1px solid var(--color-neutral-300);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #fff;
 }
 
 .title {
@@ -41,14 +45,22 @@
   font-size: 20px;
   color: var(--color-neutral-500);
   cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.closeBtn:hover {
+  color: var(--color-neutral-900);
 }
 
 .body {
   padding: 20px 24px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 
 .searchBar {
