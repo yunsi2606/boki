@@ -4,6 +4,9 @@ export interface GiveawayPrize {
   prizeName: string;
   quantity: number;
   displayOrder: number;
+  scheduleId?: string;
+  scheduleTitle?: string;
+  scheduleCoverUrl?: string;
 }
 
 export interface GiveawayCampaign {

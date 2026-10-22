@@ -11,6 +11,10 @@ import java.util.List;
 public class GiveawayMapper {
 
     public static GiveawayPrizeDto toPrizeDto(GiveawayPrizeJpaEntity entity) {
+        return toPrizeDto(entity, null, null);
+    }
+
+    public static GiveawayPrizeDto toPrizeDto(GiveawayPrizeJpaEntity entity, String scheduleTitle, String scheduleCoverUrl) {
         if (entity == null) return null;
         return GiveawayPrizeDto.builder()
                 .id(entity.getId())
@@ -18,6 +22,9 @@ public class GiveawayMapper {
                 .prizeName(entity.getPrizeName())
                 .quantity(entity.getQuantity())
                 .displayOrder(entity.getDisplayOrder())
+                .scheduleId(entity.getScheduleId())
+                .scheduleTitle(scheduleTitle)
+                .scheduleCoverUrl(scheduleCoverUrl)
                 .build();
     }
 
@@ -64,15 +71,12 @@ public class GiveawayMapper {
     public static GiveawayCampaignDetailDto toDetailDto(
             GiveawayCampaignJpaEntity entity,
             long entriesCount,
+            List<GiveawayPrizeDto> prizes,
             List<GiveawayEntryDto> winners,
             String scheduleTitle,
             String scheduleCoverUrl
     ) {
         if (entity == null) return null;
-        List<GiveawayPrizeDto> prizes = entity.getPrizes() != null
-                ? entity.getPrizes().stream().map(GiveawayMapper::toPrizeDto).toList()
-                : Collections.emptyList();
-
         return GiveawayCampaignDetailDto.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())

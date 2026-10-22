@@ -109,11 +109,39 @@
   margin-bottom: 12px;
 }
 
-.prizeRow {
+.prizeItemBox {
+  background: #fff;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md, 8px);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prizeRowTop {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-bottom: 8px;
+}
+
+.prizeRowBottom {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 6px;
+  border-top: 1px dashed var(--color-neutral-200);
+}
+
+.flatPrizeBadge {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+  border: 1px solid var(--color-primary-200);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .removePrizeBtn {
@@ -125,18 +153,18 @@
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .addPrizeBtn {
   background: #fff;
   border: 1px dashed var(--color-primary-400);
   color: var(--color-primary-500);
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 8px;
 }
 
 .footer {

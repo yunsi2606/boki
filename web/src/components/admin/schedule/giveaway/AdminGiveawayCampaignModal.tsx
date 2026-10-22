@@ -8,6 +8,8 @@ import {
 } from '@/services/adminGiveawayService';
 import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem } from '@/types/schedule';
+import ImageUploadInput from '@/components/ui/ImageUploadInput';
+import AdminGiveawayPrizeBuilder from './AdminGiveawayPrizeBuilder';
 import styles from './adminGiveawayCampaignModal.module.css';
 
 interface Props {
@@ -22,7 +24,6 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [bannerUrl, setBannerUrl] = useState('');
-  const [scheduleId, setScheduleId] = useState<string>('');
   const [prizeStructureType, setPrizeStructureType] = useState('TIERED');
   const [status, setStatus] = useState('OPEN');
   const [startDate, setStartDate] = useState('');
@@ -45,7 +46,6 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
       setSlug(campaign.slug || '');
       setDescription(campaign.description || '');
       setBannerUrl(campaign.bannerUrl || '');
-      setScheduleId(campaign.scheduleId || '');
       setPrizeStructureType(campaign.prizeStructureType || 'TIERED');
       setStatus(campaign.status || 'OPEN');
       setStartDate(campaign.startDate ? campaign.startDate.slice(0, 16) : '');
@@ -58,7 +58,6 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
       setSlug('');
       setDescription('');
       setBannerUrl('');
-      setScheduleId('');
       setPrizeStructureType('TIERED');
       setStatus('OPEN');
       const now = new Date();
@@ -77,7 +76,12 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
   const handleAddPrize = () => {
     setPrizes([
       ...prizes,
-      { prizeTier: 'STANDARD', prizeName: 'Quà tặng Manga Boki', quantity: 1, displayOrder: prizes.length + 1 },
+      {
+        prizeTier: prizeStructureType === 'FLAT' ? 'STANDARD' : 'CONSOLATION',
+        prizeName: 'Quà tặng Manga Boki',
+        quantity: 1,
+        displayOrder: prizes.length + 1,
+      },
     ]);
   };
 
@@ -111,7 +115,6 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
         slug: slug.trim() || undefined,
         description: description.trim() || undefined,
         bannerUrl: bannerUrl.trim() || undefined,
-        scheduleId: scheduleId || undefined,
         prizeStructureType,
         status,
         startDate: new Date(startDate).toISOString(),
@@ -164,35 +167,6 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
             </div>
 
             <div className={styles.field}>
-              <label className={styles.label}>Liên kết Lịch phát hành (Tùy chọn)</label>
-              <select
-                value={scheduleId}
-                onChange={(e) => setScheduleId(e.target.value)}
-                className={styles.select}
-              >
-                <option value="">-- Không liên kết --</option>
-                {schedules.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.title} ({s.publisher})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label}>Ảnh Banner (URL)</label>
-            <input
-              type="text"
-              value={bannerUrl}
-              onChange={(e) => setBannerUrl(e.target.value)}
-              placeholder="https://..."
-              className={styles.input}
-            />
-          </div>
-
-          <div className={styles.grid2}>
-            <div className={styles.field}>
               <label className={styles.label}>Loại cơ cấu giải</label>
               <select
                 value={prizeStructureType}
@@ -200,10 +174,22 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
                 className={styles.select}
               >
                 <option value="TIERED">Phân cấp (Nhất, Nhì, Ba, Khuyến khích)</option>
-                <option value="FLAT">Đồng hạng (N giải tương đương)</option>
+                <option value="FLAT">Đồng hạng (N giải giá trị tương đương)</option>
               </select>
             </div>
+          </div>
 
+          <div className={styles.field}>
+            <ImageUploadInput
+              label="Ảnh Banner sự kiện (Upload R2)"
+              value={bannerUrl}
+              onChange={setBannerUrl}
+              placeholder="Chọn hoặc kéo thả ảnh banner Give Away..."
+              helperText="Định dạng khuyến nghị: 1200x500 PNG/JPG/WEBP"
+            />
+          </div>
+
+          <div className={styles.grid2}>
             <div className={styles.field}>
               <label className={styles.label}>Trạng thái</label>
               <select
@@ -217,28 +203,28 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
                 <option value="DRAWN">Đã quay số (DRAWN)</option>
               </select>
             </div>
-          </div>
 
-          <div className={styles.grid2}>
-            <div className={styles.field}>
-              <label className={styles.label}>Bắt đầu *</label>
-              <input
-                type="datetime-local"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className={styles.input}
-                required
-              />
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label}>Kết thúc *</label>
-              <input
-                type="datetime-local"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className={styles.input}
-                required
-              />
+            <div className={styles.grid2}>
+              <div className={styles.field}>
+                <label className={styles.label}>Bắt đầu *</label>
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className={styles.input}
+                  required
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>Kết thúc *</label>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className={styles.input}
+                  required
+                />
+              </div>
             </div>
           </div>
 
@@ -252,59 +238,14 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
             />
           </div>
 
-          <div className={styles.prizeSection}>
-            <div className={styles.prizeSectionHeader}>
-              <span style={{ fontWeight: 700, fontSize: 14 }}>Danh sách giải thưởng</span>
-              <button type="button" onClick={handleAddPrize} className={styles.addPrizeBtn}>
-                + Thêm giải thưởng
-              </button>
-            </div>
-
-            {prizes.map((p, index) => (
-              <div key={index} className={styles.prizeRow}>
-                <select
-                  value={p.prizeTier}
-                  onChange={(e) => handleUpdatePrize(index, 'prizeTier', e.target.value)}
-                  className={styles.select}
-                  style={{ width: 140 }}
-                >
-                  <option value="FIRST">Giải Nhất</option>
-                  <option value="SECOND">Giải Nhì</option>
-                  <option value="THIRD">Giải Ba</option>
-                  <option value="CONSOLATION">Khuyến Khích</option>
-                  <option value="STANDARD">Đồng Hạng</option>
-                </select>
-                <input
-                  type="text"
-                  value={p.prizeName}
-                  onChange={(e) => handleUpdatePrize(index, 'prizeName', e.target.value)}
-                  placeholder="Tên giải thưởng"
-                  className={styles.input}
-                  style={{ flex: 1 }}
-                  required
-                />
-                <input
-                  type="number"
-                  min={1}
-                  value={p.quantity}
-                  onChange={(e) => handleUpdatePrize(index, 'quantity', parseInt(e.target.value, 10) || 1)}
-                  className={styles.input}
-                  style={{ width: 70, textAlign: 'center' }}
-                  title="Số lượng"
-                  required
-                />
-                {prizes.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemovePrize(index)}
-                    className={styles.removePrizeBtn}
-                  >
-                    Xóa
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+          <AdminGiveawayPrizeBuilder
+            prizeStructureType={prizeStructureType}
+            prizes={prizes}
+            schedules={schedules}
+            onAddPrize={handleAddPrize}
+            onRemovePrize={handleRemovePrize}
+            onUpdatePrize={handleUpdatePrize}
+          />
 
           <div className={styles.footer}>
             <button type="button" onClick={onClose} className={styles.cancelBtn}>Hủy</button>

@@ -3,14 +3,8 @@ package com.boki.application.service;
 import com.boki.application.dto.giveaway.*;
 import com.boki.application.exception.BusinessRuleException;
 import com.boki.application.exception.ResourceNotFoundException;
-import com.boki.infrastructure.persistence.entity.GiveawayCampaignJpaEntity;
-import com.boki.infrastructure.persistence.entity.GiveawayEntryJpaEntity;
-import com.boki.infrastructure.persistence.entity.GiveawayPrizeJpaEntity;
-import com.boki.infrastructure.persistence.entity.ReleaseScheduleJpaEntity;
-import com.boki.infrastructure.persistence.repository.GiveawayCampaignJpaRepository;
-import com.boki.infrastructure.persistence.repository.GiveawayEntryJpaRepository;
-import com.boki.infrastructure.persistence.repository.GiveawayPrizeJpaRepository;
-import com.boki.infrastructure.persistence.repository.ReleaseScheduleJpaRepository;
+import com.boki.infrastructure.persistence.entity.*;
+import com.boki.infrastructure.persistence.repository.*;
 import com.boki.infrastructure.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,12 +40,22 @@ public class GiveawayApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("GiveawayCampaign", "slug", slug));
 
         long entriesCount = entryRepository.countByCampaignId(campaign.getId());
-        List<GiveawayEntryDto> winners = Collections.emptyList();
-        if ("DRAWN".equalsIgnoreCase(campaign.getStatus())) {
-            winners = entryRepository.findWinnersByCampaignId(campaign.getId()).stream()
-                    .map(GiveawayMapper::toEntryDto)
-                    .toList();
-        }
+        List<GiveawayEntryDto> winners = "DRAWN".equalsIgnoreCase(campaign.getStatus())
+                ? entryRepository.findWinnersByCampaignId(campaign.getId()).stream().map(GiveawayMapper::toEntryDto).toList()
+                : Collections.emptyList();
+
+        List<UUID> scheduleIds = campaign.getPrizes() != null
+                ? campaign.getPrizes().stream().map(GiveawayPrizeJpaEntity::getScheduleId).filter(Objects::nonNull).distinct().toList()
+                : Collections.emptyList();
+        Map<UUID, ReleaseScheduleJpaEntity> scheduleMap = scheduleIds.isEmpty() ? Collections.emptyMap()
+                : releaseScheduleRepository.findAllById(scheduleIds).stream().collect(Collectors.toMap(ReleaseScheduleJpaEntity::getId, s -> s));
+
+        List<GiveawayPrizeDto> prizeDtos = campaign.getPrizes() != null
+                ? campaign.getPrizes().stream().map(p -> {
+                    ReleaseScheduleJpaEntity s = p.getScheduleId() != null ? scheduleMap.get(p.getScheduleId()) : null;
+                    return GiveawayMapper.toPrizeDto(p, s != null ? s.getTitle() : null, s != null ? s.getCoverUrl() : null);
+                }).toList()
+                : Collections.emptyList();
 
         String scheduleTitle = null;
         String scheduleCoverUrl = null;
@@ -62,7 +67,7 @@ public class GiveawayApplicationService {
             }
         }
 
-        return GiveawayMapper.toDetailDto(campaign, entriesCount, winners, scheduleTitle, scheduleCoverUrl);
+        return GiveawayMapper.toDetailDto(campaign, entriesCount, prizeDtos, winners, scheduleTitle, scheduleCoverUrl);
     }
 
     @Transactional
@@ -73,7 +78,6 @@ public class GiveawayApplicationService {
         if (!"OPEN".equalsIgnoreCase(campaign.getStatus())) {
             throw new BusinessRuleException("Sự kiện Give Away này hiện không nhận thêm lượt tham gia!");
         }
-
         OffsetDateTime now = OffsetDateTime.now();
         if (campaign.getStartDate() != null && now.isBefore(campaign.getStartDate())) {
             throw new BusinessRuleException("Sự kiện Give Away chưa bắt đầu!");
@@ -84,7 +88,6 @@ public class GiveawayApplicationService {
 
         String email = request.getEmail().trim().toLowerCase();
         String phone = request.getPhone().trim();
-
         if (entryRepository.existsByCampaignIdAndEmail(campaign.getId(), email)) {
             throw new BusinessRuleException("Email " + email + " đã được dùng để tham gia sự kiện này rồi!");
         }
@@ -106,7 +109,6 @@ public class GiveawayApplicationService {
 
         GiveawayEntryJpaEntity saved = entryRepository.save(entry);
         emailNotifier.enqueueEntryConfirmation(campaign, saved);
-
         return GiveawayMapper.toEntryDto(saved);
     }
 
@@ -115,7 +117,6 @@ public class GiveawayApplicationService {
         Page<GiveawayCampaignJpaEntity> page = (status != null && !status.isBlank())
                 ? campaignRepository.findByStatusOrderByCreatedAtDesc(status, pageable)
                 : campaignRepository.findAllByOrderByCreatedAtDesc(pageable);
-
         return page.map(c -> GiveawayMapper.toCampaignDto(c, entryRepository.countByCampaignId(c.getId())));
     }
 
@@ -142,7 +143,6 @@ public class GiveawayApplicationService {
 
         GiveawayCampaignJpaEntity saved = campaignRepository.save(campaign);
         savePrizes(saved, request.getPrizes());
-
         return getPublicCampaignDetail(saved.getSlug());
     }
 
@@ -159,16 +159,13 @@ public class GiveawayApplicationService {
         campaign.setBannerUrl(request.getBannerUrl());
         campaign.setScheduleId(request.getScheduleId());
         campaign.setPrizeStructureType(request.getPrizeStructureType());
-        if (request.getStatus() != null) {
-            campaign.setStatus(request.getStatus());
-        }
+        if (request.getStatus() != null) campaign.setStatus(request.getStatus());
         campaign.setStartDate(request.getStartDate());
         campaign.setEndDate(request.getEndDate());
         campaign.setUpdatedAt(OffsetDateTime.now());
 
         prizeRepository.deleteByCampaignId(id);
         savePrizes(campaign, request.getPrizes());
-
         return getPublicCampaignDetail(campaign.getSlug());
     }
 
@@ -183,7 +180,6 @@ public class GiveawayApplicationService {
     public DrawPreviewResponse previewDraw(UUID campaignId, Integer winningNumber) {
         GiveawayCampaignJpaEntity campaign = campaignRepository.findByIdWithPrizes(campaignId)
                 .orElseThrow(() -> new ResourceNotFoundException("GiveawayCampaign", "id", campaignId));
-
         List<GiveawayEntryJpaEntity> ranked = entryRepository.findRankedEntriesForDraw(campaignId, winningNumber);
         return GiveawayDrawHelper.computeDraw(campaign, campaign.getPrizes(), ranked, winningNumber);
     }
@@ -243,6 +239,7 @@ public class GiveawayApplicationService {
                     .prizeName(dto.getPrizeName().trim())
                     .quantity(dto.getQuantity() != null && dto.getQuantity() > 0 ? dto.getQuantity() : 1)
                     .displayOrder(dto.getDisplayOrder() != null ? dto.getDisplayOrder() : order++)
+                    .scheduleId(dto.getScheduleId())
                     .build());
         }
         prizeRepository.saveAll(entities);

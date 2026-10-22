@@ -17,4 +17,7 @@ public class GiveawayPrizeDto {
     private String prizeName;
     private Integer quantity;
     private Integer displayOrder;
+    private UUID scheduleId;
+    private String scheduleTitle;
+    private String scheduleCoverUrl;
 }

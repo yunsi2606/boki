@@ -6,6 +6,9 @@ export interface AdminGiveawayPrize {
   prizeName: string;
   quantity: number;
   displayOrder: number;
+  scheduleId?: string;
+  scheduleTitle?: string;
+  scheduleCoverUrl?: string;
 }
 
 export interface AdminGiveawayCampaign {

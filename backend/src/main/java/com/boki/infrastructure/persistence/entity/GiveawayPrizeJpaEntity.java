@@ -37,4 +37,7 @@ public class GiveawayPrizeJpaEntity {
     @Column(name = "display_order", nullable = false)
     @Builder.Default
     private Integer displayOrder = 1;
+
+    @Column(name = "schedule_id")
+    private UUID scheduleId;
 }

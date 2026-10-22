@@ -76,7 +76,10 @@ export default function GiveawayDetailPage({ params }: Props) {
         <>
           <GiveawayHero campaign={campaign} />
 
-          <GiveawayPrizeList prizes={campaign.prizes} />
+          <GiveawayPrizeList
+            prizes={campaign.prizes}
+            prizeStructureType={campaign.prizeStructureType}
+          />
 
           {campaign.status === 'DRAWN' && (
             <GiveawayWinnersBoard
