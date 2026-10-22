@@ -64,6 +64,7 @@ public class GiveawayMapper {
                 .slug(entity.getSlug())
                 .description(entity.getDescription())
                 .bannerUrl(entity.getBannerUrl())
+                .imageUrls(parseImageUrls(entity.getImageUrls(), entity.getBannerUrl()))
                 .scheduleId(entity.getScheduleId())
                 .prizeStructureType(entity.getPrizeStructureType())
                 .status(entity.getStatus())
@@ -92,6 +93,7 @@ public class GiveawayMapper {
                 .slug(entity.getSlug())
                 .description(entity.getDescription())
                 .bannerUrl(entity.getBannerUrl())
+                .imageUrls(parseImageUrls(entity.getImageUrls(), entity.getBannerUrl()))
                 .scheduleId(entity.getScheduleId())
                 .scheduleTitle(scheduleTitle)
                 .scheduleCoverUrl(scheduleCoverUrl)
@@ -107,6 +109,20 @@ public class GiveawayMapper {
                 .prizes(prizes)
                 .winners(winners != null ? winners : Collections.emptyList())
                 .build();
+    }
+
+    public static List<String> parseImageUrls(String raw, String fallbackBanner) {
+        List<String> list = new ArrayList<>();
+        if (raw != null && !raw.isBlank()) {
+            for (String s : raw.split(",")) {
+                String trimmed = s.trim();
+                if (!trimmed.isEmpty()) list.add(trimmed);
+            }
+        }
+        if (list.isEmpty() && fallbackBanner != null && !fallbackBanner.isBlank()) {
+            list.add(fallbackBanner.trim());
+        }
+        return list;
     }
 
     public static String maskEmail(String email) {

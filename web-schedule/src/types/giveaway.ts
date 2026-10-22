@@ -18,6 +18,7 @@ export interface GiveawayCampaign {
   slug: string;
   description?: string;
   bannerUrl?: string;
+  imageUrls?: string[];
   scheduleId?: string;
   scheduleTitle?: string;
   prizeStructureType: string;

@@ -27,6 +27,8 @@ public class CreateGiveawayCampaignRequest {
 
     private String bannerUrl;
 
+    private List<String> imageUrls;
+
     private UUID scheduleId;
 
     @NotBlank(message = "Loại cơ cấu giải không được để trống")

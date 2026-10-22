@@ -8,7 +8,7 @@ import {
 } from '@/services/adminGiveawayService';
 import { scheduleService } from '@/services/scheduleService';
 import type { ReleaseScheduleItem } from '@/types/schedule';
-import ImageUploadInput from '@/components/ui/ImageUploadInput';
+import GiveawayImagesUploader from './GiveawayImagesUploader';
 import AdminGiveawayPrizeBuilder from './AdminGiveawayPrizeBuilder';
 import styles from './adminGiveawayCampaignModal.module.css';
 
@@ -24,6 +24,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [bannerUrl, setBannerUrl] = useState('');
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [prizeStructureType, setPrizeStructureType] = useState('TIERED');
   const [status, setStatus] = useState('OPEN');
   const [startDate, setStartDate] = useState('');
@@ -47,6 +48,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
       setSlug(campaign.slug || '');
       setDescription(campaign.description || '');
       setBannerUrl(campaign.bannerUrl || '');
+      setImageUrls(campaign.imageUrls && campaign.imageUrls.length > 0 ? campaign.imageUrls : (campaign.bannerUrl ? [campaign.bannerUrl] : []));
       setPrizeStructureType(campaign.prizeStructureType || 'TIERED');
       setStatus(campaign.status || 'OPEN');
       setStartDate(campaign.startDate ? campaign.startDate.slice(0, 16) : '');
@@ -58,6 +60,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
       setSlug('');
       setDescription('');
       setBannerUrl('');
+      setImageUrls([]);
       setPrizeStructureType('TIERED');
       setStatus('OPEN');
       const now = new Date();
@@ -108,7 +111,8 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
         title: title.trim(),
         slug: slug.trim() || undefined,
         description: description.trim() || undefined,
-        bannerUrl: bannerUrl.trim() || undefined,
+        bannerUrl: imageUrls.length > 0 ? imageUrls[0] : (bannerUrl.trim() || undefined),
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
         prizeStructureType,
         status,
         startDate: new Date(startDate).toISOString(),
@@ -151,8 +155,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
           </div>
 
           <div className={styles.field}>
-            <ImageUploadInput label="Ảnh Banner sự kiện (Upload R2)" value={bannerUrl} onChange={setBannerUrl}
-              placeholder="Chọn hoặc kéo thả ảnh banner Give Away..." helperText="Định dạng khuyến nghị: 1200x500 PNG/JPG/WEBP" />
+            <GiveawayImagesUploader images={imageUrls} onChange={setImageUrls} maxImages={6} />
           </div>
 
           <div className={styles.grid2}>

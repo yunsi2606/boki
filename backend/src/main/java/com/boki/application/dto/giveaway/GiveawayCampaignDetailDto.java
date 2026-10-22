@@ -19,6 +19,7 @@ public class GiveawayCampaignDetailDto {
     private String slug;
     private String description;
     private String bannerUrl;
+    private List<String> imageUrls;
     private UUID scheduleId;
     private String scheduleTitle;
     private String scheduleCoverUrl;

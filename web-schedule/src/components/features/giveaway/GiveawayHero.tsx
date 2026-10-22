@@ -52,47 +52,47 @@ export function GiveawayHero({ campaign, onOpenEntryModal }: Props) {
   const isDrawn = campaign.status === 'DRAWN';
   const isClosed = campaign.status === 'CLOSED';
 
-  const defaultBanner = 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200&auto=format&fit=crop&q=80';
-  const bannerSrc = campaign.bannerUrl || defaultBanner;
+  const totalPrizeUnits = campaign.prizes?.reduce((acc, p) => acc + (p.quantity || 1), 0) || 0;
 
   return (
     <div className={styles.heroCard}>
-      <div className={styles.bannerWrapper}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={bannerSrc} alt="" className={styles.bannerBackdrop} aria-hidden="true" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={bannerSrc} alt={campaign.title} className={styles.bannerImg} />
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.metaRow}>
-          <div className={styles.metaLeft}>
+      <div className={styles.dashboardGrid}>
+        <div className={styles.leftCol}>
+          <div className={styles.metaRow}>
             {isOpen && <span className={`${styles.statusBadge} ${styles.statusOpen}`}>Đang diễn ra</span>}
             {isUpcoming && <span className={`${styles.statusBadge} ${styles.statusUpcoming}`}>Sắp diễn ra</span>}
             {isDrawn && <span className={`${styles.statusBadge} ${styles.statusDrawn}`}>Đã có kết quả</span>}
             {isClosed && <span className={`${styles.statusBadge} ${styles.statusClosed}`}>Đã kết thúc</span>}
-            <span className={styles.entriesBadge}>{campaign.totalEntriesCount} lượt tham gia</span>
+
+            <span className={styles.entriesBadge}>{campaign.totalEntriesCount} bạn đã tham gia</span>
+
+            {campaign.scheduleTitle && (
+              <Link href="/lich-phat-hanh" className={styles.scheduleLink}>
+                Truyện: {campaign.scheduleTitle}
+              </Link>
+            )}
           </div>
 
-          {campaign.scheduleTitle && (
-            <Link href="/lich-phat-hanh" className={styles.scheduleLink}>
-              Truyện liên kết: {campaign.scheduleTitle}
-            </Link>
-          )}
+          <h1 className={styles.title}>{campaign.title}</h1>
+
+          <div className={styles.xsmbBox}>
+            Kết quả sẽ được so khớp trực tiếp với 3 số cuối Giải Đặc Biệt Xổ Số Miền Bắc ngày{' '}
+            <strong className={styles.xsmbHighlight}>{drawDateFormatted}</strong> (mở lúc 18:15)
+          </div>
+
+          {campaign.description && <p className={styles.desc}>{campaign.description}</p>}
         </div>
 
-        <h1 className={styles.title}>{campaign.title}</h1>
+        <div className={styles.rightCol}>
+          <div className={styles.prizesQuickSummary}>
+            <span className={styles.summaryLabel}>Cơ cấu giải thưởng</span>
+            <span className={styles.summaryVal}>
+              {totalPrizeUnits} phần quà ({campaign.prizes?.length || 0} hạng giải)
+            </span>
+          </div>
 
-        <div className={styles.xsmbNoticeBox}>
-          Kết quả sẽ được so khớp trực tiếp với 3 số cuối Giải Đặc Biệt Xổ Số Miền Bắc ngày{' '}
-          <strong className={styles.xsmbHighlight}>{drawDateFormatted}</strong> (mở lúc 18:15)
-        </div>
-
-        {campaign.description && <p className={styles.desc}>{campaign.description}</p>}
-
-        <div className={styles.bottomActionRow}>
           {(isOpen || isUpcoming) && (
-            <div className={styles.countdownSection}>
+            <div className={styles.countdownBox}>
               <span className={styles.countdownLabel}>
                 {isOpen ? 'Thời gian nhận đăng ký còn:' : 'Thời gian mở đăng ký:'}
               </span>
@@ -134,7 +134,7 @@ export function GiveawayHero({ campaign, onOpenEntryModal }: Props) {
               </button>
             )}
             {isDrawn && (
-              <a href="#winners-board" className={styles.ctaBtn} style={{ display: 'inline-block', lineHeight: '46px', textAlign: 'center', textDecoration: 'none' }}>
+              <a href="#winners-board" className={styles.ctaBtn}>
                 Xem danh sách trúng thưởng
               </a>
             )}

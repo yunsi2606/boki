@@ -120,6 +120,7 @@ public class GiveawayApplicationService {
                 .startDate(request.getStartDate() != null ? request.getStartDate() : OffsetDateTime.now())
                 .endDate(request.getEndDate())
                 .drawDate(request.getDrawDate() != null ? request.getDrawDate() : request.getEndDate())
+                .imageUrls(request.getImageUrls() != null ? String.join(",", request.getImageUrls()) : null)
                 .totalWinnersCount(0)
                 .createdAt(OffsetDateTime.now())
                 .updatedAt(OffsetDateTime.now())
@@ -139,6 +140,7 @@ public class GiveawayApplicationService {
         if (request.getSlug() != null && !request.getSlug().isBlank()) campaign.setSlug(SlugUtils.slugify(request.getSlug()));
         campaign.setDescription(request.getDescription());
         campaign.setBannerUrl(request.getBannerUrl());
+        campaign.setImageUrls(request.getImageUrls() != null ? String.join(",", request.getImageUrls()) : null);
         campaign.setScheduleId(request.getScheduleId());
         campaign.setPrizeStructureType(request.getPrizeStructureType());
         if (request.getStatus() != null) campaign.setStatus(request.getStatus());
@@ -154,9 +156,8 @@ public class GiveawayApplicationService {
 
     @Transactional
     public void deleteCampaign(UUID id) {
-        GiveawayCampaignJpaEntity campaign = campaignRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("GiveawayCampaign", "id", id));
-        campaignRepository.delete(campaign);
+        GiveawayCampaignJpaEntity c = campaignRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("GiveawayCampaign", "id", id));
+        campaignRepository.delete(c);
     }
 
     @Transactional(readOnly = true)

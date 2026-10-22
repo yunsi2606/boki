@@ -20,6 +20,7 @@ export interface AdminGiveawayCampaign {
   slug: string;
   description?: string;
   bannerUrl?: string;
+  imageUrls?: string[];
   scheduleId?: string;
   scheduleTitle?: string;
   scheduleCoverUrl?: string;
@@ -80,6 +81,7 @@ export interface CreateGiveawayPayload {
   slug?: string;
   description?: string;
   bannerUrl?: string;
+  imageUrls?: string[];
   scheduleId?: string;
   prizeStructureType: string;
   status?: string;

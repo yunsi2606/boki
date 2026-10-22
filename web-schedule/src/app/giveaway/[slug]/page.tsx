@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { giveawayService } from '@/services/giveawayService';
 import { GiveawayCampaignDetail, GiveawayEntry } from '@/types/giveaway';
 import { GiveawayHero } from '@/components/features/giveaway/GiveawayHero';
+import { GiveawayGallery } from '@/components/features/giveaway/GiveawayGallery';
 import { GiveawayPrizeList } from '@/components/features/giveaway/GiveawayPrizeList';
 import { GiveawayWinnersBoard } from '@/components/features/giveaway/GiveawayWinnersBoard';
 import { GiveawayEntryModal } from '@/components/features/giveaway/GiveawayEntryModal';
@@ -59,6 +60,10 @@ export default function GiveawayDetailPage({ params }: Props) {
 
   const drawDateFormatted = campaign ? formatDrawDate(campaign.drawDate || campaign.endDate) : '';
 
+  const realImages = campaign?.imageUrls && campaign.imageUrls.length > 0
+    ? campaign.imageUrls
+    : (campaign?.bannerUrl ? [campaign.bannerUrl] : []);
+
   return (
     <div className={styles.container}>
       <nav className={styles.breadcrumbs}>
@@ -86,6 +91,13 @@ export default function GiveawayDetailPage({ params }: Props) {
             campaign={campaign}
             onOpenEntryModal={() => setIsModalOpen(true)}
           />
+
+          {realImages.length > 0 && (
+            <GiveawayGallery
+              images={realImages}
+              title={campaign.title}
+            />
+          )}
 
           <GiveawayPrizeList
             prizes={campaign.prizes}

@@ -34,6 +34,9 @@ public class GiveawayCampaignJpaEntity {
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
 
+    @Column(name = "image_urls", columnDefinition = "TEXT")
+    private String imageUrls;
+
     @Column(name = "schedule_id")
     private UUID scheduleId;
 
