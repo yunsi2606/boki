@@ -48,10 +48,7 @@
   padding: 4px;
   line-height: 1;
 }
-
-.closeBtn:hover {
-  color: var(--color-neutral-900);
-}
+.closeBtn:hover { color: var(--color-neutral-900); }
 
 .body {
   padding: 20px 24px;
@@ -151,7 +148,9 @@
   min-width: 0;
 }
 
-.prizeRowTop {
+.prizeRowTop,
+.prizeRowBottom,
+.prizeEditionRow {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -159,14 +158,10 @@
   min-width: 0;
 }
 
-.prizeRowBottom {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+.prizeRowBottom,
+.prizeEditionRow {
   padding-top: 8px;
   border-top: 1px dashed var(--color-neutral-200);
-  width: 100%;
-  min-width: 0;
 }
 
 .flatPrizeBadge {
@@ -193,10 +188,7 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-
-.removePrizeBtn:hover {
-  background: #FCA5A5;
-}
+.removePrizeBtn:hover { background: #FCA5A5; }
 
 .addPrizeBtn {
   background: #fff;
@@ -210,10 +202,7 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-
-.addPrizeBtn:hover {
-  background: var(--color-primary-50);
-}
+.addPrizeBtn:hover { background: var(--color-primary-50); }
 
 .footer {
   padding: 16px 24px;
@@ -235,10 +224,7 @@
   color: var(--color-neutral-700);
   cursor: pointer;
 }
-
-.cancelBtn:hover {
-  background: var(--color-neutral-300);
-}
+.cancelBtn:hover { background: var(--color-neutral-300); }
 
 .saveBtn {
   padding: 10px 22px;
@@ -250,15 +236,8 @@
   font-weight: 700;
   cursor: pointer;
 }
-
-.saveBtn:hover:not(:disabled) {
-  background: var(--color-primary-600);
-}
-
-.saveBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.saveBtn:hover:not(:disabled) { background: var(--color-primary-600); }
+.saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .errorText {
   color: #DC2626;

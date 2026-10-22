@@ -10,7 +10,7 @@ interface Props {
   schedules: ReleaseScheduleItem[];
   onAddPrize: () => void;
   onRemovePrize: (index: number) => void;
-  onUpdatePrize: (index: number, field: keyof AdminGiveawayPrize, val: any) => void;
+  onUpdatePrize: (index: number, updates: Partial<AdminGiveawayPrize>) => void;
 }
 
 export default function AdminGiveawayPrizeBuilder({
@@ -42,82 +42,119 @@ export default function AdminGiveawayPrizeBuilder({
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {prizes.map((p, index) => (
-          <div key={index} className={styles.prizeItemBox}>
-            <div className={styles.prizeRowTop}>
-              {isTiered ? (
-                <select
-                  value={p.prizeTier}
-                  onChange={(e) => onUpdatePrize(index, 'prizeTier', e.target.value)}
-                  className={styles.select}
-                  style={{ width: 140, fontWeight: 600 }}
-                >
-                  <option value="FIRST">Giải Nhất</option>
-                  <option value="SECOND">Giải Nhì</option>
-                  <option value="THIRD">Giải Ba</option>
-                  <option value="CONSOLATION">Khuyến Khích</option>
-                  <option value="STANDARD">Khác</option>
-                </select>
-              ) : (
-                <span className={styles.flatPrizeBadge}>Quà #{index + 1}</span>
-              )}
+        {prizes.map((p, index) => {
+          const selectedSchedule = p.scheduleId ? schedules.find((s) => s.id === p.scheduleId) : undefined;
+          const editions = selectedSchedule?.editions || [];
 
-              <input
-                type="text"
-                value={p.prizeName}
-                onChange={(e) => onUpdatePrize(index, 'prizeName', e.target.value)}
-                placeholder="Tên phần quà / sách tặng kèm..."
-                className={styles.input}
-                style={{ flex: 1, minWidth: 0 }}
-                required
-              />
+          return (
+            <div key={index} className={styles.prizeItemBox}>
+              <div className={styles.prizeRowTop}>
+                {isTiered ? (
+                  <select
+                    value={p.prizeTier}
+                    onChange={(e) => onUpdatePrize(index, { prizeTier: e.target.value })}
+                    className={styles.select}
+                    style={{ width: 140, fontWeight: 600 }}
+                  >
+                    <option value="FIRST">Giải Nhất</option>
+                    <option value="SECOND">Giải Nhì</option>
+                    <option value="THIRD">Giải Ba</option>
+                    <option value="CONSOLATION">Khuyến Khích</option>
+                    <option value="STANDARD">Khác</option>
+                  </select>
+                ) : (
+                  <span className={styles.flatPrizeBadge}>Quà #{index + 1}</span>
+                )}
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: 12, color: '#6B7280' }}>SL:</span>
                 <input
-                  type="number"
-                  min={1}
-                  value={p.quantity}
-                  onChange={(e) => onUpdatePrize(index, 'quantity', parseInt(e.target.value, 10) || 1)}
+                  type="text"
+                  value={p.prizeName}
+                  onChange={(e) => onUpdatePrize(index, { prizeName: e.target.value })}
+                  placeholder="Tên phần quà / sách tặng kèm..."
                   className={styles.input}
-                  style={{ width: 60, textAlign: 'center', padding: '0 4px' }}
-                  title="Số lượng giải"
+                  style={{ flex: 1, minWidth: 0 }}
                   required
                 />
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 12, color: '#6B7280' }}>SL:</span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={p.quantity}
+                    onChange={(e) => onUpdatePrize(index, { quantity: parseInt(e.target.value, 10) || 1 })}
+                    className={styles.input}
+                    style={{ width: 60, textAlign: 'center', padding: '0 4px' }}
+                    title="Số lượng giải"
+                    required
+                  />
+                </div>
+
+                {prizes.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => onRemovePrize(index)}
+                    className={styles.removePrizeBtn}
+                    title="Xóa giải này"
+                  >
+                    Xóa
+                  </button>
+                )}
               </div>
 
-              {prizes.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => onRemovePrize(index)}
-                  className={styles.removePrizeBtn}
-                  title="Xóa giải này"
+              <div className={styles.prizeRowBottom}>
+                <span style={{ fontSize: 12, color: 'var(--color-neutral-600)', whiteSpace: 'nowrap' }}>
+                  Lịch phát hành:
+                </span>
+                <select
+                  value={p.scheduleId || ''}
+                  onChange={(e) => {
+                    const newSchId = e.target.value || undefined;
+                    onUpdatePrize(index, { scheduleId: newSchId, editionId: undefined });
+                  }}
+                  className={styles.select}
+                  style={{ flex: 1, minWidth: 0, fontSize: 13, height: 34 }}
                 >
-                  Xóa
-                </button>
+                  <option value="">-- Không gắn LPH (Quà tặng/Sách tự do) --</option>
+                  {schedules.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.title} ({s.publisher})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedSchedule && editions.length > 0 && (
+                <div className={styles.prizeEditionRow}>
+                  <span style={{ fontSize: 12, color: 'var(--color-neutral-600)', whiteSpace: 'nowrap' }}>
+                    Phân loại / Bản:
+                  </span>
+                  <select
+                    value={p.editionId || ''}
+                    onChange={(e) => {
+                      const newEdId = e.target.value || undefined;
+                      const selectedEd = editions.find((ed) => ed.id === newEdId);
+                      onUpdatePrize(index, {
+                        editionId: newEdId,
+                        editionName: selectedEd ? selectedEd.editionName : undefined,
+                        editionGifts: selectedEd ? selectedEd.gifts : undefined,
+                      });
+                    }}
+                    className={styles.select}
+                    style={{ flex: 1, minWidth: 0, fontSize: 12, height: 32 }}
+                  >
+                    <option value="">-- Cả tập chung / Mặc định (Tất cả phân loại) --</option>
+                    {editions.map((ed) => (
+                      <option key={ed.id} value={ed.id}>
+                        {ed.editionName} {ed.gifts ? `— Quà: ${ed.gifts}` : `(${ed.editionType})`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
             </div>
-
-            <div className={styles.prizeRowBottom}>
-              <span style={{ fontSize: 12, color: 'var(--color-neutral-600)', whiteSpace: 'nowrap' }}>
-                Liên kết Lịch phát hành:
-              </span>
-              <select
-                value={p.scheduleId || ''}
-                onChange={(e) => onUpdatePrize(index, 'scheduleId', e.target.value || undefined)}
-                className={styles.select}
-                style={{ flex: 1, minWidth: 0, fontSize: 13, height: 34 }}
-              >
-                <option value="">-- Không gắn LPH (Quà tặng/Sách tự do) --</option>
-                {schedules.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.title} ({s.publisher})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

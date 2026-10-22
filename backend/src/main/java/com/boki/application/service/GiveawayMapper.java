@@ -11,10 +11,16 @@ import java.util.List;
 public class GiveawayMapper {
 
     public static GiveawayPrizeDto toPrizeDto(GiveawayPrizeJpaEntity entity) {
-        return toPrizeDto(entity, null, null);
+        return toPrizeDto(entity, null, null, null, null);
     }
 
-    public static GiveawayPrizeDto toPrizeDto(GiveawayPrizeJpaEntity entity, String scheduleTitle, String scheduleCoverUrl) {
+    public static GiveawayPrizeDto toPrizeDto(
+            GiveawayPrizeJpaEntity entity,
+            String scheduleTitle,
+            String scheduleCoverUrl,
+            String editionName,
+            String editionGifts
+    ) {
         if (entity == null) return null;
         return GiveawayPrizeDto.builder()
                 .id(entity.getId())
@@ -25,6 +31,9 @@ public class GiveawayMapper {
                 .scheduleId(entity.getScheduleId())
                 .scheduleTitle(scheduleTitle)
                 .scheduleCoverUrl(scheduleCoverUrl)
+                .editionId(entity.getEditionId())
+                .editionName(editionName)
+                .editionGifts(editionGifts)
                 .build();
     }
 

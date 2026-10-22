@@ -7,6 +7,9 @@ export interface GiveawayPrize {
   scheduleId?: string;
   scheduleTitle?: string;
   scheduleCoverUrl?: string;
+  editionId?: string;
+  editionName?: string;
+  editionGifts?: string;
 }
 
 export interface GiveawayCampaign {

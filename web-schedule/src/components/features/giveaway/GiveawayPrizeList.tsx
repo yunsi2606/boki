@@ -48,6 +48,17 @@ export function GiveawayPrizeList({ prizes, prizeStructureType }: Props) {
             <h3 className={styles.prizeName}>{prize.prizeName}</h3>
             <span className={styles.prizeQty}>Số lượng: {prize.quantity} giải</span>
 
+            {prize.editionName && (
+              <span className={styles.editionBadge}>
+                Bản: {prize.editionName}
+              </span>
+            )}
+            {prize.editionGifts && (
+              <span className={styles.editionGifts}>
+                Quà tặng: {prize.editionGifts}
+              </span>
+            )}
+
             {prize.scheduleTitle && (
               <Link href="/lich-phat-hanh" className={styles.scheduleMangaLink}>
                 {prize.scheduleCoverUrl && (

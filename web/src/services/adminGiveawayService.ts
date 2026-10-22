@@ -9,6 +9,9 @@ export interface AdminGiveawayPrize {
   scheduleId?: string;
   scheduleTitle?: string;
   scheduleCoverUrl?: string;
+  editionId?: string;
+  editionName?: string;
+  editionGifts?: string;
 }
 
 export interface AdminGiveawayCampaign {

@@ -26,6 +26,7 @@ public class GiveawayApplicationService {
     private final GiveawayPrizeJpaRepository prizeRepository;
     private final GiveawayEntryJpaRepository entryRepository;
     private final ReleaseScheduleJpaRepository releaseScheduleRepository;
+    private final ReleaseScheduleEditionJpaRepository editionRepository;
     private final GiveawayEmailNotifier emailNotifier;
 
     @Transactional(readOnly = true)
@@ -44,30 +45,12 @@ public class GiveawayApplicationService {
                 ? entryRepository.findWinnersByCampaignId(campaign.getId()).stream().map(GiveawayMapper::toEntryDto).toList()
                 : Collections.emptyList();
 
-        List<UUID> scheduleIds = campaign.getPrizes() != null
-                ? campaign.getPrizes().stream().map(GiveawayPrizeJpaEntity::getScheduleId).filter(Objects::nonNull).distinct().toList()
-                : Collections.emptyList();
-        Map<UUID, ReleaseScheduleJpaEntity> scheduleMap = scheduleIds.isEmpty() ? Collections.emptyMap()
-                : releaseScheduleRepository.findAllById(scheduleIds).stream().collect(Collectors.toMap(ReleaseScheduleJpaEntity::getId, s -> s));
+        List<GiveawayPrizeDto> prizeDtos = mapPrizeDtos(campaign.getPrizes());
+        ReleaseScheduleJpaEntity cSch = campaign.getScheduleId() != null
+                ? releaseScheduleRepository.findById(campaign.getScheduleId()).orElse(null) : null;
 
-        List<GiveawayPrizeDto> prizeDtos = campaign.getPrizes() != null
-                ? campaign.getPrizes().stream().map(p -> {
-                    ReleaseScheduleJpaEntity s = p.getScheduleId() != null ? scheduleMap.get(p.getScheduleId()) : null;
-                    return GiveawayMapper.toPrizeDto(p, s != null ? s.getTitle() : null, s != null ? s.getCoverUrl() : null);
-                }).toList()
-                : Collections.emptyList();
-
-        String scheduleTitle = null;
-        String scheduleCoverUrl = null;
-        if (campaign.getScheduleId() != null) {
-            Optional<ReleaseScheduleJpaEntity> sch = releaseScheduleRepository.findById(campaign.getScheduleId());
-            if (sch.isPresent()) {
-                scheduleTitle = sch.get().getTitle();
-                scheduleCoverUrl = sch.get().getCoverUrl();
-            }
-        }
-
-        return GiveawayMapper.toDetailDto(campaign, entriesCount, prizeDtos, winners, scheduleTitle, scheduleCoverUrl);
+        return GiveawayMapper.toDetailDto(campaign, entriesCount, prizeDtos, winners,
+                cSch != null ? cSch.getTitle() : null, cSch != null ? cSch.getCoverUrl() : null);
     }
 
     @Transactional
@@ -228,6 +211,24 @@ public class GiveawayApplicationService {
                 .map(GiveawayMapper::toEntryDto);
     }
 
+    private List<GiveawayPrizeDto> mapPrizeDtos(List<GiveawayPrizeJpaEntity> prizes) {
+        if (prizes == null || prizes.isEmpty()) return Collections.emptyList();
+        List<UUID> sIds = prizes.stream().map(GiveawayPrizeJpaEntity::getScheduleId).filter(Objects::nonNull).distinct().toList();
+        List<UUID> eIds = prizes.stream().map(GiveawayPrizeJpaEntity::getEditionId).filter(Objects::nonNull).distinct().toList();
+        Map<UUID, ReleaseScheduleJpaEntity> sMap = sIds.isEmpty() ? Collections.emptyMap()
+                : releaseScheduleRepository.findAllById(sIds).stream().collect(Collectors.toMap(ReleaseScheduleJpaEntity::getId, s -> s));
+        Map<UUID, ReleaseScheduleEditionJpaEntity> eMap = eIds.isEmpty() ? Collections.emptyMap()
+                : editionRepository.findAllById(eIds).stream().collect(Collectors.toMap(ReleaseScheduleEditionJpaEntity::getId, e -> e));
+        return prizes.stream().map(p -> {
+            ReleaseScheduleJpaEntity s = p.getScheduleId() != null ? sMap.get(p.getScheduleId()) : null;
+            ReleaseScheduleEditionJpaEntity e = p.getEditionId() != null ? eMap.get(p.getEditionId()) : null;
+            String cover = (e != null && e.getCoverUrl() != null && !e.getCoverUrl().isBlank())
+                    ? e.getCoverUrl() : (s != null ? s.getCoverUrl() : null);
+            return GiveawayMapper.toPrizeDto(p, s != null ? s.getTitle() : null, cover,
+                    e != null ? e.getEditionName() : null, e != null ? e.getGifts() : null);
+        }).toList();
+    }
+
     private void savePrizes(GiveawayCampaignJpaEntity campaign, List<GiveawayPrizeDto> prizeDtos) {
         if (prizeDtos == null || prizeDtos.isEmpty()) return;
         List<GiveawayPrizeJpaEntity> entities = new ArrayList<>();
@@ -239,8 +240,7 @@ public class GiveawayApplicationService {
                     .prizeName(dto.getPrizeName().trim())
                     .quantity(dto.getQuantity() != null && dto.getQuantity() > 0 ? dto.getQuantity() : 1)
                     .displayOrder(dto.getDisplayOrder() != null ? dto.getDisplayOrder() : order++)
-                    .scheduleId(dto.getScheduleId())
-                    .build());
+                    .scheduleId(dto.getScheduleId()).editionId(dto.getEditionId()).build());
         }
         prizeRepository.saveAll(entities);
     }

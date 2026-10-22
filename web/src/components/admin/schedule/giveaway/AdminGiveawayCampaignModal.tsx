@@ -87,24 +87,17 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
     setPrizes(prizes.filter((_, i) => i !== index));
   };
 
-  const handleUpdatePrize = (index: number, field: keyof AdminGiveawayPrize, val: any) => {
+  const handleUpdatePrize = (index: number, updates: Partial<AdminGiveawayPrize>) => {
     const updated = [...prizes];
-    updated[index] = { ...updated[index], [field]: val };
+    updated[index] = { ...updated[index], ...updates };
     setPrizes(updated);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
-
-    if (!title.trim()) {
-      setErrorMsg('Vui lòng nhập tiêu đề sự kiện');
-      return;
-    }
-    if (prizes.length === 0) {
-      setErrorMsg('Phải có ít nhất một giải thưởng');
-      return;
-    }
+    if (!title.trim()) { setErrorMsg('Vui lòng nhập tiêu đề sự kiện'); return; }
+    if (prizes.length === 0) { setErrorMsg('Phải có ít nhất một giải thưởng'); return; }
 
     try {
       setLoading(true);
@@ -131,9 +124,7 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>
-            {campaign ? 'Chỉnh sửa sự kiện Give Away' : 'Tạo sự kiện Give Away mới'}
-          </h2>
+          <h2 className={styles.title}>{campaign ? 'Chỉnh sửa sự kiện Give Away' : 'Tạo sự kiện Give Away mới'}</h2>
           <button type="button" onClick={onClose} className={styles.closeBtn}>✕</button>
         </div>
 
@@ -143,22 +134,12 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
           <div className={styles.grid2}>
             <div className={styles.field}>
               <label className={styles.label}>Tiêu đề sự kiện *</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="VD: Give Away One Piece Tập 108 Bản Giới Hạn"
-                className={styles.input}
-                required
-              />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+                placeholder="VD: Give Away One Piece Tập 108 Bản Giới Hạn" className={styles.input} required />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Loại cơ cấu giải</label>
-              <select
-                value={prizeStructureType}
-                onChange={(e) => setPrizeStructureType(e.target.value)}
-                className={styles.select}
-              >
+              <select value={prizeStructureType} onChange={(e) => setPrizeStructureType(e.target.value)} className={styles.select}>
                 <option value="TIERED">Phân cấp (Nhất, Nhì, Ba, Khuyến khích)</option>
                 <option value="FLAT">Đồng hạng (N giải giá trị tương đương)</option>
               </select>
@@ -166,46 +147,27 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
           </div>
 
           <div className={styles.field}>
-            <ImageUploadInput
-              label="Ảnh Banner sự kiện (Upload R2)"
-              value={bannerUrl}
-              onChange={setBannerUrl}
-              placeholder="Chọn hoặc kéo thả ảnh banner Give Away..."
-              helperText="Định dạng khuyến nghị: 1200x500 PNG/JPG/WEBP"
-            />
+            <ImageUploadInput label="Ảnh Banner sự kiện (Upload R2)" value={bannerUrl} onChange={setBannerUrl}
+              placeholder="Chọn hoặc kéo thả ảnh banner Give Away..." helperText="Định dạng khuyến nghị: 1200x500 PNG/JPG/WEBP" />
           </div>
 
           <div className={styles.grid2}>
             <div className={styles.field}>
               <label className={styles.label}>Thời gian bắt đầu *</label>
-              <input
-                type="datetime-local"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className={styles.input}
-                required
-              />
+              <input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                className={styles.input} required />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Thời gian kết thúc *</label>
-              <input
-                type="datetime-local"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className={styles.input}
-                required
-              />
+              <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+                className={styles.input} required />
             </div>
           </div>
 
           <div className={styles.grid2}>
             <div className={styles.field}>
               <label className={styles.label}>Trạng thái sự kiện</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className={styles.select}
-              >
+              <select value={status} onChange={(e) => setStatus(e.target.value)} className={styles.select}>
                 <option value="UPCOMING">Sắp diễn ra (UPCOMING)</option>
                 <option value="OPEN">Đang diễn ra (OPEN)</option>
                 <option value="CLOSED">Đã đóng nhận đăng ký (CLOSED)</option>
@@ -214,24 +176,15 @@ export default function AdminGiveawayCampaignModal({ isOpen, onClose, onSave, ca
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Slug (Đường dẫn tùy chọn)</label>
-              <input
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                placeholder="Tự động sinh nếu để trống"
-                className={styles.input}
-              />
+              <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)}
+                placeholder="Tự động sinh nếu để trống" className={styles.input} />
             </div>
           </div>
 
           <div className={styles.field}>
             <label className={styles.label}>Mô tả / Thể lệ chi tiết</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Nội dung giới thiệu sự kiện, quà tặng kèm..."
-              className={styles.textarea}
-            />
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)}
+              placeholder="Nội dung giới thiệu sự kiện, quà tặng kèm..." className={styles.textarea} />
           </div>
 
           <AdminGiveawayPrizeBuilder

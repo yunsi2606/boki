@@ -20,4 +20,7 @@ public class GiveawayPrizeDto {
     private UUID scheduleId;
     private String scheduleTitle;
     private String scheduleCoverUrl;
+    private UUID editionId;
+    private String editionName;
+    private String editionGifts;
 }

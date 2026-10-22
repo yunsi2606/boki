@@ -40,4 +40,7 @@ public class GiveawayPrizeJpaEntity {
 
     @Column(name = "schedule_id")
     private UUID scheduleId;
+
+    @Column(name = "edition_id")
+    private UUID editionId;
 }
