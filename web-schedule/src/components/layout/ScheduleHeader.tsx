@@ -20,6 +20,7 @@ export function ScheduleHeader() {
   const isVault = pathname.startsWith('/tu-sach');
   const isTierList = pathname.startsWith('/tier-list');
   const isChangelog = pathname.startsWith('/lich-su-thay-doi');
+  const isGiveaway = pathname.startsWith('/giveaway');
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -71,6 +72,9 @@ export function ScheduleHeader() {
             </Link>
             <Link href="/tier-list" className={`${styles.navLink} ${isTierList ? styles.navLinkActive : ''}`}>
               Tier List
+            </Link>
+            <Link href="/giveaway" className={`${styles.navLink} ${isGiveaway ? styles.navLinkActive : ''}`}>
+              Give Away
             </Link>
           </nav>
         </div>

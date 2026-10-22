@@ -1,0 +1,117 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background: #fff;
+  border-radius: var(--radius-lg, 16px);
+  width: 100%;
+  max-width: 820px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-neutral-300);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin: 0;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: var(--color-neutral-500);
+  cursor: pointer;
+}
+
+.body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.searchBar {
+  padding: 8px 12px;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 8px;
+  font-size: 14px;
+  width: 260px;
+  outline: none;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 8px;
+  max-height: 400px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  background: var(--color-neutral-200);
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.winnerBadge {
+  background: #ECFDF5;
+  color: #059669;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-neutral-300);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.closeFooterBtn {
+  padding: 8px 18px;
+  background: var(--color-neutral-200);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

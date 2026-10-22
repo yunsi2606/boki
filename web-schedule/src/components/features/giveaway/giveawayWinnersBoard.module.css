@@ -1,0 +1,155 @@
+.wrapper {
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg, 16px);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.winningBanner {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%);
+  border: 2px solid #F59E0B;
+  border-radius: var(--radius-md, 14px);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.winningLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #B45309;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.winningNumber {
+  font-size: 44px;
+  font-weight: 800;
+  color: #D97706;
+  letter-spacing: 6px;
+  line-height: 1;
+}
+
+.winningMeta {
+  font-size: 13px;
+  color: #92400E;
+  margin-top: 8px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md, 12px);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th {
+  background: var(--color-neutral-200);
+  padding: 12px 14px;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 14px;
+  border-top: 1px solid var(--color-neutral-200);
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+}
+
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rank1 {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.rank2 {
+  background: #E0E7FF;
+  color: #4338CA;
+}
+
+.rank3 {
+  background: #FCE7F3;
+  color: #BE185D;
+}
+
+.rankOther {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+}
+
+.userCell {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-weight: 700;
+  color: var(--color-neutral-900);
+}
+
+.userContact {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+}
+
+.luckyNumBadge {
+  font-weight: 800;
+  color: var(--color-primary-500);
+  font-size: 15px;
+}
+
+.exactMatch {
+  font-size: 12px;
+  font-weight: 700;
+  color: #059669;
+  background: #ECFDF5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+.diffMatch {
+  font-size: 12px;
+  color: var(--color-neutral-500);
+  margin-left: 6px;
+}
+
+.prizeWon {
+  font-weight: 600;
+  color: var(--color-neutral-900);
+}
+
+.empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--color-neutral-500);
+  font-size: 14px;
+}

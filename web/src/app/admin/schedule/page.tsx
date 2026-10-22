@@ -143,26 +143,16 @@ export default function AdminSchedulePage() {
           </p>
         </div>
         <div className={styles.headerActionGroup}>
-          <button
-            type="button"
-            className={styles.syncBtn}
-            onClick={handleSyncSeries}
-            disabled={isSyncing}
-          >
+          <button type="button" className={styles.syncBtn} onClick={handleSyncSeries} disabled={isSyncing}>
             {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ Series'}
           </button>
-          <Link
-            href="/admin/schedule/email"
-            className={styles.syncBtn}
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-          >
+          <Link href="/admin/schedule/email" className={styles.syncBtn} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
             Email thông báo
           </Link>
-          <button
-            type="button"
-            className={styles.ocrBtn}
-            onClick={() => setIsOcrModalOpen(true)}
-          >
+          <Link href="/admin/schedule/giveaway" className={styles.syncBtn} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+            Give Away Manga
+          </Link>
+          <button type="button" className={styles.ocrBtn} onClick={() => setIsOcrModalOpen(true)}>
             Quét ảnh lịch (AI)
           </button>
           <button type="button" className={styles.createBtn} onClick={handleOpenCreate}>

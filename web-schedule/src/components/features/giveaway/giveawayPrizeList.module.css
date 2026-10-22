@@ -1,0 +1,84 @@
+.wrapper {
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg, 16px);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-neutral-900);
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.prizeCard {
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px;
+  background: var(--color-neutral-50);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.prizeCard:hover {
+  border-color: var(--color-primary-400);
+  transform: translateY(-2px);
+}
+
+.tierBadge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.tierFirst {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.tierSecond {
+  background: #E0E7FF;
+  color: #4338CA;
+}
+
+.tierThird {
+  background: #FCE7F3;
+  color: #BE185D;
+}
+
+.tierConsolation,
+.tierStandard {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+}
+
+.prizeName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.prizeQty {
+  font-size: 13px;
+  color: var(--color-neutral-500);
+  margin-top: auto;
+}
