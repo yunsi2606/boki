@@ -114,7 +114,7 @@ export function HomePopularitySection({ schedules = [], loading = false }: Props
                 <div className={styles.infoCol}>
                   <h3 className={styles.itemTitle}>{item.title}</h3>
                   <div className={styles.metaRow}>
-                    <span className={styles.pubTag}>{item.publisher}</span>
+                    <span className={styles.pubTag}>{item.imprint || item.publisher}</span>
                     <span
                       className={styles.ratingBadge}
                       title={`Đánh giá: ${(item.rating || 5.0).toFixed(1)}/5 sao`}

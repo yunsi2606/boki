@@ -78,7 +78,7 @@ export default function WorkDetailPage({ params }: Props) {
     },
     publisher: {
       '@type': 'Organization',
-      name: primary.publisher || 'Nhà xuất bản',
+      name: primary.imprint || primary.publisher || 'Nhà xuất bản',
     },
     genre: primary.genres,
     image: coverUrl,
@@ -112,6 +112,7 @@ export default function WorkDetailPage({ params }: Props) {
         originalTitle={primary.originalTitle}
         coverUrl={coverUrl}
         publisher={primary.publisher}
+        imprint={primary.imprint}
         format={primary.format}
         seriesStatus={primary.seriesStatus}
         ageRating={primary.ageRating}
@@ -130,6 +131,7 @@ export default function WorkDetailPage({ params }: Props) {
         author={primary.author}
         artist={primary.artist}
         publisher={primary.publisher}
+        imprint={primary.imprint}
         format={primary.format}
         specs={primary.specs}
         genres={primary.genres}

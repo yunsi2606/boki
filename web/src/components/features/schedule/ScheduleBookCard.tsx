@@ -96,7 +96,7 @@ export default function ScheduleBookCard({
       <div className={styles.infoColumn}>
         <div>
           <div className={styles.topMetaRow}>
-            <span className={styles.publisherBadge}>{item.publisher}</span>
+            <span className={styles.publisherBadge}>{item.imprint || item.publisher}</span>
             {eventType === 'PRE_ORDER' && (
               <span className={styles.eventBadgePreOrder}>Mở Pre-order</span>
             )}

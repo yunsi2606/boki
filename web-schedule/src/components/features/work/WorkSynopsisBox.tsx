@@ -10,6 +10,7 @@ interface Props {
   author?: string;
   artist?: string;
   publisher?: string;
+  imprint?: string;
   format?: string;
   specs?: string;
   genres?: string;
@@ -21,6 +22,7 @@ export function WorkSynopsisBox({
   author,
   artist,
   publisher,
+  imprint,
   format,
   specs,
   genres,
@@ -56,7 +58,7 @@ export function WorkSynopsisBox({
     description && description.trim().length > 0
       ? description
       : `Tác phẩm "${seriesName}" là bộ truyện được mua bản quyền và phát hành chính thức tại Việt Nam bởi ${
-          publisher || 'đơn vị xuất bản'
+          imprint || publisher || 'đơn vị xuất bản'
         }. Nội dung truyện được chuyển ngữ bám sát nguyên tác ${
           author ? `tác giả ${author}` : ''
         }, chất lượng in ấn tiêu chuẩn cao cấp cùng các ấn bản giới hạn kèm phụ kiện độc quyền dành cho độc giả.`;
@@ -154,7 +156,19 @@ export function WorkSynopsisBox({
           </div>
         )}
 
-        {publisher && (
+        {imprint && (
+          <div className={styles.specItem}>
+            <span className={styles.specLabel}>Công ty phát hành</span>
+            <Link
+              href={`/tac-pham?publisher=${encodeURIComponent(imprint)}`}
+              className={styles.specValueLink}
+            >
+              {imprint}
+            </Link>
+          </div>
+        )}
+
+        {publisher && (!imprint || imprint.trim().toLowerCase() !== publisher.trim().toLowerCase()) && (
           <div className={styles.specItem}>
             <span className={styles.specLabel}>Nhà xuất bản</span>
             <Link

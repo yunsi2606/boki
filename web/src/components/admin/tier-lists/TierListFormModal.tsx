@@ -103,6 +103,7 @@ export default function TierListFormModal({
   const filteredSchedules = schedules.filter(
     (s) =>
       s.title.toLowerCase().includes(searchSchedule.toLowerCase()) ||
+      (s.imprint && s.imprint.toLowerCase().includes(searchSchedule.toLowerCase())) ||
       (s.publisher && s.publisher.toLowerCase().includes(searchSchedule.toLowerCase()))
   );
 
@@ -201,7 +202,7 @@ export default function TierListFormModal({
                       <div className={styles.itemMeta}>
                         <span className={styles.mangaTitle}>{s.title}</span>
                         <span className={styles.mangaSub}>
-                          {s.publisher} • {s.releaseDate || 'Chưa định ngày'}
+                          {(s.imprint || s.publisher)} • {s.releaseDate || 'Chưa định ngày'}
                         </span>
                       </div>
                     </div>

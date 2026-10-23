@@ -9,6 +9,7 @@ interface Props {
   coverUrl?: string;
   author?: string;
   publisher?: string;
+  imprint?: string;
   totalVolumes?: number;
 }
 
@@ -18,8 +19,10 @@ export function SeriesSidebarBox({
   coverUrl,
   author,
   publisher,
+  imprint,
   totalVolumes,
 }: Props) {
+  const displayBrand = imprint || publisher;
   return (
     <div className={styles.boxContainer}>
       <div className={styles.boxHeader}>THUỘC BỘ TRUYỆN</div>
@@ -53,14 +56,14 @@ export function SeriesSidebarBox({
         </div>
 
         <div className={styles.metaRow}>
-          <span className={styles.metaLabel}>NXB:</span>
-          {publisher ? (
+          <span className={styles.metaLabel}>Phát hành:</span>
+          {displayBrand ? (
             <Link
-              href={`/bo-truyen?publisher=${encodeURIComponent(publisher)}`}
+              href={`/tac-pham?publisher=${encodeURIComponent(displayBrand)}`}
               className={styles.metaLink}
-              title={`Xem tác phẩm của ${publisher}`}
+              title={`Xem tác phẩm của ${displayBrand}`}
             >
-              {publisher}
+              {displayBrand}
             </Link>
           ) : (
             <span className={styles.metaVal}>Đang cập nhật</span>

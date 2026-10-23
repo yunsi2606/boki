@@ -63,25 +63,35 @@ export function VolumePublicationSpecs({ schedule }: Props) {
       </div>
 
       <div className={styles.specsGrid}>
-        {/* Nhà xuất bản */}
-        <div className={styles.specRow}>
-          <span className={styles.label}>Nhà xuất bản:</span>
-          <span className={styles.value}>
-            <Link
-              href={`/tac-pham?publisher=${encodeURIComponent(schedule.publisher)}`}
-              className={styles.interactiveLink}
-              title={`Xem tất cả tác phẩm từ ${schedule.publisher}`}
-            >
-              {schedule.publisher} ↗
-            </Link>
-          </span>
-        </div>
-
-        {/* Công ty phát hành */}
+        {/* Công ty phát hành (Ưu tiên hiển thị trước) */}
         {schedule.imprint && (
           <div className={styles.specRow}>
             <span className={styles.label}>Công ty phát hành:</span>
-            <span className={styles.value}>{schedule.imprint}</span>
+            <span className={styles.value}>
+              <Link
+                href={`/tac-pham?publisher=${encodeURIComponent(schedule.imprint)}`}
+                className={styles.interactiveLink}
+                title={`Xem tất cả tác phẩm từ ${schedule.imprint}`}
+              >
+                {schedule.imprint}
+              </Link>
+            </span>
+          </div>
+        )}
+
+        {/* Nhà xuất bản */}
+        {schedule.publisher && (!schedule.imprint || schedule.imprint.trim().toLowerCase() !== schedule.publisher.trim().toLowerCase()) && (
+          <div className={styles.specRow}>
+            <span className={styles.label}>Nhà xuất bản:</span>
+            <span className={styles.value}>
+              <Link
+                href={`/tac-pham?publisher=${encodeURIComponent(schedule.publisher)}`}
+                className={styles.interactiveLink}
+                title={`Xem tất cả tác phẩm từ ${schedule.publisher}`}
+              >
+                {schedule.publisher}
+              </Link>
+            </span>
           </div>
         )}
 
@@ -97,7 +107,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
                     className={styles.interactiveLink}
                     title={`Xem tác phẩm của ${authorName}`}
                   >
-                    {authorName} ↗
+                    {authorName}
                   </Link>
                   {idx < authorList.length - 1 && ', '}
                 </React.Fragment>
@@ -118,7 +128,7 @@ export function VolumePublicationSpecs({ schedule }: Props) {
                 className={styles.interactiveLink}
                 title={`Xem tác phẩm của ${schedule.artist}`}
               >
-                {schedule.artist} ↗
+                {schedule.artist}
               </Link>
             </span>
           </div>

@@ -12,8 +12,8 @@ export function buildTimelineGroups(
 
   const filtered = schedules.filter((s) => {
     if (!s.releaseDate || !s.releaseDate.startsWith(monthPrefix)) return false;
-    if (selectedPublisher !== 'ALL' && s.publisher !== selectedPublisher) return false;
-    if (query && !s.title.toLowerCase().includes(query) && !s.author?.toLowerCase().includes(query)) {
+    if (selectedPublisher !== 'ALL' && (s.imprint || s.publisher) !== selectedPublisher && s.publisher !== selectedPublisher) return false;
+    if (query && !s.title.toLowerCase().includes(query) && !s.author?.toLowerCase().includes(query) && !s.imprint?.toLowerCase().includes(query) && !s.publisher.toLowerCase().includes(query)) {
       return false;
     }
     return true;

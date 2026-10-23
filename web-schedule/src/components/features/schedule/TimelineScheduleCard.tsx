@@ -47,7 +47,7 @@ export function TimelineScheduleCard({ schedule, highlightDate }: Props) {
         ) : (
           <div className={styles.coverPlaceholder}>Bìa dự kiến</div>
         )}
-        <div className={styles.publisherTag}>{schedule.publisher}</div>
+        <div className={styles.publisherTag}>{schedule.imprint || schedule.publisher}</div>
         {schedule.volumeNumber !== undefined && schedule.volumeNumber !== null && (
           <div className={styles.volBadge}>Tập {schedule.volumeNumber}</div>
         )}

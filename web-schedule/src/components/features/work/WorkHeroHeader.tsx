@@ -10,6 +10,7 @@ interface Props {
   originalTitle?: string;
   coverUrl?: string;
   publisher?: string;
+  imprint?: string;
   format?: string;
   seriesStatus?: string;
   ageRating?: string;
@@ -26,6 +27,7 @@ export function WorkHeroHeader({
   originalTitle,
   coverUrl,
   publisher,
+  imprint,
   format = 'MANGA',
   seriesStatus = 'ONGOING',
   ageRating,
@@ -80,7 +82,7 @@ export function WorkHeroHeader({
               {statusLabel}
             </span>
 
-            {publisher && <span className={styles.publisherBadge}>{publisher}</span>}
+            {(imprint || publisher) && <span className={styles.publisherBadge}>{imprint || publisher}</span>}
 
             {ageRating && <span className={styles.ageBadge}>{ageRating}</span>}
           </div>

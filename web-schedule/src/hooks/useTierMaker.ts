@@ -160,7 +160,7 @@ export function useTierMaker(initialId?: string) {
         scheduleId: schedId,
         title: item.title,
         coverUrl: item.coverUrl,
-        publisher: item.publisher,
+        publisher: item.imprint || item.publisher,
         tierRank: targetTierName,
         sortOrder: next[targetTierName].length + 1,
       });

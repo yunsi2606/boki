@@ -27,11 +27,14 @@ public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseSched
            "ORDER BY r.releaseDate ASC, r.title ASC")
     List<ReleaseScheduleJpaEntity> findAllWithEditions();
 
-    @Query("SELECT DISTINCT r.publisher FROM ReleaseScheduleJpaEntity r ORDER BY r.publisher ASC")
+    @Query("SELECT DISTINCT COALESCE(NULLIF(TRIM(r.imprint), ''), r.publisher) " +
+           "FROM ReleaseScheduleJpaEntity r " +
+           "WHERE r.publisher IS NOT NULL OR r.imprint IS NOT NULL " +
+           "ORDER BY 1 ASC")
     List<String> findDistinctPublishers();
 
     @Query("SELECT r FROM ReleaseScheduleJpaEntity r " +
-           "WHERE LOWER(r.publisher) = LOWER(:publisher) " +
+           "WHERE LOWER(r.publisher) = LOWER(:publisher) OR LOWER(r.imprint) = LOWER(:publisher) " +
            "ORDER BY r.releaseDate DESC")
     List<ReleaseScheduleJpaEntity> findByPublisher(@Param("publisher") String publisher);
 
@@ -48,7 +51,7 @@ public interface ReleaseScheduleJpaRepository extends JpaRepository<ReleaseSched
     List<ReleaseScheduleJpaEntity> findBySeriesSlugOrderByVolumeNumberAsc(@Param("seriesSlug") String seriesSlug);
 
     @Query("SELECT MAX(r.seriesName), r.seriesSlug, MAX(r.publisher), MAX(r.author), COUNT(r), MAX(r.coverUrl), " +
-           "MAX(r.format), MAX(r.genres), MAX(r.seriesStatus) " +
+           "MAX(r.format), MAX(r.genres), MAX(r.seriesStatus), MAX(r.imprint) " +
            "FROM ReleaseScheduleJpaEntity r " +
            "WHERE r.seriesSlug IS NOT NULL " +
            "GROUP BY r.seriesSlug " +

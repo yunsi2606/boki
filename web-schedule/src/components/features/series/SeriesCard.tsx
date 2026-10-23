@@ -25,8 +25,8 @@ export function SeriesCard({ item }: Props) {
           <div className={styles.placeholderCover}>Bìa tác phẩm</div>
         )}
         <span className={styles.formatBadge}>{format}</span>
-        {item.publisher && (
-          <span className={styles.publisherBadge}>{item.publisher}</span>
+        {(item.imprint || item.publisher) && (
+          <span className={styles.publisherBadge}>{item.imprint || item.publisher}</span>
         )}
       </div>
 

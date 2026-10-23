@@ -12,6 +12,7 @@ interface Props {
   onSelectEdition: (index: number) => void;
   bookTitle: string;
   publisher: string;
+  imprint?: string;
   author?: string;
   scheduleReleaseDate: string;
   scheduleCoverUrl?: string;
@@ -24,6 +25,7 @@ export function VolumeEditionsList({
   onSelectEdition,
   bookTitle,
   publisher,
+  imprint,
   author,
   scheduleReleaseDate,
   scheduleCoverUrl,
@@ -145,10 +147,18 @@ export function VolumeEditionsList({
 
             {/* Book Spec Data Grid */}
             <div className={styles.specGrid}>
-              <div className={styles.specItem}>
-                <span className={styles.specLabel}>Nhà xuất bản:</span>
-                <span className={styles.specVal}>{publisher}</span>
-              </div>
+              {imprint && (
+                <div className={styles.specItem}>
+                  <span className={styles.specLabel}>Công ty phát hành:</span>
+                  <span className={styles.specVal}>{imprint}</span>
+                </div>
+              )}
+              {publisher && (!imprint || imprint.trim().toLowerCase() !== publisher.trim().toLowerCase()) && (
+                <div className={styles.specItem}>
+                  <span className={styles.specLabel}>Nhà xuất bản:</span>
+                  <span className={styles.specVal}>{publisher}</span>
+                </div>
+              )}
               <div className={styles.specItem}>
                 <span className={styles.specLabel}>Biên soạn / Tác giả:</span>
                 <span className={styles.specVal}>{author || 'Đang cập nhật'}</span>

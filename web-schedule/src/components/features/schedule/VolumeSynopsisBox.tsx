@@ -9,6 +9,7 @@ interface Props {
   description?: string;
   author?: string;
   publisher: string;
+  imprint?: string;
 }
 
 export function VolumeSynopsisBox({
@@ -18,11 +19,13 @@ export function VolumeSynopsisBox({
   description,
   author,
   publisher,
+  imprint,
 }: Props) {
+  const displayBrand = imprint || publisher;
   const content =
     description && description.trim().length > 0
       ? description.trim()
-      : `Tập ${volumeNumber || ''} của tác phẩm "${seriesName || title}" chính thức ra mắt độc giả Việt Nam qua đơn vị phát hành ${publisher}. Ấn bản được cấp phép xuất bản bản quyền chính thức với chất lượng in ấn cao cấp, bám sát nguyên tác tác giả ${author || 'Nhật Bản'}.`;
+      : `Tập ${volumeNumber || ''} của tác phẩm "${seriesName || title}" chính thức ra mắt độc giả Việt Nam qua đơn vị phát hành ${displayBrand}. Ấn bản được cấp phép xuất bản bản quyền chính thức với chất lượng in ấn cao cấp, bám sát nguyên tác tác giả ${author || 'Nhật Bản'}.`;
 
   return (
     <section className={styles.container}>
@@ -36,7 +39,7 @@ export function VolumeSynopsisBox({
 
       <div className={styles.tagRow}>
         <span className={styles.tagItem}>Bản quyền chính thức</span>
-        <span className={styles.tagItem}>{publisher}</span>
+        <span className={styles.tagItem}>{displayBrand}</span>
         {author && <span className={styles.tagItem}>Tác giả: {author}</span>}
       </div>
     </section>

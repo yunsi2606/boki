@@ -110,6 +110,7 @@ export default function TapTruyenDetailPage({ params }: Props) {
             description={schedule.description}
             author={schedule.author}
             publisher={schedule.publisher}
+            imprint={schedule.imprint}
           />
 
           <VolumePublicationSpecs schedule={schedule} />
@@ -121,6 +122,7 @@ export default function TapTruyenDetailPage({ params }: Props) {
             onSelectEdition={setActiveEditionIdx}
             bookTitle={schedule.title}
             publisher={schedule.publisher}
+            imprint={schedule.imprint}
             author={schedule.author}
             scheduleReleaseDate={schedule.releaseDate}
             scheduleCoverUrl={schedule.coverUrl}

@@ -66,13 +66,19 @@ export default function ScheduleDetailEditionContent({
           )}
         </div>
         <div className={styles.publisherTagBox}>
-          <span className={styles.pubTagLabel}>Nhà xuất bản</span>
-          <span className={styles.pubTagName}>{item.publisher}</span>
+          <span className={styles.pubTagLabel}>{item.imprint ? 'Đơn vị phát hành' : 'Nhà xuất bản'}</span>
+          <span className={styles.pubTagName}>{item.imprint || item.publisher}</span>
         </div>
       </div>
 
       <div className={styles.detailsSide}>
         <div className={styles.metaList}>
+          {item.imprint && item.publisher && item.imprint.trim().toLowerCase() !== item.publisher.trim().toLowerCase() && (
+            <div className={styles.metaRow}>
+              <span className={styles.metaLabel}>Nhà xuất bản:</span>
+              <span className={styles.metaValue}>{item.publisher}</span>
+            </div>
+          )}
           {item.originalTitle && (
             <div className={styles.metaRow}>
               <span className={styles.metaLabel}>Tên gốc:</span>

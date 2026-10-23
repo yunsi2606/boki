@@ -51,8 +51,8 @@ export function ScheduleBookCard({ schedule, highlightDate }: Props) {
 
         {/* Top Badges */}
         <div className={styles.topBadgeRow}>
-          {schedule.publisher && (
-            <span className={styles.publisherBadge}>{schedule.publisher}</span>
+          {(schedule.imprint || schedule.publisher) && (
+            <span className={styles.publisherBadge}>{schedule.imprint || schedule.publisher}</span>
           )}
           {formattedDate && (
             <span className={styles.dateBadge}>

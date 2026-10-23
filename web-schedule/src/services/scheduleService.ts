@@ -5,6 +5,7 @@ export interface SeriesSummaryItem {
   seriesSlug: string;
   seriesName: string;
   publisher?: string;
+  imprint?: string;
   author?: string;
   volumeCount?: number;
   totalVolumes?: number;

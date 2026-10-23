@@ -94,7 +94,7 @@ export function HomeHeroSlider({ items }: Props) {
                   </h1>
 
                   <div className={styles.metaRow}>
-                    <span className={styles.publisherBadge}>{item.publisher}</span>
+                    <span className={styles.publisherBadge}>{item.imprint || item.publisher}</span>
                     {item.author && <span className={styles.metaText}>Tác giả: {item.author}</span>}
                     <span className={styles.metaText}>
                       Phát hành: {new Date(item.releaseDate).toLocaleDateString('vi-VN')}
@@ -103,7 +103,7 @@ export function HomeHeroSlider({ items }: Props) {
 
                   <p className={styles.description}>
                     {item.description ||
-                      `Ấn bản mới nhất từ ${item.publisher} chính thức lên kệ với chất lượng in ấn tiêu chuẩn cao cấp, quà tặng kèm hấp dẫn cho độc giả và người sưu tầm.`}
+                      `Ấn bản mới nhất từ ${item.imprint || item.publisher} chính thức lên kệ với chất lượng in ấn tiêu chuẩn cao cấp, quà tặng kèm hấp dẫn cho độc giả và người sưu tầm.`}
                   </p>
 
                   <div className={styles.actionRow}>

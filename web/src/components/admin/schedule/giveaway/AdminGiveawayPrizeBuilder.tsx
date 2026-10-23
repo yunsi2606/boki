@@ -118,7 +118,7 @@ export default function AdminGiveawayPrizeBuilder({
                   <option value="">-- Không gắn LPH (Quà tặng/Sách tự do) --</option>
                   {schedules.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.title} ({s.publisher})
+                      {s.title} ({s.imprint || s.publisher})
                     </option>
                   ))}
                 </select>

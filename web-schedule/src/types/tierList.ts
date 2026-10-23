@@ -11,6 +11,7 @@ export interface TierRankedMangaItem {
   title: string;
   coverUrl?: string;
   publisher?: string;
+  imprint?: string;
   tierRank: string;
   sortOrder: number;
 }

@@ -51,7 +51,8 @@ function TacPhamListContent() {
   const availablePublishers = useMemo(() => {
     const pubSet = new Set<string>();
     seriesList.forEach((s) => {
-      if (s.publisher) pubSet.add(s.publisher);
+      const brand = s.imprint || s.publisher;
+      if (brand) pubSet.add(brand);
     });
     return Array.from(pubSet).sort();
   }, [seriesList]);
@@ -77,12 +78,13 @@ function TacPhamListContent() {
         (s) =>
           s.seriesName.toLowerCase().includes(q) ||
           (s.author && s.author.toLowerCase().includes(q)) ||
+          (s.imprint && s.imprint.toLowerCase().includes(q)) ||
           (s.publisher && s.publisher.toLowerCase().includes(q))
       );
     }
 
     if (selectedPublisher !== 'ALL') {
-      list = list.filter((s) => s.publisher === selectedPublisher);
+      list = list.filter((s) => (s.imprint || s.publisher) === selectedPublisher || s.publisher === selectedPublisher);
     }
 
     if (selectedFormat !== 'ALL') {

@@ -70,14 +70,14 @@ export function SeriesFilterToolbar({
 
       {/* Publisher Filter Row */}
       <div className={styles.filterRow}>
-        <span className={styles.rowLabel}>Nhà xuất bản:</span>
+        <span className={styles.rowLabel}>Đơn vị phát hành:</span>
         <div className={styles.chipsContainer}>
           <button
             type="button"
             className={`${styles.chipBtn} ${selectedPublisher === 'ALL' ? styles.activeChip : ''}`}
             onClick={() => onSelectPublisher('ALL')}
           >
-            Tất cả NXB
+            Tất cả đơn vị
           </button>
           {availablePublishers.map((pub) => {
             const active = selectedPublisher === pub;
@@ -143,7 +143,7 @@ export function SeriesFilterToolbar({
             )}
             {selectedPublisher !== 'ALL' && (
               <span className={styles.activeFilterBadge}>
-                NXB: {selectedPublisher}
+                Phát hành: {selectedPublisher}
                 <button
                   type="button"
                   className={styles.removeFilterBtn}

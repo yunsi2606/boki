@@ -108,7 +108,7 @@ export default function TapTruyenDetailPage({ params }: Props) {
 
         <div className={styles.infoSide}>
           <div className={styles.badgeRow}>
-            <span className={styles.publisherBadge}>{schedule.publisher}</span>
+            <span className={styles.publisherBadge}>{schedule.imprint || schedule.publisher}</span>
             <span className={styles.editionBadge}>{currentEdition.editionName}</span>
           </div>
 

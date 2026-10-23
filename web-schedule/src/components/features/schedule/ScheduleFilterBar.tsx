@@ -36,7 +36,7 @@ export function ScheduleFilterBar({
       <div className={styles.publisherRow}>
         {allPublishers.map((pub) => {
           const isActive = selectedPublisher === pub;
-          const label = pub === 'ALL' ? 'Tất cả NXB' : pub;
+          const label = pub === 'ALL' ? 'Tất cả đơn vị' : pub;
           return (
             <button
               key={pub}

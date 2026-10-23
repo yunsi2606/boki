@@ -56,7 +56,11 @@ public class ReleaseScheduleApplicationService {
             }
 
             if (publisher != null && !publisher.isBlank()) {
-                predicates.add(cb.equal(cb.lower(root.get("publisher")), publisher.trim().toLowerCase()));
+                String searchPub = publisher.trim().toLowerCase();
+                predicates.add(cb.or(
+                    cb.equal(cb.lower(root.get("imprint")), searchPub),
+                    cb.equal(cb.lower(root.get("publisher")), searchPub)
+                ));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -145,6 +149,7 @@ public class ReleaseScheduleApplicationService {
             map.put("format", row.length > 6 && row[6] != null ? row[6] : "MANGA");
             map.put("genres", row.length > 7 && row[7] != null ? row[7] : "");
             map.put("seriesStatus", row.length > 8 && row[8] != null ? row[8] : "ONGOING");
+            map.put("imprint", row.length > 9 && row[9] != null ? row[9] : null);
             return map;
         }).collect(Collectors.toList());
     }
