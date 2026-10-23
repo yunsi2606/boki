@@ -5,6 +5,7 @@ import com.boki.infrastructure.persistence.entity.GiveawayCampaignJpaEntity;
 import com.boki.infrastructure.persistence.entity.GiveawayEntryJpaEntity;
 import com.boki.infrastructure.persistence.entity.GiveawayPrizeJpaEntity;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
