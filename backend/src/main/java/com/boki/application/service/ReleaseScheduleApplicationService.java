@@ -198,11 +198,11 @@ public class ReleaseScheduleApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("ReleaseSchedule", "id", id));
 
         if (request.getTitle() != null) entity.setTitle(request.getTitle().trim());
-        if (request.getOriginalTitle() != null) entity.setOriginalTitle(request.getOriginalTitle().trim());
+        if (request.getOriginalTitle() != null) entity.setOriginalTitle(request.getOriginalTitle().isBlank() ? null : request.getOriginalTitle().trim());
         if (request.getPublisher() != null) entity.setPublisher(request.getPublisher().trim());
-        if (request.getAuthor() != null) entity.setAuthor(request.getAuthor().trim());
-        if (request.getArtist() != null) entity.setArtist(request.getArtist().trim());
-        if (request.getImprint() != null) entity.setImprint(request.getImprint().trim());
+        if (request.getAuthor() != null) entity.setAuthor(request.getAuthor().isBlank() ? null : request.getAuthor().trim());
+        if (request.getArtist() != null) entity.setArtist(request.getArtist().isBlank() ? null : request.getArtist().trim());
+        if (request.getImprint() != null) entity.setImprint(request.getImprint().isBlank() ? null : request.getImprint().trim());
         if (request.getGenres() != null) entity.setGenres(request.getGenres().trim());
         if (request.getFormat() != null) entity.setFormat(request.getFormat().trim());
         if (request.getSeriesStatus() != null) entity.setSeriesStatus(request.getSeriesStatus().trim());
@@ -210,8 +210,8 @@ public class ReleaseScheduleApplicationService {
         if (request.getSpecs() != null) entity.setSpecs(request.getSpecs().trim());
         if (request.getReleaseDate() != null) entity.setReleaseDate(request.getReleaseDate());
         if (request.getPreOrderDate() != null) entity.setPreOrderDate(request.getPreOrderDate());
-        if (request.getCoverUrl() != null) entity.setCoverUrl(request.getCoverUrl().trim());
-        if (request.getDescription() != null) entity.setDescription(request.getDescription());
+        if (request.getCoverUrl() != null) entity.setCoverUrl(request.getCoverUrl().isBlank() ? null : request.getCoverUrl().trim());
+        if (request.getDescription() != null) entity.setDescription(request.getDescription().isBlank() ? null : request.getDescription().trim());
         if (request.getStatus() != null) entity.setStatus(request.getStatus());
         syncService.normalizeScheduleFields(entity);
 

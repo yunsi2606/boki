@@ -178,9 +178,12 @@ export function useScheduleFormState(
     try {
       setSubmitting(true);
       const validSpecs: Record<string, string> = {};
-      specsList.forEach(({ key, value }) => {
-        if (key.trim()) validSpecs[key.trim()] = value.trim();
-      });
+      specsList.forEach(({ key, value }) => { if (key.trim()) validSpecs[key.trim()] = value.trim(); });
+      const normCover = coverUrl.trim();
+      const normEditions = editions.map((ed) => ({
+        ...ed,
+        coverUrl: editions.length <= 1 ? normCover : (ed.coverUrl?.trim() || ''),
+      }));
 
       await onSubmit({
         title: title.trim(),
@@ -196,9 +199,9 @@ export function useScheduleFormState(
         specs: Object.keys(validSpecs).length > 0 ? JSON.stringify(validSpecs) : undefined,
         releaseDate,
         preOrderDate: preOrderDate.trim() || undefined,
-        coverUrl: coverUrl.trim() || undefined,
+        coverUrl: normCover,
         description: description.trim() || undefined,
-        editions,
+        editions: normEditions,
         storeLinks: storeLinks.filter((s) => s.productUrl && s.productUrl.trim().length > 0),
       });
       onClose();

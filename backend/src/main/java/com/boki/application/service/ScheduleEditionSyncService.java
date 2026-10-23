@@ -81,7 +81,7 @@ public class ScheduleEditionSyncService {
         schedule.getEditions().addAll(retained);
 
         // If single edition, keep coverUrl synchronized with parent schedule cover
-        if (schedule.getEditions().size() == 1 && schedule.getCoverUrl() != null) {
+        if (schedule.getEditions().size() == 1) {
             schedule.getEditions().get(0).setCoverUrl(schedule.getCoverUrl());
         }
     }
@@ -129,7 +129,7 @@ public class ScheduleEditionSyncService {
         target.setPreOrderDate(req.getPreOrderDate());
         target.setEstimatedPrice(req.getEstimatedPrice());
         target.setGifts(req.getGifts() != null ? req.getGifts().trim() : null);
-        target.setCoverUrl(req.getCoverUrl() != null ? req.getCoverUrl().trim() : null);
+        target.setCoverUrl((req.getCoverUrl() != null && !req.getCoverUrl().isBlank()) ? req.getCoverUrl().trim() : null);
         target.setStatus(req.getStatus() != null ? req.getStatus() : ReleaseScheduleStatus.SCHEDULED);
         target.setBookId(req.getBookId());
         target.setSortOrder(req.getSortOrder() != null ? req.getSortOrder() : sortOrder);
