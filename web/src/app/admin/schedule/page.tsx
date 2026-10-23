@@ -8,6 +8,13 @@ import AdminScheduleTable from '@/components/admin/schedule/AdminScheduleTable';
 import AdminScheduleFormModal from '@/components/admin/schedule/AdminScheduleFormModal';
 import AdminScheduleOcrModal from '@/components/admin/schedule/AdminScheduleOcrModal';
 import DeleteScheduleModal from '@/components/admin/schedule/DeleteScheduleModal';
+import AdminScheduleFilterBar from '@/components/admin/schedule/AdminScheduleFilterBar';
+import {
+  getAvailablePeriods,
+  getPrevPeriod,
+  getNextPeriod,
+  matchesSchedulePeriod,
+} from '@/components/admin/schedule/schedulePeriodHelper';
 import { createNextVolumeItem } from '@/components/admin/schedule/scheduleCloneHelper';
 import styles from './adminSchedule.module.css';
 
@@ -18,6 +25,7 @@ export default function AdminSchedulePage() {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('ALL');
   const [selectedPublisher, setSelectedPublisher] = useState<string>('ALL');
   const [linkFilter, setLinkFilter] = useState<'ALL' | 'LINKED' | 'UNLINKED'>('ALL');
 
@@ -48,6 +56,16 @@ export default function AdminSchedulePage() {
   useEffect(() => {
     fetchSchedules();
   }, []);
+
+  const availablePeriods = useMemo(() => getAvailablePeriods(items), [items]);
+
+  const handlePrevPeriod = () => {
+    setSelectedPeriod((prev) => getPrevPeriod(prev));
+  };
+
+  const handleNextPeriod = () => {
+    setSelectedPeriod((prev) => getNextPeriod(prev));
+  };
 
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -112,6 +130,7 @@ export default function AdminSchedulePage() {
   // Filtered Items
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
+      if (!matchesSchedulePeriod(item, selectedPeriod)) return false;
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
         const matchesTitle = item.title.toLowerCase().includes(term);
@@ -122,7 +141,7 @@ export default function AdminSchedulePage() {
         );
         if (!matchesTitle && !matchesOrig && !matchesAuthor && !matchesEditions) return false;
       }
-      if (selectedPublisher !== 'ALL' && item.publisher !== selectedPublisher) {
+      if (selectedPublisher !== 'ALL' && item.publisher !== selectedPublisher && item.imprint !== selectedPublisher) {
         return false;
       }
       const hasAnyLinked = item.editions?.some((e) => e.linkedBook || e.bookId);
@@ -130,7 +149,7 @@ export default function AdminSchedulePage() {
       if (linkFilter === 'UNLINKED' && hasAnyLinked) return false;
       return true;
     });
-  }, [items, searchTerm, selectedPublisher, linkFilter]);
+  }, [items, selectedPeriod, searchTerm, selectedPublisher, linkFilter]);
 
   return (
     <div className={styles.adminSchedulePage}>
@@ -162,37 +181,20 @@ export default function AdminSchedulePage() {
       </div>
 
       {/* Control / Filter Bar */}
-      <div className={styles.filterCard}>
-        <div className={styles.searchBox}>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Tìm theo tên truyện, tên gốc, tác giả, quà tặng..."
-          />
-        </div>
-
-        <div className={styles.selectGroup}>
-          <select
-            value={selectedPublisher}
-            onChange={(e) => setSelectedPublisher(e.target.value)}
-          >
-            <option value="ALL">Tất cả nhà xuất bản</option>
-            {publishers.map((p) => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
-
-          <select
-            value={linkFilter}
-            onChange={(e) => setLinkFilter(e.target.value as 'ALL' | 'LINKED' | 'UNLINKED')}
-          >
-            <option value="ALL">Tất cả tình trạng link</option>
-            <option value="LINKED">Đã có bản link sách Boki</option>
-            <option value="UNLINKED">Chưa có bản nào link</option>
-          </select>
-        </div>
-      </div>
+      <AdminScheduleFilterBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedPeriod={selectedPeriod}
+        onSelectPeriod={setSelectedPeriod}
+        availablePeriods={availablePeriods}
+        onPrevPeriod={handlePrevPeriod}
+        onNextPeriod={handleNextPeriod}
+        selectedPublisher={selectedPublisher}
+        onSelectPublisher={setSelectedPublisher}
+        publishers={publishers}
+        linkFilter={linkFilter}
+        onSelectLinkFilter={setLinkFilter}
+      />
 
       {/* Table Content */}
       {loading ? (
