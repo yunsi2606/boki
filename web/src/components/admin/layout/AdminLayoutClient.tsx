@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import {
   BarChartIcon,
   BookOpenIcon,
@@ -43,6 +44,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
   const pathname = usePathname();
   const router = useRouter();
   const { user, isLoading, isAuthenticated, logout } = useAuth();
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -79,9 +81,15 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
             <button onClick={() => router.push('/login')} className={styles.primaryAuthBtn}>
               Đăng nhập ngay
             </button>
-            <Link href="/" className={styles.secondaryHomeBtn}>
-              Về trang chủ
-            </Link>
+            {isRedirectToSchedule ? (
+              <a href={scheduleUrl} className={styles.secondaryHomeBtn}>
+                Về Lịch phát hành
+              </a>
+            ) : (
+              <Link href="/" className={styles.secondaryHomeBtn}>
+                Về trang chủ
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -135,9 +143,9 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <Link href="/" className={styles.storefrontBtn}>
+          <Link href={isRedirectToSchedule ? '/?preview=true' : '/'} className={styles.storefrontBtn} target="_blank">
             <GlobeIcon size={18} />
-            <span>Xem Cửa hàng</span>
+            <span>{isRedirectToSchedule ? 'Xem Trang chủ (Preview)' : 'Xem Cửa hàng'}</span>
           </Link>
         </div>
       </aside>

@@ -4,6 +4,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import { authService } from '@/services/authService';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -15,6 +16,7 @@ import styles from '../auth.module.css';
 export default function RegisterPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -118,9 +120,15 @@ export default function RegisterPage() {
     <div className={styles.page}>
       <Card className={styles.card} glass>
         <div className={styles.header}>
-          <Link href="/" className={styles.brandLogoLink}>
-            <img src="/brand/logo.png" alt="Boki Logo" className={styles.brandLogo} />
-          </Link>
+          {isRedirectToSchedule ? (
+            <a href={scheduleUrl} className={styles.brandLogoLink}>
+              <img src="/brand/logo.png" alt="Boki Logo" className={styles.brandLogo} />
+            </a>
+          ) : (
+            <Link href="/" className={styles.brandLogoLink}>
+              <img src="/brand/logo.png" alt="Boki Logo" className={styles.brandLogo} />
+            </Link>
+          )}
           <h1>Tạo tài khoản</h1>
           <p>Tham gia Boki để khám phá kho sách bản quyền</p>
         </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import { orderService } from '@/services/orderService';
 import { paymentService } from '@/services/paymentService';
 import SePayQrModal from '@/components/features/checkout/SePayQrModal';
@@ -37,6 +38,7 @@ const getStatusClassAndText = (status: string) => {
 export default function OrderHistoryPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('ALL');
@@ -157,9 +159,15 @@ export default function OrderHistoryPage() {
     <div className={styles.container}>
       {/* Breadcrumb Navigation */}
       <div className={styles.breadcrumb}>
-        <Link href="/" className={styles.breadcrumbLink}>
-          Trang chủ
-        </Link>
+        {isRedirectToSchedule ? (
+          <a href={scheduleUrl} className={styles.breadcrumbLink}>
+            Lịch phát hành
+          </a>
+        ) : (
+          <Link href="/" className={styles.breadcrumbLink}>
+            Trang chủ
+          </Link>
+        )}
         <span className={styles.breadcrumbSeparator}>/</span>
         <span className={styles.breadcrumbCurrent}>Đơn hàng của tôi</span>
       </div>

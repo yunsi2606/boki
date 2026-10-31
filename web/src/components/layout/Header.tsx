@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import Button from '@/components/ui/Button';
 import SmartSearchBar from '@/components/features/search/SmartSearchBar';
 import UserAvatarDropdown from './UserAvatarDropdown';
@@ -12,6 +13,7 @@ import styles from './Header.module.css';
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { cartCount } = useCart();
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -22,13 +24,25 @@ export default function Header() {
     .toUpperCase()
     .slice(0, 2) || 'U';
 
+  const logoContent = (
+    <>
+      <div className={styles.logoIconBox}>
+        <img src="/brand/logo.png" alt="Boki Store Logo" className={styles.logoImg} />
+      </div>
+      <span className={styles.logoMain}>BOKI</span>
+      <span className={styles.logoSub}>STORE</span>
+    </>
+  );
+
   return (
     <>
       {/* Top Announcement Bar */}
       <div className={styles.announcementBar}>
         <div className={styles.announcementContent}>
-          <span>✨ <strong>Ưu đãi tháng 9:</strong> Giảm tới 50% toàn bộ Manga & Light Novel | Nhập mã <strong>BOKI20K</strong> giảm ngay 20.000đ</span>
-          <Link href="/#vouchers" className={styles.announcementLink}>Xem mã ngay &rarr;</Link>
+          <span><strong>Ưu đãi thành viên:</strong> Giảm tới 50% toàn bộ Manga & Light Novel | Nhập mã <strong>BOKI20K</strong> giảm ngay 20.000đ</span>
+          {!isRedirectToSchedule && (
+            <Link href="/#vouchers" className={styles.announcementLink}>Xem mã ngay &rarr;</Link>
+          )}
         </div>
       </div>
 
@@ -36,22 +50,28 @@ export default function Header() {
         <div className={styles.container}>
           {/* Row 1: Logo, Navigation Links, Cart & Auth */}
           <div className={styles.topRow}>
-            <Link href="/" className={styles.logo}>
-              <div className={styles.logoIconBox}>
-                <img src="/brand/logo.png" alt="Boki Store Logo" className={styles.logoImg} />
-              </div>
-              <span className={styles.logoMain}>BOKI</span>
-              <span className={styles.logoSub}>STORE</span>
-            </Link>
+            {isRedirectToSchedule ? (
+              <a href={scheduleUrl} className={styles.logo} title="Trang Lịch phát hành">
+                {logoContent}
+              </a>
+            ) : (
+              <Link href="/" className={styles.logo}>
+                {logoContent}
+              </Link>
+            )}
 
             <nav className={styles.navLinks}>
-              <Link href="/" className={pathname === '/' ? styles.navLinkActive : styles.navLink}>Trang chủ</Link>
+              {!isRedirectToSchedule && (
+                <Link href="/" className={pathname === '/' ? styles.navLinkActive : styles.navLink}>Trang chủ</Link>
+              )}
               <Link href="/books" className={pathname?.startsWith('/books') ? styles.navLinkActive : styles.navLink}>Cửa hàng</Link>
-              <Link href="/lich-phat-hanh" className={pathname?.startsWith('/lich-phat-hanh') || pathname?.startsWith('/schedule') ? styles.navLinkActive : styles.navLink}>Lịch phát hành</Link>
+              <a href={scheduleUrl} className={styles.navLink}>Lịch phát hành</a>
               <Link href="/tu-sach" className={pathname?.startsWith('/tu-sach') ? styles.navLinkActive : styles.navLink}>Tủ sách</Link>
               <Link href="/preview" className={pathname?.startsWith('/preview') ? styles.navLinkActive : styles.navLink}>Đọc thử</Link>
               <Link href="/blog" className={pathname?.startsWith('/blog') ? styles.navLinkActive : styles.navLink}>Bài viết</Link>
-              <Link href="/#vouchers" className={styles.navLink}>Mã giảm giá</Link>
+              {!isRedirectToSchedule && (
+                <Link href="/#vouchers" className={styles.navLink}>Mã giảm giá</Link>
+              )}
               {user?.role === 'ADMIN' && (
                 <Link href="/admin" className={styles.adminPortalBtn}>
                   Trang Admin

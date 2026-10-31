@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import { blogService } from '@/services/blogService';
 import type { BlogPost } from '@/types/blog';
 import styles from '@/components/features/blog/blog.module.css';
@@ -11,6 +12,7 @@ interface BlogDetailClientProps {
 }
 
 export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
@@ -79,7 +81,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>
-        <Link href="/">Trang chủ</Link>
+        {isRedirectToSchedule ? <a href={scheduleUrl}>Lịch phát hành</a> : <Link href="/">Trang chủ</Link>}
         <span>/</span>
         <Link href="/blog">Blog</Link>
         <span>/</span>

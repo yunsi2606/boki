@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import { BookOpen, Clock, Eye, Calendar, User, ChevronRight, ArrowLeft } from 'lucide-react';
 import { blogService } from '@/services/blogService';
 import StickyReadingBar from '@/components/features/preview/StickyReadingBar';
@@ -14,6 +15,7 @@ interface PreviewReaderClientProps {
 }
 
 export default function PreviewReaderClient({ slug }: PreviewReaderClientProps) {
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -72,7 +74,7 @@ export default function PreviewReaderClient({ slug }: PreviewReaderClientProps) 
   return (
     <div className={styles.readerContainer}>
       <div className={styles.breadcrumb}>
-        <Link href="/">Trang chủ</Link>
+        {isRedirectToSchedule ? <a href={scheduleUrl}>Lịch phát hành</a> : <Link href="/">Trang chủ</Link>}
         <ChevronRight size={14} />
         <Link href="/preview">Đọc thử sách</Link>
         <ChevronRight size={14} />

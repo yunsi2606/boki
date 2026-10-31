@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import { orderService } from '@/services/orderService';
 import { checkoutNavigationService } from '@/services/checkoutNavigationService';
 import type { Order, CartItem, PaymentInitResponse } from '@/types';
@@ -27,6 +28,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cartItems, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
 
   // Smooth state transition: prioritize state passed via checkoutNavigationService
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>(cartItems);
@@ -330,6 +332,10 @@ export default function CheckoutPage() {
               <Link href="/orders/history" className={styles.historyBtn}>
                 Xem lịch sử đơn hàng
               </Link>
+            ) : isRedirectToSchedule ? (
+              <a href={scheduleUrl} className={styles.historyBtn}>
+                Về Lịch phát hành
+              </a>
             ) : (
               <Link href="/" className={styles.historyBtn}>
                 Về trang chủ
@@ -368,9 +374,15 @@ export default function CheckoutPage() {
     <div className={styles.container}>
       {/* Breadcrumbs */}
       <div className={styles.breadcrumb}>
-        <Link href="/" className={styles.breadcrumbLink}>
-          Trang chủ
-        </Link>
+        {isRedirectToSchedule ? (
+          <a href={scheduleUrl} className={styles.breadcrumbLink}>
+            Lịch phát hành
+          </a>
+        ) : (
+          <Link href="/" className={styles.breadcrumbLink}>
+            Trang chủ
+          </Link>
+        )}
         <span className={styles.breadcrumbSeparator}>/</span>
         <Link href="/cart" className={styles.breadcrumbLink}>
           Giỏ hàng

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { scheduleApiFetch } from '@/services/api';
 import styles from './scheduleHeader.module.css';
 
 export function ScheduleHeader() {
@@ -12,7 +13,23 @@ export function ScheduleHeader() {
   const { user, isAuthenticated, logout, loginUrl, redirectToLogin } = useAuth();
   const [searchVal, setSearchVal] = useState('');
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [hideStoreBtn, setHideStoreBtn] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scheduleApiFetch<Record<string, string>>('/public/config')
+      .then((cfg) => {
+        if (cfg?.homepage_config) {
+          try {
+            const parsed = JSON.parse(cfg.homepage_config);
+            if (parsed.redirectToSchedule) {
+              setHideStoreBtn(true);
+            }
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const isHome = pathname === '/';
   const isSchedule = pathname.startsWith('/lich-phat-hanh');
@@ -172,19 +189,21 @@ export function ScheduleHeader() {
             </a>
           )}
 
-          <a
-            href={storeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.bokiStoreBtn}
-          >
-            <span>Boki Store</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-          </a>
+          {!hideStoreBtn && (
+            <a
+              href={storeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.bokiStoreBtn}
+            >
+              <span>Boki Store</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          )}
         </div>
       </div>
     </header>

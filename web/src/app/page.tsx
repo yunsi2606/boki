@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { defaultHomepageConfig, type HomepageConfig } from '@/config/homepageConfig';
-import { adminService } from '@/services/adminService';
+import { defaultHomepageConfig } from '@/config/homepageConfig';
 import { voucherService } from '@/services/voucherService';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import type { Voucher } from '@/types/voucher';
 import HeroBanner from '@/components/features/home/HeroBanner';
 import CategoryCircles from '@/components/features/home/CategoryCircles';
@@ -15,26 +15,27 @@ import FlashSaleSection from '@/components/features/home/flashSale/FlashSaleSect
 import styles from './page.module.css';
 
 export default function HomePage() {
-  const [config, setConfig] = useState<HomepageConfig>(defaultHomepageConfig);
+  const { config, loading: configLoading, isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const [notification, setNotification] = useState<string | null>(null);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
+  const [isPreview, setIsPreview] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    async function loadStoreConfig() {
-      try {
-        const data = await adminService.getStoreConfig();
-        if (data) {
-          if (!data.sections || data.sections.length === 0) {
-            data.sections = defaultHomepageConfig.sections;
-          }
-          setConfig(data);
-        }
-      } catch (err) {
-        console.error('Failed to load dynamic store config', err);
-      }
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setIsPreview(params.get('preview') === 'true');
     }
+  }, []);
 
-    loadStoreConfig();
+  useEffect(() => {
+    if (!configLoading && isRedirectToSchedule && !isPreview) {
+      setRedirecting(true);
+      window.location.replace(scheduleUrl);
+    }
+  }, [configLoading, isRedirectToSchedule, isPreview, scheduleUrl]);
+
+  useEffect(() => {
     voucherService.getAllVouchers().then(setVouchers).catch(console.error);
   }, []);
 
@@ -43,10 +44,24 @@ export default function HomePage() {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  if ((configLoading || isRedirectToSchedule || redirecting) && !isPreview) {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '14px' }}>
+        <span>Đang chuyển hướng sang Lịch phát hành...</span>
+      </div>
+    );
+  }
+
   const sections = config.sections || defaultHomepageConfig.sections;
 
   return (
     <div className={styles.homeContainer}>
+      {isPreview && (
+        <div style={{ background: '#fff3bf', borderBottom: '1px solid #ffe066', padding: '10px 16px', textAlign: 'center', fontSize: '13px', color: '#854d0e', fontWeight: 600 }}>
+          Chế độ xem trước dành cho Quản trị viên (Trang chủ đang tạm ẩn với khách truy cập thông thường)
+        </div>
+      )}
+
       {/* Toast Notification */}
       {notification && <div className={styles.toast}>{notification}</div>}
 

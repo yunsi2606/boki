@@ -1,6 +1,8 @@
 import type { HomepageConfig } from './homepageConfig';
 
 export const defaultHomepageConfig: HomepageConfig = {
+  redirectToSchedule: false,
+  scheduleUrl: process.env.NEXT_PUBLIC_SCHEDULE_URL || 'https://schedule.boki.nhatcuong.io.vn',
   hero: {
     tag: '⚡ SIÊU ƯU ĐÃI THÁNG 9',
     title: 'ĐỒNG GIÁ',

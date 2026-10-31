@@ -12,6 +12,7 @@ import type { Category } from '@/types';
 import DecorationComponentLibrary from '../decoration/DecorationComponentLibrary';
 import DecorationCanvas from '../decoration/DecorationCanvas';
 import DecorationPropertyPanel from '../decoration/DecorationPropertyPanel';
+import HomepageLaunchModeCard from './HomepageLaunchModeCard';
 import styles from './ShopDecorationTab.module.css';
 
 interface ShopDecorationTabProps {
@@ -120,12 +121,21 @@ export default function ShopDecorationTab({ onSuccessNotice }: ShopDecorationTab
     }
   };
 
+  const handleLaunchModeChange = (updates: Partial<HomepageConfig>) => {
+    setConfig((prev) => ({ ...prev, ...updates }));
+  };
+
   // Save changes
   const handleSave = async () => {
     setSaving(true);
     try {
       const latest = await adminService.getStoreConfig();
-      const merged = { ...latest, sections: config.sections };
+      const merged: HomepageConfig = {
+        ...latest,
+        sections: config.sections,
+        redirectToSchedule: config.redirectToSchedule,
+        scheduleUrl: config.scheduleUrl,
+      };
       await adminService.updateStoreConfig(merged);
       setConfig(merged);
       onSuccessNotice('Lưu thiết kế trang chủ thành công! Giao diện khách hàng đã được đồng bộ.');
@@ -178,6 +188,8 @@ export default function ShopDecorationTab({ onSuccessNotice }: ShopDecorationTab
           </button>
         </div>
       </div>
+
+      <HomepageLaunchModeCard config={config} onChange={handleLaunchModeChange} />
 
       {/* 3-Column Shopee Decoration Workspace */}
       <div className={styles.decorationWorkspace}>

@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import { bookService } from '@/services/bookService';
 import { categoryService } from '@/services/categoryService';
 import type { Book, BookVariant, Category } from '@/types';
@@ -31,11 +32,9 @@ import BookDetailSpecsTable from './BookDetailSpecsTable';
 import styles from '@/app/books/[slug]/page.module.css';
 
 export default function BookDetailClient() {
-  const params = useParams();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { isAuthenticated } = useAuth();
-  const { addToCart, cartItems } = useCart();
+  const params = useParams(); const router = useRouter(); const searchParams = useSearchParams();
+  const { isAuthenticated } = useAuth(); const { addToCart, cartItems } = useCart();
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
 
   const rawParam = (params.slug || params.id) as string;
   const id = extractBookId(rawParam);
@@ -158,7 +157,7 @@ export default function BookDetailClient() {
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>
-        <Link href="/" className={styles.breadcrumbLink}>Trang chủ</Link>
+        {isRedirectToSchedule ? <a href={scheduleUrl} className={styles.breadcrumbLink}>Lịch phát hành</a> : <Link href="/" className={styles.breadcrumbLink}>Trang chủ</Link>}
         <span className={styles.breadcrumbSeparator}>/</span>
         <Link href="/books" className={styles.breadcrumbLink}>Cửa hàng</Link>
         <span className={styles.breadcrumbSeparator}>/</span>

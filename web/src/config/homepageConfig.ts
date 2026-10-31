@@ -98,6 +98,8 @@ export interface HomepageSectionConfig {
 }
 
 export interface HomepageConfig {
+  redirectToSchedule?: boolean;
+  scheduleUrl?: string;
   hero: HeroBannerConfig;
   vouchers: VoucherConfig[];
   publishers: string[];

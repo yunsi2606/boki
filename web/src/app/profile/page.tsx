@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import { useStoreConfig } from '@/contexts/StoreConfigContext';
 import { customerProfileService } from '@/services/customerProfileService';
 import type { CustomerProfileSummary } from '@/types/profile';
 import type { User } from '@/types';
@@ -17,6 +18,7 @@ import styles from '@/components/features/profile/profile.module.css';
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading, updateUser } = useAuth();
+  const { isRedirectToSchedule, scheduleUrl } = useStoreConfig();
   const [summary, setSummary] = useState<CustomerProfileSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,9 +96,15 @@ export default function ProfilePage() {
     <div className={styles.pageContainer}>
       {/* Breadcrumb */}
       <div className={styles.breadcrumb}>
-        <Link href="/" className={styles.breadcrumbLink}>
-          Trang chủ
-        </Link>
+        {isRedirectToSchedule ? (
+          <a href={scheduleUrl} className={styles.breadcrumbLink}>
+            Lịch phát hành
+          </a>
+        ) : (
+          <Link href="/" className={styles.breadcrumbLink}>
+            Trang chủ
+          </Link>
+        )}
         <span className={styles.breadcrumbSeparator}>/</span>
         <span className={styles.breadcrumbCurrent}>Hồ sơ cá nhân & Xếp hạng</span>
       </div>
