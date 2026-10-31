@@ -124,23 +124,33 @@ public class ScheduleSeriesMatchingService {
         }
 
         if (exactMatch != null) {
-            item.setAuthor(exactMatch.getAuthor());
-            item.setOriginalTitle(exactMatch.getOriginalTitle());
-            item.setDescription(exactMatch.getDescription());
+            copyAttributesFromSchedule(item, exactMatch);
             item.setMatchStatus(OcrMatchStatus.EXACT_MATCH);
             item.setMatchMessage("Khớp chính xác: Kế thừa từ bộ đã có (" + exactMatch.getTitle() + ")");
             return true;
         }
 
         if (similarMatch != null) {
-            item.setAuthor(similarMatch.getAuthor());
-            item.setOriginalTitle(similarMatch.getOriginalTitle());
+            copyAttributesFromSchedule(item, similarMatch);
             item.setMatchStatus(OcrMatchStatus.SIMILAR_MATCH);
             item.setMatchMessage("Gợi ý khớp tương đồng (" + similarMatch.getTitle() + ")");
             return true;
         }
 
         return false;
+    }
+
+    private void copyAttributesFromSchedule(OcrParsedBookItemDto item, ReleaseScheduleJpaEntity source) {
+        if (source.getAuthor() != null) item.setAuthor(source.getAuthor());
+        if (source.getArtist() != null) item.setArtist(source.getArtist());
+        if (source.getImprint() != null) item.setImprint(source.getImprint());
+        if (source.getGenres() != null) item.setGenres(source.getGenres());
+        if (source.getFormat() != null) item.setFormat(source.getFormat());
+        if (source.getSeriesStatus() != null) item.setSeriesStatus(source.getSeriesStatus());
+        if (source.getAgeRating() != null) item.setAgeRating(source.getAgeRating());
+        if (source.getSpecs() != null) item.setSpecs(source.getSpecs());
+        if (source.getOriginalTitle() != null) item.setOriginalTitle(source.getOriginalTitle());
+        if (source.getDescription() != null) item.setDescription(source.getDescription());
     }
 
     private boolean matchFromBooksInventory(OcrParsedBookItemDto item, String seriesName) {
@@ -151,9 +161,19 @@ public class ScheduleSeriesMatchingService {
 
         if (!books.isEmpty()) {
             BookJpaEntity book = books.getContent().get(0);
-            item.setAuthor(book.getAuthor());
-            if (book.getPublicationDetails() != null && book.getPublicationDetails().containsKey("original_title")) {
-                item.setOriginalTitle(book.getPublicationDetails().get("original_title"));
+            if (book.getAuthor() != null) item.setAuthor(book.getAuthor());
+            if (book.getDescription() != null && item.getDescription() == null) item.setDescription(book.getDescription());
+            if (book.getPublicationDetails() != null) {
+                var pub = book.getPublicationDetails();
+                if (pub.containsKey("publisher") && (item.getPublisher() == null || item.getPublisher().isBlank())) {
+                    item.setPublisher(pub.get("publisher"));
+                }
+                if (pub.containsKey("original_title")) item.setOriginalTitle(pub.get("original_title"));
+                if (pub.containsKey("artist")) item.setArtist(pub.get("artist"));
+                if (pub.containsKey("imprint")) item.setImprint(pub.get("imprint"));
+                if (pub.containsKey("format")) item.setFormat(pub.get("format"));
+                if (pub.containsKey("genres") && item.getGenres() == null) item.setGenres(pub.get("genres"));
+                if (pub.containsKey("age_rating")) item.setAgeRating(pub.get("age_rating"));
             }
             item.setMatchedBookId(book.getId());
             item.setMatchStatus(OcrMatchStatus.EXACT_MATCH);

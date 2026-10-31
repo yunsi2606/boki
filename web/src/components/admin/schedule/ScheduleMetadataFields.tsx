@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import type { InheritedAttributes } from './scheduleLinkInheritHelper';
 import styles from './scheduleMetadataFields.module.css';
 
 interface Props {
@@ -16,6 +17,8 @@ interface Props {
   setSeriesStatus: (val: string) => void;
   ageRating: string;
   setAgeRating: (val: string) => void;
+  previousAttributes?: InheritedAttributes | null;
+  onInheritAttributes?: () => void;
 }
 
 const GENRE_PRESETS = [
@@ -36,6 +39,8 @@ export default function ScheduleMetadataFields({
   setSeriesStatus,
   ageRating,
   setAgeRating,
+  previousAttributes,
+  onInheritAttributes,
 }: Props) {
   const handleToggleGenre = (g: string) => {
     const list = genres
@@ -56,7 +61,33 @@ export default function ScheduleMetadataFields({
 
   return (
     <>
-      <div className={styles.sectionHeader}>2. Phân loại & Xuất bản chuyên sâu</div>
+      <div className={styles.sectionHeaderRow}>
+        <div className={styles.sectionHeader}>2. Phân loại & Xuất bản chuyên sâu</div>
+        {onInheritAttributes && previousAttributes && (
+          <button
+            type="button"
+            className={styles.inheritBtn}
+            onClick={onInheritAttributes}
+            title="Tải họa sĩ, thể loại, tình trạng, độ tuổi từ tập trước"
+          >
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <span>Tải thuộc tính từ tập trước</span>
+          </button>
+        )}
+      </div>
 
       <div className={styles.formRow}>
         <div className={styles.formGroup} style={{ flex: 1 }}>
@@ -127,7 +158,22 @@ export default function ScheduleMetadataFields({
                 className={`${styles.presetChip} ${active ? styles.activeChip : ''}`}
                 onClick={() => handleToggleGenre(g)}
               >
-                {active ? `✓ ${g}` : `+ ${g}`}
+                {active && (
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ marginRight: '4px' }}
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+                <span>{g}</span>
               </button>
             );
           })}

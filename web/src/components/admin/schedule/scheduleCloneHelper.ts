@@ -54,12 +54,16 @@ export function calculateNextOriginalTitle(originalTitle?: string): string {
   return originalTitle;
 }
 
+export interface NextVolumeDraftItem extends ReleaseScheduleItem {
+  previousVolumeSource?: ReleaseScheduleItem;
+}
+
 /**
  * Tạo dữ liệu tập mới từ thông tin tập cũ:
  * - Giữ lại: thông tin chung (NXB, tác giả, họa sĩ, thể loại, specs động, series...)
  * - Loại bỏ/reset: ảnh bìa, phiên bản, giá bán, quà tặng, ngày phát hành, id.
  */
-export function createNextVolumeItem(oldItem: ReleaseScheduleItem): ReleaseScheduleItem {
+export function createNextVolumeItem(oldItem: ReleaseScheduleItem): NextVolumeDraftItem {
   const { nextTitle, nextVolume } = calculateNextVolumeTitle(
     oldItem.title,
     oldItem.volumeNumber
@@ -92,5 +96,6 @@ export function createNextVolumeItem(oldItem: ReleaseScheduleItem): ReleaseSched
     editions: [cleanStandardEdition], // Reset phiên bản & giá & quà tặng
     storeLinks: [],
     changelogs: [],
+    previousVolumeSource: oldItem,
   };
 }

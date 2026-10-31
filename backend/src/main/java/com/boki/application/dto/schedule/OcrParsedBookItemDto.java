@@ -27,6 +27,13 @@ public class OcrParsedBookItemDto {
     private String editionName;
     private String gifts;
     private String author;
+    private String artist;
+    private String imprint;
+    private String genres;
+    private String format;
+    private String seriesStatus;
+    private String ageRating;
+    private String specs;
     private String originalTitle;
     private String coverUrl;
     private String description;

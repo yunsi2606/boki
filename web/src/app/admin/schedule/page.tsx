@@ -16,6 +16,7 @@ import {
   matchesSchedulePeriod,
 } from '@/components/admin/schedule/schedulePeriodHelper';
 import { createNextVolumeItem } from '@/components/admin/schedule/scheduleCloneHelper';
+import { cloneStoreLinks } from '@/components/admin/schedule/scheduleLinkInheritHelper';
 import styles from './adminSchedule.module.css';
 
 export default function AdminSchedulePage() {
@@ -53,38 +54,19 @@ export default function AdminSchedulePage() {
     }
   };
 
-  useEffect(() => {
-    fetchSchedules();
-  }, []);
+  useEffect(() => { fetchSchedules(); }, []);
 
   const availablePeriods = useMemo(() => getAvailablePeriods(items), [items]);
+  const handlePrevPeriod = () => setSelectedPeriod((prev) => getPrevPeriod(prev));
+  const handleNextPeriod = () => setSelectedPeriod((prev) => getNextPeriod(prev));
 
-  const handlePrevPeriod = () => {
-    setSelectedPeriod((prev) => getPrevPeriod(prev));
-  };
-
-  const handleNextPeriod = () => {
-    setSelectedPeriod((prev) => getNextPeriod(prev));
-  };
-
-  const handleOpenCreate = () => {
-    setEditingItem(null);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (item: ReleaseScheduleItem) => {
-    setEditingItem(item);
-    setIsModalOpen(true);
-  };
-
+  const handleOpenCreate = () => { setEditingItem(null); setIsModalOpen(true); };
+  const handleOpenEdit = (item: ReleaseScheduleItem) => { setEditingItem(item); setIsModalOpen(true); };
   const handleOpenAddNextVolume = (item: ReleaseScheduleItem) => {
     setEditingItem(createNextVolumeItem(item));
     setIsModalOpen(true);
   };
-
-  const handleRequestDelete = (item: ReleaseScheduleItem) => {
-    setDeletingItem(item);
-  };
+  const handleRequestDelete = (item: ReleaseScheduleItem) => setDeletingItem(item);
 
   const handleConfirmDelete = async (id: string) => {
     try {
@@ -102,9 +84,7 @@ export default function AdminSchedulePage() {
   };
 
   const handleSyncSeries = async () => {
-    if (!window.confirm('Chuẩn hóa và đồng bộ toàn bộ lịch phát hành theo Series và số Tập (Volume)?')) {
-      return;
-    }
+    if (!window.confirm('Chuẩn hóa và đồng bộ toàn bộ lịch phát hành theo Series và số Tập (Volume)?')) return;
     try {
       setIsSyncing(true);
       const res = await scheduleService.syncSeries();
@@ -118,6 +98,20 @@ export default function AdminSchedulePage() {
     }
   };
 
+  const handleSyncLinksFromPrevious = async (item: ReleaseScheduleItem, prevWithLinks: ReleaseScheduleItem) => {
+    if (!prevWithLinks.storeLinks || prevWithLinks.storeLinks.length === 0) return;
+    const count = prevWithLinks.storeLinks.length;
+    if (!window.confirm(`Đồng bộ ${count} liên kết mua hàng từ "${prevWithLinks.title}" sang "${item.title}"?`)) return;
+    try {
+      const cloned = cloneStoreLinks(prevWithLinks.storeLinks);
+      await scheduleService.updateSchedule(item.id, { storeLinks: cloned });
+      await fetchSchedules();
+    } catch (err) {
+      console.error('Failed to sync links:', err);
+      alert('Không thể đồng bộ liên kết sàn. Vui lòng thử lại!');
+    }
+  };
+
   const handleSubmitForm = async (payload: CreateSchedulePayload) => {
     if (editingItem?.id) {
       await scheduleService.updateSchedule(editingItem.id, payload);
@@ -127,7 +121,6 @@ export default function AdminSchedulePage() {
     await fetchSchedules();
   };
 
-  // Filtered Items
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       if (!matchesSchedulePeriod(item, selectedPeriod)) return false;
@@ -153,7 +146,6 @@ export default function AdminSchedulePage() {
 
   return (
     <div className={styles.adminSchedulePage}>
-      {/* Top Header */}
       <div className={styles.topHeader}>
         <div>
           <h1 className={styles.pageTitle}>Quản Lý Lịch Phát Hành Sách & Manga</h1>
@@ -175,12 +167,14 @@ export default function AdminSchedulePage() {
             Quét ảnh lịch (AI)
           </button>
           <button type="button" className={styles.createBtn} onClick={handleOpenCreate}>
-            + Thêm mục lịch mới
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '6px' }}>
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>Thêm mục lịch mới</span>
           </button>
         </div>
       </div>
 
-      {/* Control / Filter Bar */}
       <AdminScheduleFilterBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -196,7 +190,6 @@ export default function AdminSchedulePage() {
         onSelectLinkFilter={setLinkFilter}
       />
 
-      {/* Table Content */}
       {loading ? (
         <div className={styles.loadingBox}>Đang tải danh sách lịch phát hành...</div>
       ) : (
@@ -205,18 +198,18 @@ export default function AdminSchedulePage() {
           onEdit={handleOpenEdit}
           onDelete={handleRequestDelete}
           onAddNextVolume={handleOpenAddNextVolume}
+          onSyncLinks={handleSyncLinksFromPrevious}
         />
       )}
 
-      {/* Form Modal */}
       <AdminScheduleFormModal
         isOpen={isModalOpen}
         initialItem={editingItem}
+        allItems={items}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmitForm}
       />
 
-      {/* OCR Staging Modal */}
       <AdminScheduleOcrModal
         isOpen={isOcrModalOpen}
         publishers={publishers}
@@ -224,7 +217,6 @@ export default function AdminSchedulePage() {
         onSuccess={fetchSchedules}
       />
 
-      {/* Delete Confirmation Modal */}
       <DeleteScheduleModal
         isOpen={!!deletingItem}
         item={deletingItem}

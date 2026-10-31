@@ -3,14 +3,12 @@
   border-top: 1px solid var(--color-neutral-200, #e5e7eb);
   padding-top: 16px;
 }
-
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
-
 .title {
   font-size: 14px;
   font-weight: 700;
@@ -19,7 +17,26 @@
   align-items: center;
   gap: 8px;
 }
-
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inheritBtn {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fef3c7;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  padding: 5px 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+.inheritBtn:hover { background: #fde68a; border-color: #d97706; }
 .addBtn {
   font-size: 12px;
   font-weight: 600;
@@ -29,27 +46,23 @@
   border-radius: var(--radius-sm, 6px);
   padding: 5px 12px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: all 0.15s ease;
 }
-
-.addBtn:hover {
-  background: #ffeae4;
-  border-color: var(--color-primary-500, #ee4d2d);
-}
-
+.addBtn:hover { background: #ffeae4; border-color: var(--color-primary-500, #ee4d2d); }
 .emptyHint {
   font-size: 12.5px;
   color: var(--color-neutral-400, #9ca3af);
   font-style: italic;
   padding: 8px 0;
 }
-
 .linksList {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
 .linkCard {
   background: var(--color-neutral-50, #f9fafb);
   border: 1px solid var(--color-neutral-200, #e5e7eb);
@@ -60,23 +73,17 @@
   gap: 10px;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
-
-.linkCard:hover {
-  border-color: var(--color-neutral-300, #d1d5db);
-}
-
+.linkCard:hover { border-color: var(--color-neutral-300, #d1d5db); }
 .isDragging {
   opacity: 0.4;
   border-style: dashed;
   border-color: var(--color-primary-400, #ff7a59);
   transform: scale(0.99);
 }
-
 .isDragOver {
   border-color: var(--color-primary-500, #ee4d2d);
   box-shadow: 0 0 0 2px rgba(238, 77, 45, 0.2);
 }
-
 .cardHeaderBar {
   display: flex;
   align-items: center;
@@ -84,7 +91,6 @@
   padding-bottom: 8px;
   border-bottom: 1px dashed var(--color-neutral-200, #e5e7eb);
 }
-
 .dragHandle {
   display: flex;
   align-items: center;
@@ -92,17 +98,8 @@
   cursor: grab;
   user-select: none;
 }
-
-.dragHandle:active {
-  cursor: grabbing;
-}
-
-.dragGripIcon {
-  color: var(--color-neutral-400, #9ca3af);
-  display: flex;
-  align-items: center;
-}
-
+.dragHandle:active { cursor: grabbing; }
+.dragGripIcon { color: var(--color-neutral-400, #9ca3af); display: flex; align-items: center; }
 .orderBadge {
   font-size: 11px;
   font-weight: 700;
@@ -112,19 +109,8 @@
   border-radius: 9999px;
   letter-spacing: 0.2px;
 }
-
-.dragHint {
-  font-size: 11px;
-  color: var(--color-neutral-400, #9ca3af);
-  font-weight: 500;
-}
-
-.orderControls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
+.dragHint { font-size: 11px; color: var(--color-neutral-400, #9ca3af); font-weight: 500; }
+.orderControls { display: flex; align-items: center; gap: 4px; }
 .orderBtn {
   width: 24px;
   height: 24px;
@@ -139,32 +125,24 @@
   transition: all 0.12s ease;
   padding: 0;
 }
-
 .orderBtn:hover:not(:disabled) {
   border-color: var(--color-primary-500, #ee4d2d);
   color: var(--color-primary-600, #ee4d2d);
   background: #fff5f2;
 }
-
-.orderBtn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
+.orderBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 .rowTop {
   display: grid;
   grid-template-columns: 140px 1fr;
   gap: 10px;
   align-items: center;
 }
-
 .rowBottom {
   display: grid;
   grid-template-columns: 1fr 140px auto;
   gap: 10px;
   align-items: center;
 }
-
 .select, .input {
   width: 100%;
   padding: 7px 10px;
@@ -176,11 +154,7 @@
   outline: none;
   box-sizing: border-box;
 }
-
-.select:focus, .input:focus {
-  border-color: var(--color-primary-500, #ee4d2d);
-}
-
+.select:focus, .input:focus { border-color: var(--color-primary-500, #ee4d2d); }
 .checkPriceBtn {
   font-size: 12px;
   font-weight: 600;
@@ -193,12 +167,7 @@
   white-space: nowrap;
   transition: opacity 0.15s ease;
 }
-
-.checkPriceBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+.checkPriceBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 .deleteBtn {
   background: transparent;
   border: none;
@@ -210,21 +179,7 @@
   justify-content: center;
   border-radius: 4px;
 }
-
-.deleteBtn:hover {
-  color: #ef4444;
-  background: #fee2e2;
-}
-
-.statusMessage {
-  font-size: 11.5px;
-  margin-top: -4px;
-}
-
-.statusSuccess {
-  color: #059669;
-}
-
-.statusError {
-  color: #dc2626;
-}
+.deleteBtn:hover { color: #ef4444; background: #fee2e2; }
+.statusMessage { font-size: 11.5px; margin-top: -4px; }
+.statusSuccess { color: #059669; }
+.statusError { color: #dc2626; }

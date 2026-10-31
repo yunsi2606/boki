@@ -8,6 +8,8 @@ import styles from './scheduleStoreLinksSection.module.css';
 
 interface Props {
   storeLinks: ReleaseStoreLinkItem[];
+  previousLinks?: ReleaseStoreLinkItem[];
+  onInheritLinks?: (links: ReleaseStoreLinkItem[]) => void;
   onAddLink: () => void;
   onRemoveLink: (index: number) => void;
   onUpdateLink: (index: number, updated: ReleaseStoreLinkItem) => void;
@@ -16,6 +18,8 @@ interface Props {
 
 export function ScheduleStoreLinksSection({
   storeLinks,
+  previousLinks,
+  onInheritLinks,
   onAddLink,
   onRemoveLink,
   onUpdateLink,
@@ -42,16 +46,12 @@ export function ScheduleStoreLinksSection({
   const handleDragOver = (e: React.DragEvent, idx: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    if (dragOverIdx !== idx) {
-      setDragOverIdx(idx);
-    }
+    if (dragOverIdx !== idx) setDragOverIdx(idx);
   };
 
   const handleDrop = (e: React.DragEvent, dropIdx: number) => {
     e.preventDefault();
-    if (draggedIdx !== null && draggedIdx !== dropIdx) {
-      moveLink(draggedIdx, dropIdx);
-    }
+    if (draggedIdx !== null && draggedIdx !== dropIdx) moveLink(draggedIdx, dropIdx);
     setDraggedIdx(null);
     setDragOverIdx(null);
   };
@@ -69,12 +69,10 @@ export function ScheduleStoreLinksSection({
       }));
       return;
     }
-
     try {
       setCheckingIdx(idx);
       setStatusMap((prev) => ({ ...prev, [idx]: { text: 'Đang kiểm tra...', success: true } }));
       const res = await scheduleService.checkShopeePrice(url);
-
       if (res.success && typeof res.price === 'number') {
         const foundPrice = res.price;
         onUpdateLink(idx, {
@@ -114,9 +112,47 @@ export function ScheduleStoreLinksSection({
         <div className={styles.title}>
           <span>Liên kết sàn thương mại & Affiliate ({storeLinks.length})</span>
         </div>
-        <button type="button" onClick={onAddLink} className={styles.addBtn}>
-          + Thêm liên kết sàn
-        </button>
+        <div className={styles.headerActions}>
+          {onInheritLinks && previousLinks && previousLinks.length > 0 && (
+            <button
+              type="button"
+              onClick={() => onInheritLinks(previousLinks)}
+              className={styles.inheritBtn}
+              title="Lấy danh sách liên kết sàn từ tập trước (không kèm ID để tạo mới)"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+              <span>Lấy link từ tập trước ({previousLinks.length})</span>
+            </button>
+          )}
+          <button type="button" onClick={onAddLink} className={styles.addBtn}>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>Thêm liên kết sàn</span>
+          </button>
+        </div>
       </div>
 
       {storeLinks.length === 0 ? (

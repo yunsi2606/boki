@@ -78,3 +78,4 @@ export function StoreConfigProvider({ children }: { children: React.ReactNode })
 export function useStoreConfig() {
   return useContext(StoreConfigContext);
 }
+

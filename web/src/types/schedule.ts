@@ -125,6 +125,13 @@ export interface OcrParsedBookItem {
   editionName: string;
   gifts?: string;
   author?: string;
+  artist?: string;
+  imprint?: string;
+  genres?: string;
+  format?: string;
+  seriesStatus?: string;
+  ageRating?: string;
+  specs?: string;
   originalTitle?: string;
   coverUrl?: string;
   description?: string;

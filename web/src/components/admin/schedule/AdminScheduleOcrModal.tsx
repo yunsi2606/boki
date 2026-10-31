@@ -111,7 +111,6 @@ export default function AdminScheduleOcrModal({
       alert('Vui lòng chọn ít nhất 1 mục lịch để lưu.');
       return;
     }
-
     try {
       setIsSaving(true);
       const payloads = groupStagingItemsToPayloads(selected, scanResult);
@@ -197,16 +196,13 @@ export default function AdminScheduleOcrModal({
           ) : (
             <div>
               <div className={styles.scanBanner}>
-                <div>
-                  <span className={styles.scanBannerTitle}>
-                    {scanResult?.detectedPublisher} — Tháng {scanResult?.month}/{scanResult?.year}
-                  </span>
-                </div>
-                <div className={styles.scanBannerDetails}>
+                <span className={styles.scanBannerTitle}>
+                  {scanResult?.detectedPublisher} — Tháng {scanResult?.month}/{scanResult?.year}
+                </span>
+                <span className={styles.scanBannerDetails}>
                   Phát hiện {stagingItems.length} đầu sách | Đối soát thông minh theo Nhà xuất bản
-                </div>
+                </span>
               </div>
-
               <OcrStagingTable
                 items={stagingItems}
                 onUpdateItem={handleUpdateItem}
@@ -218,37 +214,20 @@ export default function AdminScheduleOcrModal({
 
         <div className={styles.footer}>
           {step === 'REVIEW' && !isScanning && (
-            <button
-              type="button"
-              className={styles.cancelBtn}
-              onClick={() => setStep('UPLOAD')}
-            >
+            <button type="button" className={styles.cancelBtn} onClick={() => setStep('UPLOAD')}>
               Quay lại nhập khác
             </button>
           )}
-          <button type="button" className={styles.cancelBtn} onClick={onClose}>
-            Hủy bỏ
-          </button>
+          <button type="button" className={styles.cancelBtn} onClick={onClose}>Hủy bỏ</button>
           {step === 'UPLOAD' ? (
-            inputMode === 'IMAGE' ? (
-              <button
-                type="button"
-                className={styles.primaryBtn}
-                disabled={!selectedFile || isScanning}
-                onClick={handleStartScan}
-              >
-                Bắt đầu phân tích ảnh
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={styles.primaryBtn}
-                disabled={!plainText.trim() || isScanning}
-                onClick={handleStartTextParse}
-              >
-                Bắt đầu phân tích văn bản
-              </button>
-            )
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              disabled={(inputMode === 'IMAGE' ? !selectedFile : !plainText.trim()) || isScanning}
+              onClick={inputMode === 'IMAGE' ? handleStartScan : handleStartTextParse}
+            >
+              {inputMode === 'IMAGE' ? 'Bắt đầu phân tích ảnh' : 'Bắt đầu phân tích văn bản'}
+            </button>
           ) : (
             <button
               type="button"

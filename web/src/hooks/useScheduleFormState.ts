@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { ReleaseScheduleItem, ReleaseStoreLinkItem } from '@/types/schedule';
 import type { CreateSchedulePayload, CreateEditionPayload } from '@/services/scheduleService';
 import type { ParsedScheduleData } from '@/utils/scheduleTextParserTypes';
+import type { InheritedAttributes } from '@/components/admin/schedule/scheduleLinkInheritHelper';
 import {
   DEFAULT_SCHEDULE_FORM,
   mergeSpecsList,
@@ -117,13 +118,29 @@ export function useScheduleFormState(
     const rel = toSafeString(data.releaseDate); if (rel) setReleaseDate(rel);
     const pre = toSafeString(data.preOrderDate); if (pre) setPreOrderDate(pre);
     const desc = toSafeString(data.description); if (desc) setDescription(desc);
-
-    if (data.specs) {
-      setSpecsList((prev) => mergeSpecsList(prev, data.specs));
-    }
+    if (data.specs) setSpecsList((prev) => mergeSpecsList(prev, data.specs));
     const converted = convertParsedEditions(data.editions);
-    if (converted) {
-      setEditions(converted);
+    if (converted) setEditions(converted);
+  };
+
+  const handleInheritLinks = (links: ReleaseStoreLinkItem[]) => {
+    setStoreLinks(links);
+  };
+
+  const handleInheritAttributes = (attrs: InheritedAttributes) => {
+    if (attrs.author) setAuthor(attrs.author);
+    if (attrs.artist) setArtist(attrs.artist);
+    if (attrs.imprint) setImprint(attrs.imprint);
+    if (attrs.genres) setGenres(attrs.genres);
+    if (attrs.format) setFormat(attrs.format);
+    if (attrs.seriesStatus) setSeriesStatus(attrs.seriesStatus);
+    if (attrs.ageRating) setAgeRating(attrs.ageRating);
+    if (attrs.description && !description) setDescription(attrs.description);
+    if (attrs.specs) {
+      try {
+        const parsed = JSON.parse(attrs.specs);
+        setSpecsList(Object.entries(parsed).map(([k, v]) => ({ key: k, value: String(v) })));
+      } catch {}
     }
   };
 
@@ -174,7 +191,6 @@ export function useScheduleFormState(
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !publisher.trim() || !releaseDate) return;
-
     try {
       setSubmitting(true);
       const validSpecs: Record<string, string> = {};
@@ -184,7 +200,6 @@ export function useScheduleFormState(
         ...ed,
         coverUrl: editions.length <= 1 ? normCover : (ed.coverUrl?.trim() || ''),
       }));
-
       await onSubmit({
         title: title.trim(),
         originalTitle: originalTitle.trim() || undefined,
@@ -211,36 +226,14 @@ export function useScheduleFormState(
   };
 
   return {
-    title, setTitle,
-    originalTitle, setOriginalTitle,
-    publisher, setPublisher,
-    author, setAuthor,
-    artist, setArtist,
-    imprint, setImprint,
-    genres, setGenres,
-    format, setFormat,
-    seriesStatus, setSeriesStatus,
-    ageRating, setAgeRating,
-    specsList,
-    handleAddSpec,
-    handleUpdateSpec,
-    handleRemoveSpec,
-    releaseDate, setReleaseDate,
-    preOrderDate, setPreOrderDate,
-    coverUrl, setCoverUrl,
-    description, setDescription,
-    editions,
-    storeLinks,
-    handleAddStoreLink,
-    handleRemoveStoreLink,
-    handleUpdateStoreLink,
-    handleReorderStoreLinks,
-    submitting,
-    handleAddEdition,
-    handleUpdateEdition,
-    handleUpdateSingleEdition,
-    handleRemoveEdition,
-    handleApplySmartFill,
-    handleSubmit,
+    title, setTitle, originalTitle, setOriginalTitle, publisher, setPublisher,
+    author, setAuthor, artist, setArtist, imprint, setImprint,
+    genres, setGenres, format, setFormat, seriesStatus, setSeriesStatus,
+    ageRating, setAgeRating, specsList, handleAddSpec, handleUpdateSpec, handleRemoveSpec,
+    releaseDate, setReleaseDate, preOrderDate, setPreOrderDate, coverUrl, setCoverUrl,
+    description, setDescription, editions, storeLinks, submitting,
+    handleAddStoreLink, handleRemoveStoreLink, handleUpdateStoreLink, handleReorderStoreLinks,
+    handleAddEdition, handleUpdateEdition, handleUpdateSingleEdition, handleRemoveEdition,
+    handleApplySmartFill, handleInheritLinks, handleInheritAttributes, handleSubmit,
   };
 }

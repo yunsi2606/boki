@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { ReleaseScheduleItem } from '@/types/schedule';
+import { findPreviousVolumeWithLinks } from './scheduleLinkInheritHelper';
 import styles from './adminScheduleTable.module.css';
 
 interface AdminScheduleTableProps {
@@ -9,6 +10,7 @@ interface AdminScheduleTableProps {
   onEdit: (item: ReleaseScheduleItem) => void;
   onDelete: (item: ReleaseScheduleItem) => void;
   onAddNextVolume: (item: ReleaseScheduleItem) => void;
+  onSyncLinks?: (item: ReleaseScheduleItem, prevWithLinks: ReleaseScheduleItem) => void;
 }
 
 export default function AdminScheduleTable({
@@ -16,6 +18,7 @@ export default function AdminScheduleTable({
   onEdit,
   onDelete,
   onAddNextVolume,
+  onSyncLinks,
 }: AdminScheduleTableProps) {
   const formatDate = (dateStr?: string | null) => {
     if (!dateStr) return '—';
@@ -63,6 +66,9 @@ export default function AdminScheduleTable({
           {items.map((item) => {
             const firstCover = item.coverUrl || item.editions?.find((e) => e.coverUrl)?.coverUrl;
             const linkedEditions = item.editions?.filter((e) => e.linkedBook || e.bookId) || [];
+            const prevWithLinks = onSyncLinks && (!item.storeLinks || item.storeLinks.length === 0)
+              ? findPreviousVolumeWithLinks(item, items)
+              : null;
 
             return (
               <tr key={item.id}>
@@ -102,7 +108,12 @@ export default function AdminScheduleTable({
                           </span>
                           {ed.gifts && (
                             <span className={styles.giftsText} title={ed.gifts}>
-                              🎁 {ed.gifts}
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="20 12 20 22 4 22 4 12" />
+                                <rect x="2" y="7" width="20" height="5" />
+                                <line x1="12" y1="22" x2="12" y2="7" />
+                              </svg>
+                              <span>{ed.gifts}</span>
                             </span>
                           )}
                         </div>
@@ -134,6 +145,16 @@ export default function AdminScheduleTable({
                 </td>
                 <td style={{ textAlign: 'right' }}>
                   <div className={styles.actionsRow}>
+                    {prevWithLinks && onSyncLinks && (
+                      <button
+                        type="button"
+                        className={styles.syncLinksBtn}
+                        onClick={() => onSyncLinks(item, prevWithLinks)}
+                        title={`Đồng bộ ${prevWithLinks.storeLinks?.length || 0} link từ ${prevWithLinks.title}`}
+                      >
+                        Link tập trước
+                      </button>
+                    )}
                     <button
                       type="button"
                       className={styles.cloneBtn}
