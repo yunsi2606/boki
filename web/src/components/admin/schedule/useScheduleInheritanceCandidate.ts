@@ -37,3 +37,4 @@ export function useScheduleInheritanceCandidate(
 
   return { candidateAttributes, candidateLinks };
 }
+

@@ -136,3 +136,32 @@
   color: var(--color-neutral-500);
   margin: 0;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 12px 48px;
+  }
+  .headerBanner {
+    padding: 16px 14px;
+    margin-bottom: 16px;
+    border-radius: var(--radius-md, 10px);
+  }
+  .mainTitle {
+    font-size: 20px;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+  .navPillsRow {
+    margin-top: 12px;
+    padding-top: 12px;
+    gap: 8px;
+  }
+  .navPill {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}

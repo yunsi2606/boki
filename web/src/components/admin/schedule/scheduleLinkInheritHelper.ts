@@ -139,3 +139,4 @@ export function extractInheritedAttributes(prev: ReleaseScheduleItem): Inherited
     originalTitle: prev.originalTitle || undefined,
   };
 }
+
