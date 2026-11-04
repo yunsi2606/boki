@@ -21,7 +21,7 @@ public class GeminiAiProvider implements AiProvider {
     @Value("${boki.ai.gemini.api-key:}")
     private String apiKey;
 
-    @Value("${boki.ai.gemini.model:gemini-1.5-flash}")
+    @Value("${boki.ai.gemini.model:gemini-3.5-flash-lite}")
     private String modelName;
 
     private final RestClient restClient;

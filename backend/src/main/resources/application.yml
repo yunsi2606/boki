@@ -73,7 +73,7 @@ boki:
   ai:
     gemini:
       api-key: ${GEMINI_API_KEY:${BOKI_AI_GEMINI_API_KEY:}}
-      model: ${GEMINI_MODEL:gemini-3.8-flash}
+      model: ${GEMINI_MODEL:gemini-3.5-flash-lite}
 
 # Server
 server:

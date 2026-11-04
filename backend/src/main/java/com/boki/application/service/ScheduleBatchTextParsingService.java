@@ -59,13 +59,14 @@ public class ScheduleBatchTextParsingService {
 
     private String callGeminiWithFallback(BatchParseTextRequest req, String apiKey) throws Exception {
         List<String> candidates = new ArrayList<>();
-        if (geminiModel != null && !geminiModel.isBlank() && !geminiModel.contains("1.5")) {
+        if (geminiModel != null && !geminiModel.isBlank()
+                && !geminiModel.contains("1.5") && !geminiModel.contains("2.0") && !geminiModel.contains("2.5")) {
             candidates.add(geminiModel.trim());
         }
+        if (!candidates.contains("gemini-3.5-flash-lite")) candidates.add("gemini-3.5-flash-lite");
+        if (!candidates.contains("gemini-flash-lite-latest")) candidates.add("gemini-flash-lite-latest");
         if (!candidates.contains("gemini-3.8-flash")) candidates.add("gemini-3.8-flash");
         if (!candidates.contains("gemini-flash-latest")) candidates.add("gemini-flash-latest");
-        if (!candidates.contains("gemini-1.5-flash")) candidates.add("gemini-1.5-flash");
-        if (!candidates.contains("gemini-2.0-flash")) candidates.add("gemini-2.0-flash");
 
         Exception lastEx = null;
         for (String modelName : candidates) {
@@ -74,6 +75,9 @@ public class ScheduleBatchTextParsingService {
             } catch (Exception e) {
                 lastEx = e;
                 log.warn("Model {} failed for batch text parsing: {}, trying next candidate...", modelName, e.getMessage());
+                if (e.getMessage() != null && e.getMessage().contains("503")) {
+                    try { Thread.sleep(1000); } catch (InterruptedException ignored) { Thread.currentThread().interrupt(); }
+                }
             }
         }
         throw lastEx != null ? lastEx : new IllegalStateException("Không có model Gemini nào phản hồi");
