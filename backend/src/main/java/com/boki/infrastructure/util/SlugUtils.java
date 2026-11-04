@@ -14,7 +14,8 @@ public class SlugUtils {
         if (input == null || input.isBlank()) {
             return "";
         }
-        String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
+        String prepared = input.replace("＆", " and ").replace("&", " and ");
+        String nowhitespace = WHITESPACE.matcher(prepared).replaceAll("-");
         String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
         String slug = DIACRITICS.matcher(normalized).replaceAll("");
         slug = slug.replace("đ", "d").replace("Đ", "d");

@@ -92,7 +92,7 @@ public class ScheduleOcrService {
                 + "1. Nhận diện Nhà xuất bản (detectedPublisher) và Thời gian (năm: year, tháng: month).\n"
                 + "2. Bóc tách từng đầu sách phát hành, gồm:\n"
                 + "   - day: số ngày phát hành trong tháng (1-31)\n"
-                + "   - title: tên sách đầy đủ kèm số tập trong dấu ngoặc đơn (ví dụ: 'Ao Ashi - Tân binh sân cỏ (Tập 7)', 'Tamon - Thần tượng hai mặt (Tập 2)')\n"
+                + "   - title: tên sách kèm số tập trong ngoặc đơn (ví dụ: 'Ao Ashi - Tân binh sân cỏ (Tập 7)'). Hãy viết hoa chữ cái đầu (Title Case) thay vì IN HOA TOÀN BỘ.\n"
                 + "   - volume: số tập (ví dụ: 'Tập 7', 'Tập 25+26', 'Tập 1', hoặc để trống nếu sách lẻ)\n"
                 + "   - price: giá bìa dạng số nguyên VND (ví dụ: 35000, 105000)\n"
                 + "   - editionName: tên phiên bản (ví dụ: 'Bản thường', 'Bản đặc biệt 2 in 1', 'Box Set 3 tập')\n"

@@ -70,26 +70,13 @@ public class ScheduleSeriesMatchingService {
 
     public String extractSeriesName(String fullTitle) {
         if (fullTitle == null || fullTitle.isBlank()) return "";
-        String s = fullTitle.trim();
-        s = CLEAN_EXTRA_PATTERN.matcher(s).replaceAll("");
-
-        int tapParenIndex = s.toLowerCase().indexOf(" (tập");
-        if (tapParenIndex > 0) return s.substring(0, tapParenIndex).trim();
-
-        int tapIndex = s.toLowerCase().indexOf(" - tập");
-        if (tapIndex > 0) return s.substring(0, tapIndex).trim();
-
-        int boxIndex = s.toLowerCase().indexOf(" - box set");
-        if (boxIndex > 0) return s.substring(0, boxIndex).trim();
-
-        int banDacBietIndex = s.toLowerCase().indexOf(" - bản đặc biệt");
-        if (banDacBietIndex > 0) return s.substring(0, banDacBietIndex).trim();
-
-        Matcher m = VOLUME_PATTERN.matcher(s);
-        if (m.find() && m.start() > 2) {
-            return s.substring(0, m.start()).trim();
+        String s = CLEAN_EXTRA_PATTERN.matcher(fullTitle.trim()).replaceAll("");
+        for (String marker : List.of(" (tập", " - tập", " - box set", " - bản đặc biệt")) {
+            int idx = s.toLowerCase().indexOf(marker);
+            if (idx > 0) return s.substring(0, idx).trim();
         }
-
+        Matcher m = VOLUME_PATTERN.matcher(s);
+        if (m.find() && m.start() > 2) return s.substring(0, m.start()).trim();
         return s;
     }
 
@@ -103,41 +90,75 @@ public class ScheduleSeriesMatchingService {
 
     private boolean matchFromPastSchedules(OcrParsedBookItemDto item, String seriesName, String publisher) {
         if (seriesName == null || seriesName.length() < 2) return false;
-
-        List<ReleaseScheduleJpaEntity> candidates = publisher != null && !publisher.isBlank()
-                ? releaseScheduleRepository.findByPublisher(publisher.trim())
-                : releaseScheduleRepository.findAll();
-
-        ReleaseScheduleJpaEntity exactMatch = null;
-        ReleaseScheduleJpaEntity similarMatch = null;
-
+        List<ReleaseScheduleJpaEntity> cands = publisher != null && !publisher.isBlank()
+                ? releaseScheduleRepository.findByPublisher(publisher.trim()) : releaseScheduleRepository.findAll();
         String normSeries = normalizeForCompare(seriesName);
-
-        for (ReleaseScheduleJpaEntity cand : candidates) {
-            String candSeries = normalizeForCompare(extractSeriesName(cand.getTitle()));
-            if (candSeries.equals(normSeries)) {
-                exactMatch = cand;
-                break;
-            } else if (candSeries.contains(normSeries) || normSeries.contains(candSeries)) {
-                if (similarMatch == null) similarMatch = cand;
-            }
+        ReleaseScheduleJpaEntity exactMatch = findMatch(cands, normSeries);
+        if (exactMatch == null && publisher != null && !publisher.isBlank()) {
+            exactMatch = findMatch(releaseScheduleRepository.findAll(), normSeries);
         }
-
         if (exactMatch != null) {
-            copyAttributesFromSchedule(item, exactMatch);
-            item.setMatchStatus(OcrMatchStatus.EXACT_MATCH);
-            item.setMatchMessage("Khớp chính xác: Kế thừa từ bộ đã có (" + exactMatch.getTitle() + ")");
+            applyMatchedSchedule(item, exactMatch, OcrMatchStatus.EXACT_MATCH,
+                    "Khớp chính xác: Kế thừa từ bộ đã có (" + exactMatch.getTitle() + ")");
             return true;
         }
-
+        ReleaseScheduleJpaEntity similarMatch = findSimilar(cands, normSeries);
+        if (similarMatch == null && publisher != null && !publisher.isBlank()) {
+            similarMatch = findSimilar(releaseScheduleRepository.findAll(), normSeries);
+        }
         if (similarMatch != null) {
-            copyAttributesFromSchedule(item, similarMatch);
-            item.setMatchStatus(OcrMatchStatus.SIMILAR_MATCH);
-            item.setMatchMessage("Gợi ý khớp tương đồng (" + similarMatch.getTitle() + ")");
+            applyMatchedSchedule(item, similarMatch, OcrMatchStatus.SIMILAR_MATCH,
+                    "Gợi ý khớp tương đồng (" + similarMatch.getTitle() + ")");
             return true;
         }
-
         return false;
+    }
+
+    private ReleaseScheduleJpaEntity findMatch(List<ReleaseScheduleJpaEntity> list, String normSeries) {
+        if (list == null) return null;
+        for (ReleaseScheduleJpaEntity cand : list) {
+            String name = cand.getSeriesName() != null && !cand.getSeriesName().isBlank()
+                    ? cand.getSeriesName() : extractSeriesName(cand.getTitle());
+            if (normalizeForCompare(name).equals(normSeries)) return cand;
+        }
+        return null;
+    }
+
+    private ReleaseScheduleJpaEntity findSimilar(List<ReleaseScheduleJpaEntity> list, String normSeries) {
+        if (list == null) return null;
+        for (ReleaseScheduleJpaEntity cand : list) {
+            String name = cand.getSeriesName() != null && !cand.getSeriesName().isBlank()
+                    ? cand.getSeriesName() : extractSeriesName(cand.getTitle());
+            String candNorm = normalizeForCompare(name);
+            if (!candNorm.isBlank() && (candNorm.contains(normSeries) || normSeries.contains(candNorm))) return cand;
+        }
+        return null;
+    }
+
+    private void applyMatchedSchedule(OcrParsedBookItemDto item, ReleaseScheduleJpaEntity source,
+                                      OcrMatchStatus status, String msg) {
+        copyAttributesFromSchedule(item, source);
+        item.setMatchStatus(status);
+        item.setMatchMessage(msg);
+        String matchedSeries = source.getSeriesName() != null && !source.getSeriesName().isBlank()
+                ? source.getSeriesName() : extractSeriesName(source.getTitle());
+        if (matchedSeries != null && !matchedSeries.isBlank()) {
+            item.setSeriesTitle(matchedSeries);
+            String volSuffix = extractVolumeSuffix(item.getTitle());
+            if (!volSuffix.isBlank()) item.setTitle(matchedSeries + " " + volSuffix);
+        }
+        item.setComputedSlug(syncService.computeScheduleSlug(item.getTitle()));
+    }
+
+    private String extractVolumeSuffix(String title) {
+        if (title == null) return "";
+        Matcher m = VOLUME_PATTERN.matcher(title);
+        if (m.find()) {
+            String prefix = m.group(1).trim();
+            if (prefix.equalsIgnoreCase("tập")) prefix = "Tập";
+            return "(" + prefix + " " + m.group(2).trim() + ")";
+        }
+        return "";
     }
 
     private void copyAttributesFromSchedule(OcrParsedBookItemDto item, ReleaseScheduleJpaEntity source) {
@@ -155,10 +176,12 @@ public class ScheduleSeriesMatchingService {
 
     private boolean matchFromBooksInventory(OcrParsedBookItemDto item, String seriesName) {
         if (seriesName == null || seriesName.length() < 2) return false;
-
         Page<BookJpaEntity> books = bookRepository.searchActiveBooks(
                 BookJpaEntity.BookStatusJpa.ACTIVE, seriesName, PageRequest.of(0, 5));
-
+        if (books.isEmpty() && seriesName.contains("&")) {
+            books = bookRepository.searchActiveBooks(
+                    BookJpaEntity.BookStatusJpa.ACTIVE, seriesName.replace("&", "and"), PageRequest.of(0, 5));
+        }
         if (!books.isEmpty()) {
             BookJpaEntity book = books.getContent().get(0);
             if (book.getAuthor() != null) item.setAuthor(book.getAuthor());
@@ -213,8 +236,13 @@ public class ScheduleSeriesMatchingService {
 
     private String normalizeForCompare(String s) {
         if (s == null) return "";
-        return s.toLowerCase()
-                .replaceAll("[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]", "")
+        String norm = s.toLowerCase()
+                .replace("＆", " and ")
+                .replace("&", " and ")
+                .replace("+", " and ")
+                .replaceAll("(?i)\\b(và|va)\\b", " and ")
+                .replaceAll("['’‘`´]", "");
+        return norm.replaceAll("[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]", "")
                 .trim();
     }
 }

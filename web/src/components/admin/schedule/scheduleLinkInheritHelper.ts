@@ -37,6 +37,11 @@ function getSeriesKey(title: string): string {
   if (!title) return '';
   return title
     .replace(/(?:\s*-\s*tập|\s*\(tập|\s*#|\s*vol\.?)\s*\d+.*$/i, '')
+    .replace(/[&＆+]/g, ' and ')
+    .replace(/\b(và|va)\b/gi, ' and ')
+    .replace(/['’‘`´]/g, '')
+    .replace(/[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ\s]/gi, ' ')
+    .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
 }
