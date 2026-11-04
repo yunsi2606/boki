@@ -120,11 +120,6 @@
   box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.12);
 }
 
-@media (max-width: 680px) {
-  .searchInput { width: 130px; }
-  .searchInput:focus { width: 160px; }
-}
-
 .loginBtn {
   display: inline-flex;
   align-items: center; gap: 6px; padding: 6px 14px;
@@ -222,14 +217,31 @@
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-
 .bokiStoreBtn:hover {
   background: var(--color-primary-500);
   border-color: var(--color-primary-500);
   color: #ffffff;
 }
 
-@media (max-width: 540px) {
+@media (max-width: 768px) {
+  .logoSub { display: none; }
+}
+@media (max-width: 680px) {
+  .container { padding: 0 10px; gap: 8px; }
+  .leftSection { gap: 8px; }
+  .rightSection { gap: 6px; flex: 1; justify-content: flex-end; }
+  .searchForm { flex: 1; min-width: 0; max-width: 200px; }
+  .searchInput { width: 100%; min-width: 80px; padding: 0 10px 0 30px; font-size: 12px; }
+  .searchInput:focus { width: 100%; }
+  .searchIcon { left: 9px; }
   .bokiStoreBtn span { display: none; }
   .bokiStoreBtn { padding: 6px 8px; }
+}
+@media (max-width: 440px) {
+  .container { padding: 0 8px; gap: 6px; }
+  .logoIconBox { width: 32px; height: 32px; border-radius: 8px; }
+  .logoMain { font-size: 18px; }
+  .userName { display: none; }
+  .userTriggerBtn { padding: 2px 5px 2px 2px; }
+  .searchForm { max-width: 140px; }
 }
